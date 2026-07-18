@@ -1,0 +1,69 @@
+{
+  "_comment": "Chapter 2 enemy family: Gatecrushed Giants (docs 05 s1, 06 s3). Chapter damage bias: mostly PHYSICAL attackers (doc 06 s1) - teaches Taunt/DR/Barrier answers. Family identity: slow, heavy, telegraphed, Armored - teaches Armor Break value (Fletch's designed relevance). Stats at reference level 1, runtime = base * levelScaling^(enemyLevel-1).",
+  "levelScaling": 1.065,
+  "enemies": [
+    { "id": "ENM-GNT-M01", "name": "Rubblekin", "family": "GNT", "tier": "M",
+      "traits": ["swarm"], "physRes": 0.25, "magRes": -0.25, "immunities": [],
+      "damageRoot": "physical", "baseStats": { "hp": 420, "atk": 40, "def": 34, "spd": 58 },
+      "aiScript": "brute_v1",
+      "skills": [ { "name": "Stone Fist", "target": "single_enemy", "power": 1.0 } ],
+      "note": "Inverts Ch1's res lesson: giants resist physical, break to magical. Mage value spikes here." },
+
+    { "id": "ENM-GNT-M02", "name": "Cairn Hurler", "family": "GNT", "tier": "M",
+      "traits": [], "physRes": 0.25, "magRes": -0.25, "immunities": [],
+      "damageRoot": "physical", "baseStats": { "hp": 360, "atk": 52, "def": 26, "spd": 72 },
+      "aiScript": "artillery_v1",
+      "skills": [ { "name": "Cairn Toss", "target": "single_enemy", "power": 1.2, "targetRule": "back_row_preferred" } ],
+      "note": "First enemy that preferentially hits the player's backline - teaches frontline aggro limits." },
+
+    { "id": "ENM-GNT-M03", "name": "Chainback", "family": "GNT", "tier": "M",
+      "traits": ["armored"], "physRes": 0.25, "magRes": 0, "immunities": [],
+      "damageRoot": "physical", "baseStats": { "hp": 560, "atk": 36, "def": 48, "spd": 52 },
+      "aiScript": "brute_v1",
+      "mechanics": [ { "id": "shell", "note": "Armored trait grants 30% DR until STS-ARMOR-BREAK is applied - the family's Armor Break tutorial dummy." } ],
+      "skills": [ { "name": "Chain Drag", "target": "single_enemy", "power": 0.9, "effects": [ { "verb": "applyStatus", "status": "STS-SPD-DOWN", "duration": 1, "chance": 0.5 } ] } ] },
+
+    { "id": "ENM-GNT-M04", "name": "Ash Ogre", "family": "GNT", "tier": "M",
+      "traits": [], "physRes": 0.25, "magRes": -0.25, "immunities": [],
+      "damageRoot": "physical", "baseStats": { "hp": 520, "atk": 58, "def": 30, "spd": 60 },
+      "aiScript": "brute_v1",
+      "skills": [ { "name": "Beam Swing", "target": "splash2", "power": 0.9 } ] },
+
+    { "id": "ENM-GNT-E01", "name": "Wallbreaker", "family": "GNT", "tier": "E",
+      "traits": ["colossal", "armored"], "physRes": 0.25, "magRes": 0, "immunities": ["STS-SPD-DOWN"],
+      "damageRoot": "physical", "baseStats": { "hp": 1250, "atk": 74, "def": 52, "spd": 50 },
+      "aiScript": "brute_v1",
+      "telegraphs": [ { "skill": "Wall Toss", "windup": 2, "pattern": "front_row", "power": 1.7 } ],
+      "skills": [ { "name": "Gate Fist", "target": "single_enemy", "power": 1.3 } ] },
+
+    { "id": "ENM-GNT-E02", "name": "Ironroot Colossus", "family": "GNT", "tier": "E",
+      "traits": ["colossal", "armored"], "physRes": 0.25, "magRes": 0, "immunities": ["STS-STUN"],
+      "damageRoot": "physical", "baseStats": { "hp": 1400, "atk": 62, "def": 58, "spd": 46 },
+      "aiScript": "bulwark_v1",
+      "mechanics": [ { "id": "ironroot", "note": "Gains STS-DEF-UP every 2 rounds while stationary (stacking). The chapter's Strip/Armor-Break race lesson and Harrowjaw P2 preview." } ],
+      "skills": [ { "name": "Root Slam", "target": "single_enemy", "power": 1.2 } ] },
+
+    { "id": "ENM-GNT-B01", "name": "The Tollkeeper", "family": "GNT", "tier": "B",
+      "traits": ["colossal", "armored"], "physRes": 0.25, "magRes": 0, "immunities": ["STS-STUN"],
+      "damageRoot": "physical", "baseStats": { "hp": 3400, "atk": 88, "def": 60, "spd": 56 },
+      "aiScript": "miniboss_v1",
+      "telegraphs": [ { "skill": "Toll Demanded", "windup": 3, "pattern": "single_highest_atk", "power": 2.4,
+        "note": "The chapter's core lesson in miniature: a Skyfall-style near-oneshot on the strongest ally. Answers: Taunt-Me redirect, Barrier, Stealth, or burst him past the windup. Preview of Harrowjaw P1." } ],
+      "skills": [ { "name": "Lantern Sweep", "target": "front_row", "power": 1.1 } ],
+      "empoweredVariant": { "usedInStage": "STG-CAMP-2-09", "statMult": 1.35,
+        "extra": "Toll Demanded windup drops to 2; gains one stack of STS-DEF-UP whenever it takes a critical hit." } },
+
+    { "id": "ENM-GNT-X01", "name": "Harrowjaw, the Gatecrushed Titan", "family": "GNT", "tier": "X",
+      "traits": ["colossal", "armored"], "physRes": 0.25, "magRes": 0, "immunities": ["STS-STUN", "STS-ATK-DOWN"],
+      "damageRoot": "physical", "baseStats": { "hp": 8600, "atk": 104, "def": 66, "spd": 62 },
+      "aiScript": "boss_harrowjaw_v1",
+      "phases": [
+        { "from": 1.0, "note": "P1: 'Skyfall Fist' 3-turn telegraph on the highest-ATK ally, near-oneshot unmitigated. Answer: Taunt-Me, Barrier, or Stealth the target (doc 05 s4.2)." },
+        { "from": 0.6, "staggerRound": true, "note": "P2: gains STS-DEF-UP every round (stacking). Answer: Strip or maintain STS-ARMOR-BREAK uptime - the Fletch race." }
+      ],
+      "resolve": true, "enrageRound": 15,
+      "telegraphs": [ { "skill": "Skyfall Fist", "windup": 3, "pattern": "single_highest_atk", "power": 2.8 } ],
+      "skills": [ { "name": "Jaw Grind", "target": "single_enemy", "power": 1.4 },
+                  { "name": "Rampart Sweep", "target": "front_row", "power": 1.1, "cooldown": 3 } ] }
+  ]
+}
