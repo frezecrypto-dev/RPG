@@ -104,11 +104,45 @@ def check_skills(unit_ids: set[str]) -> None:
             err(f"{uid}: incomplete kit, has {sorted(slots)}")
 
 
+ENEMY_ID_RE = re.compile(r"^ENM-(SLM|GNT|GRD|UND)-(M|E|B|X)(\d{2})$")
+STAGE_ID_RE = re.compile(r"^STG-CAMP-[1-4]-(0[1-9]|10)$")
+
+
+def check_enemies_and_stages() -> None:
+    enemy_ids: set[str] = set()
+    for path in sorted(DATA.glob("enemies.ch*.json")):
+        for e in json.loads(path.read_text())["enemies"]:
+            eid = e["id"]
+            m = ENEMY_ID_RE.match(eid)
+            if not m:
+                err(f"{eid}: bad enemy id format")
+            elif m.group(1) != e["family"] or m.group(2) != e["tier"]:
+                err(f"{eid}: id tags != family/tier columns")
+            if eid in enemy_ids:
+                err(f"{eid}: duplicate enemy id")
+            enemy_ids.add(eid)
+            for t in e.get("telegraphs", []):
+                if not 1 <= t["windup"] <= 3:
+                    err(f"{eid}: telegraph windup {t['windup']} outside 1-3")
+    for path in sorted(DATA.glob("stages.ch*.json")):
+        for s in json.loads(path.read_text())["stages"]:
+            sid = s["id"]
+            if not STAGE_ID_RE.match(sid):
+                err(f"{sid}: bad stage id format")
+            if not 1 <= len(s["waves"]) <= 3:
+                err(f"{sid}: {len(s['waves'])} waves outside 1-3")
+            for wave in s["waves"]:
+                for eid in wave:
+                    if eid not in enemy_ids:
+                        err(f"{sid}: references unknown enemy {eid}")
+
+
 def main() -> int:
     tpl = json.loads((CONTENT / "class_stat_templates.json").read_text())
     rows = load_units()
     check_roster_shape(rows)
     check_skills({r["id"] for r in rows})
+    check_enemies_and_stages()
 
     if errors:
         print(f"VALIDATION FAILED ({len(errors)} errors):")
