@@ -1,0 +1,71 @@
+id,name,class,rarity,faction,row,damageRoot,subtags,bias
+ASH-TNK-C01,Garrick Gatehouse Door,TNK,C,Emberguard,front,physical,,balanced
+ASH-TNK-C02,Bram Coalhide,TNK,C,Emberguard,front,physical,,defense
+ASH-TNK-R01,Sera Ironvow,TNK,R,Emberguard,front,physical,,defense
+ASH-TNK-R02,Odo of the Ninth Wall,TNK,R,Choir,front,physical,,defense
+ASH-TNK-R03,Kellan Vice,TNK,R,Freeblades,front,physical,,balanced
+ASH-TNK-E01,Vashti Bulwark of Glass,TNK,E,Hollowed,front,magical,arcane,defense
+ASH-TNK-E02,Morholt Gravemantle,TNK,E,Gravebound,front,physical,,defense
+ASH-TNK-E03,Sigrun Aegisdottir,TNK,E,Freeblades,front,physical,,offense
+ASH-TNK-L01,Roland the Last Rampart,TNK,L,Choir,front,physical,holy,defense
+ASH-TNK-L02,Kaela Nightwarden,TNK,L,Hollowed,front,magical,shadow,balanced
+ASH-ASN-C01,Whisper,ASN,C,Freeblades,back,physical,bleed,balanced
+ASH-ASN-C02,Ratchet Anna,ASN,C,Emberguard,back,physical,,offense
+ASH-ASN-R01,Vesk Halfsmile,ASN,R,Freeblades,back,physical,bleed,speed
+ASH-ASN-R02,Mireille Threadcut,ASN,R,Freeblades,back,physical,,balanced
+ASH-ASN-R03,Joss Emberknife,ASN,R,Freeblades,back,physical,bleed,offense
+ASH-ASN-E01,Nyx Serrata,ASN,E,Hollowed,back,physical,bleed,offense
+ASH-ASN-E02,Cassian Veil,ASN,E,Freeblades,back,physical,,speed
+ASH-ASN-E03,Ten-Knives Orla,ASN,E,Freeblades,back,physical,bleed,balanced
+ASH-ASN-L01,The Hollow Smile,ASN,L,Hollowed,back,physical,bleed,balanced
+ASH-ASN-L02,Seraphine Redveil,ASN,L,Hollowed,back,physical,bleed,offense
+ASH-RNG-C01,Fletch,RNG,C,Emberguard,back,physical,pierce,balanced
+ASH-RNG-C02,Marta Longwatch,RNG,C,Emberguard,back,physical,,balanced
+ASH-RNG-R01,Corvo Hexlock,RNG,R,Choir,back,physical,pierce,balanced
+ASH-RNG-R02,Brenna Two-Strings,RNG,R,Freeblades,back,physical,,speed
+ASH-RNG-R03,Silent Aldous,RNG,R,Freeblades,back,physical,pierce,offense
+ASH-RNG-E01,Yara Stormfletch,RNG,E,Freeblades,back,physical,,balanced
+ASH-RNG-E02,Dunstan Ironquill,RNG,E,Emberguard,back,physical,pierce,offense
+ASH-RNG-E03,Lys of the Last Light,RNG,E,Choir,back,physical,,balanced
+ASH-RNG-L01,Vigil the Unblinking,RNG,L,Emberguard,back,physical,pierce,offense
+ASH-RNG-L02,Freya Gatepiercer,RNG,L,Freeblades,back,physical,pierce,speed
+ASH-MAG-C01,Pip Emberling,MAG,C,Emberguard,back,magical,arcane,balanced
+ASH-MAG-C02,Old Maren,MAG,C,Freeblades,back,magical,arcane,balanced
+ASH-MAG-R01,Castor Nullbrand,MAG,R,Choir,back,magical,arcane,balanced
+ASH-MAG-R02,Ione Glasswake,MAG,R,Hollowed,back,magical,arcane,offense
+ASH-MAG-R03,Tobias Wardlow,MAG,R,Emberguard,back,magical,arcane,balanced
+ASH-MAG-E01,Zerelda Voidquill,MAG,E,Hollowed,back,magical,shadow,balanced
+ASH-MAG-E02,Ashvander the Third,MAG,E,Emberguard,back,magical,arcane,offense
+ASH-MAG-E03,Liora Tidebinder,MAG,E,Choir,back,magical,arcane,defense
+ASH-MAG-L01,Ordan Arc of Ruin,MAG,L,Hollowed,back,magical,arcane,offense
+ASH-MAG-L02,Selune Mirrorveil,MAG,L,Choir,back,magical,arcane,speed
+ASH-NEC-C01,Gravedigger Tam,NEC,C,Gravebound,back,physical,,balanced
+ASH-NEC-C02,Widow Isolde,NEC,C,Gravebound,back,magical,decay,balanced
+ASH-NEC-R01,Oswin Marrowcall,NEC,R,Gravebound,back,physical,,balanced
+ASH-NEC-R02,Nerys Palegrasp,NEC,R,Gravebound,back,magical,shadow,balanced
+ASH-NEC-R03,Cantor Vhel,NEC,R,Gravebound,back,magical,decay,balanced
+ASH-NEC-E01,Morgause Ossuary,NEC,E,Gravebound,back,magical,shadow,defense
+ASH-NEC-E02,Hollow-King Edric,NEC,E,Gravebound,back,physical,,balanced
+ASH-NEC-E03,Sister Vesper,NEC,E,Choir,back,magical,decay,balanced
+ASH-NEC-L01,Mordrahl Gravetide,NEC,L,Gravebound,back,physical,shadow,balanced
+ASH-NEC-L02,Anguisette Last Lament,NEC,L,Hollowed,back,magical,decay,offense
+ASH-HLR-C01,Novice Bree,HLR,C,Choir,back,magical,holy,balanced
+ASH-HLR-C02,Father Ambrose,HLR,C,Choir,back,magical,holy,balanced
+ASH-HLR-R01,Sable Thornwick,HLR,R,Freeblades,back,magical,,balanced
+ASH-HLR-R02,Cantrice Elowen,HLR,R,Choir,back,magical,holy,defense
+ASH-HLR-R03,Dr. Halvard Quist,HLR,R,Emberguard,back,magical,,offense
+ASH-HLR-E01,Seraphel of the Ninth Choir,HLR,E,Choir,back,magical,holy,balanced
+ASH-HLR-E02,Warden Ysolt,HLR,E,Choir,front,magical,holy,defense
+ASH-HLR-E03,Lumen the Kindled,HLR,E,Choir,back,magical,holy,offense
+ASH-HLR-L01,Aurelia Dawnvow,HLR,L,Choir,back,magical,holy,balanced
+ASH-HLR-L02,Requiem,HLR,L,Gravebound,back,magical,holy,balanced
+ASH-BSK-C01,Brick,BSK,C,Freeblades,front,physical,,balanced
+ASH-BSK-C02,Hedda Ironjaw,BSK,C,Freeblades,front,physical,,offense
+ASH-BSK-R01,Cormac Redmist,BSK,R,Emberguard,front,physical,,offense
+ASH-BSK-R02,Ulla Grindstone,BSK,R,Freeblades,front,physical,,balanced
+ASH-BSK-R03,Feral Jonas,BSK,R,Hollowed,front,physical,,defense
+ASH-BSK-E01,Ragna Pyrelight,BSK,E,Emberguard,front,physical,,offense
+ASH-BSK-E02,Torvald Chainbreak,BSK,E,Freeblades,front,physical,,balanced
+ASH-BSK-E03,Maeve Halfdeath,BSK,E,Freeblades,front,physical,,speed
+ASH-BSK-L01,Kargh the Unfinished,BSK,L,Hollowed,front,physical,,offense
+ASH-BSK-L02,Branwen Oathbreaker,BSK,L,Emberguard,front,physical,,balanced

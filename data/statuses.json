@@ -1,0 +1,34 @@
+{
+  "_comment": "Canonical status token table (doc 02 s8). Standardized math: character uniqueness = when/how many, never bespoke stat math. Durations in rounds, decrement at owner's turn start.",
+  "statuses": [
+    { "id": "STS-ATK-UP",      "kind": "buff",   "stat": "atk", "amount": 0.30, "dispellable": true },
+    { "id": "STS-CRIT-UP",     "kind": "buff",   "stat": "critRate", "amount": 0.20, "dispellable": true },
+    { "id": "STS-SPD-UP",      "kind": "buff",   "stat": "spd", "amount": 0.25, "dispellable": true },
+    { "id": "STS-FOCUS",       "kind": "buff",   "stat": "effectHit", "amount": 0.30, "dispellable": true },
+    { "id": "STS-DEF-UP",      "kind": "buff",   "stat": "def", "amount": 0.30, "dispellable": true },
+    { "id": "STS-DR-25",       "kind": "buff",   "stat": "damageReduction", "amount": 0.25, "dispellable": true },
+    { "id": "STS-BARRIER",     "kind": "shield", "scaling": "per_application", "dispellable": true,
+      "note": "Flat shield HP set by the applying skill (usually %caster ATK or DEF). Bleed ticks pierce it (assassin class rule)." },
+    { "id": "STS-IMMUNITY",    "kind": "buff",   "blocks": "next_n_debuffs", "dispellable": false },
+    { "id": "STS-STEALTH",     "kind": "buff",   "effect": "untargetable_single", "breaksOn": "offensive_action", "dispellable": true },
+    { "id": "STS-TAUNT-ME",    "kind": "buff",   "effect": "forces_enemy_targeting_to_owner", "dispellable": true },
+    { "id": "STS-COUNTER",     "kind": "buff",   "effect": "counterattack_s1_when_hit", "dispellable": true },
+    { "id": "STS-ATK-DOWN",    "kind": "debuff", "stat": "atk", "amount": -0.30, "dispellable": true },
+    { "id": "STS-DEF-DOWN",    "kind": "debuff", "stat": "def", "amount": -0.30, "dispellable": true },
+    { "id": "STS-SPD-DOWN",    "kind": "debuff", "stat": "spd", "amount": -0.25, "dispellable": true },
+    { "id": "STS-ARMOR-BREAK", "kind": "debuff", "stat": "def", "amount": -0.40, "appliesTo": "physical_mitigation_only", "dispellable": true,
+      "note": "Also removes the Armored trait's damage reduction while active (doc 02 s7)." },
+    { "id": "STS-BLEED",       "kind": "dot", "root": "physical", "stackMax": 5, "tickPower": 0.08, "tickStat": "applier_atk", "piercesShield": true, "dispellable": true },
+    { "id": "STS-POISON",      "kind": "dot", "root": "magical", "stackMax": 3, "tickPower": 0.05, "tickStat": "target_maxhp", "bossTickCap": "2%_maxhp", "dispellable": true },
+    { "id": "STS-DECAY",       "kind": "dot", "root": "magical", "stackMax": 3, "tickPower": 0.06, "tickStat": "applier_atk", "healingReduction": 0.50, "dispellable": true },
+    { "id": "STS-STUN",        "kind": "control", "effect": "skip_turn", "maxDuration": 1, "triggersResolve": true, "dispellable": true },
+    { "id": "STS-BIND",        "kind": "control", "effect": "s1_only", "triggersResolve": true, "dispellable": true },
+    { "id": "STS-MARK",        "kind": "debuff", "effect": "damage_taken_all_sources", "amount": 0.20, "dispellable": true }
+  ],
+  "rules": {
+    "maxVisibleEffectsPerUnit": 8,
+    "applyChanceFormula": "base * (1 + effectHit - effectRes), floor 0.15, cap 1.0",
+    "resolve": "After any hard CC (Stun/Bind) lands on a boss, boss is CC-immune for 2 rounds.",
+    "dispelVerbs": ["cleanse", "strip", "steal", "block"]
+  }
+}

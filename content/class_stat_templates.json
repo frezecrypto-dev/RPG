@@ -1,0 +1,36 @@
+{
+  "_comment": "Level-1 base stats per class at Common rarity. Effective base = class template x rarity multiplier (hp/atk/def) + flat SPD bonus, then stat bias. See docs/design/03 and 04 s1.",
+  "classTemplates": {
+    "TNK": { "hp": 1450, "atk": 95,  "def": 132, "spd": 96 },
+    "ASN": { "hp": 755,  "atk": 132, "def": 68,  "spd": 108 },
+    "RNG": { "hp": 820,  "atk": 125, "def": 72,  "spd": 104 },
+    "MAG": { "hp": 790,  "atk": 128, "def": 65,  "spd": 100 },
+    "NEC": { "hp": 900,  "atk": 118, "def": 78,  "spd": 98 },
+    "HLR": { "hp": 950,  "atk": 105, "def": 85,  "spd": 102 },
+    "BSK": { "hp": 1050, "atk": 130, "def": 75,  "spd": 94 }
+  },
+  "rarityMultipliers": {
+    "_comment": "SPD deliberately gets a small flat bonus, not a multiplier - anti speed-tyranny rule (doc 14 s1).",
+    "C": { "stat": 1.00, "spdBonus": 0 },
+    "R": { "stat": 1.08, "spdBonus": 2 },
+    "E": { "stat": 1.18, "spdBonus": 3 },
+    "L": { "stat": 1.30, "spdBonus": 4 }
+  },
+  "biases": {
+    "balanced": { "hp": 1.00, "atk": 1.00, "def": 1.00, "spdBonus": 0 },
+    "offense":  { "hp": 0.92, "atk": 1.10, "def": 1.00, "spdBonus": 0 },
+    "defense":  { "hp": 1.05, "atk": 0.92, "def": 1.12, "spdBonus": 0 },
+    "speed":    { "hp": 0.95, "atk": 1.00, "def": 1.00, "spdBonus": 4 }
+  },
+  "growthCurves": {
+    "_comment": "Per-level growth as fraction of level-1 base added per level (linear at launch; curve shape is data, not code). Rarity growth multiplier from doc 04 s1.",
+    "common_std":    { "perLevel": 0.048, "rarityGrowth": 1.00 },
+    "rare_std":      { "perLevel": 0.048, "rarityGrowth": 1.05 },
+    "epic_std":      { "perLevel": 0.048, "rarityGrowth": 1.12 },
+    "legendary_std": { "perLevel": 0.048, "rarityGrowth": 1.20 }
+  },
+  "starBonusPerStar": 0.08,
+  "levelCapByStar": { "1": 20, "2": 30, "3": 40, "4": 50, "5": 55, "6": 60 },
+  "rarityStartStars": { "C": 1, "R": 2, "E": 3, "L": 3 },
+  "rarityStarCap":    { "C": 5, "R": 6, "E": 6, "L": 6 }
+}

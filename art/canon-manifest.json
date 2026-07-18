@@ -1,0 +1,46 @@
+{
+  "_comment": "Canonical art registry (doc 11 s3). Each entry maps a content ID to its approved Higgsfield generation. The job id is the consistency anchor: pass it as an input media reference for all derivative generations (cut-ins, skins, portraits). Binaries live in the Higgsfield workspace / asset CDN, not in git. Generated 2026-07-17, style-lock sprint pass 1 (doc 11 s6 step 1), model nano_banana_pro (nano_banana_2), 2K.",
+  "styleLockSprint": {
+    "date": "2026-07-17",
+    "model": "nano_banana_2",
+    "resolution": "2k",
+    "status": "pass1_candidates_pending_art_review",
+    "note": "One candidate per subject generated. Doc 11 s3 two-pass workflow: art lead reviews against the s7 checklist, annotates, pass 2 refines winners before these become locked canon."
+  },
+  "characters": {
+    "ASH-TNK-L01": { "job": "9aa6dcdb-e63d-4941-88cd-978b9310b096", "asset": "master_v01", "aspect": "2:3",
+      "raw": "https://d8j0ntlcm91z4.cloudfront.net/user_34Ho3nHg9ADFGZKa6cP3QgXRXKn/hf_20260717_171512_9aa6dcdb-e63d-4941-88cd-978b9310b096.png" },
+    "ASH-ASN-L01": { "job": "f791af5b-427f-4dc8-abbe-1afcb6e7e179", "asset": "master_v01", "aspect": "2:3",
+      "raw": "https://d8j0ntlcm91z4.cloudfront.net/user_34Ho3nHg9ADFGZKa6cP3QgXRXKn/hf_20260717_171516_f791af5b-427f-4dc8-abbe-1afcb6e7e179.png" },
+    "ASH-RNG-E01": { "job": "3408f54b-4086-4dcc-951e-492b089c89de", "asset": "master_v01", "aspect": "2:3",
+      "raw": "https://d8j0ntlcm91z4.cloudfront.net/user_34Ho3nHg9ADFGZKa6cP3QgXRXKn/hf_20260717_171520_3408f54b-4086-4dcc-951e-492b089c89de.png" },
+    "ASH-MAG-L01": { "job": "2a0db233-c4e2-494f-91e7-f5dcf2a7ac24", "asset": "master_v01", "aspect": "2:3",
+      "raw": "https://d8j0ntlcm91z4.cloudfront.net/user_34Ho3nHg9ADFGZKa6cP3QgXRXKn/hf_20260717_171525_2a0db233-c4e2-494f-91e7-f5dcf2a7ac24.png" },
+    "ASH-NEC-E01": { "job": "7931fbc9-c52f-4715-a2bb-8764d7a00d61", "asset": "master_v01", "aspect": "2:3",
+      "raw": "https://d8j0ntlcm91z4.cloudfront.net/user_34Ho3nHg9ADFGZKa6cP3QgXRXKn/hf_20260717_171536_7931fbc9-c52f-4715-a2bb-8764d7a00d61.png" },
+    "ASH-HLR-L01": { "job": "cfdf1310-38d7-44a6-90a7-658af7e0f4fd", "asset": "master_v01", "aspect": "2:3",
+      "raw": "https://d8j0ntlcm91z4.cloudfront.net/user_34Ho3nHg9ADFGZKa6cP3QgXRXKn/hf_20260717_171541_cfdf1310-38d7-44a6-90a7-658af7e0f4fd.png" },
+    "ASH-BSK-L02": { "job": "2dda296b-d38e-4f77-8f52-2f47f3e899ec", "asset": "master_v01", "aspect": "2:3",
+      "raw": "https://d8j0ntlcm91z4.cloudfront.net/user_34Ho3nHg9ADFGZKa6cP3QgXRXKn/hf_20260717_171546_2dda296b-d38e-4f77-8f52-2f47f3e899ec.png" }
+  },
+  "enemies": {
+    "ENM-SLM-E02": { "name": "Prism Ooze", "job": "8076dfe6-f38b-4e00-addd-9d3bfd4f1061", "asset": "master_v01", "aspect": "2:3",
+      "raw": "https://d8j0ntlcm91z4.cloudfront.net/user_34Ho3nHg9ADFGZKa6cP3QgXRXKn/hf_20260717_171552_8076dfe6-f38b-4e00-addd-9d3bfd4f1061.png" },
+    "ENM-GNT-E01": { "name": "Wallbreaker", "job": "166ebc7d-3041-4fcd-9057-4a26ab59efae", "asset": "master_v01", "aspect": "2:3",
+      "raw": "https://d8j0ntlcm91z4.cloudfront.net/user_34Ho3nHg9ADFGZKa6cP3QgXRXKn/hf_20260717_171556_166ebc7d-3041-4fcd-9057-4a26ab59efae.png" },
+    "ENM-GRD-E01": { "name": "Null Templar", "job": "346860d5-fcb2-4821-9c92-bb6126d3abe4", "asset": "master_v01", "aspect": "2:3",
+      "raw": "https://d8j0ntlcm91z4.cloudfront.net/user_34Ho3nHg9ADFGZKa6cP3QgXRXKn/hf_20260717_171605_346860d5-fcb2-4821-9c92-bb6126d3abe4.png" },
+    "ENM-UND-E01": { "name": "Requiem Knight", "job": "ac6badec-dc26-40a5-a8c5-8365bde440a3", "asset": "master_v01", "aspect": "2:3",
+      "raw": "https://d8j0ntlcm91z4.cloudfront.net/user_34Ho3nHg9ADFGZKa6cP3QgXRXKn/hf_20260717_171612_ac6badec-dc26-40a5-a8c5-8365bde440a3.png" }
+  },
+  "environments": {
+    "ENV-CH1": { "name": "The Drowned Quarter", "job": "d55361f1-d9a1-4bdd-b063-5e00a56a2bba", "asset": "keyart_v01", "aspect": "16:9",
+      "raw": "https://d8j0ntlcm91z4.cloudfront.net/user_34Ho3nHg9ADFGZKa6cP3QgXRXKn/hf_20260717_171615_d55361f1-d9a1-4bdd-b063-5e00a56a2bba.png" },
+    "ENV-CH2": { "name": "The Broken Reach", "job": "de7c5684-9c4a-4eba-881d-208689855123", "asset": "keyart_v01", "aspect": "16:9",
+      "raw": "https://d8j0ntlcm91z4.cloudfront.net/user_34Ho3nHg9ADFGZKa6cP3QgXRXKn/hf_20260717_171617_de7c5684-9c4a-4eba-881d-208689855123.png" },
+    "ENV-CH3": { "name": "The Sleepless Bastion", "job": "7d00b877-927e-42f8-aded-9ad303946c78", "asset": "keyart_v01", "aspect": "16:9",
+      "raw": "https://d8j0ntlcm91z4.cloudfront.net/user_34Ho3nHg9ADFGZKa6cP3QgXRXKn/hf_20260717_171620_7d00b877-927e-42f8-aded-9ad303946c78.png" },
+    "ENV-CH4": { "name": "The Singing Graves", "job": "814743dd-116c-4fe0-8ea8-b31ae477fa7b", "asset": "keyart_v01", "aspect": "16:9",
+      "raw": "https://d8j0ntlcm91z4.cloudfront.net/user_34Ho3nHg9ADFGZKa6cP3QgXRXKn/hf_20260717_171626_814743dd-116c-4fe0-8ea8-b31ae477fa7b.png" }
+  }
+}

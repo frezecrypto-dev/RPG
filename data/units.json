@@ -1,0 +1,1907 @@
+{
+  "schema": "units_v1",
+  "units": [
+    {
+      "id": "ASH-TNK-C01",
+      "class": "TNK",
+      "rarity": "C",
+      "faction": "Emberguard",
+      "row": "front",
+      "damageRoot": "physical",
+      "subtags": [],
+      "baseStats": {
+        "hp": 1450,
+        "atk": 95,
+        "def": 132,
+        "spd": 96
+      },
+      "growthCurve": "common_std",
+      "startStars": 1,
+      "starCap": 5,
+      "skills": [
+        "SKL-ASH-TNK-C01-S1",
+        "SKL-ASH-TNK-C01-S2",
+        "SKL-ASH-TNK-C01-S3",
+        "SKL-ASH-TNK-C01-S4"
+      ],
+      "artRef": "ASH-TNK-C01",
+      "status": "live"
+    },
+    {
+      "id": "ASH-TNK-C02",
+      "class": "TNK",
+      "rarity": "C",
+      "faction": "Emberguard",
+      "row": "front",
+      "damageRoot": "physical",
+      "subtags": [],
+      "baseStats": {
+        "hp": 1522,
+        "atk": 87,
+        "def": 148,
+        "spd": 96
+      },
+      "growthCurve": "common_std",
+      "startStars": 1,
+      "starCap": 5,
+      "skills": [
+        "SKL-ASH-TNK-C02-S1",
+        "SKL-ASH-TNK-C02-S2",
+        "SKL-ASH-TNK-C02-S3",
+        "SKL-ASH-TNK-C02-S4"
+      ],
+      "artRef": "ASH-TNK-C02",
+      "status": "live"
+    },
+    {
+      "id": "ASH-TNK-R01",
+      "class": "TNK",
+      "rarity": "R",
+      "faction": "Emberguard",
+      "row": "front",
+      "damageRoot": "physical",
+      "subtags": [],
+      "baseStats": {
+        "hp": 1644,
+        "atk": 94,
+        "def": 160,
+        "spd": 98
+      },
+      "growthCurve": "rare_std",
+      "startStars": 2,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-TNK-R01-S1",
+        "SKL-ASH-TNK-R01-S2",
+        "SKL-ASH-TNK-R01-S3",
+        "SKL-ASH-TNK-R01-S4"
+      ],
+      "artRef": "ASH-TNK-R01",
+      "status": "live"
+    },
+    {
+      "id": "ASH-TNK-R02",
+      "class": "TNK",
+      "rarity": "R",
+      "faction": "Choir",
+      "row": "front",
+      "damageRoot": "physical",
+      "subtags": [],
+      "baseStats": {
+        "hp": 1644,
+        "atk": 94,
+        "def": 160,
+        "spd": 98
+      },
+      "growthCurve": "rare_std",
+      "startStars": 2,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-TNK-R02-S1",
+        "SKL-ASH-TNK-R02-S2",
+        "SKL-ASH-TNK-R02-S3",
+        "SKL-ASH-TNK-R02-S4"
+      ],
+      "artRef": "ASH-TNK-R02",
+      "status": "live"
+    },
+    {
+      "id": "ASH-TNK-R03",
+      "class": "TNK",
+      "rarity": "R",
+      "faction": "Freeblades",
+      "row": "front",
+      "damageRoot": "physical",
+      "subtags": [],
+      "baseStats": {
+        "hp": 1566,
+        "atk": 103,
+        "def": 143,
+        "spd": 98
+      },
+      "growthCurve": "rare_std",
+      "startStars": 2,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-TNK-R03-S1",
+        "SKL-ASH-TNK-R03-S2",
+        "SKL-ASH-TNK-R03-S3",
+        "SKL-ASH-TNK-R03-S4"
+      ],
+      "artRef": "ASH-TNK-R03",
+      "status": "live"
+    },
+    {
+      "id": "ASH-TNK-E01",
+      "class": "TNK",
+      "rarity": "E",
+      "faction": "Hollowed",
+      "row": "front",
+      "damageRoot": "magical",
+      "subtags": [
+        "arcane"
+      ],
+      "baseStats": {
+        "hp": 1797,
+        "atk": 103,
+        "def": 174,
+        "spd": 99
+      },
+      "growthCurve": "epic_std",
+      "startStars": 3,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-TNK-E01-S1",
+        "SKL-ASH-TNK-E01-S2",
+        "SKL-ASH-TNK-E01-S3",
+        "SKL-ASH-TNK-E01-S4"
+      ],
+      "artRef": "ASH-TNK-E01",
+      "status": "live"
+    },
+    {
+      "id": "ASH-TNK-E02",
+      "class": "TNK",
+      "rarity": "E",
+      "faction": "Gravebound",
+      "row": "front",
+      "damageRoot": "physical",
+      "subtags": [],
+      "baseStats": {
+        "hp": 1797,
+        "atk": 103,
+        "def": 174,
+        "spd": 99
+      },
+      "growthCurve": "epic_std",
+      "startStars": 3,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-TNK-E02-S1",
+        "SKL-ASH-TNK-E02-S2",
+        "SKL-ASH-TNK-E02-S3",
+        "SKL-ASH-TNK-E02-S4"
+      ],
+      "artRef": "ASH-TNK-E02",
+      "status": "live"
+    },
+    {
+      "id": "ASH-TNK-E03",
+      "class": "TNK",
+      "rarity": "E",
+      "faction": "Freeblades",
+      "row": "front",
+      "damageRoot": "physical",
+      "subtags": [],
+      "baseStats": {
+        "hp": 1574,
+        "atk": 123,
+        "def": 156,
+        "spd": 99
+      },
+      "growthCurve": "epic_std",
+      "startStars": 3,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-TNK-E03-S1",
+        "SKL-ASH-TNK-E03-S2",
+        "SKL-ASH-TNK-E03-S3",
+        "SKL-ASH-TNK-E03-S4"
+      ],
+      "artRef": "ASH-TNK-E03",
+      "status": "live"
+    },
+    {
+      "id": "ASH-TNK-L01",
+      "class": "TNK",
+      "rarity": "L",
+      "faction": "Choir",
+      "row": "front",
+      "damageRoot": "physical",
+      "subtags": [
+        "holy"
+      ],
+      "baseStats": {
+        "hp": 1979,
+        "atk": 114,
+        "def": 192,
+        "spd": 100
+      },
+      "growthCurve": "legendary_std",
+      "startStars": 3,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-TNK-L01-S1",
+        "SKL-ASH-TNK-L01-S2",
+        "SKL-ASH-TNK-L01-S3",
+        "SKL-ASH-TNK-L01-S4"
+      ],
+      "artRef": "ASH-TNK-L01",
+      "status": "live"
+    },
+    {
+      "id": "ASH-TNK-L02",
+      "class": "TNK",
+      "rarity": "L",
+      "faction": "Hollowed",
+      "row": "front",
+      "damageRoot": "magical",
+      "subtags": [
+        "shadow"
+      ],
+      "baseStats": {
+        "hp": 1885,
+        "atk": 124,
+        "def": 172,
+        "spd": 100
+      },
+      "growthCurve": "legendary_std",
+      "startStars": 3,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-TNK-L02-S1",
+        "SKL-ASH-TNK-L02-S2",
+        "SKL-ASH-TNK-L02-S3",
+        "SKL-ASH-TNK-L02-S4"
+      ],
+      "artRef": "ASH-TNK-L02",
+      "status": "live"
+    },
+    {
+      "id": "ASH-ASN-C01",
+      "class": "ASN",
+      "rarity": "C",
+      "faction": "Freeblades",
+      "row": "back",
+      "damageRoot": "physical",
+      "subtags": [
+        "bleed"
+      ],
+      "baseStats": {
+        "hp": 755,
+        "atk": 132,
+        "def": 68,
+        "spd": 108
+      },
+      "growthCurve": "common_std",
+      "startStars": 1,
+      "starCap": 5,
+      "skills": [
+        "SKL-ASH-ASN-C01-S1",
+        "SKL-ASH-ASN-C01-S2",
+        "SKL-ASH-ASN-C01-S3",
+        "SKL-ASH-ASN-C01-S4"
+      ],
+      "artRef": "ASH-ASN-C01",
+      "status": "live"
+    },
+    {
+      "id": "ASH-ASN-C02",
+      "class": "ASN",
+      "rarity": "C",
+      "faction": "Emberguard",
+      "row": "back",
+      "damageRoot": "physical",
+      "subtags": [],
+      "baseStats": {
+        "hp": 695,
+        "atk": 145,
+        "def": 68,
+        "spd": 108
+      },
+      "growthCurve": "common_std",
+      "startStars": 1,
+      "starCap": 5,
+      "skills": [
+        "SKL-ASH-ASN-C02-S1",
+        "SKL-ASH-ASN-C02-S2",
+        "SKL-ASH-ASN-C02-S3",
+        "SKL-ASH-ASN-C02-S4"
+      ],
+      "artRef": "ASH-ASN-C02",
+      "status": "live"
+    },
+    {
+      "id": "ASH-ASN-R01",
+      "class": "ASN",
+      "rarity": "R",
+      "faction": "Freeblades",
+      "row": "back",
+      "damageRoot": "physical",
+      "subtags": [
+        "bleed"
+      ],
+      "baseStats": {
+        "hp": 775,
+        "atk": 143,
+        "def": 73,
+        "spd": 114
+      },
+      "growthCurve": "rare_std",
+      "startStars": 2,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-ASN-R01-S1",
+        "SKL-ASH-ASN-R01-S2",
+        "SKL-ASH-ASN-R01-S3",
+        "SKL-ASH-ASN-R01-S4"
+      ],
+      "artRef": "ASH-ASN-R01",
+      "status": "live"
+    },
+    {
+      "id": "ASH-ASN-R02",
+      "class": "ASN",
+      "rarity": "R",
+      "faction": "Freeblades",
+      "row": "back",
+      "damageRoot": "physical",
+      "subtags": [],
+      "baseStats": {
+        "hp": 815,
+        "atk": 143,
+        "def": 73,
+        "spd": 110
+      },
+      "growthCurve": "rare_std",
+      "startStars": 2,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-ASN-R02-S1",
+        "SKL-ASH-ASN-R02-S2",
+        "SKL-ASH-ASN-R02-S3",
+        "SKL-ASH-ASN-R02-S4"
+      ],
+      "artRef": "ASH-ASN-R02",
+      "status": "live"
+    },
+    {
+      "id": "ASH-ASN-R03",
+      "class": "ASN",
+      "rarity": "R",
+      "faction": "Freeblades",
+      "row": "back",
+      "damageRoot": "physical",
+      "subtags": [
+        "bleed"
+      ],
+      "baseStats": {
+        "hp": 750,
+        "atk": 157,
+        "def": 73,
+        "spd": 110
+      },
+      "growthCurve": "rare_std",
+      "startStars": 2,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-ASN-R03-S1",
+        "SKL-ASH-ASN-R03-S2",
+        "SKL-ASH-ASN-R03-S3",
+        "SKL-ASH-ASN-R03-S4"
+      ],
+      "artRef": "ASH-ASN-R03",
+      "status": "live"
+    },
+    {
+      "id": "ASH-ASN-E01",
+      "class": "ASN",
+      "rarity": "E",
+      "faction": "Hollowed",
+      "row": "back",
+      "damageRoot": "physical",
+      "subtags": [
+        "bleed"
+      ],
+      "baseStats": {
+        "hp": 820,
+        "atk": 171,
+        "def": 80,
+        "spd": 111
+      },
+      "growthCurve": "epic_std",
+      "startStars": 3,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-ASN-E01-S1",
+        "SKL-ASH-ASN-E01-S2",
+        "SKL-ASH-ASN-E01-S3",
+        "SKL-ASH-ASN-E01-S4"
+      ],
+      "artRef": "ASH-ASN-E01",
+      "status": "live"
+    },
+    {
+      "id": "ASH-ASN-E02",
+      "class": "ASN",
+      "rarity": "E",
+      "faction": "Freeblades",
+      "row": "back",
+      "damageRoot": "physical",
+      "subtags": [],
+      "baseStats": {
+        "hp": 846,
+        "atk": 156,
+        "def": 80,
+        "spd": 115
+      },
+      "growthCurve": "epic_std",
+      "startStars": 3,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-ASN-E02-S1",
+        "SKL-ASH-ASN-E02-S2",
+        "SKL-ASH-ASN-E02-S3",
+        "SKL-ASH-ASN-E02-S4"
+      ],
+      "artRef": "ASH-ASN-E02",
+      "status": "live"
+    },
+    {
+      "id": "ASH-ASN-E03",
+      "class": "ASN",
+      "rarity": "E",
+      "faction": "Freeblades",
+      "row": "back",
+      "damageRoot": "physical",
+      "subtags": [
+        "bleed"
+      ],
+      "baseStats": {
+        "hp": 891,
+        "atk": 156,
+        "def": 80,
+        "spd": 111
+      },
+      "growthCurve": "epic_std",
+      "startStars": 3,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-ASN-E03-S1",
+        "SKL-ASH-ASN-E03-S2",
+        "SKL-ASH-ASN-E03-S3",
+        "SKL-ASH-ASN-E03-S4"
+      ],
+      "artRef": "ASH-ASN-E03",
+      "status": "live"
+    },
+    {
+      "id": "ASH-ASN-L01",
+      "class": "ASN",
+      "rarity": "L",
+      "faction": "Hollowed",
+      "row": "back",
+      "damageRoot": "physical",
+      "subtags": [
+        "bleed"
+      ],
+      "baseStats": {
+        "hp": 982,
+        "atk": 172,
+        "def": 88,
+        "spd": 112
+      },
+      "growthCurve": "legendary_std",
+      "startStars": 3,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-ASN-L01-S1",
+        "SKL-ASH-ASN-L01-S2",
+        "SKL-ASH-ASN-L01-S3",
+        "SKL-ASH-ASN-L01-S4"
+      ],
+      "artRef": "ASH-ASN-L01",
+      "status": "live"
+    },
+    {
+      "id": "ASH-ASN-L02",
+      "class": "ASN",
+      "rarity": "L",
+      "faction": "Hollowed",
+      "row": "back",
+      "damageRoot": "physical",
+      "subtags": [
+        "bleed"
+      ],
+      "baseStats": {
+        "hp": 903,
+        "atk": 189,
+        "def": 88,
+        "spd": 112
+      },
+      "growthCurve": "legendary_std",
+      "startStars": 3,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-ASN-L02-S1",
+        "SKL-ASH-ASN-L02-S2",
+        "SKL-ASH-ASN-L02-S3",
+        "SKL-ASH-ASN-L02-S4"
+      ],
+      "artRef": "ASH-ASN-L02",
+      "status": "live"
+    },
+    {
+      "id": "ASH-RNG-C01",
+      "class": "RNG",
+      "rarity": "C",
+      "faction": "Emberguard",
+      "row": "back",
+      "damageRoot": "physical",
+      "subtags": [
+        "pierce"
+      ],
+      "baseStats": {
+        "hp": 820,
+        "atk": 125,
+        "def": 72,
+        "spd": 104
+      },
+      "growthCurve": "common_std",
+      "startStars": 1,
+      "starCap": 5,
+      "skills": [
+        "SKL-ASH-RNG-C01-S1",
+        "SKL-ASH-RNG-C01-S2",
+        "SKL-ASH-RNG-C01-S3",
+        "SKL-ASH-RNG-C01-S4"
+      ],
+      "artRef": "ASH-RNG-C01",
+      "status": "live"
+    },
+    {
+      "id": "ASH-RNG-C02",
+      "class": "RNG",
+      "rarity": "C",
+      "faction": "Emberguard",
+      "row": "back",
+      "damageRoot": "physical",
+      "subtags": [],
+      "baseStats": {
+        "hp": 820,
+        "atk": 125,
+        "def": 72,
+        "spd": 104
+      },
+      "growthCurve": "common_std",
+      "startStars": 1,
+      "starCap": 5,
+      "skills": [
+        "SKL-ASH-RNG-C02-S1",
+        "SKL-ASH-RNG-C02-S2",
+        "SKL-ASH-RNG-C02-S3",
+        "SKL-ASH-RNG-C02-S4"
+      ],
+      "artRef": "ASH-RNG-C02",
+      "status": "live"
+    },
+    {
+      "id": "ASH-RNG-R01",
+      "class": "RNG",
+      "rarity": "R",
+      "faction": "Choir",
+      "row": "back",
+      "damageRoot": "physical",
+      "subtags": [
+        "pierce"
+      ],
+      "baseStats": {
+        "hp": 886,
+        "atk": 135,
+        "def": 78,
+        "spd": 106
+      },
+      "growthCurve": "rare_std",
+      "startStars": 2,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-RNG-R01-S1",
+        "SKL-ASH-RNG-R01-S2",
+        "SKL-ASH-RNG-R01-S3",
+        "SKL-ASH-RNG-R01-S4"
+      ],
+      "artRef": "ASH-RNG-R01",
+      "status": "live"
+    },
+    {
+      "id": "ASH-RNG-R02",
+      "class": "RNG",
+      "rarity": "R",
+      "faction": "Freeblades",
+      "row": "back",
+      "damageRoot": "physical",
+      "subtags": [],
+      "baseStats": {
+        "hp": 841,
+        "atk": 135,
+        "def": 78,
+        "spd": 110
+      },
+      "growthCurve": "rare_std",
+      "startStars": 2,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-RNG-R02-S1",
+        "SKL-ASH-RNG-R02-S2",
+        "SKL-ASH-RNG-R02-S3",
+        "SKL-ASH-RNG-R02-S4"
+      ],
+      "artRef": "ASH-RNG-R02",
+      "status": "live"
+    },
+    {
+      "id": "ASH-RNG-R03",
+      "class": "RNG",
+      "rarity": "R",
+      "faction": "Freeblades",
+      "row": "back",
+      "damageRoot": "physical",
+      "subtags": [
+        "pierce"
+      ],
+      "baseStats": {
+        "hp": 815,
+        "atk": 148,
+        "def": 78,
+        "spd": 106
+      },
+      "growthCurve": "rare_std",
+      "startStars": 2,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-RNG-R03-S1",
+        "SKL-ASH-RNG-R03-S2",
+        "SKL-ASH-RNG-R03-S3",
+        "SKL-ASH-RNG-R03-S4"
+      ],
+      "artRef": "ASH-RNG-R03",
+      "status": "live"
+    },
+    {
+      "id": "ASH-RNG-E01",
+      "class": "RNG",
+      "rarity": "E",
+      "faction": "Freeblades",
+      "row": "back",
+      "damageRoot": "physical",
+      "subtags": [],
+      "baseStats": {
+        "hp": 968,
+        "atk": 148,
+        "def": 85,
+        "spd": 107
+      },
+      "growthCurve": "epic_std",
+      "startStars": 3,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-RNG-E01-S1",
+        "SKL-ASH-RNG-E01-S2",
+        "SKL-ASH-RNG-E01-S3",
+        "SKL-ASH-RNG-E01-S4"
+      ],
+      "artRef": "ASH-RNG-E01",
+      "status": "live"
+    },
+    {
+      "id": "ASH-RNG-E02",
+      "class": "RNG",
+      "rarity": "E",
+      "faction": "Emberguard",
+      "row": "back",
+      "damageRoot": "physical",
+      "subtags": [
+        "pierce"
+      ],
+      "baseStats": {
+        "hp": 890,
+        "atk": 162,
+        "def": 85,
+        "spd": 107
+      },
+      "growthCurve": "epic_std",
+      "startStars": 3,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-RNG-E02-S1",
+        "SKL-ASH-RNG-E02-S2",
+        "SKL-ASH-RNG-E02-S3",
+        "SKL-ASH-RNG-E02-S4"
+      ],
+      "artRef": "ASH-RNG-E02",
+      "status": "live"
+    },
+    {
+      "id": "ASH-RNG-E03",
+      "class": "RNG",
+      "rarity": "E",
+      "faction": "Choir",
+      "row": "back",
+      "damageRoot": "physical",
+      "subtags": [],
+      "baseStats": {
+        "hp": 968,
+        "atk": 148,
+        "def": 85,
+        "spd": 107
+      },
+      "growthCurve": "epic_std",
+      "startStars": 3,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-RNG-E03-S1",
+        "SKL-ASH-RNG-E03-S2",
+        "SKL-ASH-RNG-E03-S3",
+        "SKL-ASH-RNG-E03-S4"
+      ],
+      "artRef": "ASH-RNG-E03",
+      "status": "live"
+    },
+    {
+      "id": "ASH-RNG-L01",
+      "class": "RNG",
+      "rarity": "L",
+      "faction": "Emberguard",
+      "row": "back",
+      "damageRoot": "physical",
+      "subtags": [
+        "pierce"
+      ],
+      "baseStats": {
+        "hp": 981,
+        "atk": 179,
+        "def": 94,
+        "spd": 108
+      },
+      "growthCurve": "legendary_std",
+      "startStars": 3,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-RNG-L01-S1",
+        "SKL-ASH-RNG-L01-S2",
+        "SKL-ASH-RNG-L01-S3",
+        "SKL-ASH-RNG-L01-S4"
+      ],
+      "artRef": "ASH-RNG-L01",
+      "status": "live"
+    },
+    {
+      "id": "ASH-RNG-L02",
+      "class": "RNG",
+      "rarity": "L",
+      "faction": "Freeblades",
+      "row": "back",
+      "damageRoot": "physical",
+      "subtags": [
+        "pierce"
+      ],
+      "baseStats": {
+        "hp": 1013,
+        "atk": 162,
+        "def": 94,
+        "spd": 112
+      },
+      "growthCurve": "legendary_std",
+      "startStars": 3,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-RNG-L02-S1",
+        "SKL-ASH-RNG-L02-S2",
+        "SKL-ASH-RNG-L02-S3",
+        "SKL-ASH-RNG-L02-S4"
+      ],
+      "artRef": "ASH-RNG-L02",
+      "status": "live"
+    },
+    {
+      "id": "ASH-MAG-C01",
+      "class": "MAG",
+      "rarity": "C",
+      "faction": "Emberguard",
+      "row": "back",
+      "damageRoot": "magical",
+      "subtags": [
+        "arcane"
+      ],
+      "baseStats": {
+        "hp": 790,
+        "atk": 128,
+        "def": 65,
+        "spd": 100
+      },
+      "growthCurve": "common_std",
+      "startStars": 1,
+      "starCap": 5,
+      "skills": [
+        "SKL-ASH-MAG-C01-S1",
+        "SKL-ASH-MAG-C01-S2",
+        "SKL-ASH-MAG-C01-S3",
+        "SKL-ASH-MAG-C01-S4"
+      ],
+      "artRef": "ASH-MAG-C01",
+      "status": "live"
+    },
+    {
+      "id": "ASH-MAG-C02",
+      "class": "MAG",
+      "rarity": "C",
+      "faction": "Freeblades",
+      "row": "back",
+      "damageRoot": "magical",
+      "subtags": [
+        "arcane"
+      ],
+      "baseStats": {
+        "hp": 790,
+        "atk": 128,
+        "def": 65,
+        "spd": 100
+      },
+      "growthCurve": "common_std",
+      "startStars": 1,
+      "starCap": 5,
+      "skills": [
+        "SKL-ASH-MAG-C02-S1",
+        "SKL-ASH-MAG-C02-S2",
+        "SKL-ASH-MAG-C02-S3",
+        "SKL-ASH-MAG-C02-S4"
+      ],
+      "artRef": "ASH-MAG-C02",
+      "status": "live"
+    },
+    {
+      "id": "ASH-MAG-R01",
+      "class": "MAG",
+      "rarity": "R",
+      "faction": "Choir",
+      "row": "back",
+      "damageRoot": "magical",
+      "subtags": [
+        "arcane"
+      ],
+      "baseStats": {
+        "hp": 853,
+        "atk": 138,
+        "def": 70,
+        "spd": 102
+      },
+      "growthCurve": "rare_std",
+      "startStars": 2,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-MAG-R01-S1",
+        "SKL-ASH-MAG-R01-S2",
+        "SKL-ASH-MAG-R01-S3",
+        "SKL-ASH-MAG-R01-S4"
+      ],
+      "artRef": "ASH-MAG-R01",
+      "status": "live"
+    },
+    {
+      "id": "ASH-MAG-R02",
+      "class": "MAG",
+      "rarity": "R",
+      "faction": "Hollowed",
+      "row": "back",
+      "damageRoot": "magical",
+      "subtags": [
+        "arcane"
+      ],
+      "baseStats": {
+        "hp": 785,
+        "atk": 152,
+        "def": 70,
+        "spd": 102
+      },
+      "growthCurve": "rare_std",
+      "startStars": 2,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-MAG-R02-S1",
+        "SKL-ASH-MAG-R02-S2",
+        "SKL-ASH-MAG-R02-S3",
+        "SKL-ASH-MAG-R02-S4"
+      ],
+      "artRef": "ASH-MAG-R02",
+      "status": "live"
+    },
+    {
+      "id": "ASH-MAG-R03",
+      "class": "MAG",
+      "rarity": "R",
+      "faction": "Emberguard",
+      "row": "back",
+      "damageRoot": "magical",
+      "subtags": [
+        "arcane"
+      ],
+      "baseStats": {
+        "hp": 853,
+        "atk": 138,
+        "def": 70,
+        "spd": 102
+      },
+      "growthCurve": "rare_std",
+      "startStars": 2,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-MAG-R03-S1",
+        "SKL-ASH-MAG-R03-S2",
+        "SKL-ASH-MAG-R03-S3",
+        "SKL-ASH-MAG-R03-S4"
+      ],
+      "artRef": "ASH-MAG-R03",
+      "status": "live"
+    },
+    {
+      "id": "ASH-MAG-E01",
+      "class": "MAG",
+      "rarity": "E",
+      "faction": "Hollowed",
+      "row": "back",
+      "damageRoot": "magical",
+      "subtags": [
+        "shadow"
+      ],
+      "baseStats": {
+        "hp": 932,
+        "atk": 151,
+        "def": 77,
+        "spd": 103
+      },
+      "growthCurve": "epic_std",
+      "startStars": 3,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-MAG-E01-S1",
+        "SKL-ASH-MAG-E01-S2",
+        "SKL-ASH-MAG-E01-S3",
+        "SKL-ASH-MAG-E01-S4"
+      ],
+      "artRef": "ASH-MAG-E01",
+      "status": "live"
+    },
+    {
+      "id": "ASH-MAG-E02",
+      "class": "MAG",
+      "rarity": "E",
+      "faction": "Emberguard",
+      "row": "back",
+      "damageRoot": "magical",
+      "subtags": [
+        "arcane"
+      ],
+      "baseStats": {
+        "hp": 858,
+        "atk": 166,
+        "def": 77,
+        "spd": 103
+      },
+      "growthCurve": "epic_std",
+      "startStars": 3,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-MAG-E02-S1",
+        "SKL-ASH-MAG-E02-S2",
+        "SKL-ASH-MAG-E02-S3",
+        "SKL-ASH-MAG-E02-S4"
+      ],
+      "artRef": "ASH-MAG-E02",
+      "status": "live"
+    },
+    {
+      "id": "ASH-MAG-E03",
+      "class": "MAG",
+      "rarity": "E",
+      "faction": "Choir",
+      "row": "back",
+      "damageRoot": "magical",
+      "subtags": [
+        "arcane"
+      ],
+      "baseStats": {
+        "hp": 979,
+        "atk": 139,
+        "def": 86,
+        "spd": 103
+      },
+      "growthCurve": "epic_std",
+      "startStars": 3,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-MAG-E03-S1",
+        "SKL-ASH-MAG-E03-S2",
+        "SKL-ASH-MAG-E03-S3",
+        "SKL-ASH-MAG-E03-S4"
+      ],
+      "artRef": "ASH-MAG-E03",
+      "status": "live"
+    },
+    {
+      "id": "ASH-MAG-L01",
+      "class": "MAG",
+      "rarity": "L",
+      "faction": "Hollowed",
+      "row": "back",
+      "damageRoot": "magical",
+      "subtags": [
+        "arcane"
+      ],
+      "baseStats": {
+        "hp": 945,
+        "atk": 183,
+        "def": 84,
+        "spd": 104
+      },
+      "growthCurve": "legendary_std",
+      "startStars": 3,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-MAG-L01-S1",
+        "SKL-ASH-MAG-L01-S2",
+        "SKL-ASH-MAG-L01-S3",
+        "SKL-ASH-MAG-L01-S4"
+      ],
+      "artRef": "ASH-MAG-L01",
+      "status": "live"
+    },
+    {
+      "id": "ASH-MAG-L02",
+      "class": "MAG",
+      "rarity": "L",
+      "faction": "Choir",
+      "row": "back",
+      "damageRoot": "magical",
+      "subtags": [
+        "arcane"
+      ],
+      "baseStats": {
+        "hp": 976,
+        "atk": 166,
+        "def": 84,
+        "spd": 108
+      },
+      "growthCurve": "legendary_std",
+      "startStars": 3,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-MAG-L02-S1",
+        "SKL-ASH-MAG-L02-S2",
+        "SKL-ASH-MAG-L02-S3",
+        "SKL-ASH-MAG-L02-S4"
+      ],
+      "artRef": "ASH-MAG-L02",
+      "status": "live"
+    },
+    {
+      "id": "ASH-NEC-C01",
+      "class": "NEC",
+      "rarity": "C",
+      "faction": "Gravebound",
+      "row": "back",
+      "damageRoot": "physical",
+      "subtags": [],
+      "baseStats": {
+        "hp": 900,
+        "atk": 118,
+        "def": 78,
+        "spd": 98
+      },
+      "growthCurve": "common_std",
+      "startStars": 1,
+      "starCap": 5,
+      "skills": [
+        "SKL-ASH-NEC-C01-S1",
+        "SKL-ASH-NEC-C01-S2",
+        "SKL-ASH-NEC-C01-S3",
+        "SKL-ASH-NEC-C01-S4"
+      ],
+      "artRef": "ASH-NEC-C01",
+      "status": "live"
+    },
+    {
+      "id": "ASH-NEC-C02",
+      "class": "NEC",
+      "rarity": "C",
+      "faction": "Gravebound",
+      "row": "back",
+      "damageRoot": "magical",
+      "subtags": [
+        "decay"
+      ],
+      "baseStats": {
+        "hp": 900,
+        "atk": 118,
+        "def": 78,
+        "spd": 98
+      },
+      "growthCurve": "common_std",
+      "startStars": 1,
+      "starCap": 5,
+      "skills": [
+        "SKL-ASH-NEC-C02-S1",
+        "SKL-ASH-NEC-C02-S2",
+        "SKL-ASH-NEC-C02-S3",
+        "SKL-ASH-NEC-C02-S4"
+      ],
+      "artRef": "ASH-NEC-C02",
+      "status": "live"
+    },
+    {
+      "id": "ASH-NEC-R01",
+      "class": "NEC",
+      "rarity": "R",
+      "faction": "Gravebound",
+      "row": "back",
+      "damageRoot": "physical",
+      "subtags": [],
+      "baseStats": {
+        "hp": 972,
+        "atk": 127,
+        "def": 84,
+        "spd": 100
+      },
+      "growthCurve": "rare_std",
+      "startStars": 2,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-NEC-R01-S1",
+        "SKL-ASH-NEC-R01-S2",
+        "SKL-ASH-NEC-R01-S3",
+        "SKL-ASH-NEC-R01-S4"
+      ],
+      "artRef": "ASH-NEC-R01",
+      "status": "live"
+    },
+    {
+      "id": "ASH-NEC-R02",
+      "class": "NEC",
+      "rarity": "R",
+      "faction": "Gravebound",
+      "row": "back",
+      "damageRoot": "magical",
+      "subtags": [
+        "shadow"
+      ],
+      "baseStats": {
+        "hp": 972,
+        "atk": 127,
+        "def": 84,
+        "spd": 100
+      },
+      "growthCurve": "rare_std",
+      "startStars": 2,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-NEC-R02-S1",
+        "SKL-ASH-NEC-R02-S2",
+        "SKL-ASH-NEC-R02-S3",
+        "SKL-ASH-NEC-R02-S4"
+      ],
+      "artRef": "ASH-NEC-R02",
+      "status": "live"
+    },
+    {
+      "id": "ASH-NEC-R03",
+      "class": "NEC",
+      "rarity": "R",
+      "faction": "Gravebound",
+      "row": "back",
+      "damageRoot": "magical",
+      "subtags": [
+        "decay"
+      ],
+      "baseStats": {
+        "hp": 972,
+        "atk": 127,
+        "def": 84,
+        "spd": 100
+      },
+      "growthCurve": "rare_std",
+      "startStars": 2,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-NEC-R03-S1",
+        "SKL-ASH-NEC-R03-S2",
+        "SKL-ASH-NEC-R03-S3",
+        "SKL-ASH-NEC-R03-S4"
+      ],
+      "artRef": "ASH-NEC-R03",
+      "status": "live"
+    },
+    {
+      "id": "ASH-NEC-E01",
+      "class": "NEC",
+      "rarity": "E",
+      "faction": "Gravebound",
+      "row": "back",
+      "damageRoot": "magical",
+      "subtags": [
+        "shadow"
+      ],
+      "baseStats": {
+        "hp": 1115,
+        "atk": 128,
+        "def": 103,
+        "spd": 101
+      },
+      "growthCurve": "epic_std",
+      "startStars": 3,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-NEC-E01-S1",
+        "SKL-ASH-NEC-E01-S2",
+        "SKL-ASH-NEC-E01-S3",
+        "SKL-ASH-NEC-E01-S4"
+      ],
+      "artRef": "ASH-NEC-E01",
+      "status": "live"
+    },
+    {
+      "id": "ASH-NEC-E02",
+      "class": "NEC",
+      "rarity": "E",
+      "faction": "Gravebound",
+      "row": "back",
+      "damageRoot": "physical",
+      "subtags": [],
+      "baseStats": {
+        "hp": 1062,
+        "atk": 139,
+        "def": 92,
+        "spd": 101
+      },
+      "growthCurve": "epic_std",
+      "startStars": 3,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-NEC-E02-S1",
+        "SKL-ASH-NEC-E02-S2",
+        "SKL-ASH-NEC-E02-S3",
+        "SKL-ASH-NEC-E02-S4"
+      ],
+      "artRef": "ASH-NEC-E02",
+      "status": "live"
+    },
+    {
+      "id": "ASH-NEC-E03",
+      "class": "NEC",
+      "rarity": "E",
+      "faction": "Choir",
+      "row": "back",
+      "damageRoot": "magical",
+      "subtags": [
+        "decay"
+      ],
+      "baseStats": {
+        "hp": 1062,
+        "atk": 139,
+        "def": 92,
+        "spd": 101
+      },
+      "growthCurve": "epic_std",
+      "startStars": 3,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-NEC-E03-S1",
+        "SKL-ASH-NEC-E03-S2",
+        "SKL-ASH-NEC-E03-S3",
+        "SKL-ASH-NEC-E03-S4"
+      ],
+      "artRef": "ASH-NEC-E03",
+      "status": "live"
+    },
+    {
+      "id": "ASH-NEC-L01",
+      "class": "NEC",
+      "rarity": "L",
+      "faction": "Gravebound",
+      "row": "back",
+      "damageRoot": "physical",
+      "subtags": [
+        "shadow"
+      ],
+      "baseStats": {
+        "hp": 1170,
+        "atk": 153,
+        "def": 101,
+        "spd": 102
+      },
+      "growthCurve": "legendary_std",
+      "startStars": 3,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-NEC-L01-S1",
+        "SKL-ASH-NEC-L01-S2",
+        "SKL-ASH-NEC-L01-S3",
+        "SKL-ASH-NEC-L01-S4"
+      ],
+      "artRef": "ASH-NEC-L01",
+      "status": "live"
+    },
+    {
+      "id": "ASH-NEC-L02",
+      "class": "NEC",
+      "rarity": "L",
+      "faction": "Hollowed",
+      "row": "back",
+      "damageRoot": "magical",
+      "subtags": [
+        "decay"
+      ],
+      "baseStats": {
+        "hp": 1076,
+        "atk": 169,
+        "def": 101,
+        "spd": 102
+      },
+      "growthCurve": "legendary_std",
+      "startStars": 3,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-NEC-L02-S1",
+        "SKL-ASH-NEC-L02-S2",
+        "SKL-ASH-NEC-L02-S3",
+        "SKL-ASH-NEC-L02-S4"
+      ],
+      "artRef": "ASH-NEC-L02",
+      "status": "live"
+    },
+    {
+      "id": "ASH-HLR-C01",
+      "class": "HLR",
+      "rarity": "C",
+      "faction": "Choir",
+      "row": "back",
+      "damageRoot": "magical",
+      "subtags": [
+        "holy"
+      ],
+      "baseStats": {
+        "hp": 950,
+        "atk": 105,
+        "def": 85,
+        "spd": 102
+      },
+      "growthCurve": "common_std",
+      "startStars": 1,
+      "starCap": 5,
+      "skills": [
+        "SKL-ASH-HLR-C01-S1",
+        "SKL-ASH-HLR-C01-S2",
+        "SKL-ASH-HLR-C01-S3",
+        "SKL-ASH-HLR-C01-S4"
+      ],
+      "artRef": "ASH-HLR-C01",
+      "status": "live"
+    },
+    {
+      "id": "ASH-HLR-C02",
+      "class": "HLR",
+      "rarity": "C",
+      "faction": "Choir",
+      "row": "back",
+      "damageRoot": "magical",
+      "subtags": [
+        "holy"
+      ],
+      "baseStats": {
+        "hp": 950,
+        "atk": 105,
+        "def": 85,
+        "spd": 102
+      },
+      "growthCurve": "common_std",
+      "startStars": 1,
+      "starCap": 5,
+      "skills": [
+        "SKL-ASH-HLR-C02-S1",
+        "SKL-ASH-HLR-C02-S2",
+        "SKL-ASH-HLR-C02-S3",
+        "SKL-ASH-HLR-C02-S4"
+      ],
+      "artRef": "ASH-HLR-C02",
+      "status": "live"
+    },
+    {
+      "id": "ASH-HLR-R01",
+      "class": "HLR",
+      "rarity": "R",
+      "faction": "Freeblades",
+      "row": "back",
+      "damageRoot": "magical",
+      "subtags": [],
+      "baseStats": {
+        "hp": 1026,
+        "atk": 113,
+        "def": 92,
+        "spd": 104
+      },
+      "growthCurve": "rare_std",
+      "startStars": 2,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-HLR-R01-S1",
+        "SKL-ASH-HLR-R01-S2",
+        "SKL-ASH-HLR-R01-S3",
+        "SKL-ASH-HLR-R01-S4"
+      ],
+      "artRef": "ASH-HLR-R01",
+      "status": "live"
+    },
+    {
+      "id": "ASH-HLR-R02",
+      "class": "HLR",
+      "rarity": "R",
+      "faction": "Choir",
+      "row": "back",
+      "damageRoot": "magical",
+      "subtags": [
+        "holy"
+      ],
+      "baseStats": {
+        "hp": 1077,
+        "atk": 104,
+        "def": 103,
+        "spd": 104
+      },
+      "growthCurve": "rare_std",
+      "startStars": 2,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-HLR-R02-S1",
+        "SKL-ASH-HLR-R02-S2",
+        "SKL-ASH-HLR-R02-S3",
+        "SKL-ASH-HLR-R02-S4"
+      ],
+      "artRef": "ASH-HLR-R02",
+      "status": "live"
+    },
+    {
+      "id": "ASH-HLR-R03",
+      "class": "HLR",
+      "rarity": "R",
+      "faction": "Emberguard",
+      "row": "back",
+      "damageRoot": "magical",
+      "subtags": [],
+      "baseStats": {
+        "hp": 944,
+        "atk": 125,
+        "def": 92,
+        "spd": 104
+      },
+      "growthCurve": "rare_std",
+      "startStars": 2,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-HLR-R03-S1",
+        "SKL-ASH-HLR-R03-S2",
+        "SKL-ASH-HLR-R03-S3",
+        "SKL-ASH-HLR-R03-S4"
+      ],
+      "artRef": "ASH-HLR-R03",
+      "status": "live"
+    },
+    {
+      "id": "ASH-HLR-E01",
+      "class": "HLR",
+      "rarity": "E",
+      "faction": "Choir",
+      "row": "back",
+      "damageRoot": "magical",
+      "subtags": [
+        "holy"
+      ],
+      "baseStats": {
+        "hp": 1121,
+        "atk": 124,
+        "def": 100,
+        "spd": 105
+      },
+      "growthCurve": "epic_std",
+      "startStars": 3,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-HLR-E01-S1",
+        "SKL-ASH-HLR-E01-S2",
+        "SKL-ASH-HLR-E01-S3",
+        "SKL-ASH-HLR-E01-S4"
+      ],
+      "artRef": "ASH-HLR-E01",
+      "status": "live"
+    },
+    {
+      "id": "ASH-HLR-E02",
+      "class": "HLR",
+      "rarity": "E",
+      "faction": "Choir",
+      "row": "front",
+      "damageRoot": "magical",
+      "subtags": [
+        "holy"
+      ],
+      "baseStats": {
+        "hp": 1177,
+        "atk": 114,
+        "def": 112,
+        "spd": 105
+      },
+      "growthCurve": "epic_std",
+      "startStars": 3,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-HLR-E02-S1",
+        "SKL-ASH-HLR-E02-S2",
+        "SKL-ASH-HLR-E02-S3",
+        "SKL-ASH-HLR-E02-S4"
+      ],
+      "artRef": "ASH-HLR-E02",
+      "status": "live"
+    },
+    {
+      "id": "ASH-HLR-E03",
+      "class": "HLR",
+      "rarity": "E",
+      "faction": "Choir",
+      "row": "back",
+      "damageRoot": "magical",
+      "subtags": [
+        "holy"
+      ],
+      "baseStats": {
+        "hp": 1031,
+        "atk": 136,
+        "def": 100,
+        "spd": 105
+      },
+      "growthCurve": "epic_std",
+      "startStars": 3,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-HLR-E03-S1",
+        "SKL-ASH-HLR-E03-S2",
+        "SKL-ASH-HLR-E03-S3",
+        "SKL-ASH-HLR-E03-S4"
+      ],
+      "artRef": "ASH-HLR-E03",
+      "status": "live"
+    },
+    {
+      "id": "ASH-HLR-L01",
+      "class": "HLR",
+      "rarity": "L",
+      "faction": "Choir",
+      "row": "back",
+      "damageRoot": "magical",
+      "subtags": [
+        "holy"
+      ],
+      "baseStats": {
+        "hp": 1235,
+        "atk": 136,
+        "def": 110,
+        "spd": 106
+      },
+      "growthCurve": "legendary_std",
+      "startStars": 3,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-HLR-L01-S1",
+        "SKL-ASH-HLR-L01-S2",
+        "SKL-ASH-HLR-L01-S3",
+        "SKL-ASH-HLR-L01-S4"
+      ],
+      "artRef": "ASH-HLR-L01",
+      "status": "live"
+    },
+    {
+      "id": "ASH-HLR-L02",
+      "class": "HLR",
+      "rarity": "L",
+      "faction": "Gravebound",
+      "row": "back",
+      "damageRoot": "magical",
+      "subtags": [
+        "holy"
+      ],
+      "baseStats": {
+        "hp": 1235,
+        "atk": 136,
+        "def": 110,
+        "spd": 106
+      },
+      "growthCurve": "legendary_std",
+      "startStars": 3,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-HLR-L02-S1",
+        "SKL-ASH-HLR-L02-S2",
+        "SKL-ASH-HLR-L02-S3",
+        "SKL-ASH-HLR-L02-S4"
+      ],
+      "artRef": "ASH-HLR-L02",
+      "status": "live"
+    },
+    {
+      "id": "ASH-BSK-C01",
+      "class": "BSK",
+      "rarity": "C",
+      "faction": "Freeblades",
+      "row": "front",
+      "damageRoot": "physical",
+      "subtags": [],
+      "baseStats": {
+        "hp": 1050,
+        "atk": 130,
+        "def": 75,
+        "spd": 94
+      },
+      "growthCurve": "common_std",
+      "startStars": 1,
+      "starCap": 5,
+      "skills": [
+        "SKL-ASH-BSK-C01-S1",
+        "SKL-ASH-BSK-C01-S2",
+        "SKL-ASH-BSK-C01-S3",
+        "SKL-ASH-BSK-C01-S4"
+      ],
+      "artRef": "ASH-BSK-C01",
+      "status": "live"
+    },
+    {
+      "id": "ASH-BSK-C02",
+      "class": "BSK",
+      "rarity": "C",
+      "faction": "Freeblades",
+      "row": "front",
+      "damageRoot": "physical",
+      "subtags": [],
+      "baseStats": {
+        "hp": 966,
+        "atk": 143,
+        "def": 75,
+        "spd": 94
+      },
+      "growthCurve": "common_std",
+      "startStars": 1,
+      "starCap": 5,
+      "skills": [
+        "SKL-ASH-BSK-C02-S1",
+        "SKL-ASH-BSK-C02-S2",
+        "SKL-ASH-BSK-C02-S3",
+        "SKL-ASH-BSK-C02-S4"
+      ],
+      "artRef": "ASH-BSK-C02",
+      "status": "live"
+    },
+    {
+      "id": "ASH-BSK-R01",
+      "class": "BSK",
+      "rarity": "R",
+      "faction": "Emberguard",
+      "row": "front",
+      "damageRoot": "physical",
+      "subtags": [],
+      "baseStats": {
+        "hp": 1043,
+        "atk": 154,
+        "def": 81,
+        "spd": 96
+      },
+      "growthCurve": "rare_std",
+      "startStars": 2,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-BSK-R01-S1",
+        "SKL-ASH-BSK-R01-S2",
+        "SKL-ASH-BSK-R01-S3",
+        "SKL-ASH-BSK-R01-S4"
+      ],
+      "artRef": "ASH-BSK-R01",
+      "status": "live"
+    },
+    {
+      "id": "ASH-BSK-R02",
+      "class": "BSK",
+      "rarity": "R",
+      "faction": "Freeblades",
+      "row": "front",
+      "damageRoot": "physical",
+      "subtags": [],
+      "baseStats": {
+        "hp": 1134,
+        "atk": 140,
+        "def": 81,
+        "spd": 96
+      },
+      "growthCurve": "rare_std",
+      "startStars": 2,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-BSK-R02-S1",
+        "SKL-ASH-BSK-R02-S2",
+        "SKL-ASH-BSK-R02-S3",
+        "SKL-ASH-BSK-R02-S4"
+      ],
+      "artRef": "ASH-BSK-R02",
+      "status": "live"
+    },
+    {
+      "id": "ASH-BSK-R03",
+      "class": "BSK",
+      "rarity": "R",
+      "faction": "Hollowed",
+      "row": "front",
+      "damageRoot": "physical",
+      "subtags": [],
+      "baseStats": {
+        "hp": 1191,
+        "atk": 129,
+        "def": 91,
+        "spd": 96
+      },
+      "growthCurve": "rare_std",
+      "startStars": 2,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-BSK-R03-S1",
+        "SKL-ASH-BSK-R03-S2",
+        "SKL-ASH-BSK-R03-S3",
+        "SKL-ASH-BSK-R03-S4"
+      ],
+      "artRef": "ASH-BSK-R03",
+      "status": "live"
+    },
+    {
+      "id": "ASH-BSK-E01",
+      "class": "BSK",
+      "rarity": "E",
+      "faction": "Emberguard",
+      "row": "front",
+      "damageRoot": "physical",
+      "subtags": [],
+      "baseStats": {
+        "hp": 1140,
+        "atk": 169,
+        "def": 88,
+        "spd": 97
+      },
+      "growthCurve": "epic_std",
+      "startStars": 3,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-BSK-E01-S1",
+        "SKL-ASH-BSK-E01-S2",
+        "SKL-ASH-BSK-E01-S3",
+        "SKL-ASH-BSK-E01-S4"
+      ],
+      "artRef": "ASH-BSK-E01",
+      "status": "live"
+    },
+    {
+      "id": "ASH-BSK-E02",
+      "class": "BSK",
+      "rarity": "E",
+      "faction": "Freeblades",
+      "row": "front",
+      "damageRoot": "physical",
+      "subtags": [],
+      "baseStats": {
+        "hp": 1239,
+        "atk": 153,
+        "def": 88,
+        "spd": 97
+      },
+      "growthCurve": "epic_std",
+      "startStars": 3,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-BSK-E02-S1",
+        "SKL-ASH-BSK-E02-S2",
+        "SKL-ASH-BSK-E02-S3",
+        "SKL-ASH-BSK-E02-S4"
+      ],
+      "artRef": "ASH-BSK-E02",
+      "status": "live"
+    },
+    {
+      "id": "ASH-BSK-E03",
+      "class": "BSK",
+      "rarity": "E",
+      "faction": "Freeblades",
+      "row": "front",
+      "damageRoot": "physical",
+      "subtags": [],
+      "baseStats": {
+        "hp": 1177,
+        "atk": 153,
+        "def": 88,
+        "spd": 101
+      },
+      "growthCurve": "epic_std",
+      "startStars": 3,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-BSK-E03-S1",
+        "SKL-ASH-BSK-E03-S2",
+        "SKL-ASH-BSK-E03-S3",
+        "SKL-ASH-BSK-E03-S4"
+      ],
+      "artRef": "ASH-BSK-E03",
+      "status": "live"
+    },
+    {
+      "id": "ASH-BSK-L01",
+      "class": "BSK",
+      "rarity": "L",
+      "faction": "Hollowed",
+      "row": "front",
+      "damageRoot": "physical",
+      "subtags": [],
+      "baseStats": {
+        "hp": 1256,
+        "atk": 186,
+        "def": 98,
+        "spd": 98
+      },
+      "growthCurve": "legendary_std",
+      "startStars": 3,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-BSK-L01-S1",
+        "SKL-ASH-BSK-L01-S2",
+        "SKL-ASH-BSK-L01-S3",
+        "SKL-ASH-BSK-L01-S4"
+      ],
+      "artRef": "ASH-BSK-L01",
+      "status": "live"
+    },
+    {
+      "id": "ASH-BSK-L02",
+      "class": "BSK",
+      "rarity": "L",
+      "faction": "Emberguard",
+      "row": "front",
+      "damageRoot": "physical",
+      "subtags": [],
+      "baseStats": {
+        "hp": 1365,
+        "atk": 169,
+        "def": 98,
+        "spd": 98
+      },
+      "growthCurve": "legendary_std",
+      "startStars": 3,
+      "starCap": 6,
+      "skills": [
+        "SKL-ASH-BSK-L02-S1",
+        "SKL-ASH-BSK-L02-S2",
+        "SKL-ASH-BSK-L02-S3",
+        "SKL-ASH-BSK-L02-S4"
+      ],
+      "artRef": "ASH-BSK-L02",
+      "status": "live"
+    }
+  ]
+}
