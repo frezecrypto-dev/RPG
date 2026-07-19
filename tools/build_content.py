@@ -84,12 +84,17 @@ def compute_stats(row: dict, tpl: dict) -> dict:
 
 
 def check_skills(unit_ids: set[str]) -> None:
-    skills_path = DATA / "skills.mvp.json"
     statuses_path = DATA / "statuses.json"
-    if not skills_path.exists() or not statuses_path.exists():
+    skill_files = sorted(DATA.glob("skills*.json"))
+    if not skill_files or not statuses_path.exists():
         return
-    skills = json.loads(skills_path.read_text())["skills"]
     status_ids = {s["id"] for s in json.loads(statuses_path.read_text())["statuses"]}
+    skills: dict[str, dict] = {}
+    for path in skill_files:
+        for sid, sk in json.loads(path.read_text())["skills"].items():
+            if sid in skills:
+                err(f"{sid}: defined in multiple skill files")
+            skills[sid] = sk
     kits: dict[str, set[str]] = {}
     for sid, sk in skills.items():
         if sk["unit"] not in unit_ids:
@@ -99,9 +104,11 @@ def check_skills(unit_ids: set[str]) -> None:
             st = eff.get("status")
             if st and st not in status_ids:
                 err(f"{sid}: references unknown status {st}")
-    for uid, slots in kits.items():
+    for uid in sorted(unit_ids):
+        slots = kits.get(uid, set())
         if slots != {"S1", "S2", "S3", "S4"}:
             err(f"{uid}: incomplete kit, has {sorted(slots)}")
+    print(f"skills: {len(skills)} across {len(skill_files)} files, {len(kits)} complete kits")
 
 
 ENEMY_ID_RE = re.compile(r"^ENM-(SLM|GNT|GRD|UND)-(M|E|B|X)(\d{2})$")
