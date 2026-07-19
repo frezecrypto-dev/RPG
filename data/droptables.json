@@ -1,0 +1,41 @@
+{
+  "_comment": "Repeat-drop tables referenced by stages (DRT-CAMP-*) and raids (DRT-RAID-*). Every run drops baseline loot; 'pity' entries are the visible-counter guarantees (doc 07 s1.3). gold/xp values are per-run at the table's chapter/tier baseline before level scaling.",
+  "tables": {
+    "DRT-CAMP-1A": { "gold": [120, 180], "guaranteed": [ { "item": "ITM-XP-TOME-S", "qty": [2, 3] } ], "chance": [ { "item": "ITM-GEAR-ORE-T1", "qty": 1, "p": 0.35 } ] },
+    "DRT-CAMP-1B": { "gold": [160, 240], "guaranteed": [ { "item": "ITM-XP-TOME-S", "qty": [3, 4] } ], "chance": [ { "item": "ITM-GEAR-ORE-T1", "qty": 1, "p": 0.45 }, { "item": "GEAR-RANDOM-T1", "qty": 1, "p": 0.08 } ] },
+    "DRT-CAMP-1C": { "gold": [220, 320], "guaranteed": [ { "item": "ITM-XP-TOME-M", "qty": 1 } ], "chance": [ { "item": "GEAR-RANDOM-T1", "qty": 1, "p": 0.15 } ] },
+    "DRT-CAMP-2A": { "gold": [200, 300], "guaranteed": [ { "item": "ITM-XP-TOME-S", "qty": [3, 5] } ], "chance": [ { "item": "ITM-GEAR-ORE-T1", "qty": 1, "p": 0.45 } ] },
+    "DRT-CAMP-2B": { "gold": [260, 380], "guaranteed": [ { "item": "ITM-XP-TOME-M", "qty": 1 } ], "chance": [ { "item": "ITM-GEAR-ORE-T2", "qty": 1, "p": 0.35 }, { "item": "GEAR-RANDOM-T1", "qty": 1, "p": 0.10 } ] },
+    "DRT-CAMP-2C": { "gold": [340, 480], "guaranteed": [ { "item": "ITM-XP-TOME-M", "qty": [1, 2] } ], "chance": [ { "item": "GEAR-RANDOM-T2", "qty": 1, "p": 0.12 } ] },
+    "DRT-CAMP-3A": { "gold": [320, 460], "guaranteed": [ { "item": "ITM-XP-TOME-M", "qty": [1, 2] } ], "chance": [ { "item": "ITM-GEAR-ORE-T2", "qty": 1, "p": 0.45 } ] },
+    "DRT-CAMP-3B": { "gold": [400, 560], "guaranteed": [ { "item": "ITM-XP-TOME-M", "qty": 2 } ], "chance": [ { "item": "ITM-GEAR-ORE-T3", "qty": 1, "p": 0.30 }, { "item": "GEAR-RANDOM-T2", "qty": 1, "p": 0.10 } ] },
+    "DRT-CAMP-3C": { "gold": [500, 700], "guaranteed": [ { "item": "ITM-XP-TOME-L", "qty": 1 } ], "chance": [ { "item": "GEAR-RANDOM-T3", "qty": 1, "p": 0.10 } ] },
+    "DRT-CAMP-4A": { "gold": [460, 640], "guaranteed": [ { "item": "ITM-XP-TOME-M", "qty": [2, 3] } ], "chance": [ { "item": "ITM-GEAR-ORE-T3", "qty": 1, "p": 0.40 } ] },
+    "DRT-CAMP-4B": { "gold": [560, 780], "guaranteed": [ { "item": "ITM-XP-TOME-L", "qty": 1 } ], "chance": [ { "item": "ITM-GEAR-ORE-T4", "qty": 1, "p": 0.25 }, { "item": "GEAR-RANDOM-T3", "qty": 1, "p": 0.10 } ] },
+    "DRT-CAMP-4C": { "gold": [700, 950], "guaranteed": [ { "item": "ITM-XP-TOME-L", "qty": [1, 2] } ], "chance": [ { "item": "GEAR-RANDOM-T4", "qty": 1, "p": 0.10 } ] },
+
+    "DRT-RAID-STAR-T1": { "gold": [150, 220], "guaranteed": [ { "item": "ITM-STAR-CRATE", "qty": 2 }, { "item": "ITM-STARSTONE", "qty": 1 } ], "chance": [ { "item": "ITM-STARSTONE", "qty": 2, "p": 0.25 } ] },
+    "DRT-RAID-STAR-T2": { "gold": [220, 320], "guaranteed": [ { "item": "ITM-STAR-CRATE", "qty": 3 }, { "item": "ITM-STARSTONE", "qty": 2 } ], "chance": [ { "item": "ITM-STARSTONE", "qty": 3, "p": 0.25 } ] },
+    "DRT-RAID-STAR-T3": { "gold": [320, 450], "guaranteed": [ { "item": "ITM-STAR-CRATE", "qty": 4 }, { "item": "ITM-STARSTONE", "qty": 3 } ], "chance": [ { "item": "ITM-STARSTONE", "qty": 5, "p": 0.25 } ] },
+    "DRT-RAID-STAR-T4": { "gold": [450, 620], "guaranteed": [ { "item": "ITM-STAR-CRATE", "qty": 6 }, { "item": "ITM-STARSTONE", "qty": 4 } ], "chance": [ { "item": "ITM-STARSTONE", "qty": 7, "p": 0.25 } ] },
+
+    "DRT-RAID-FND-T1": { "gold": [150, 220], "guaranteed": [ { "item": "ITM-GEAR-ORE-T1", "qty": 3 } ], "chance": [ { "item": "GEAR-RANDOM-T1", "qty": 1, "p": 0.30 }, { "item": "ITM-SET-TOKEN", "qty": 1, "p": 0.10, "pity": 10 } ] },
+    "DRT-RAID-FND-T2": { "gold": [220, 320], "guaranteed": [ { "item": "ITM-GEAR-ORE-T2", "qty": 3 } ], "chance": [ { "item": "GEAR-RANDOM-T2", "qty": 1, "p": 0.30 }, { "item": "ITM-SET-TOKEN", "qty": 1, "p": 0.10, "pity": 10 } ] },
+    "DRT-RAID-FND-T3": { "gold": [320, 450], "guaranteed": [ { "item": "ITM-GEAR-ORE-T3", "qty": 3 } ], "chance": [ { "item": "GEAR-RANDOM-T3", "qty": 1, "p": 0.30 }, { "item": "ITM-SET-TOKEN", "qty": 1, "p": 0.10, "pity": 10 } ] },
+    "DRT-RAID-FND-T4": { "gold": [450, 620], "guaranteed": [ { "item": "ITM-GEAR-ORE-T4", "qty": 3 } ], "chance": [ { "item": "GEAR-RANDOM-T4", "qty": 1, "p": 0.30 }, { "item": "ITM-SET-TOKEN", "qty": 1, "p": 0.12, "pity": 10 } ] },
+
+    "DRT-RAID-REL-T1": { "gold": [150, 220], "guaranteed": [ { "item": "ITM-ASC-RELIC-T1", "qty": 2 }, { "item": "ITM-MANUAL-RANDOM", "qty": 1 } ], "chance": [ { "item": "ITM-FACTION-RELIC-RANDOM", "qty": 1, "p": 0.30, "pity": 10 } ] },
+    "DRT-RAID-REL-T2": { "gold": [220, 320], "guaranteed": [ { "item": "ITM-ASC-RELIC-T1", "qty": 3 }, { "item": "ITM-MANUAL-RANDOM", "qty": 1 } ], "chance": [ { "item": "ITM-ASC-RELIC-T2", "qty": 1, "p": 0.35, "pity": 10 } ] },
+    "DRT-RAID-REL-T3": { "gold": [320, 450], "guaranteed": [ { "item": "ITM-ASC-RELIC-T2", "qty": 2 }, { "item": "ITM-MANUAL-RANDOM", "qty": 2 } ], "chance": [ { "item": "ITM-ASC-RELIC-T3", "qty": 1, "p": 0.25, "pity": 10 } ] },
+    "DRT-RAID-REL-T4": { "gold": [450, 620], "guaranteed": [ { "item": "ITM-ASC-RELIC-T3", "qty": 1 }, { "item": "ITM-MANUAL-RANDOM", "qty": 2 } ], "chance": [ { "item": "ITM-ASC-RELIC-T3", "qty": 2, "p": 0.30, "pity": 10 } ] }
+  },
+  "virtualItems": {
+    "_comment": "Resolver ids valid only inside drop tables, expanded at grant time.",
+    "GEAR-RANDOM-T1": "random slot+set gear piece, tier 1, rarity weighted C60/R30/E9/L1",
+    "GEAR-RANDOM-T2": "random slot+set gear piece, tier 2, rarity weighted C45/R38/E14/L3",
+    "GEAR-RANDOM-T3": "random slot+set gear piece, tier 3, rarity weighted C30/R42/E22/L6",
+    "GEAR-RANDOM-T4": "random slot+set gear piece, tier 4, rarity weighted C15/R40/E33/L12",
+    "ITM-MANUAL-RANDOM": "random class skill manual",
+    "ITM-FACTION-RELIC-RANDOM": "random faction relic"
+  }
+}

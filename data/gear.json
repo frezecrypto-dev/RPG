@@ -1,0 +1,33 @@
+{
+  "_comment": "Equipment system config (doc 09 s5). Exactly 5 slots, 6 launch sets, tiers T1-T4 (Foundry raid tiers), rarities C/R/E/L. Concrete piece ids follow GEAR-<slot>-<set>-<tier>; the build CLI treats every valid combination as a grantable reward id. Substat upgrades are weighted rerolls among EXISTING substats - no new-substat gambling (bounded grind rule).",
+  "slots": {
+    "WPN": { "name": "Weapon", "mainStats": ["atk_flat", "atk_pct"] },
+    "ARM": { "name": "Armor",  "mainStats": ["def_flat", "hp_pct"] },
+    "HLM": { "name": "Helm",   "mainStats": ["hp_flat", "def_pct"] },
+    "CHM": { "name": "Charm",  "mainStats": ["spd_flat", "crit_rate", "crit_dmg"] },
+    "SGL": { "name": "Sigil",  "mainStats": ["effect_hit", "effect_res", "lifesteal"] }
+  },
+  "substatPool": ["atk_pct", "def_pct", "hp_pct", "spd_flat", "crit_rate", "crit_dmg", "effect_hit", "effect_res"],
+  "rarities": { "C": { "substats": 1 }, "R": { "substats": 2 }, "E": { "substats": 3 }, "L": { "substats": 4 } },
+  "tiers": { "T1": { "statMult": 1.0 }, "T2": { "statMult": 1.25 }, "T3": { "statMult": 1.55 }, "T4": { "statMult": 1.9 } },
+  "enhance": {
+    "maxLevel": 15,
+    "oreByTier": { "T1": "ITM-GEAR-ORE-T1", "T2": "ITM-GEAR-ORE-T2", "T3": "ITM-GEAR-ORE-T3", "T4": "ITM-GEAR-ORE-T4" },
+    "substatUpgradeEvery": 5,
+    "substatUpgradeRule": "weighted_reroll_among_existing",
+    "goldCostCurve": "gear_enhance_std"
+  },
+  "sets": {
+    "VANGUARD":  { "name": "Vanguard",  "bonus2": { "def_pct": 0.12 }, "bonus4": { "effect": "taunt_me_grants_15pct_dr" } },
+    "SLAUGHTER": { "name": "Slaughter", "bonus2": { "atk_pct": 0.08 }, "bonus4": { "crit_dmg": 0.20 } },
+    "SWIFTVOW":  { "name": "Swiftvow",  "bonus2": { "spd_pct": 0.06 }, "bonus4": { "spd_pct": 0.18 } },
+    "MENDING":   { "name": "Mending",   "bonus2": { "healing_pct": 0.08 }, "bonus4": { "healing_pct": 0.20 } },
+    "GRAVEBIND": { "name": "Gravebind", "bonus2": { "effect_hit": 0.08 }, "bonus4": { "effect": "dots_plus_15pct" } },
+    "AEGIS":     { "name": "Aegis",     "bonus2": { "hp_pct": 0.10 }, "bonus4": { "effect": "battle_start_barrier_15pct_maxhp" } }
+  },
+  "rules": {
+    "reEquipCost": "gold_only_no_lock",
+    "loadoutPresetsPerUnit": 3,
+    "autoOptimizeButton": true
+  }
+}

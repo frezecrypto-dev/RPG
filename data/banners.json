@@ -1,0 +1,48 @@
+{
+  "_comment": "Launch banner configs (doc 08). Rates must match published rates - the CI simulation harness (doc 12 s7) validates this file. Pity counters and 50/50 state are server-side and always visible in UI.",
+  "banners": [
+    {
+      "bannerId": "BNR-BEGIN-V1",
+      "type": "beginner",
+      "availability": "first_7_days_once_per_account",
+      "pool": "standard_v1",
+      "structure": { "pulls": 30, "discountPct": 40, "guarantee": "selectable_legendary_within_30" },
+      "selectableLegendaries": ["ASH-TNK-L01", "ASH-ASN-L01", "ASH-MAG-L01", "ASH-HLR-L01"],
+      "rates": { "legendary": 0.03, "epic": 0.14, "rare": 0.38, "common": 0.45 },
+      "tenPullFloor": "epic"
+    },
+    {
+      "bannerId": "BNR-STD-PERM",
+      "type": "standard",
+      "availability": "always",
+      "pool": "standard_v1",
+      "rates": { "legendary": 0.03, "epic": 0.14, "rare": 0.38, "common": 0.45 },
+      "pity": { "soft": { "from": 51, "step": 0.06 }, "hard": 70, "carryGroup": "standard" },
+      "tenPullFloor": "epic",
+      "costs": { "single": { "ITM-CRYSTAL": 150 }, "ten": { "ITM-CRYSTAL": 1500 }, "ticket": "TKT-STD" }
+    },
+    {
+      "bannerId": "BNR-FEAT-2026-W3",
+      "type": "featured",
+      "start": "2026-11-02T05:00:00Z", "end": "2026-11-16T04:59:59Z",
+      "pool": "standard_v1",
+      "featured": { "legendary": ["ASH-BSK-L02"], "epic": ["ASH-BSK-E01", "ASH-HLR-E02"] },
+      "rates": { "legendary": 0.03, "epic": 0.14, "rare": 0.38, "common": 0.45 },
+      "featuredShare": { "legendary": 0.5, "epic": 0.4 },
+      "pity": { "soft": { "from": 51, "step": 0.06 }, "hard": 70, "carryGroup": "featured" },
+      "fiftyFifty": { "carryover": true, "note": "Vowkeeping: a lost 50/50 guarantees the next Legendary is featured, state persists across rotations" },
+      "tenPullFloor": "epic",
+      "trialStage": "STG-TRIAL-BSK-L02",
+      "costs": { "single": { "ITM-CRYSTAL": 150 }, "ten": { "ITM-CRYSTAL": 1500 }, "ticket": "TKT-FEAT" }
+    }
+  ],
+  "pools": {
+    "standard_v1": { "contents": "all_live_units", "note": "featured Legendaries enter this pool + Mercy Forge after 2 banner cycles - no limited-forever units" }
+  },
+  "mercyForge": {
+    "currency": "ITM-EMBER-SIGIL",
+    "costs": { "legendary_older_than_2_cycles": 1500, "epic": 300 },
+    "dupeConversion": { "C": 1, "R": 5, "E": 40, "L": 300 }
+  },
+  "tutorialSummon": { "scripted": true, "guarantees": "epic_dps_from_curated_trio", "curatedTrio": ["ASH-ASN-E01", "ASH-MAG-E02", "ASH-RNG-E01"] }
+}

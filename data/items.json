@@ -1,0 +1,54 @@
+{
+  "_comment": "Canonical item/currency registry (doc 10 s1 currency map + doc 09 materials). Anti-bloat rule: adding a currency here requires removing or merging one. 'kind' drives inventory UI grouping; 'sink' documents the terminal sink (nothing accumulates meaninglessly).",
+  "items": [
+    { "id": "ITM-CRYSTAL",      "kind": "currency", "name": "Vow Crystals", "premium": true, "sink": "summons, stamina refresh (cap 3/day), cosmetics" },
+    { "id": "ITM-GOLD",         "kind": "currency", "name": "Gold", "sink": "levels, gear enhance, skill-ups, guild creation, re-equip" },
+    { "id": "ITM-AETHER",       "kind": "currency", "name": "Aether", "regen": { "perMinutes": 6, "cap": 240 }, "sink": "campaign, raids, hard mode" },
+    { "id": "ITM-EMBER-SIGIL",  "kind": "currency", "name": "Ember Sigils", "sink": "Mercy Forge (doc 08 s5)" },
+    { "id": "ITM-GUILD-MARK",   "kind": "currency", "name": "Guild Marks", "sink": "guild shop" },
+    { "id": "ITM-GLEAM",        "kind": "currency", "name": "Gleam", "sink": "cosmetics shop only - never power" },
+
+    { "id": "TKT-STD",          "kind": "ticket", "name": "Standard Gate Ticket", "banner": "standard" },
+    { "id": "TKT-FEAT",         "kind": "ticket", "name": "Featured Gate Ticket", "banner": "featured" },
+    { "id": "ITM-TKT-SHARD",    "kind": "ticket_shard", "name": "Vow Ticket Shard", "combine": { "into": "TKT-STD", "count": 10 }, "note": "Expedition segment reward (doc 07 s2.6)" },
+    { "id": "ITM-BOSS-TICKET",  "kind": "ticket", "name": "Boss Attempt Ticket", "note": "daily-quest drip; partial boss rewards (doc 05 s5)" },
+
+    { "id": "ITM-XP-TOME-S",    "kind": "material", "name": "XP Tome (S)", "xp": 100 },
+    { "id": "ITM-XP-TOME-M",    "kind": "material", "name": "XP Tome (M)", "xp": 500 },
+    { "id": "ITM-XP-TOME-L",    "kind": "material", "name": "XP Tome (L)", "xp": 2500 },
+
+    { "id": "ITM-STAR-CRATE",   "kind": "material", "name": "Star Shard Crate (class-choice)", "note": "opens to ITM-STAR-SHARD-<CLS> of the player's choosing - anti-frustration rule doc 07 s1.3" },
+    { "id": "ITM-STAR-SHARD-TNK", "kind": "material", "name": "Tank Star Shard" },
+    { "id": "ITM-STAR-SHARD-ASN", "kind": "material", "name": "Assassin Star Shard" },
+    { "id": "ITM-STAR-SHARD-RNG", "kind": "material", "name": "Ranger Star Shard" },
+    { "id": "ITM-STAR-SHARD-MAG", "kind": "material", "name": "Mage Star Shard" },
+    { "id": "ITM-STAR-SHARD-NEC", "kind": "material", "name": "Necromancer Star Shard" },
+    { "id": "ITM-STAR-SHARD-HLR", "kind": "material", "name": "Healer Star Shard" },
+    { "id": "ITM-STAR-SHARD-BSK", "kind": "material", "name": "Berserker Star Shard" },
+    { "id": "ITM-STARSTONE",    "kind": "material", "name": "Starstone", "note": "universal star-up catalyst" },
+
+    { "id": "ITM-GEAR-ORE-T1",  "kind": "material", "name": "Gear Ore T1" },
+    { "id": "ITM-GEAR-ORE-T2",  "kind": "material", "name": "Gear Ore T2" },
+    { "id": "ITM-GEAR-ORE-T3",  "kind": "material", "name": "Gear Ore T3" },
+    { "id": "ITM-GEAR-ORE-T4",  "kind": "material", "name": "Gear Ore T4" },
+    { "id": "ITM-SET-TOKEN",    "kind": "material", "name": "Set Token", "note": "Foundry rare drop with visible pity (10 runs); crafts a chosen set piece" },
+
+    { "id": "ITM-ASC-RELIC-T1", "kind": "material", "name": "Ash Relic T1" },
+    { "id": "ITM-ASC-RELIC-T2", "kind": "material", "name": "Ash Relic T2" },
+    { "id": "ITM-ASC-RELIC-T3", "kind": "material", "name": "Ash Relic T3" },
+    { "id": "ITM-FACTION-RELIC-EMBERGUARD", "kind": "material", "name": "Emberguard Relic" },
+    { "id": "ITM-FACTION-RELIC-HOLLOWED",   "kind": "material", "name": "Hollowed Relic" },
+    { "id": "ITM-FACTION-RELIC-CHOIR",      "kind": "material", "name": "Choir Relic" },
+    { "id": "ITM-FACTION-RELIC-FREEBLADES", "kind": "material", "name": "Freeblades Relic" },
+    { "id": "ITM-FACTION-RELIC-GRAVEBOUND", "kind": "material", "name": "Gravebound Relic" },
+
+    { "id": "ITM-MANUAL-TNK", "kind": "material", "name": "Tank Skill Manual" },
+    { "id": "ITM-MANUAL-ASN", "kind": "material", "name": "Assassin Skill Manual" },
+    { "id": "ITM-MANUAL-RNG", "kind": "material", "name": "Ranger Skill Manual" },
+    { "id": "ITM-MANUAL-MAG", "kind": "material", "name": "Mage Skill Manual" },
+    { "id": "ITM-MANUAL-NEC", "kind": "material", "name": "Necromancer Skill Manual" },
+    { "id": "ITM-MANUAL-HLR", "kind": "material", "name": "Healer Skill Manual" },
+    { "id": "ITM-MANUAL-BSK", "kind": "material", "name": "Berserker Skill Manual" }
+  ],
+  "overflowConversion": { "toGold": true, "note": "maxed-material overflow auto-converts to Gold - nothing wasted (doc 07 s1.3)" }
+}

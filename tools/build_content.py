@@ -144,12 +144,80 @@ def check_enemies_and_stages() -> None:
                         err(f"{sid}: references unknown enemy {eid}")
 
 
+GEAR_ID_RE = re.compile(r"^GEAR-(WPN|ARM|HLM|CHM|SGL)-([A-Z]+)-(T[1-4])$")
+
+
+def load_reward_ids() -> tuple[set[str], set[str]]:
+    """Returns (valid reward item ids incl. gear combos + virtual ids, drop table ids)."""
+    valid: set[str] = set()
+    gear_sets: set[str] = set()
+    items_path = DATA / "items.json"
+    gear_path = DATA / "gear.json"
+    drops_path = DATA / "droptables.json"
+    if items_path.exists():
+        valid |= {i["id"] for i in json.loads(items_path.read_text())["items"]}
+    if gear_path.exists():
+        g = json.loads(gear_path.read_text())
+        gear_sets = set(g["sets"])
+        for slot in g["slots"]:
+            for gset in gear_sets:
+                for tier in g["tiers"]:
+                    valid.add(f"GEAR-{slot}-{gset}-{tier}")
+    tables: set[str] = set()
+    if drops_path.exists():
+        d = json.loads(drops_path.read_text())
+        tables = set(d["tables"])
+        valid |= set(d.get("virtualItems", {})) - {"_comment"}
+        for tid, t in d["tables"].items():
+            for entry in t.get("guaranteed", []) + t.get("chance", []):
+                if entry["item"] not in valid:
+                    err(f"{tid}: unknown item {entry['item']}")
+    return valid, tables
+
+
+def check_rewards_and_banners(unit_ids: set[str]) -> None:
+    valid_items, drop_tables = load_reward_ids()
+    if not valid_items:
+        return
+    for path in sorted(DATA.glob("stages.ch*.json")):
+        doc = json.loads(path.read_text())
+        chest_rewards = [r for rl in doc["chapter"].get("starChests", {}).values() for r in rl]
+        for r in chest_rewards:
+            if r["item"] not in valid_items:
+                err(f"{doc['chapter']['id']} starChests: unknown item {r['item']}")
+        for s in doc["stages"]:
+            for r in s.get("firstClear", []):
+                if r["item"] not in valid_items:
+                    err(f"{s['id']}: unknown firstClear item {r['item']}")
+            if drop_tables and s.get("repeatDrops") not in drop_tables:
+                err(f"{s['id']}: unknown drop table {s.get('repeatDrops')}")
+    banners_path = DATA / "banners.json"
+    if banners_path.exists():
+        b = json.loads(banners_path.read_text())
+        for bn in b["banners"]:
+            rates = bn.get("rates", {})
+            if rates and abs(sum(rates.values()) - 1.0) > 1e-9:
+                err(f"{bn['bannerId']}: rates sum to {sum(rates.values())}, not 1.0")
+            featured = bn.get("featured", {})
+            named = list(bn.get("selectableLegendaries", []))
+            for group in featured.values():
+                named += group
+            for uid in named:
+                if uid not in unit_ids:
+                    err(f"{bn['bannerId']}: unknown unit {uid}")
+        for uid in b.get("tutorialSummon", {}).get("curatedTrio", []):
+            if uid not in unit_ids:
+                err(f"tutorialSummon: unknown unit {uid}")
+
+
 def main() -> int:
     tpl = json.loads((CONTENT / "class_stat_templates.json").read_text())
     rows = load_units()
+    unit_ids = {r["id"] for r in rows}
     check_roster_shape(rows)
-    check_skills({r["id"] for r in rows})
+    check_skills(unit_ids)
     check_enemies_and_stages()
+    check_rewards_and_banners(unit_ids)
 
     if errors:
         print(f"VALIDATION FAILED ({len(errors)} errors):")
