@@ -1,72 +1,332 @@
 {
-  "_comment": "Chapter 1 enemy family: Umbral Slimes (docs 05 s1, 06 s3). Stats are reference values at enemyLevel 1; runtime stats = base * levelScaling^(enemyLevel-1). Res values: -0.25 weak / 0 neutral / +0.25 resistant, shown as icons in the stage-prep UI. Chapter damage bias: mostly magical attackers (doc 06 s1) so Ch1 teaches barrier/heal answers, while slime physRes weakness rewards any physical DPS the tutorial granted.",
-  "levelScaling": 1.065,
+  "_comment": "Chapter 1 enemy family: Umbral Slimes (docs 05 s1, 06 s3). Stats are reference values at enemyLevel 1; runtime stats = base * levelScaling^(enemyLevel-1). Res values: -0.25 weak / 0 neutral / +0.25 resistant, shown as icons in the stage-prep UI. Chapter damage bias: mostly magical attackers (doc 06 s1) so Ch1 teaches barrier/heal answers, while slime physRes weakness rewards any physical DPS the tutorial granted. levelScaling retuned 1.065->1.035 (sim/balance.py Phase-0 finding: geometric enemy growth outran the additive player curve; 1.035 tracks it and keeps maxed-roster guardrails green while leaving a ~65% fresh-team finale challenge).",
+  "levelScaling": 1.035,
   "enemies": [
-    { "id": "ENM-SLM-M01", "name": "Sump Slime", "family": "SLM", "tier": "M",
-      "traits": ["swarm"], "physRes": -0.25, "magRes": 0, "immunities": [],
-      "damageRoot": "physical", "baseStats": { "hp": 320, "atk": 38, "def": 22, "spd": 78 },
+    {
+      "id": "ENM-SLM-M01",
+      "name": "Sump Slime",
+      "family": "SLM",
+      "tier": "M",
+      "traits": [
+        "swarm"
+      ],
+      "physRes": -0.25,
+      "magRes": 0,
+      "immunities": [],
+      "damageRoot": "physical",
+      "baseStats": {
+        "hp": 320,
+        "atk": 38,
+        "def": 22,
+        "spd": 78
+      },
       "aiScript": "brute_v1",
-      "skills": [ { "name": "Pseudopod Slap", "target": "single_enemy", "power": 1.0 } ] },
-
-    { "id": "ENM-SLM-M02", "name": "Gutter Ooze", "family": "SLM", "tier": "M",
-      "traits": ["swarm"], "physRes": -0.25, "magRes": 0, "immunities": [],
-      "damageRoot": "physical", "baseStats": { "hp": 280, "atk": 44, "def": 18, "spd": 92 },
+      "skills": [
+        {
+          "name": "Pseudopod Slap",
+          "target": "single_enemy",
+          "power": 1.0
+        }
+      ]
+    },
+    {
+      "id": "ENM-SLM-M02",
+      "name": "Gutter Ooze",
+      "family": "SLM",
+      "tier": "M",
+      "traits": [
+        "swarm"
+      ],
+      "physRes": -0.25,
+      "magRes": 0,
+      "immunities": [],
+      "damageRoot": "physical",
+      "baseStats": {
+        "hp": 280,
+        "atk": 44,
+        "def": 18,
+        "spd": 92
+      },
       "aiScript": "skirmisher_v1",
-      "skills": [ { "name": "Signage Claw", "target": "single_enemy", "power": 1.1 },
-                  { "name": "Oil Slick", "target": "single_enemy", "power": 0.6, "effects": [ { "verb": "applyStatus", "status": "STS-SPD-DOWN", "duration": 1, "chance": 0.5 } ] } ] },
-
-    { "id": "ENM-SLM-M03", "name": "Lantern Jelly", "family": "SLM", "tier": "M",
-      "traits": ["swarm"], "physRes": 0, "magRes": 0.25, "immunities": [],
-      "damageRoot": "magical", "baseStats": { "hp": 240, "atk": 52, "def": 14, "spd": 88 },
+      "skills": [
+        {
+          "name": "Signage Claw",
+          "target": "single_enemy",
+          "power": 1.1
+        },
+        {
+          "name": "Oil Slick",
+          "target": "single_enemy",
+          "power": 0.6,
+          "effects": [
+            {
+              "verb": "applyStatus",
+              "status": "STS-SPD-DOWN",
+              "duration": 1,
+              "chance": 0.5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ENM-SLM-M03",
+      "name": "Lantern Jelly",
+      "family": "SLM",
+      "tier": "M",
+      "traits": [
+        "swarm"
+      ],
+      "physRes": 0,
+      "magRes": 0.25,
+      "immunities": [],
+      "damageRoot": "magical",
+      "baseStats": {
+        "hp": 240,
+        "atk": 52,
+        "def": 14,
+        "spd": 88
+      },
       "aiScript": "caster_v1",
-      "skills": [ { "name": "Lantern Spark", "target": "single_enemy", "power": 1.0 },
-                  { "name": "Drowned Glow", "target": "splash2", "power": 0.8, "cooldown": 2 } ] },
-
-    { "id": "ENM-SLM-M04", "name": "Clot", "family": "SLM", "tier": "M",
-      "traits": ["swarm"], "physRes": -0.25, "magRes": 0, "immunities": [],
-      "damageRoot": "physical", "baseStats": { "hp": 380, "atk": 34, "def": 26, "spd": 70 },
+      "skills": [
+        {
+          "name": "Lantern Spark",
+          "target": "single_enemy",
+          "power": 1.0
+        },
+        {
+          "name": "Drowned Glow",
+          "target": "splash2",
+          "power": 0.8,
+          "cooldown": 2
+        }
+      ]
+    },
+    {
+      "id": "ENM-SLM-M04",
+      "name": "Clot",
+      "family": "SLM",
+      "tier": "M",
+      "traits": [
+        "swarm"
+      ],
+      "physRes": -0.25,
+      "magRes": 0,
+      "immunities": [],
+      "damageRoot": "physical",
+      "baseStats": {
+        "hp": 380,
+        "atk": 34,
+        "def": 26,
+        "spd": 70
+      },
       "aiScript": "clot_v1",
-      "skills": [ { "name": "Lurch", "target": "single_enemy", "power": 1.0 },
-                  { "name": "Fuse", "target": "self", "cooldown": 3, "note": "Absorbs one adjacent living SLM minion: gains 60% of its current HP and +15% ATK. Teaches kill-priority." } ] },
-
-    { "id": "ENM-SLM-E01", "name": "Mire Colossus", "family": "SLM", "tier": "E",
-      "traits": ["swarm"], "physRes": 0, "magRes": 0.25, "immunities": ["STS-SPD-DOWN"],
-      "damageRoot": "physical", "baseStats": { "hp": 950, "atk": 68, "def": 40, "spd": 62 },
+      "skills": [
+        {
+          "name": "Lurch",
+          "target": "single_enemy",
+          "power": 1.0
+        },
+        {
+          "name": "Fuse",
+          "target": "self",
+          "cooldown": 3,
+          "note": "Absorbs one adjacent living SLM minion: gains 60% of its current HP and +15% ATK. Teaches kill-priority."
+        }
+      ]
+    },
+    {
+      "id": "ENM-SLM-E01",
+      "name": "Mire Colossus",
+      "family": "SLM",
+      "tier": "E",
+      "traits": [
+        "swarm"
+      ],
+      "physRes": 0,
+      "magRes": 0.25,
+      "immunities": [
+        "STS-SPD-DOWN"
+      ],
+      "damageRoot": "physical",
+      "baseStats": {
+        "hp": 950,
+        "atk": 68,
+        "def": 40,
+        "spd": 62
+      },
       "aiScript": "brute_v1",
-      "telegraphs": [ { "skill": "Column Slam", "windup": 2, "pattern": "front_row", "power": 1.8,
-        "note": "First telegraph the player ever sees. Answerable by kill-before-detonation at Ch1 power, later by DR/Barrier." } ],
-      "skills": [ { "name": "Masonry Fist", "target": "single_enemy", "power": 1.2 } ] },
-
-    { "id": "ENM-SLM-E02", "name": "Prism Ooze", "family": "SLM", "tier": "E",
-      "traits": ["swarm", "prism"], "physRes": 0, "magRes": 0, "immunities": [],
-      "damageRoot": "magical", "baseStats": { "hp": 720, "atk": 74, "def": 30, "spd": 84 },
+      "telegraphs": [
+        {
+          "skill": "Column Slam",
+          "windup": 2,
+          "pattern": "front_row",
+          "power": 1.8,
+          "note": "First telegraph the player ever sees. Answerable by kill-before-detonation at Ch1 power, later by DR/Barrier."
+        }
+      ],
+      "skills": [
+        {
+          "name": "Masonry Fist",
+          "target": "single_enemy",
+          "power": 1.2
+        }
+      ]
+    },
+    {
+      "id": "ENM-SLM-E02",
+      "name": "Prism Ooze",
+      "family": "SLM",
+      "tier": "E",
+      "traits": [
+        "swarm",
+        "prism"
+      ],
+      "physRes": 0,
+      "magRes": 0,
+      "immunities": [],
+      "damageRoot": "magical",
+      "baseStats": {
+        "hp": 720,
+        "atk": 74,
+        "def": 30,
+        "spd": 84
+      },
       "aiScript": "caster_v1",
-      "mechanics": [ { "id": "prism_shift", "note": "Alternates +50% physRes / +50% magRes every 2 rounds, state shown as a colored shell. Soft preview of the Ch3 phase-lock mechanic." } ],
-      "skills": [ { "name": "Refracted Beam", "target": "single_enemy", "power": 1.3 },
-                  { "name": "Scatter Light", "target": "all_enemies", "power": 0.7, "cooldown": 3 } ] },
-
-    { "id": "ENM-SLM-B01", "name": "The Undertow", "family": "SLM", "tier": "B",
-      "traits": ["swarm"], "physRes": 0, "magRes": 0.25, "immunities": ["STS-STUN"],
-      "damageRoot": "magical", "baseStats": { "hp": 2600, "atk": 82, "def": 46, "spd": 74 },
+      "mechanics": [
+        {
+          "id": "prism_shift",
+          "note": "Alternates +50% physRes / +50% magRes every 2 rounds, state shown as a colored shell. Soft preview of the Ch3 phase-lock mechanic."
+        }
+      ],
+      "skills": [
+        {
+          "name": "Refracted Beam",
+          "target": "single_enemy",
+          "power": 1.3
+        },
+        {
+          "name": "Scatter Light",
+          "target": "all_enemies",
+          "power": 0.7,
+          "cooldown": 3
+        }
+      ]
+    },
+    {
+      "id": "ENM-SLM-B01",
+      "name": "The Undertow",
+      "family": "SLM",
+      "tier": "B",
+      "traits": [
+        "swarm"
+      ],
+      "physRes": 0,
+      "magRes": 0.25,
+      "immunities": [
+        "STS-STUN"
+      ],
+      "damageRoot": "magical",
+      "baseStats": {
+        "hp": 2600,
+        "atk": 82,
+        "def": 46,
+        "spd": 74
+      },
       "aiScript": "miniboss_v1",
-      "telegraphs": [ { "skill": "Crash", "windup": 2, "pattern": "all_enemies", "power": 1.5,
-        "note": "Chapter's sustain check: survivable with any heal/barrier, punishing with none. Core glows brighter each windup turn." } ],
-      "skills": [ { "name": "Riptide Grab", "target": "single_enemy", "power": 1.2, "effects": [ { "verb": "applyStatus", "status": "STS-SPD-DOWN", "duration": 2, "chance": 0.75 } ] } ],
-      "empoweredVariant": { "usedInStage": "STG-CAMP-1-09", "statMult": 1.35,
-        "extra": "Crash windup drops to 1 on repeat casts; spawns 1 Sump Slime per round while above 50% HP." } },
-
-    { "id": "ENM-SLM-X01", "name": "Krul, the Mother-Mass", "family": "SLM", "tier": "X",
-      "traits": ["swarm"], "physRes": 0, "magRes": 0.25, "immunities": ["STS-BIND", "STS-STUN"],
-      "damageRoot": "magical", "baseStats": { "hp": 6800, "atk": 96, "def": 52, "spd": 80 },
+      "telegraphs": [
+        {
+          "skill": "Crash",
+          "windup": 2,
+          "pattern": "all_enemies",
+          "power": 1.5,
+          "note": "Chapter's sustain check: survivable with any heal/barrier, punishing with none. Core glows brighter each windup turn."
+        }
+      ],
+      "skills": [
+        {
+          "name": "Riptide Grab",
+          "target": "single_enemy",
+          "power": 1.2,
+          "effects": [
+            {
+              "verb": "applyStatus",
+              "status": "STS-SPD-DOWN",
+              "duration": 2,
+              "chance": 0.75
+            }
+          ]
+        }
+      ],
+      "empoweredVariant": {
+        "usedInStage": "STG-CAMP-1-09",
+        "statMult": 1.35,
+        "extra": "Crash windup drops to 1 on repeat casts; spawns 1 Sump Slime per round while above 50% HP."
+      }
+    },
+    {
+      "id": "ENM-SLM-X01",
+      "name": "Krul, the Mother-Mass",
+      "family": "SLM",
+      "tier": "X",
+      "traits": [
+        "swarm"
+      ],
+      "physRes": 0,
+      "magRes": 0.25,
+      "immunities": [
+        "STS-BIND",
+        "STS-STUN"
+      ],
+      "damageRoot": "magical",
+      "baseStats": {
+        "hp": 6800,
+        "atk": 96,
+        "def": 52,
+        "spd": 80
+      },
       "aiScript": "boss_krul_v1",
       "phases": [
-        { "from": 1.0, "note": "P1: spawns a Slimelet pair every 2 rounds; slimelets detonate on a 2-turn telegraph (team AoE). Answer: AoE clear or focus-fire." },
-        { "from": 0.6, "staggerRound": true, "note": "P2: absorbs living slimelets to heal 8% each. Answer: clear adds BEFORE pushing past 60%." }
+        {
+          "from": 1.0,
+          "note": "P1: spawns a Slimelet pair every 2 rounds; slimelets detonate on a 2-turn telegraph (team AoE). Answer: AoE clear or focus-fire."
+        },
+        {
+          "from": 0.6,
+          "staggerRound": true,
+          "note": "P2: absorbs living slimelets to heal 8% each. Answer: clear adds BEFORE pushing past 60%."
+        }
       ],
-      "resolve": true, "enrageRound": 15,
-      "adds": [ { "id": "ENM-SLM-M01", "asName": "Slimelet", "statMult": 0.5,
-        "telegraphs": [ { "skill": "Pop", "windup": 2, "pattern": "all_enemies", "power": 1.0 } ] } ],
-      "skills": [ { "name": "Mother's Reach", "target": "single_enemy", "power": 1.3 },
-                  { "name": "Umbral Spray", "target": "all_enemies", "power": 0.8, "cooldown": 3 } ] }
+      "resolve": true,
+      "enrageRound": 15,
+      "adds": [
+        {
+          "id": "ENM-SLM-M01",
+          "asName": "Slimelet",
+          "statMult": 0.5,
+          "telegraphs": [
+            {
+              "skill": "Pop",
+              "windup": 2,
+              "pattern": "all_enemies",
+              "power": 1.0
+            }
+          ]
+        }
+      ],
+      "skills": [
+        {
+          "name": "Mother's Reach",
+          "target": "single_enemy",
+          "power": 1.3
+        },
+        {
+          "name": "Umbral Spray",
+          "target": "all_enemies",
+          "power": 0.8,
+          "cooldown": 3
+        }
+      ]
+    }
   ]
 }

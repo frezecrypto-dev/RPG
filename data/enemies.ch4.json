@@ -1,78 +1,387 @@
 {
-  "_comment": "Chapter 4 enemy family: Gravetide Undead (docs 05 s1, 06 s3). The launch finale and full-curriculum exam: anti-heal pressure, Cleanse cadence, resurrection denial. Undead trait: takes +25% from Holy sub-tag (Healer offense niche - Lumen/Ambrose farm relevance by design). Chapter damage bias: magical + Decay. Stats at reference level 1, runtime = base * levelScaling^(enemyLevel-1).",
-  "levelScaling": 1.065,
+  "_comment": "Chapter 4 enemy family: Gravetide Undead (docs 05 s1, 06 s3). The launch finale and full-curriculum exam: anti-heal pressure, Cleanse cadence, resurrection denial. Undead trait: takes +25% from Holy sub-tag (Healer offense niche - Lumen/Ambrose farm relevance by design). Chapter damage bias: magical + Decay. Stats at reference level 1, runtime = base * levelScaling^(enemyLevel-1). levelScaling retuned 1.065->1.035 (sim/balance.py Phase-0 finding: geometric enemy growth outran the additive player curve; 1.035 tracks it and keeps maxed-roster guardrails green while leaving a ~65% fresh-team finale challenge).",
+  "levelScaling": 1.035,
   "enemies": [
-    { "id": "ENM-UND-M01", "name": "Gravechoir Thrall", "family": "UND", "tier": "M",
-      "traits": ["undead", "swarm"], "physRes": 0, "magRes": 0, "immunities": ["STS-POISON"],
-      "damageRoot": "physical", "baseStats": { "hp": 460, "atk": 48, "def": 30, "spd": 66 },
+    {
+      "id": "ENM-UND-M01",
+      "name": "Gravechoir Thrall",
+      "family": "UND",
+      "tier": "M",
+      "traits": [
+        "undead",
+        "swarm"
+      ],
+      "physRes": 0,
+      "magRes": 0,
+      "immunities": [
+        "STS-POISON"
+      ],
+      "damageRoot": "physical",
+      "baseStats": {
+        "hp": 460,
+        "atk": 48,
+        "def": 30,
+        "spd": 66
+      },
       "aiScript": "brute_v1",
-      "skills": [ { "name": "Hymnal Swing", "target": "single_enemy", "power": 1.0 },
-                  { "name": "Droning Verse", "target": "single_enemy", "power": 0.6, "cooldown": 3,
-                    "effects": [ { "verb": "applyStatus", "status": "STS-DECAY", "stacks": 1, "duration": 2, "chance": 0.6 } ] } ] },
-
-    { "id": "ENM-UND-M02", "name": "Bonewrought", "family": "UND", "tier": "M",
-      "traits": ["undead", "armored"], "physRes": 0.25, "magRes": 0, "immunities": ["STS-POISON"],
-      "damageRoot": "physical", "baseStats": { "hp": 620, "atk": 54, "def": 46, "spd": 54 },
+      "skills": [
+        {
+          "name": "Hymnal Swing",
+          "target": "single_enemy",
+          "power": 1.0
+        },
+        {
+          "name": "Droning Verse",
+          "target": "single_enemy",
+          "power": 0.6,
+          "cooldown": 3,
+          "effects": [
+            {
+              "verb": "applyStatus",
+              "status": "STS-DECAY",
+              "stacks": 1,
+              "duration": 2,
+              "chance": 0.6
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ENM-UND-M02",
+      "name": "Bonewrought",
+      "family": "UND",
+      "tier": "M",
+      "traits": [
+        "undead",
+        "armored"
+      ],
+      "physRes": 0.25,
+      "magRes": 0,
+      "immunities": [
+        "STS-POISON"
+      ],
+      "damageRoot": "physical",
+      "baseStats": {
+        "hp": 620,
+        "atk": 54,
+        "def": 46,
+        "spd": 54
+      },
       "aiScript": "brute_v1",
-      "skills": [ { "name": "Femur Barrage", "target": "single_enemy", "power": 1.2, "hits": 2 } ] },
-
-    { "id": "ENM-UND-M03", "name": "Lament Wisp", "family": "UND", "tier": "M",
-      "traits": ["undead"], "physRes": 0, "magRes": 0.25, "immunities": ["STS-POISON"],
-      "damageRoot": "magical", "baseStats": { "hp": 300, "atk": 60, "def": 20, "spd": 92 },
+      "skills": [
+        {
+          "name": "Femur Barrage",
+          "target": "single_enemy",
+          "power": 1.2,
+          "hits": 2
+        }
+      ]
+    },
+    {
+      "id": "ENM-UND-M03",
+      "name": "Lament Wisp",
+      "family": "UND",
+      "tier": "M",
+      "traits": [
+        "undead"
+      ],
+      "physRes": 0,
+      "magRes": 0.25,
+      "immunities": [
+        "STS-POISON"
+      ],
+      "damageRoot": "magical",
+      "baseStats": {
+        "hp": 300,
+        "atk": 60,
+        "def": 20,
+        "spd": 92
+      },
       "aiScript": "caster_v1",
-      "skills": [ { "name": "Keening", "target": "single_enemy", "power": 1.0,
-                    "effects": [ { "verb": "applyStatus", "status": "STS-DECAY", "stacks": 1, "duration": 2, "chance": 0.75 } ] } ],
-      "note": "The chapter's Decay-stacker. Two Wisps outpace an uncleansing team's healing - the Cleanse lesson in minion form." },
-
-    { "id": "ENM-UND-M04", "name": "Carrion Sexton", "family": "UND", "tier": "M",
-      "traits": ["undead"], "physRes": 0, "magRes": 0.25, "immunities": ["STS-POISON"],
-      "damageRoot": "magical", "baseStats": { "hp": 380, "atk": 36, "def": 32, "spd": 72 },
+      "skills": [
+        {
+          "name": "Keening",
+          "target": "single_enemy",
+          "power": 1.0,
+          "effects": [
+            {
+              "verb": "applyStatus",
+              "status": "STS-DECAY",
+              "stacks": 1,
+              "duration": 2,
+              "chance": 0.75
+            }
+          ]
+        }
+      ],
+      "note": "The chapter's Decay-stacker. Two Wisps outpace an uncleansing team's healing - the Cleanse lesson in minion form."
+    },
+    {
+      "id": "ENM-UND-M04",
+      "name": "Carrion Sexton",
+      "family": "UND",
+      "tier": "M",
+      "traits": [
+        "undead"
+      ],
+      "physRes": 0,
+      "magRes": 0.25,
+      "immunities": [
+        "STS-POISON"
+      ],
+      "damageRoot": "magical",
+      "baseStats": {
+        "hp": 380,
+        "atk": 36,
+        "def": 32,
+        "spd": 72
+      },
       "aiScript": "healer_v1",
-      "mechanics": [ { "id": "grave_oil", "note": "Heals the most-wounded allied enemy 12% maxHP per round. The anti-heal tutor: Decay (Widow Isolde - Common relevance) halves it, kill-priority removes it." } ],
-      "skills": [ { "name": "Spade Jab", "target": "single_enemy", "power": 0.8 } ] },
-
-    { "id": "ENM-UND-E01", "name": "Requiem Knight", "family": "UND", "tier": "E",
-      "traits": ["undead", "armored"], "physRes": 0.25, "magRes": 0, "immunities": ["STS-POISON", "STS-STUN"],
-      "damageRoot": "physical", "baseStats": { "hp": 1350, "atk": 78, "def": 56, "spd": 62 },
+      "mechanics": [
+        {
+          "id": "grave_oil",
+          "note": "Heals the most-wounded allied enemy 12% maxHP per round. The anti-heal tutor: Decay (Widow Isolde - Common relevance) halves it, kill-priority removes it."
+        }
+      ],
+      "skills": [
+        {
+          "name": "Spade Jab",
+          "target": "single_enemy",
+          "power": 0.8
+        }
+      ]
+    },
+    {
+      "id": "ENM-UND-E01",
+      "name": "Requiem Knight",
+      "family": "UND",
+      "tier": "E",
+      "traits": [
+        "undead",
+        "armored"
+      ],
+      "physRes": 0.25,
+      "magRes": 0,
+      "immunities": [
+        "STS-POISON",
+        "STS-STUN"
+      ],
+      "damageRoot": "physical",
+      "baseStats": {
+        "hp": 1350,
+        "atk": 78,
+        "def": 56,
+        "spd": 62
+      },
       "aiScript": "brute_v1",
-      "telegraphs": [ { "skill": "Grave-Marker Cleave", "windup": 2, "pattern": "front_row", "power": 1.7 } ],
-      "skills": [ { "name": "Dirge Strike", "target": "single_enemy", "power": 1.3,
-                    "effects": [ { "verb": "applyStatus", "status": "STS-DECAY", "stacks": 1, "duration": 2, "chance": 0.5 } ] } ] },
-
-    { "id": "ENM-UND-E02", "name": "Tidebound Mass", "family": "UND", "tier": "E",
-      "traits": ["undead", "colossal"], "physRes": 0, "magRes": 0, "immunities": ["STS-POISON", "STS-STUN"],
-      "damageRoot": "physical", "baseStats": { "hp": 1500, "atk": 70, "def": 44, "spd": 50 },
+      "telegraphs": [
+        {
+          "skill": "Grave-Marker Cleave",
+          "windup": 2,
+          "pattern": "front_row",
+          "power": 1.7
+        }
+      ],
+      "skills": [
+        {
+          "name": "Dirge Strike",
+          "target": "single_enemy",
+          "power": 1.3,
+          "effects": [
+            {
+              "verb": "applyStatus",
+              "status": "STS-DECAY",
+              "stacks": 1,
+              "duration": 2,
+              "chance": 0.5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ENM-UND-E02",
+      "name": "Tidebound Mass",
+      "family": "UND",
+      "tier": "E",
+      "traits": [
+        "undead",
+        "colossal"
+      ],
+      "physRes": 0,
+      "magRes": 0,
+      "immunities": [
+        "STS-POISON",
+        "STS-STUN"
+      ],
+      "damageRoot": "physical",
+      "baseStats": {
+        "hp": 1500,
+        "atk": 70,
+        "def": 44,
+        "spd": 50
+      },
       "aiScript": "brute_v1",
-      "mechanics": [ { "id": "reknit", "note": "RESURRECTS ONCE at 40% maxHP two rounds after first death unless the corpse-mass takes Holy damage or 3+ hits while down. The resurrection-denial exam; Holy units answer it cleanly." } ],
-      "skills": [ { "name": "Drowning Reach", "target": "splash2", "power": 1.0 } ] },
-
-    { "id": "ENM-UND-B01", "name": "The Choirmaster", "family": "UND", "tier": "B",
-      "traits": ["undead", "colossal"], "physRes": 0, "magRes": 0.25, "immunities": ["STS-POISON", "STS-STUN"],
-      "damageRoot": "magical", "baseStats": { "hp": 4200, "atk": 94, "def": 58, "spd": 64 },
+      "mechanics": [
+        {
+          "id": "reknit",
+          "note": "RESURRECTS ONCE at 40% maxHP two rounds after first death unless the corpse-mass takes Holy damage or 3+ hits while down. The resurrection-denial exam; Holy units answer it cleanly."
+        }
+      ],
+      "skills": [
+        {
+          "name": "Drowning Reach",
+          "target": "splash2",
+          "power": 1.0
+        }
+      ]
+    },
+    {
+      "id": "ENM-UND-B01",
+      "name": "The Choirmaster",
+      "family": "UND",
+      "tier": "B",
+      "traits": [
+        "undead",
+        "colossal"
+      ],
+      "physRes": 0,
+      "magRes": 0.25,
+      "immunities": [
+        "STS-POISON",
+        "STS-STUN"
+      ],
+      "damageRoot": "magical",
+      "baseStats": {
+        "hp": 4200,
+        "atk": 94,
+        "def": 58,
+        "spd": 64
+      },
       "aiScript": "miniboss_v1",
-      "mechanics": [ { "id": "tempo", "note": "Metronome-heart: every 3rd round all undead allies act with +1 SPD priority and +15% ATK - kill-order pressure on adds." } ],
-      "adds": [ { "id": "ENM-UND-M01", "asName": "Gravechoir Thrall", "statMult": 0.8, "note": "Conducts 1 back to its feet every 3 rounds while above 50% HP." } ],
-      "telegraphs": [ { "skill": "Crescendo", "windup": 3, "pattern": "all_enemies", "power": 1.6,
-        "note": "Full-team detonation on a 3-turn baton windup; each living add adds +10% power. Answer: clear adds, then DR/Immunity the hit." } ],
-      "skills": [ { "name": "Baton Lash", "target": "single_enemy", "power": 1.2 } ],
-      "empoweredVariant": { "usedInStage": "STG-CAMP-4-09", "statMult": 1.35,
-        "extra": "Tempo triggers every 2nd round; Crescendo windup drops to 2." } },
-
-    { "id": "ENM-UND-X01", "name": "Annor-Vhol, the Gravetide Chorus", "family": "UND", "tier": "X",
-      "traits": ["undead", "colossal"], "physRes": 0, "magRes": 0.25, "immunities": ["STS-STUN", "STS-POISON"],
-      "damageRoot": "magical", "baseStats": { "hp": 13800, "atk": 112, "def": 68, "spd": 70 },
+      "mechanics": [
+        {
+          "id": "tempo",
+          "note": "Metronome-heart: every 3rd round all undead allies act with +1 SPD priority and +15% ATK - kill-order pressure on adds."
+        }
+      ],
+      "adds": [
+        {
+          "id": "ENM-UND-M01",
+          "asName": "Gravechoir Thrall",
+          "statMult": 0.8,
+          "note": "Conducts 1 back to its feet every 3 rounds while above 50% HP."
+        }
+      ],
+      "telegraphs": [
+        {
+          "skill": "Crescendo",
+          "windup": 3,
+          "pattern": "all_enemies",
+          "power": 1.6,
+          "note": "Full-team detonation on a 3-turn baton windup; each living add adds +10% power. Answer: clear adds, then DR/Immunity the hit."
+        }
+      ],
+      "skills": [
+        {
+          "name": "Baton Lash",
+          "target": "single_enemy",
+          "power": 1.2
+        }
+      ],
+      "empoweredVariant": {
+        "usedInStage": "STG-CAMP-4-09",
+        "statMult": 1.35,
+        "extra": "Tempo triggers every 2nd round; Crescendo windup drops to 2."
+      }
+    },
+    {
+      "id": "ENM-UND-X01",
+      "name": "Annor-Vhol, the Gravetide Chorus",
+      "family": "UND",
+      "tier": "X",
+      "traits": [
+        "undead",
+        "colossal"
+      ],
+      "physRes": 0,
+      "magRes": 0.25,
+      "immunities": [
+        "STS-STUN",
+        "STS-POISON"
+      ],
+      "damageRoot": "magical",
+      "baseStats": {
+        "hp": 13800,
+        "atk": 112,
+        "def": 68,
+        "spd": 70
+      },
       "aiScript": "boss_annorvhol_v1",
       "phases": [
-        { "from": 1.0, "note": "P1: stacks 1 Decay on the whole team every round. Answer: Cleanse cadence (Father Ambrose viable - Common relevance, doc 05 s4.4)." },
-        { "from": 0.6, "staggerRound": true, "note": "P2: raises 2 Bonewrought adds channeling a mass-fear detonation (3-turn); boss heals 5% maxHP/round while they live. Answer: add-burst + anti-heal (Widow Isolde viable)." },
-        { "from": 0.3, "staggerRound": true, "note": "P3: 'Chorus of Ending' - 3-turn full-team detonation, repeats every 4 rounds. Answer: Tank ult DR / Immunity cycling / Berserker execute race." }
+        {
+          "from": 1.0,
+          "note": "P1: stacks 1 Decay on the whole team every round. Answer: Cleanse cadence (Father Ambrose viable - Common relevance, doc 05 s4.4)."
+        },
+        {
+          "from": 0.6,
+          "staggerRound": true,
+          "note": "P2: raises 2 Bonewrought adds channeling a mass-fear detonation (3-turn); boss heals 5% maxHP/round while they live. Answer: add-burst + anti-heal (Widow Isolde viable)."
+        },
+        {
+          "from": 0.3,
+          "staggerRound": true,
+          "note": "P3: 'Chorus of Ending' - 3-turn full-team detonation, repeats every 4 rounds. Answer: Tank ult DR / Immunity cycling / Berserker execute race."
+        }
       ],
-      "resolve": true, "enrageRound": 15,
-      "adds": [ { "id": "ENM-UND-M02", "asName": "Bonewrought", "statMult": 0.9,
-        "telegraphs": [ { "skill": "Mass Fear", "windup": 3, "pattern": "all_enemies", "power": 1.2 } ] } ],
-      "telegraphs": [ { "skill": "Chorus of Ending", "windup": 3, "pattern": "all_enemies", "power": 2.0 } ],
-      "skills": [ { "name": "Hymn of the Tide", "target": "all_enemies", "power": 0.8, "cooldown": 3,
-                    "effects": [ { "verb": "applyStatus", "status": "STS-DECAY", "stacks": 1, "duration": 2, "chance": 1.0 } ] },
-                  { "name": "Voice of the Deep", "target": "single_enemy", "power": 1.4 } ] }
+      "resolve": true,
+      "enrageRound": 15,
+      "adds": [
+        {
+          "id": "ENM-UND-M02",
+          "asName": "Bonewrought",
+          "statMult": 0.9,
+          "telegraphs": [
+            {
+              "skill": "Mass Fear",
+              "windup": 3,
+              "pattern": "all_enemies",
+              "power": 1.2
+            }
+          ]
+        }
+      ],
+      "telegraphs": [
+        {
+          "skill": "Chorus of Ending",
+          "windup": 3,
+          "pattern": "all_enemies",
+          "power": 2.0
+        }
+      ],
+      "skills": [
+        {
+          "name": "Hymn of the Tide",
+          "target": "all_enemies",
+          "power": 0.8,
+          "cooldown": 3,
+          "effects": [
+            {
+              "verb": "applyStatus",
+              "status": "STS-DECAY",
+              "stacks": 1,
+              "duration": 2,
+              "chance": 1.0
+            }
+          ]
+        },
+        {
+          "name": "Voice of the Deep",
+          "target": "single_enemy",
+          "power": 1.4
+        }
+      ]
+    }
   ]
 }
