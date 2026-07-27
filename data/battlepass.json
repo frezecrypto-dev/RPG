@@ -1,0 +1,27 @@
+{
+  "_comment": "Battle Pass 'Gatewarden's Vow' (doc 10 s4). 4-week seasons aligned to the Expedition cycle, 50 levels. Free track carries real value (tickets, relics); paid ($9.99) adds cosmetics/Gleam/tickets/ore but NO exclusive units or stats; Premium+ ($19.99) adds instant levels + a cosmetic only. XP from dailies/weeklies/events. Reward item ids reference items.json; COS-* are cosmetics.",
+  "season": {
+    "id": "BP-S01", "name": "Gatewarden's Vow — Season 1",
+    "weeks": 4, "levels": 50, "xpPerLevel": 1000,
+    "xpSources": { "dailyQuestAllClaim": 200, "weeklyQuest": 800, "expeditionSegment": 120, "eventMilestone": 300 }
+  },
+  "tiers": {
+    "free": { "priceUSD": 0 },
+    "paid": { "priceUSD": 9.99, "unlocksPaidTrack": true },
+    "premiumPlus": { "priceUSD": 19.99, "unlocksPaidTrack": true, "grantNow": { "instantLevels": 10 }, "exclusive": "COS-SKIN-BSK-L02-BANNERLORD (cosmetic only)" }
+  },
+  "perLevelPattern": {
+    "_comment": "what EVERY level grants on each track unless a milestone overrides",
+    "free": [ { "item": "ITM-GOLD", "qty": 15000 } ],
+    "paid": [ { "item": "ITM-CRYSTAL", "qty": 40 }, { "item": "ITM-GEAR-ORE-T3", "qty": 2 } ]
+  },
+  "milestones": [
+    { "level": 5,  "free": [ { "item": "TKT-STD", "qty": 2 } ],        "paid": [ { "item": "ITM-STAR-CRATE", "qty": 4 } ] },
+    { "level": 10, "free": [ { "item": "ITM-ASC-RELIC-T2", "qty": 2 } ], "paid": [ { "item": "TKT-FEAT", "qty": 2 }, { "item": "ITM-GLEAM", "qty": 400 } ] },
+    { "level": 20, "free": [ { "item": "ITM-CRYSTAL", "qty": 200 } ],   "paid": [ { "cosmeticId": "COS-CUTIN-FRAME-VOW" } ] },
+    { "level": 30, "free": [ { "item": "TKT-FEAT", "qty": 1 } ],        "paid": [ { "item": "ITM-CRYSTAL", "qty": 500 } ] },
+    { "level": 40, "free": [ { "item": "ITM-ASC-RELIC-T3", "qty": 2 } ], "paid": [ { "item": "ITM-EPIC-SELECTOR-FRAG", "qty": 2 } ] },
+    { "level": 50, "free": [ { "item": "ITM-CRYSTAL", "qty": 400 } ],   "paid": [ { "cosmeticId": "COS-SKIN-HLR-L01-DAWNVOW" }, { "item": "ITM-CRYSTAL", "qty": 600 } ] }
+  ],
+  "policy": { "noExclusiveUnitsOrStats": true, "cosmeticsAndAccelerationOnly": true }
+}

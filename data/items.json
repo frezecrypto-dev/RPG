@@ -48,7 +48,9 @@
     { "id": "ITM-MANUAL-MAG", "kind": "material", "name": "Mage Skill Manual" },
     { "id": "ITM-MANUAL-NEC", "kind": "material", "name": "Necromancer Skill Manual" },
     { "id": "ITM-MANUAL-HLR", "kind": "material", "name": "Healer Skill Manual" },
-    { "id": "ITM-MANUAL-BSK", "kind": "material", "name": "Berserker Skill Manual" }
+    { "id": "ITM-MANUAL-BSK", "kind": "material", "name": "Berserker Skill Manual" },
+
+    { "id": "ITM-EPIC-SELECTOR-FRAG", "kind": "material", "name": "Epic Selector Fragment", "note": "guild-shop / battle-pass slow drip; combine to pick an Epic" }
   ],
   "overflowConversion": { "toGold": true, "note": "maxed-material overflow auto-converts to Gold - nothing wasted (doc 07 s1.3)" }
 }

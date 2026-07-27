@@ -1,0 +1,44 @@
+{
+  "_comment": "Event cadence config (doc 10 s3). 2-week cycles alternating a point-farm event (over existing stages, with an event shop) and a mini-story event (5 bespoke stages reusing an enemy family + 1 new elite). Faction-bonus weeks rotate roster relevance (doc 04 s2). Event-currency ids are scoped to their event and cleared at event end; reward items reference items.json.",
+  "factionWeekRotation": {
+    "cycleWeeks": 5,
+    "order": ["Emberguard", "Hollowed", "Choir", "Freeblades", "Gravebound"],
+    "bonus": { "statPct": 0.15, "appliesTo": "featured_faction_units", "scope": "all_pve" }
+  },
+  "events": [
+    {
+      "id": "EVT-POINTFARM-2026-W1", "type": "point_farm", "durationDays": 14,
+      "pointCurrency": "EVC-EMBER-CINDERS",
+      "earn": "points from clearing any campaign/raid stage during the event, ~1.5x on the day's Surging raid",
+      "shop": [
+        { "item": "TKT-FEAT", "qty": 2, "cost": { "EVC-EMBER-CINDERS": 1200 }, "limit": 2 },
+        { "item": "ITM-ASC-RELIC-T3", "qty": 3, "cost": { "EVC-EMBER-CINDERS": 800 }, "limit": 3 },
+        { "item": "ITM-STAR-CRATE", "qty": 5, "cost": { "EVC-EMBER-CINDERS": 500 }, "limit": 6 },
+        { "item": "ITM-GLEAM", "qty": 300, "cost": { "EVC-EMBER-CINDERS": 400 }, "limit": 2 },
+        { "item": "ITM-GOLD", "qty": 100000, "cost": { "EVC-EMBER-CINDERS": 200 }, "limit": 10 }
+      ],
+      "milestones": [
+        { "points": 500, "reward": [ { "item": "ITM-CRYSTAL", "qty": 150 } ] },
+        { "points": 2000, "reward": [ { "item": "TKT-FEAT", "qty": 1 } ] },
+        { "points": 5000, "reward": [ { "item": "ITM-CRYSTAL", "qty": 400 }, { "cosmeticId": "COS-CUTIN-FRAME-EMBER" } ] }
+      ]
+    },
+    {
+      "id": "EVT-STORY-2026-W3", "type": "mini_story", "durationDays": 14,
+      "reusesFamily": "SLM", "newElite": "ENM-SLM-E03-EVENT",
+      "stages": ["STG-EVT-W3-1", "STG-EVT-W3-2", "STG-EVT-W3-3", "STG-EVT-W3-4", "STG-EVT-W3-5"],
+      "cutscenes": ["CS-EVT-W3-INTRO", "CS-EVT-W3-FINALE"],
+      "firstClearTotal": [ { "item": "ITM-CRYSTAL", "qty": 300 }, { "item": "TKT-STD", "qty": 5 } ],
+      "note": "cheap content: reuses the Ch1 slime family + one new elite; art from the doc 11 pipeline"
+    }
+  ],
+  "loginTrack": {
+    "id": "LOGIN-28D", "resetPolicy": "pauses_on_miss_never_resets",
+    "notableDays": {
+      "7": [ { "item": "TKT-FEAT", "qty": 1 } ],
+      "14": [ { "item": "ITM-CRYSTAL", "qty": 300 } ],
+      "21": [ { "item": "TKT-FEAT", "qty": 1 } ],
+      "28": [ { "item": "ITM-CRYSTAL", "qty": 500 } ]
+    }
+  }
+}

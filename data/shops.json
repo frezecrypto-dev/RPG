@@ -1,0 +1,66 @@
+{
+  "_comment": "Shop config (doc 16 s2 tabs, doc 10 s4 policy, doc 07 s3.2 guild shop). Costs/rewards reference the items.json registry; cosmetic ids (COS-*) are catalogued separately and validated only for prefix. Hard policy: nothing in a power tab is bought with real money, and cosmetics use Gleam only - clean separation (doc 10 s4).",
+  "shops": [
+    {
+      "id": "SHOP-VALUE", "tab": "Value", "refresh": "none",
+      "entries": [
+        { "sku": "SKU-MONTHLY-VOW", "name": "Monthly Vow Card", "priceUSD": 4.99,
+          "grantNow": [ { "item": "ITM-CRYSTAL", "qty": 300 } ],
+          "grantDaily": [ { "item": "ITM-CRYSTAL", "qty": 90 } ], "days": 30,
+          "note": "F2P-adjacent best-value anchor (doc 10 s4)" },
+        { "sku": "SKU-FIRSTBUY-2X", "name": "First Purchase Double", "modifier": "doubles first crystal pack" }
+      ]
+    },
+    {
+      "id": "SHOP-CRYSTALS", "tab": "Crystals", "refresh": "none",
+      "entries": [
+        { "sku": "SKU-CRYSTAL-80",   "priceUSD": 0.99,  "grantNow": [ { "item": "ITM-CRYSTAL", "qty": 80 } ] },
+        { "sku": "SKU-CRYSTAL-500",  "priceUSD": 4.99,  "grantNow": [ { "item": "ITM-CRYSTAL", "qty": 500 } ] },
+        { "sku": "SKU-CRYSTAL-1100", "priceUSD": 9.99,  "grantNow": [ { "item": "ITM-CRYSTAL", "qty": 1100 } ] },
+        { "sku": "SKU-CRYSTAL-2400", "priceUSD": 19.99, "grantNow": [ { "item": "ITM-CRYSTAL", "qty": 2400 } ] },
+        { "sku": "SKU-CRYSTAL-6500", "priceUSD": 49.99, "grantNow": [ { "item": "ITM-CRYSTAL", "qty": 6500 } ] }
+      ]
+    },
+    {
+      "id": "SHOP-GENERAL", "tab": "Crystals", "refresh": "daily",
+      "entries": [
+        { "item": "ITM-GOLD", "qty": 60000, "cost": { "ITM-CRYSTAL": 60 }, "limit": 2 },
+        { "item": "ITM-AETHER", "qty": 120, "cost": { "ITM-CRYSTAL": 50 }, "limit": 3, "note": "the 3/day stamina-refresh cap (doc 09 s6)" },
+        { "item": "ITM-XP-TOME-M", "qty": 5, "cost": { "ITM-GOLD": 20000 }, "limit": 5 }
+      ]
+    },
+    {
+      "id": "SHOP-COSMETIC", "tab": "Cosmetics", "refresh": "weekly",
+      "currencyNote": "Gleam only - never power (doc 10 s4)",
+      "entries": [
+        { "cosmeticId": "COS-SKIN-ASN-L01-REDMASK", "name": "The Hollow Smile — Crimson Court", "cost": { "ITM-GLEAM": 1200 } },
+        { "cosmeticId": "COS-CUTIN-FRAME-GOLD", "name": "Gilded Ultimate Frame", "cost": { "ITM-GLEAM": 400 } },
+        { "cosmeticId": "COS-HUB-THEME-DROWNED", "name": "Home Theme: The Drowned Quarter", "cost": { "ITM-GLEAM": 600 } }
+      ]
+    },
+    {
+      "id": "SHOP-GUILD", "tab": "Guild", "refresh": "weekly",
+      "currencyNote": "Guild Marks; discount channel, not a power gate (doc 07 s3.2)",
+      "entries": [
+        { "item": "ITM-STAR-CRATE", "qty": 3, "cost": { "ITM-GUILD-MARK": 200 }, "limit": 4 },
+        { "item": "ITM-ASC-RELIC-T2", "qty": 2, "cost": { "ITM-GUILD-MARK": 300 }, "limit": 3 },
+        { "item": "ITM-GEAR-ORE-T3", "qty": 5, "cost": { "ITM-GUILD-MARK": 150 }, "limit": 5 },
+        { "item": "ITM-EPIC-SELECTOR-FRAG", "qty": 1, "cost": { "ITM-GUILD-MARK": 500 }, "limit": 1,
+          "note": "slow drip: ~1 selector per 10 weeks of full participation" }
+      ]
+    },
+    {
+      "id": "SHOP-GLEAM-EXCHANGE", "tab": "Gleam", "refresh": "monthly",
+      "entries": [
+        { "cosmeticId": "COS-EMBLEM-PACK-1", "name": "Guild Emblem Pack I", "cost": { "ITM-GLEAM": 300 } },
+        { "item": "ITM-GLEAM", "qty": 0, "archiveNote": "rotating cosmetic archive is the terminal Gleam sink (doc 10 s5)" }
+      ]
+    }
+  ],
+  "policy": {
+    "noRandomizedIAP": true,
+    "spendConfirmEveryPurchase": true,
+    "dailyPremiumSpendSoftCapWarning": true,
+    "neverSoldForMoney": ["gear", "substats", "combat_revive", "aether_beyond_3x_daily", "exclusive_forever_units"]
+  }
+}

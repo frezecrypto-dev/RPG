@@ -210,6 +210,59 @@ def check_rewards_and_banners(unit_ids: set[str]) -> None:
                 err(f"tutorialSummon: unknown unit {uid}")
 
 
+def check_liveops(valid_items: set[str]) -> None:
+    """Every reward/cost item ref in shops/events/battlepass must resolve.
+    Cosmetic ids (COS-*) and event-scoped currencies (EVC-*) are free-form
+    (catalogued elsewhere); everything else must be a real item."""
+    def ok(item_id: str) -> bool:
+        return (item_id in valid_items or item_id.startswith("COS-")
+                or item_id.startswith("EVC-"))
+
+    def check_reward_list(rewards: list, where: str) -> None:
+        for r in rewards:
+            iid = r.get("item") or r.get("cosmeticId")
+            if iid and not ok(iid):
+                err(f"{where}: unknown reward {iid}")
+
+    def check_cost(cost: dict, where: str) -> None:
+        for cid in cost:
+            if not ok(cid):
+                err(f"{where}: unknown cost currency {cid}")
+
+    shops = DATA / "shops.json"
+    if shops.exists():
+        for shop in json.loads(shops.read_text())["shops"]:
+            for e in shop.get("entries", []):
+                for key in ("grantNow", "grantDaily"):
+                    check_reward_list(e.get(key, []), f"{shop['id']}")
+                if "item" in e and not ok(e["item"]):
+                    err(f"{shop['id']}: unknown item {e['item']}")
+                if "cost" in e:
+                    check_cost(e["cost"], shop["id"])
+    events = DATA / "events.json"
+    if events.exists():
+        ev = json.loads(events.read_text())
+        for e in ev["events"]:
+            for entry in e.get("shop", []):
+                if "item" in entry and not ok(entry["item"]):
+                    err(f"{e['id']} shop: unknown item {entry['item']}")
+                check_cost(entry.get("cost", {}), f"{e['id']} shop")
+            for m in e.get("milestones", []):
+                check_reward_list(m.get("reward", []), f"{e['id']} milestone")
+            check_reward_list(e.get("firstClearTotal", []), e["id"])
+        for day, rl in ev.get("loginTrack", {}).get("notableDays", {}).items():
+            check_reward_list(rl, f"loginTrack day {day}")
+    bp = DATA / "battlepass.json"
+    if bp.exists():
+        b = json.loads(bp.read_text())
+        for track in b.get("perLevelPattern", {}).values():
+            if isinstance(track, list):
+                check_reward_list(track, "battlepass pattern")
+        for m in b.get("milestones", []):
+            check_reward_list(m.get("free", []), f"BP L{m['level']} free")
+            check_reward_list(m.get("paid", []), f"BP L{m['level']} paid")
+
+
 def main() -> int:
     tpl = json.loads((CONTENT / "class_stat_templates.json").read_text())
     rows = load_units()
@@ -218,6 +271,8 @@ def main() -> int:
     check_skills(unit_ids)
     check_enemies_and_stages()
     check_rewards_and_banners(unit_ids)
+    valid_items, _ = load_reward_ids()
+    check_liveops(valid_items)
 
     if errors:
         print(f"VALIDATION FAILED ({len(errors)} errors):")
