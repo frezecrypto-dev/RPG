@@ -1,560 +1,515 @@
 <style>
   :root{
-    --bg:#0a0910; --bg2:#13101f; --panel:rgba(26,22,42,.72); --panel-solid:#1a1629;
+    --bg:#0a0910; --panel:rgba(26,22,42,.72); --panel2:#171326;
     --line:rgba(140,120,200,.16); --ink:#ece8f6; --muted:#948cae; --faint:#5f5878;
     --umbra:#7b5cff; --umbra-dim:#4a3a8f;
-    --tnk:#5b8fd6; --bsk:#ff6a3d; --asn:#e8394f; --mag:#a970ff; --hlr:#ffcf6b;
+    --tnk:#5b8fd6; --bsk:#ff6a3d; --asn:#e8394f; --mag:#a970ff; --nec:#6fe3a0; --hlr:#ffcf6b; --rng:#ffb14e;
     --slime:#3fd6c4;
     --good:#57d98a; --warn:#ffc24b; --crit:#ff5470; --danger:#ff3b5c;
+    --rC:#9aa0b5; --rR:#5b8fd6; --rE:#a970ff; --rL:#ffcf6b;
     --font-title:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
     --font-hud:ui-sans-serif,system-ui,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;
   }
   *{box-sizing:border-box}
   html,body{margin:0;height:100%}
-  body{
-    background:
-      radial-gradient(120% 90% at 50% -10%, #1c1633 0%, transparent 55%),
-      radial-gradient(80% 60% at 50% 120%, #0e1a1c 0%, transparent 60%),
-      var(--bg);
-    color:var(--ink); font-family:var(--font-hud);
-    -webkit-font-smoothing:antialiased; overflow:hidden;
-    font-variant-numeric:tabular-nums;
-  }
-  #stage{position:relative;height:100dvh;max-width:560px;margin:0 auto;display:flex;flex-direction:column;
-    border-left:1px solid var(--line);border-right:1px solid var(--line)}
+  body{background:radial-gradient(120% 90% at 50% -10%,#1c1633 0%,transparent 55%),
+    radial-gradient(80% 60% at 50% 120%,#0e1a1c 0%,transparent 60%),var(--bg);
+    color:var(--ink);font-family:var(--font-hud);-webkit-font-smoothing:antialiased;overflow:hidden;
+    font-variant-numeric:tabular-nums}
+  #app{position:relative;height:100dvh;max-width:560px;margin:0 auto;display:flex;flex-direction:column;
+    border-left:1px solid var(--line);border-right:1px solid var(--line);overflow:hidden}
+  .screen{position:absolute;inset:0;display:none;flex-direction:column}
+  .screen.on{display:flex}
   .lbl{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
   .num{font-variant-numeric:tabular-nums}
+  button{font:inherit;cursor:pointer}
+  .cta{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:#0a0910;background:var(--umbra);
+    border:none;border-radius:9px;padding:13px 26px;font-weight:700;transition:transform .12s,box-shadow .2s,opacity .2s;
+    box-shadow:0 0 30px rgba(123,92,255,.4)}
+  .cta:hover{transform:translateY(-2px);box-shadow:0 6px 34px rgba(123,92,255,.55)}
+  .cta:disabled{opacity:.35;box-shadow:none;transform:none;cursor:not-allowed}
+  .cta:focus-visible{outline:2px solid #fff;outline-offset:3px}
+  .ghost{background:rgba(123,92,255,.12);border:1px solid var(--line);border-radius:8px;padding:9px 14px;
+    color:var(--ink);font-size:11px;letter-spacing:.12em;text-transform:uppercase;transition:background .15s,border-color .15s}
+  .ghost:hover{background:rgba(123,92,255,.24);border-color:var(--umbra)}
 
-  /* top bar */
+  /* ---------- header (shared) ---------- */
+  .scrhead{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,rgba(20,16,34,.9),transparent)}
+  .scrhead .eyebrow{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--umbra)}
+  .scrhead h1{font-family:var(--font-title);font-size:19px;margin:2px 0 0;font-weight:500}
+  .scrhead .back{margin-left:auto}
+
+  /* ---------- title screen ---------- */
+  #screen-title{align-items:center;justify-content:center;text-align:center;padding:32px;gap:18px;
+    background:radial-gradient(circle at 50% 38%,rgba(24,18,44,.9),rgba(6,5,12,.98))}
+  #screen-title .mark{font-size:11px;letter-spacing:.4em;text-transform:uppercase;color:var(--umbra)}
+  #screen-title h1{font-family:var(--font-title);font-size:44px;line-height:1;margin:0;letter-spacing:.02em;text-wrap:balance}
+  #screen-title .tag{color:var(--muted);font-size:13px;line-height:1.7;max-width:32ch}
+  #screen-title .hint{font-size:11px;color:var(--faint);letter-spacing:.04em;max-width:34ch;line-height:1.5}
+
+  /* ---------- map ---------- */
+  #maplist{flex:1;overflow-y:auto;padding:22px 20px 30px;position:relative}
+  .track{position:absolute;left:44px;top:36px;bottom:36px;width:2px;background:linear-gradient(180deg,var(--umbra-dim),transparent)}
+  .node{position:relative;display:flex;gap:16px;align-items:center;padding:11px 0;z-index:1}
+  .node .dot{width:26px;height:26px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;
+    font-size:12px;font-weight:700;background:var(--panel2);border:2px solid var(--faint);color:var(--muted)}
+  .node.done .dot{background:var(--good);border-color:var(--good);color:#08120b}
+  .node.current .dot{background:var(--umbra);border-color:var(--umbra);color:#0a0910;box-shadow:0 0 18px var(--umbra)}
+  .node.boss .dot{border-radius:7px}
+  .node .card{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;
+    display:flex;align-items:center;gap:12px;transition:border-color .2s,transform .12s,box-shadow .2s}
+  .node.playable .card{cursor:pointer}
+  .node.playable .card:hover{border-color:var(--umbra);transform:translateX(3px);box-shadow:0 0 22px rgba(123,92,255,.18)}
+  .node.locked{opacity:.4}
+  .node .stg{font-size:11px;letter-spacing:.14em;color:var(--muted)}
+  .node .snm{font-family:var(--font-title);font-size:16px;line-height:1.15}
+  .node .teach{font-size:11px;color:var(--faint);margin-top:2px}
+  .node .badge{margin-left:auto;font-size:9px;letter-spacing:.16em;text-transform:uppercase;padding:3px 8px;border-radius:6px}
+  .node .badge.boss{color:var(--slime);border:1px solid rgba(63,214,196,.5)}
+  .node .badge.clr{color:var(--good);border:1px solid rgba(87,217,138,.5)}
+  .node .badge.go{color:#0a0910;background:var(--umbra)}
+
+  /* ---------- team select ---------- */
+  #partyslots{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;padding:14px 16px 6px}
+  .slot{aspect-ratio:3/4;border-radius:12px;border:1.5px dashed var(--line);display:flex;align-items:center;justify-content:center;
+    position:relative;background:rgba(20,16,34,.4);overflow:hidden}
+  .slot.filled{border-style:solid;--hue:var(--umbra);border-color:color-mix(in srgb,var(--hue) 55%,var(--line));cursor:pointer}
+  .slot .g{font-size:26px}
+  .slot .sn{position:absolute;bottom:4px;left:0;right:0;text-align:center;font-size:8px;color:var(--ink);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 3px}
+  .slot .empty{font-size:9px;color:var(--faint);letter-spacing:.14em}
+  .slot .x{position:absolute;top:3px;right:4px;font-size:11px;color:var(--muted)}
+  #teamcount{padding:2px 16px 8px;font-size:11px;color:var(--muted)}
+  #teamcount b{color:var(--umbra)}
+  #roster{flex:1;overflow-y:auto;padding:6px 14px 90px;display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+  .rcard{position:relative;border-radius:11px;background:var(--panel);border:1px solid var(--line);padding:7px 5px 8px;
+    text-align:center;cursor:pointer;transition:transform .12s,border-color .2s,box-shadow .2s;--hue:var(--umbra)}
+  .rcard:hover{transform:translateY(-3px)}
+  .rcard.picked{border-color:var(--hue);box-shadow:0 0 0 1px var(--hue),0 0 18px color-mix(in srgb,var(--hue) 40%,transparent)}
+  .rcard .g{height:46px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;
+    background:radial-gradient(70% 80% at 50% 30%,color-mix(in srgb,var(--hue) 42%,transparent),transparent),linear-gradient(180deg,#171326,#0e0b18);
+    border:1px solid color-mix(in srgb,var(--hue) 40%,var(--line))}
+  .rcard .rn{font-size:9px;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rcard .rl{font-size:8px;color:var(--muted);letter-spacing:.08em;margin-top:1px}
+  .rcard .rar{position:absolute;top:5px;left:6px;width:7px;height:7px;border-radius:2px}
+  .rcard .chk{position:absolute;top:4px;right:5px;font-size:10px;color:var(--hue);opacity:0;transition:opacity .15s}
+  .rcard.picked .chk{opacity:1}
+  #teambar{position:absolute;left:0;right:0;bottom:0;display:flex;gap:10px;align-items:center;justify-content:space-between;
+    padding:12px 16px;border-top:1px solid var(--line);background:linear-gradient(0deg,rgba(14,11,24,.98),rgba(14,11,24,.8))}
+  #teambar .hint2{font-size:10px;color:var(--faint);letter-spacing:.04em;flex:1}
+
+  /* ---------- battle ---------- */
   #top{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);
     background:linear-gradient(180deg,rgba(20,16,34,.9),transparent)}
   #top .world{flex:1;min-width:0}
-  #top .chapter{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--umbra);opacity:.85}
-  #top .stagename{font-family:var(--font-title);font-size:15px;line-height:1.1;color:var(--ink);
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  #round{text-align:right}
-  #round .r{font-family:var(--font-title);font-size:20px;line-height:1}
+  #top .chapter{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--umbra);opacity:.85}
+  #top .stagename{font-family:var(--font-title);font-size:15px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #round{text-align:right}#round .r{font-family:var(--font-title);font-size:20px;line-height:1}
   .btnrow{display:flex;gap:6px}
-  .ui-btn{font:inherit;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink);
-    background:rgba(123,92,255,.12);border:1px solid var(--line);border-radius:7px;padding:7px 10px;cursor:pointer;
-    transition:background .15s,border-color .15s}
+  .ui-btn{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink);background:rgba(123,92,255,.12);
+    border:1px solid var(--line);border-radius:7px;padding:7px 9px;transition:background .15s,border-color .15s}
   .ui-btn:hover{background:rgba(123,92,255,.24);border-color:var(--umbra)}
-  .ui-btn:focus-visible{outline:2px solid var(--umbra);outline-offset:2px}
   .ui-btn.active{background:var(--umbra);border-color:var(--umbra);color:#0a0910}
-
-  /* enemy zone */
-  #enemies{flex:1;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;
-    gap:14px;padding:14px 16px 4px}
-  #boss{width:100%;max-width:340px;position:relative}
-  #boss .portrait{height:150px;border-radius:16px;position:relative;overflow:hidden;
+  #enemies{flex:1;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:14px 16px 4px}
+  #enemyRow{display:flex;align-items:flex-end;justify-content:center;gap:12px;flex-wrap:wrap}
+  .ecard{position:relative;text-align:center}
+  .ecard .p{border-radius:14px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;
     border:1px solid rgba(63,214,196,.4);
-    background:
-      radial-gradient(70% 90% at 50% 30%, rgba(63,214,196,.32), transparent 70%),
-      radial-gradient(40% 50% at 50% 55%, rgba(63,214,196,.5), transparent 70%),
-      linear-gradient(180deg,#0d201f,#081413);
-    box-shadow:0 0 44px rgba(63,214,196,.14),inset 0 0 60px rgba(0,0,0,.5)}
-  #boss .glyph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-    font-size:76px;filter:drop-shadow(0 6px 18px rgba(0,0,0,.6));opacity:.92}
-  #boss .core{position:absolute;left:50%;top:54%;width:26px;height:26px;transform:translate(-50%,-50%);
-    border-radius:50%;background:radial-gradient(circle,#eafffb,#3fd6c4 55%,transparent);
-    box-shadow:0 0 24px 6px rgba(63,214,196,.7);animation:pulse 1.8s ease-in-out infinite}
+    background:radial-gradient(70% 85% at 50% 32%,rgba(63,214,196,.3),transparent 70%),linear-gradient(180deg,#0d201f,#081413);
+    box-shadow:0 0 26px rgba(63,214,196,.12),inset 0 0 44px rgba(0,0,0,.5)}
+  .ecard.big .p{width:230px;height:150px;font-size:74px}
+  .ecard.mid .p{width:150px;height:118px;font-size:52px}
+  .ecard.small .p{width:70px;height:64px;font-size:32px}
+  .ecard .core{position:absolute;left:50%;top:54%;width:22px;height:22px;transform:translate(-50%,-50%);border-radius:50%;
+    background:radial-gradient(circle,#eafffb,#3fd6c4 55%,transparent);box-shadow:0 0 22px 5px rgba(63,214,196,.7);
+    animation:pulse 1.8s ease-in-out infinite}
   @keyframes pulse{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.85}50%{transform:translate(-50%,-50%) scale(1.25);opacity:1}}
-  #boss .bossmeta{display:flex;align-items:baseline;justify-content:space-between;margin:8px 2px 5px}
-  #boss .bossname{font-family:var(--font-title);font-size:17px}
-  #boss .phase{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--slime)}
-
-  .hpwrap{position:relative;height:12px;border-radius:6px;background:#241f33;overflow:hidden;border:1px solid var(--line)}
+  .ecard .en{font-family:var(--font-title);font-size:13px;margin:6px 0 4px}
+  .ecard.small .en{font-size:0;margin:4px 0 3px}
+  .hpwrap{position:relative;height:9px;border-radius:5px;background:#241f33;overflow:hidden;border:1px solid var(--line)}
+  .ecard.big .hpwrap{height:14px}.ecard.mid .hpwrap{height:11px}
   .hpfill{position:absolute;inset:0;transform-origin:left;transition:transform .45s cubic-bezier(.2,.8,.2,1)}
-  .hpwrap.boss{height:15px}
-  .hptext{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;
-    letter-spacing:.04em;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.9)}
-
-  .adds{display:flex;gap:8px;min-height:0;flex-wrap:wrap;justify-content:center}
-  .add{width:60px;text-align:center}
-  .add .p{height:46px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:26px;
-    border:1px solid rgba(63,214,196,.35);
-    background:radial-gradient(60% 70% at 50% 40%,rgba(63,214,196,.3),transparent),linear-gradient(180deg,#0d201f,#081413)}
-  .add .hpwrap{height:5px;margin-top:4px}
-
-  /* telegraph banner */
-  #telegraph{position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:6;
-    display:none;align-items:center;gap:9px;padding:8px 14px;border-radius:10px;
-    background:linear-gradient(180deg,rgba(255,59,92,.22),rgba(255,59,92,.08));
+  .hptext{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:8.5px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.9)}
+  #telegraph{position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:6;display:none;align-items:center;gap:9px;
+    padding:8px 14px;border-radius:10px;background:linear-gradient(180deg,rgba(255,59,92,.22),rgba(255,59,92,.08));
     border:1px solid rgba(255,59,92,.6);box-shadow:0 0 30px rgba(255,59,92,.3);white-space:nowrap}
   #telegraph.show{display:flex;animation:tgin .3s ease}
   @keyframes tgin{from{opacity:0;transform:translateX(-50%) translateY(-8px)}to{opacity:1}}
-  #telegraph .tgname{font-size:12px;letter-spacing:.06em}
-  #telegraph .pips{display:flex;gap:4px}
-  .pip{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.18);border:1px solid rgba(255,59,92,.7)}
+  #telegraph .tgname{font-size:12px}.pip{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.18);border:1px solid rgba(255,59,92,.7)}
   .pip.lit{background:var(--danger);box-shadow:0 0 8px var(--danger)}
-
-  /* surge */
+  #wavepip{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+  #log{height:20px;overflow:hidden;text-align:center;font-size:11px;color:var(--muted);padding:0 16px}#log b{color:var(--ink)}
   #surgebar{padding:6px 16px 10px}
   #surge{position:relative;height:16px;border-radius:9px;background:#221c34;border:1px solid var(--line);overflow:hidden}
   #surgefill{position:absolute;inset:0;transform-origin:left;transform:scaleX(0);
-    background:linear-gradient(90deg,#4a3a8f,#7b5cff 70%,#b9a5ff);transition:transform .4s ease;
-    box-shadow:0 0 20px rgba(123,92,255,.5)}
-  #surge .ticks{position:absolute;inset:0;display:flex;justify-content:space-between;padding:0 33%}
-  #surge .ticks span{width:1px;background:rgba(255,255,255,.14)}
-  #surgelabel{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
-  #surgeval{font-size:12px;letter-spacing:.02em}
-  #surgeval b{color:var(--umbra)}
-
-  /* party */
-  #party{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;padding:8px 12px 16px;
-    border-top:1px solid var(--line);background:linear-gradient(0deg,rgba(18,14,30,.95),transparent)}
-  .hero{position:relative;border-radius:12px;padding:7px 5px 6px;cursor:default;
-    background:var(--panel);border:1px solid var(--line);transition:transform .12s,box-shadow .2s,border-color .2s;
-    --hue:var(--umbra)}
-  .hero .p{height:52px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:27px;position:relative;
-    background:radial-gradient(70% 80% at 50% 30%,color-mix(in srgb,var(--hue) 40%,transparent),transparent),
-      linear-gradient(180deg,#171326,#0e0b18);
+    background:linear-gradient(90deg,#4a3a8f,#7b5cff 70%,#b9a5ff);transition:transform .4s ease;box-shadow:0 0 20px rgba(123,92,255,.5)}
+  #surgelabel{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}#surgeval{font-size:12px}#surgeval b{color:var(--umbra)}
+  #party{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;padding:8px 12px 16px;border-top:1px solid var(--line);
+    background:linear-gradient(0deg,rgba(18,14,30,.95),transparent)}
+  .hero{position:relative;border-radius:12px;padding:7px 5px 6px;background:var(--panel);border:1px solid var(--line);
+    transition:transform .12s,box-shadow .2s,border-color .2s;--hue:var(--umbra)}
+  .hero .p{height:50px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:26px;position:relative;
+    background:radial-gradient(70% 80% at 50% 30%,color-mix(in srgb,var(--hue) 40%,transparent),transparent),linear-gradient(180deg,#171326,#0e0b18);
     border:1px solid color-mix(in srgb,var(--hue) 40%,var(--line))}
-  .hero .nm{font-size:9.5px;text-align:center;margin:5px 0 4px;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
+  .hero .nm{font-size:9px;text-align:center;margin:5px 0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .hero .hpwrap{height:6px}
-  .hero .cls{position:absolute;top:5px;left:6px;font-size:8px;letter-spacing:.14em;text-transform:uppercase;
-    color:var(--hue);text-shadow:0 0 6px color-mix(in srgb,var(--hue) 60%,transparent)}
-  .hero.ready{cursor:pointer;border-color:var(--hue);
-    box-shadow:0 0 0 1px var(--hue),0 0 22px color-mix(in srgb,var(--hue) 45%,transparent)}
+  .hero .cls{position:absolute;top:5px;left:6px;font-size:7.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--hue)}
+  .hero .cd{position:absolute;top:5px;right:6px;font-size:9px;color:var(--faint)}
+  .hero.ready{cursor:pointer;border-color:var(--hue);box-shadow:0 0 0 1px var(--hue),0 0 22px color-mix(in srgb,var(--hue) 45%,transparent)}
   .hero.ready .p{animation:readyglow 1.3s ease-in-out infinite}
   @keyframes readyglow{0%,100%{filter:brightness(1)}50%{filter:brightness(1.35)}}
-  .hero.ready::after{content:"ULT";position:absolute;bottom:22px;left:50%;transform:translateX(-50%);
-    font-size:8px;letter-spacing:.16em;color:#0a0910;background:var(--hue);padding:1px 6px;border-radius:4px;font-weight:700}
-  .hero.ready:hover{transform:translateY(-4px)}
-  .hero.dead{opacity:.32;filter:grayscale(1)}
+  .hero.ready::after{content:"ULT";position:absolute;bottom:21px;left:50%;transform:translateX(-50%);font-size:8px;letter-spacing:.14em;
+    color:#0a0910;background:var(--hue);padding:1px 6px;border-radius:4px;font-weight:700}
+  .hero.ready:hover{transform:translateY(-4px)}.hero.dead{opacity:.32;filter:grayscale(1)}
   .hero.acting .p{transform:scale(1.08);transition:transform .15s}
-  .hero .cd{position:absolute;top:5px;right:6px;font-size:9px;color:var(--faint)}
-
-  /* floating numbers + log */
   #fx{position:absolute;inset:0;pointer-events:none;z-index:8;overflow:hidden}
-  .dmg{position:absolute;font-family:var(--font-title);font-weight:700;font-size:22px;
-    animation:floatup 1s ease-out forwards;text-shadow:0 2px 6px rgba(0,0,0,.8)}
-  .dmg.crit{font-size:30px}
-  .dmg.heal{color:var(--good)}
-  @keyframes floatup{0%{opacity:0;transform:translateY(6px) scale(.7)}15%{opacity:1;transform:translateY(-4px) scale(1.1)}
-    100%{opacity:0;transform:translateY(-40px) scale(1)}}
-  #log{height:20px;overflow:hidden;text-align:center;font-size:11px;color:var(--muted);padding:0 16px}
-  #log b{color:var(--ink)}
-
-  .hit{animation:shake .3s}
-  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
-
-  /* cut-in */
+  .dmg{position:absolute;font-family:var(--font-title);font-weight:700;font-size:20px;animation:floatup 1s ease-out forwards;text-shadow:0 2px 6px rgba(0,0,0,.8)}
+  .dmg.crit{font-size:28px}
+  @keyframes floatup{0%{opacity:0;transform:translateY(6px) scale(.7)}15%{opacity:1;transform:translateY(-4px) scale(1.1)}100%{opacity:0;transform:translateY(-40px) scale(1)}}
+  .hit{animation:shake .3s}@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
   #cutin{position:absolute;inset:0;z-index:12;display:none;align-items:center;justify-content:center;pointer-events:none}
   #cutin.show{display:flex}
-  #cutin .flash{position:absolute;inset:0;background:var(--hue,#7b5cff);opacity:0;animation:flash .6s ease}
-  @keyframes flash{0%{opacity:0}20%{opacity:.5}100%{opacity:0}}
   #cutin .band{width:100%;padding:22px 0;text-align:center;
     background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--hue,#7b5cff) 30%,#0a0910) 20%,color-mix(in srgb,var(--hue,#7b5cff) 30%,#0a0910) 80%,transparent);
-    border-top:1px solid var(--hue,#7b5cff);border-bottom:1px solid var(--hue,#7b5cff);
-    animation:bandin .55s cubic-bezier(.2,.9,.2,1)}
+    border-top:1px solid var(--hue,#7b5cff);border-bottom:1px solid var(--hue,#7b5cff);animation:bandin .55s cubic-bezier(.2,.9,.2,1)}
   @keyframes bandin{from{transform:translateX(-100%);opacity:0}to{transform:translateX(0);opacity:1}}
-  #cutin .who{font-family:var(--font-title);font-size:30px;letter-spacing:.02em}
-  #cutin .skill{font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--hue,#7b5cff);margin-top:4px}
+  #cutin .who{font-family:var(--font-title);font-size:28px}#cutin .skill{font-size:12px;letter-spacing:.26em;text-transform:uppercase;color:var(--hue,#7b5cff);margin-top:4px}
 
-  /* overlays */
-  #intro,#result{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;
-    text-align:center;padding:32px;gap:16px;background:radial-gradient(circle at 50% 40%,rgba(20,16,36,.86),rgba(6,5,12,.97))}
-  #result{display:none}
-  .eyebrow{font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--umbra)}
-  .bigtitle{font-family:var(--font-title);font-size:34px;line-height:1.05;text-wrap:balance;max-width:15ch}
-  .sub{color:var(--muted);font-size:13px;line-height:1.6;max-width:34ch}
-  .cta{font:inherit;font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:#0a0910;background:var(--umbra);
-    border:none;border-radius:9px;padding:13px 26px;cursor:pointer;font-weight:700;transition:transform .12s,box-shadow .2s;
-    box-shadow:0 0 30px rgba(123,92,255,.4)}
-  .cta:hover{transform:translateY(-2px);box-shadow:0 6px 34px rgba(123,92,255,.55)}
-  .cta:focus-visible{outline:2px solid #fff;outline-offset:3px}
-  .teamline{display:flex;gap:10px;margin-top:4px}
-  .teamline .t{display:flex;flex-direction:column;align-items:center;gap:5px;font-size:9px;color:var(--muted);letter-spacing:.1em}
-  .teamline .d{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:19px;
-    background:radial-gradient(70% 80% at 50% 30%,color-mix(in srgb,var(--hue) 45%,transparent),transparent),#131024;
-    border:1px solid color-mix(in srgb,var(--hue) 45%,var(--line))}
-  #result .verdict{font-family:var(--font-title);font-size:40px}
-  .win{color:var(--good)} .lose{color:var(--crit)}
-  .hint{font-size:11px;color:var(--faint);letter-spacing:.04em;max-width:30ch;line-height:1.5}
-  .credit{position:absolute;bottom:14px;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
-
-  @media (max-width:400px){.hero .nm{font-size:8.5px}.hero .p{font-size:22px}}
+  #result{position:absolute;inset:0;z-index:20;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+    padding:32px;gap:14px;background:radial-gradient(circle at 50% 40%,rgba(20,16,36,.88),rgba(6,5,12,.97))}
+  #result .verdict{font-family:var(--font-title);font-size:38px}.win{color:var(--good)}.lose{color:var(--crit)}
+  #result .eyebrow{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--umbra)}
+  #result .sub{color:var(--muted);font-size:13px;line-height:1.6;max-width:34ch}
+  .rowbtn{display:flex;gap:10px}
+  .credit{position:absolute;bottom:12px;left:0;right:0;text-align:center;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);z-index:1}
   @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.05ms!important}}
 </style>
 
-<div id="stage">
-  <div id="top">
-    <div class="world">
-      <div class="chapter">Ch. 1 · The Drowned Quarter</div>
-      <div class="stagename">Boss — Krul, the Mother-Mass</div>
+<div id="app">
+  <!-- TITLE -->
+  <section class="screen on" id="screen-title">
+    <div class="mark">Ashgate</div>
+    <h1>ASHGATE</h1>
+    <div class="tag">A dark-fantasy squad RPG. Push through the Drowned Quarter, build your five, and close the Gate on the Mother-Mass.</div>
+    <button class="cta" id="toMap">Begin the Descent</button>
+    <div class="hint">Playable vertical slice · real unit stats & the doc-02 turn engine, in your browser.</div>
+  </section>
+
+  <!-- MAP -->
+  <section class="screen" id="screen-map">
+    <div class="scrhead"><div><div class="eyebrow">Chapter 1</div><h1>The Drowned Quarter</h1></div></div>
+    <div id="maplist"><div class="track"></div></div>
+  </section>
+
+  <!-- TEAM SELECT -->
+  <section class="screen" id="screen-team">
+    <div class="scrhead"><div><div class="eyebrow" id="teamStage">Stage 1-1</div><h1>Form Your Squad</h1></div>
+      <button class="ghost back" id="teamBack">Back</button></div>
+    <div id="partyslots"></div>
+    <div id="teamcount"><b id="tcNum">0</b> / 5 chosen · a balanced five wants frontline, damage, and sustain</div>
+    <div id="roster"></div>
+    <div id="teambar">
+      <div class="hint2">Tap heroes to add · rarity mixes are viable by design</div>
+      <button class="ghost" id="suggestBtn">Suggest</button>
+      <button class="cta" id="startBtn" disabled>Deploy</button>
     </div>
-    <div class="btnrow">
-      <button class="ui-btn" id="speedBtn" title="Battle speed">1×</button>
-      <button class="ui-btn" id="autoBtn" title="Auto-fire ultimates">Auto-Ult</button>
+  </section>
+
+  <!-- BATTLE -->
+  <section class="screen" id="screen-battle">
+    <div id="top">
+      <div class="world"><div class="chapter" id="btlChapter">Ch.1 · The Drowned Quarter</div>
+        <div class="stagename" id="btlName">Stage</div></div>
+      <div class="btnrow"><button class="ui-btn" id="speedBtn">1×</button><button class="ui-btn" id="autoBtn">Auto-Ult</button></div>
+      <div id="round"><div class="lbl">Round</div><div class="r num" id="roundNum">1</div></div>
     </div>
-    <div id="round"><div class="lbl">Round</div><div class="r num" id="roundNum">1</div></div>
-  </div>
-
-  <div id="enemies">
-    <div id="telegraph"><span class="tgname"></span><span class="pips"></span></div>
-    <div id="boss">
-      <div class="portrait"><div class="glyph">🌊</div><div class="core"></div></div>
-      <div class="bossmeta"><span class="bossname">Krul, the Mother-Mass</span><span class="phase" id="bossPhase">Phase I</span></div>
-      <div class="hpwrap boss"><div class="hpfill" id="bossHp"></div><div class="hptext" id="bossHpTxt"></div></div>
+    <div id="enemies">
+      <div id="telegraph"><span class="tgname"></span><span class="pips"></span></div>
+      <div id="wavepip"></div>
+      <div id="enemyRow"></div>
     </div>
-    <div class="adds" id="adds"></div>
-  </div>
-
-  <div id="log"></div>
-
-  <div id="surgebar">
-    <div id="surgelabel"><span class="lbl">Team Surge</span><span id="surgeval" class="num"><b>0</b> / 100</span></div>
-    <div id="surge"><div id="surgefill"></div><div class="ticks"><span></span><span></span></div></div>
-  </div>
-
-  <div id="party"></div>
-
-  <div id="fx"></div>
-  <div id="cutin"><div class="flash"></div><div class="band"><div class="who"></div><div class="skill"></div></div></div>
-
-  <div id="intro">
-    <div class="eyebrow">ASHGATE · Playable Combat Slice</div>
-    <div class="bigtitle">Five Vowbound against the Mother-Mass</div>
-    <div class="sub">Basic attacks run themselves. The team shares one <b style="color:var(--umbra)">Surge</b> bar — when a hero lights up, tap them to unleash their ultimate. Bank Surge for Krul's telegraphed detonation, or race her down before it lands.</div>
-    <div class="teamline" id="introTeam"></div>
-    <button class="cta" id="startBtn">Enter the Gate</button>
-    <div class="hint">A faithful slice: real unit stats, skill kits, and the doc-02 turn engine, running in your browser.</div>
-  </div>
-
-  <div id="result">
-    <div class="eyebrow" id="resEyebrow"></div>
-    <div class="verdict" id="resVerdict"></div>
-    <div class="sub" id="resSub"></div>
-    <button class="cta" id="againBtn">Fight Again</button>
-  </div>
-
+    <div id="log"></div>
+    <div id="surgebar"><div id="surgelabel"><span class="lbl">Team Surge</span><span id="surgeval" class="num"><b>0</b> / 100</span></div>
+      <div id="surge"><div id="surgefill"></div></div></div>
+    <div id="party"></div>
+    <div id="fx"></div>
+    <div id="cutin"><div class="band"><div class="who"></div><div class="skill"></div></div></div>
+    <div id="result">
+      <div class="eyebrow" id="resEyebrow"></div>
+      <div class="verdict" id="resVerdict"></div>
+      <div class="sub" id="resSub"></div>
+      <div class="rowbtn"><button class="ghost" id="resMap">To Map</button><button class="cta" id="resNext"></button></div>
+    </div>
+  </section>
   <div class="credit">ASHGATE — vertical slice</div>
 </div>
 
 <script>
-const DATA = {"heroes":[{"id":"ASH-TNK-L01","class":"TNK","row":"front","damageRoot":"physical","subtags":["holy"],"stats":{"hp":9443,"atk":544,"def":679,"spd":100},"kit":{"S1":{"name":"Gatecrest Strike","power":1.1,"target":"single_enemy","cooldown":null,"surgeCost":null,"subtag":"holy","effects":[]},"S2":{"name":"Stand Behind Me","power":0,"target":"team_ally","cooldown":3,"surgeCost":null,"subtag":null,"effects":[{"verb":"applyStatus","status":"STS-DR-25","duration":1},{"verb":"applyStatus","status":"STS-TAUNT-ME","duration":2}]},"S3":{"name":"The Last Rampart","power":0,"target":"team_ally","cooldown":null,"surgeCost":60,"subtag":null,"effects":[{"verb":"applyStatus","status":"STS-IMMUNITY"},{"verb":"shield","power":1.5,"duration":2}]}},"name":"Roland"},{"id":"ASH-BSK-L02","class":"BSK","row":"front","damageRoot":"physical","subtags":[],"stats":{"hp":6513,"atk":806,"def":346,"spd":98},"kit":{"S1":{"name":"Oathbreaker's Edge","power":1.1,"target":"single_enemy","cooldown":null,"surgeCost":null,"subtag":null,"effects":[{"verb":"rageMod"}]},"S2":{"name":"Banner Torn Forward","power":1.7,"target":"single_enemy","cooldown":3,"surgeCost":null,"subtag":null,"effects":[{"verb":"applyStatus","status":"STS-ATK-UP","duration":1}]},"S3":{"name":"All Oaths Broken at Once","power":1.4,"target":"single_enemy","cooldown":null,"surgeCost":60,"subtag":null,"effects":[{"verb":"teamInstantAttack","which":"S1"}]}},"name":"Branwen"},{"id":"ASH-ASN-L01","class":"ASN","row":"back","damageRoot":"physical","subtags":["bleed"],"stats":{"hp":4686,"atk":821,"def":311,"spd":112},"kit":{"S1":{"name":"Smilecut","power":1.1,"target":"single_enemy","cooldown":null,"surgeCost":null,"subtag":null,"effects":[{"verb":"applyStatus","status":"STS-BLEED","stacks":1,"duration":2},{"verb":"damageMod"}]},"S2":{"name":"Between Heartbeats","power":1.9,"target":"single_enemy","cooldown":3,"surgeCost":null,"subtag":null,"effects":[{"verb":"ignore","which":["STS-STEALTH","STS-BARRIER"]},{"verb":"consumeStatus","which":"STS-BLEED"}]},"S3":{"name":"The Last Thing You Never Saw","power":3.2,"target":"single_enemy","cooldown":null,"surgeCost":60,"subtag":null,"effects":[{"verb":"execute","threshold":0.25},{"verb":"applyStatus","status":"STS-STEALTH","duration":1}]}},"name":"The Hollow Smile"},{"id":"ASH-MAG-L01","class":"MAG","row":"back","damageRoot":"magical","subtags":["arcane"],"stats":{"hp":4509,"atk":873,"def":297,"spd":104},"kit":{"S1":{"name":"Arc Splinter","power":1.1,"target":"splash2","cooldown":null,"surgeCost":null,"subtag":null,"effects":[]},"S2":{"name":"Ruin Rotation","power":1.6,"target":"all_enemies","cooldown":3,"surgeCost":null,"subtag":null,"effects":[{"verb":"strip"}]},"S3":{"name":"Seven Rings Descend","power":2.4,"target":"all_enemies","cooldown":null,"surgeCost":60,"subtag":null,"effects":[{"verb":"applyStatus","status":"STS-SPD-DOWN","duration":2}]}},"name":"Ordan"},{"id":"ASH-HLR-L01","class":"HLR","row":"back","damageRoot":"magical","subtags":["holy"],"stats":{"hp":5893,"atk":649,"def":389,"spd":106},"kit":{"S1":{"name":"Dawnlight","power":1.0,"target":"single_enemy","cooldown":null,"surgeCost":null,"subtag":"holy","effects":[]},"S2":{"name":"Morning Vow","power":0,"target":"team_ally","cooldown":3,"surgeCost":null,"subtag":null,"effects":[{"verb":"heal","power":1.3},{"verb":"cleanse"}]},"S3":{"name":"The Sun Also Rises","power":0,"target":"team_ally","cooldown":null,"surgeCost":60,"subtag":null,"effects":[{"verb":"heal","power":2.2},{"verb":"cleanse"},{"verb":"applyStatus","status":"STS-IMMUNITY"}]}},"name":"Aurelia"}],"enemies":[{"id":"ENM-SLM-X01","name":"Krul, the Mother-Mass","stats":{"hp":27683,"atk":152,"def":66,"spd":102},"damageRoot":"magical","traits":["swarm"],"physRes":0,"magRes":0.25,"immunities":["STS-BIND","STS-STUN"],"skillPower":1.3,"demoNote":"HPx3.2/ATKx1.25 for showcase pacing"},{"id":"ENM-SLM-M01","name":"Slimelet","stats":{"hp":203,"atk":24,"def":14,"spd":49},"damageRoot":"physical","traits":["swarm"],"physRes":-0.25,"magRes":0,"immunities":[],"skillPower":1.0}]};
+const DATA = {"heroes":[{"id":"ASH-TNK-C01","name":"Garrick","class":"TNK","rarity":"C","role":"Frontline","row":"front","damageRoot":"physical","subtags":[],"stats":{"hp":3327,"atk":218,"def":252,"spd":96},"kit":{"S1":{"name":"Shield Jab","power":1.0,"target":"single_enemy","cooldown":null,"surgeCost":null,"subtag":null,"effects":[]},"S2":{"name":"Stand Fast","power":0,"target":"self","cooldown":3,"surgeCost":null,"subtag":null,"effects":[{"verb":"applyStatus","status":"STS-TAUNT-ME","duration":2},{"verb":"applyStatus","status":"STS-DR-25","duration":2}]},"S3":{"name":"The Door Holds","power":0,"target":"team_ally","cooldown":null,"surgeCost":50,"subtag":null,"effects":[{"verb":"applyStatus","status":"STS-DR-25","duration":2}]}}},{"id":"ASH-TNK-R01","name":"Sera Ironvow","class":"TNK","rarity":"R","role":"Frontline","row":"front","damageRoot":"physical","subtags":[],"stats":{"hp":3862,"atk":221,"def":313,"spd":98},"kit":{"S1":{"name":"Oathstrike","power":1.05,"target":"single_enemy","cooldown":null,"surgeCost":null,"subtag":null,"effects":[]},"S2":{"name":"Chained Aegis","power":0,"target":"lowest_hp_ally","cooldown":3,"surgeCost":null,"subtag":null,"effects":[{"verb":"shield","power":1.8,"duration":2}]},"S3":{"name":"Vow Unbroken","power":0,"target":"team_ally","cooldown":null,"surgeCost":50,"subtag":null,"effects":[{"verb":"shield","power":1.2,"duration":2}]}}},{"id":"ASH-TNK-L01","name":"Roland","class":"TNK","rarity":"L","role":"Frontline","row":"front","damageRoot":"physical","subtags":["holy"],"stats":{"hp":4974,"atk":287,"def":402,"spd":100},"kit":{"S1":{"name":"Gatecrest Strike","power":1.1,"target":"single_enemy","cooldown":null,"surgeCost":null,"subtag":"holy","effects":[]},"S2":{"name":"Stand Behind Me","power":0,"target":"team_ally","cooldown":3,"surgeCost":null,"subtag":null,"effects":[{"verb":"applyStatus","status":"STS-DR-25","duration":1},{"verb":"applyStatus","status":"STS-TAUNT-ME","duration":2}]},"S3":{"name":"The Last Rampart","power":0,"target":"team_ally","cooldown":null,"surgeCost":60,"subtag":null,"effects":[{"verb":"applyStatus","status":"STS-IMMUNITY"},{"verb":"shield","power":1.5,"duration":2}]}}},{"id":"ASH-ASN-C01","name":"Whisper","class":"ASN","rarity":"C","role":"Burst DPS","row":"back","damageRoot":"physical","subtags":["bleed"],"stats":{"hp":1732,"atk":303,"def":130,"spd":108},"kit":{"S1":{"name":"Thin Cut","power":1.1,"target":"single_enemy","cooldown":null,"surgeCost":null,"subtag":null,"effects":[{"verb":"applyStatus","status":"STS-BLEED","stacks":1,"duration":2}]},"S2":{"name":"Red Thread","power":1.5,"target":"single_enemy","cooldown":2,"surgeCost":null,"subtag":null,"effects":[{"verb":"applyStatus","status":"STS-BLEED","stacks":2,"duration":2}]},"S3":{"name":"A Thousand Small Goodbyes","power":3.0,"target":"single_enemy","cooldown":null,"surgeCost":50,"subtag":null,"effects":[{"verb":"dotTick","which":"STS-BLEED"}]}}},{"id":"ASH-ASN-E01","name":"Nyx Serrata","class":"ASN","rarity":"E","role":"Burst DPS","row":"back","damageRoot":"physical","subtags":["bleed"],"stats":{"hp":1989,"atk":415,"def":162,"spd":111},"kit":{"S1":{"name":"Bone Saw","power":1.15,"target":"single_enemy","cooldown":null,"surgeCost":null,"subtag":null,"effects":[{"verb":"applyStatus","status":"STS-BLEED","stacks":1,"duration":2}]},"S2":{"name":"Serrated Verdict","power":1.7,"target":"single_enemy","cooldown":3,"surgeCost":null,"subtag":null,"effects":[{"verb":"applyStatus","status":"STS-BLEED","stacks":2,"duration":2},{"verb":"applyStatus","status":"STS-BLEED","stacks":1,"duration":2}]},"S3":{"name":"Red Season","power":1.8,"target":"all_enemies","cooldown":null,"surgeCost":50,"subtag":null,"effects":[{"verb":"applyStatus","status":"STS-BLEED","stacks":1,"duration":2}]}}},{"id":"ASH-ASN-L01","name":"The Hollow Smile","class":"ASN","rarity":"L","role":"Burst DPS","row":"back","damageRoot":"physical","subtags":["bleed"],"stats":{"hp":2468,"atk":432,"def":184,"spd":112},"kit":{"S1":{"name":"Smilecut","power":1.1,"target":"single_enemy","cooldown":null,"surgeCost":null,"subtag":null,"effects":[{"verb":"applyStatus","status":"STS-BLEED","stacks":1,"duration":2},{"verb":"damageMod"}]},"S2":{"name":"Between Heartbeats","power":1.9,"target":"single_enemy","cooldown":3,"surgeCost":null,"subtag":null,"effects":[{"verb":"ignore","which":["STS-STEALTH","STS-BARRIER"]},{"verb":"consumeStatus","which":"STS-BLEED"}]},"S3":{"name":"The Last Thing You Never Saw","power":3.2,"target":"single_enemy","cooldown":null,"surgeCost":60,"subtag":null,"effects":[{"verb":"execute","threshold":0.25},{"verb":"applyStatus","status":"STS-STEALTH","duration":1}]}}},{"id":"ASH-RNG-C01","name":"Fletch","class":"RNG","rarity":"C","role":"Sustained DPS","row":"back","damageRoot":"physical","subtags":["pierce"],"stats":{"hp":1881,"atk":287,"def":138,"spd":104},"kit":{"S1":{"name":"Salvage Bolt","power":1.05,"target":"single_enemy","cooldown":null,"surgeCost":null,"subtag":null,"effects":[]},"S2":{"name":"Joint-Splitter","power":1.3,"target":"single_enemy","cooldown":2,"surgeCost":null,"subtag":null,"effects":[{"verb":"applyStatus","status":"STS-ARMOR-BREAK","duration":2}]},"S3":{"name":"Overdraw","power":2.9,"target":"single_enemy","cooldown":null,"surgeCost":50,"subtag":"pierce","effects":[]}}},{"id":"ASH-RNG-R01","name":"Corvo Hexlock","class":"RNG","rarity":"R","role":"Sustained DPS","row":"back","damageRoot":"physical","subtags":["pierce"],"stats":{"hp":2081,"atk":317,"def":153,"spd":106},"kit":{"S1":{"name":"Hexshot","power":1.0,"target":"single_enemy","cooldown":null,"surgeCost":null,"subtag":null,"effects":[{"verb":"applyStatus","status":"STS-MARK","duration":1}]},"S2":{"name":"Witchfinder's Round","power":1.6,"target":"single_enemy","cooldown":3,"surgeCost":null,"subtag":null,"effects":[{"verb":"applyStatus","status":"STS-MARK","duration":2}]},"S3":{"name":"Sentence Passed","power":3.0,"target":"single_enemy","cooldown":null,"surgeCost":50,"subtag":null,"effects":[{"verb":"damageMod"}]}}},{"id":"ASH-RNG-E01","name":"Yara Stormfletch","class":"RNG","rarity":"E","role":"Sustained DPS","row":"back","damageRoot":"physical","subtags":[],"stats":{"hp":2348,"atk":359,"def":172,"spd":107},"kit":{"S1":{"name":"Forked Volley","power":1.2,"target":"single_enemy","cooldown":null,"surgeCost":null,"subtag":null,"effects":[]},"S2":{"name":"Crosswind Barrage","power":1.4,"target":"all_enemies","cooldown":3,"surgeCost":null,"subtag":null,"effects":[{"verb":"applyStatus","status":"STS-MARK","duration":1}]},"S3":{"name":"Stormfall","power":2.0,"target":"all_enemies","cooldown":null,"surgeCost":50,"subtag":null,"effects":[{"verb":"applyStatus","status":"STS-MARK","duration":2}]}}},{"id":"ASH-MAG-C01","name":"Pip Emberling","class":"MAG","rarity":"C","role":"AoE DPS","row":"back","damageRoot":"magical","subtags":["arcane"],"stats":{"hp":1813,"atk":294,"def":124,"spd":100},"kit":{"S1":{"name":"Spark Primer","power":0.8,"target":"splash2","cooldown":null,"surgeCost":null,"subtag":null,"effects":[]},"S2":{"name":"Page of Flames","power":1.2,"target":"all_enemies","cooldown":2,"surgeCost":null,"subtag":null,"effects":[]},"S3":{"name":"Unabridged Edition","power":2.0,"target":"all_enemies","cooldown":null,"surgeCost":50,"subtag":null,"effects":[]}}},{"id":"ASH-MAG-R02","name":"Ione Glasswake","class":"MAG","rarity":"R","role":"AoE DPS","row":"back","damageRoot":"magical","subtags":["arcane"],"stats":{"hp":1844,"atk":357,"def":137,"spd":102},"kit":{"S1":{"name":"Shard Ray","power":1.1,"target":"single_enemy","cooldown":null,"surgeCost":null,"subtag":null,"effects":[]},"S2":{"name":"Refraction Fan","power":1.4,"target":"all_enemies","cooldown":2,"surgeCost":null,"subtag":null,"effects":[{"verb":"applyStatus","status":"STS-ATK-UP","duration":1}]},"S3":{"name":"Glasswake","power":2.2,"target":"all_enemies","cooldown":null,"surgeCost":50,"subtag":null,"effects":[]}}},{"id":"ASH-MAG-L01","name":"Ordan","class":"MAG","rarity":"L","role":"AoE DPS","row":"back","damageRoot":"magical","subtags":["arcane"],"stats":{"hp":2375,"atk":460,"def":176,"spd":104},"kit":{"S1":{"name":"Arc Splinter","power":1.1,"target":"splash2","cooldown":null,"surgeCost":null,"subtag":null,"effects":[]},"S2":{"name":"Ruin Rotation","power":1.6,"target":"all_enemies","cooldown":3,"surgeCost":null,"subtag":null,"effects":[{"verb":"strip"}]},"S3":{"name":"Seven Rings Descend","power":2.4,"target":"all_enemies","cooldown":null,"surgeCost":60,"subtag":null,"effects":[{"verb":"applyStatus","status":"STS-SPD-DOWN","duration":2}]}}},{"id":"ASH-NEC-C01","name":"Gravedigger Tam","class":"NEC","rarity":"C","role":"Summoner","row":"back","damageRoot":"physical","subtags":[],"stats":{"hp":2065,"atk":271,"def":149,"spd":98},"kit":{"S1":{"name":"Spadework","power":1.0,"target":"single_enemy","cooldown":null,"surgeCost":null,"subtag":null,"effects":[]},"S2":{"name":"Up You Get, Lad","power":0,"target":"self","cooldown":3,"surgeCost":null,"subtag":null,"effects":[{"verb":"summon"}]},"S3":{"name":"Overtime","power":2.0,"target":"single_enemy","cooldown":null,"surgeCost":50,"subtag":null,"effects":[{"verb":"summonAct"}]}}},{"id":"ASH-NEC-R01","name":"Oswin Marrowcall","class":"NEC","rarity":"R","role":"Summoner","row":"back","damageRoot":"physical","subtags":[],"stats":{"hp":2283,"atk":298,"def":164,"spd":100},"kit":{"S1":{"name":"Drill Command","power":1.0,"target":"single_enemy","cooldown":null,"surgeCost":null,"subtag":null,"effects":[]},"S2":{"name":"Fall In","power":0,"target":"self","cooldown":3,"surgeCost":null,"subtag":null,"effects":[{"verb":"summon"}]},"S3":{"name":"Charge of the Marrow Guard","power":1.6,"target":"single_enemy","cooldown":null,"surgeCost":50,"subtag":null,"effects":[{"verb":"summonAct"},{"verb":"applyStatus","status":"STS-ATK-UP","duration":2}]}}},{"id":"ASH-HLR-C01","name":"Novice Bree","class":"HLR","rarity":"C","role":"Sustain","row":"back","damageRoot":"magical","subtags":["holy"],"stats":{"hp":2180,"atk":241,"def":163,"spd":102},"kit":{"S1":{"name":"Reliquary Spark","power":0.9,"target":"single_enemy","cooldown":null,"surgeCost":null,"subtag":"holy","effects":[]},"S2":{"name":"Please Hold Still","power":0,"target":"lowest_hp_ally","cooldown":2,"surgeCost":null,"subtag":null,"effects":[{"verb":"heal","power":1.8},{"verb":"heal","power":0.3}]},"S3":{"name":"Everyone At Once!","power":0,"target":"team_ally","cooldown":null,"surgeCost":50,"subtag":null,"effects":[{"verb":"heal","power":1.6}]}}},{"id":"ASH-HLR-L01","name":"Aurelia","class":"HLR","rarity":"L","role":"Sustain","row":"back","damageRoot":"magical","subtags":["holy"],"stats":{"hp":3104,"atk":342,"def":230,"spd":106},"kit":{"S1":{"name":"Dawnlight","power":1.0,"target":"single_enemy","cooldown":null,"surgeCost":null,"subtag":"holy","effects":[]},"S2":{"name":"Morning Vow","power":0,"target":"team_ally","cooldown":3,"surgeCost":null,"subtag":null,"effects":[{"verb":"heal","power":1.3},{"verb":"cleanse"}]},"S3":{"name":"The Sun Also Rises","power":0,"target":"team_ally","cooldown":null,"surgeCost":60,"subtag":null,"effects":[{"verb":"heal","power":2.2},{"verb":"cleanse"},{"verb":"applyStatus","status":"STS-IMMUNITY"}]}}},{"id":"ASH-BSK-C01","name":"Brick","class":"BSK","rarity":"C","role":"Bruiser","row":"front","damageRoot":"physical","subtags":[],"stats":{"hp":2409,"atk":298,"def":143,"spd":94},"kit":{"S1":{"name":"Paver's Swing","power":1.1,"target":"single_enemy","cooldown":null,"surgeCost":null,"subtag":null,"effects":[{"verb":"rageMod"}]},"S2":{"name":"Wind-Up","power":1.7,"target":"single_enemy","cooldown":2,"surgeCost":null,"subtag":null,"effects":[{"verb":"rageMod"}]},"S3":{"name":"Demolition","power":3.0,"target":"single_enemy","cooldown":null,"surgeCost":50,"subtag":null,"effects":[{"verb":"damageMod"}]}}},{"id":"ASH-BSK-L02","name":"Branwen","class":"BSK","rarity":"L","role":"Bruiser","row":"front","damageRoot":"physical","subtags":[],"stats":{"hp":3431,"atk":425,"def":205,"spd":98},"kit":{"S1":{"name":"Oathbreaker's Edge","power":1.1,"target":"single_enemy","cooldown":null,"surgeCost":null,"subtag":null,"effects":[{"verb":"rageMod"}]},"S2":{"name":"Banner Torn Forward","power":1.7,"target":"single_enemy","cooldown":3,"surgeCost":null,"subtag":null,"effects":[{"verb":"applyStatus","status":"STS-ATK-UP","duration":1}]},"S3":{"name":"All Oaths Broken at Once","power":1.4,"target":"single_enemy","cooldown":null,"surgeCost":60,"subtag":null,"effects":[{"verb":"teamInstantAttack","which":"S1"}]}}}],"enemies":{"ENM-SLM-M01@4":{"id":"ENM-SLM-M01","name":"Sump Slime","stats":{"hp":355,"atk":42,"def":24,"spd":86},"damageRoot":"physical","traits":["swarm"],"physRes":-0.25,"magRes":0,"immunities":[],"skillPower":1.0,"tier":"M"},"ENM-SLM-M02@4":{"id":"ENM-SLM-M02","name":"Gutter Ooze","stats":{"hp":310,"atk":49,"def":20,"spd":102},"damageRoot":"physical","traits":["swarm"],"physRes":-0.25,"magRes":0,"immunities":[],"skillPower":1.1,"tier":"M"},"ENM-SLM-M02@6":{"id":"ENM-SLM-M02","name":"Gutter Ooze","stats":{"hp":333,"atk":52,"def":21,"spd":109},"damageRoot":"physical","traits":["swarm"],"physRes":-0.25,"magRes":0,"immunities":[],"skillPower":1.1,"tier":"M"},"ENM-SLM-M03@6":{"id":"ENM-SLM-M03","name":"Lantern Jelly","stats":{"hp":285,"atk":62,"def":17,"spd":105},"damageRoot":"magical","traits":["swarm"],"physRes":0,"magRes":0.25,"immunities":[],"skillPower":1.0,"tier":"M"},"ENM-SLM-M01@6":{"id":"ENM-SLM-M01","name":"Sump Slime","stats":{"hp":380,"atk":45,"def":26,"spd":93},"damageRoot":"physical","traits":["swarm"],"physRes":-0.25,"magRes":0,"immunities":[],"skillPower":1.0,"tier":"M"},"ENM-SLM-M03@8":{"id":"ENM-SLM-M03","name":"Lantern Jelly","stats":{"hp":305,"atk":66,"def":18,"spd":112},"damageRoot":"magical","traits":["swarm"],"physRes":0,"magRes":0.25,"immunities":[],"skillPower":1.0,"tier":"M"},"ENM-SLM-M04@8":{"id":"ENM-SLM-M04","name":"Clot","stats":{"hp":483,"atk":43,"def":33,"spd":89},"damageRoot":"physical","traits":["swarm"],"physRes":-0.25,"magRes":0,"immunities":[],"skillPower":1.0,"tier":"M"},"ENM-SLM-M02@8":{"id":"ENM-SLM-M02","name":"Gutter Ooze","stats":{"hp":356,"atk":56,"def":23,"spd":117},"damageRoot":"physical","traits":["swarm"],"physRes":-0.25,"magRes":0,"immunities":[],"skillPower":1.1,"tier":"M"},"ENM-SLM-E02@8":{"id":"ENM-SLM-E02","name":"Prism Ooze","stats":{"hp":916,"atk":94,"def":38,"spd":107},"damageRoot":"magical","traits":["swarm","prism"],"physRes":0,"magRes":0,"immunities":[],"skillPower":1.3,"tier":"E"},"ENM-SLM-M04@10":{"id":"ENM-SLM-M04","name":"Clot","stats":{"hp":518,"atk":46,"def":35,"spd":95},"damageRoot":"physical","traits":["swarm"],"physRes":-0.25,"magRes":0,"immunities":[],"skillPower":1.0,"tier":"M"},"ENM-SLM-B01@10":{"id":"ENM-SLM-B01","name":"The Undertow","stats":{"hp":3544,"atk":112,"def":63,"spd":101},"damageRoot":"magical","traits":["swarm"],"physRes":0,"magRes":0.25,"immunities":["STS-STUN"],"skillPower":1.2,"tier":"B"},"ENM-SLM-X01@12":{"id":"ENM-SLM-X01","name":"Krul, the Mother-Mass","stats":{"hp":9928,"atk":140,"def":76,"spd":117},"damageRoot":"magical","traits":["swarm"],"physRes":0,"magRes":0.25,"immunities":["STS-BIND","STS-STUN"],"skillPower":1.3,"tier":"X"},"ENM-SLM-M01@12":{"id":"ENM-SLM-M01","name":"Slimelet","stats":{"hp":233,"atk":27,"def":16,"spd":57},"damageRoot":"physical","traits":["swarm"],"physRes":-0.25,"magRes":0,"immunities":[],"skillPower":1.0,"tier":"M"}},"arc":[{"id":"1-1","name":"The Flooded Arcade","teach":"Basics \u00b7 tap ults when Surge fills","boss":false,"waves":[["ENM-SLM-M01@4","ENM-SLM-M01@4"],["ENM-SLM-M01@4","ENM-SLM-M02@4","ENM-SLM-M01@4"]]},{"id":"1-2","name":"Gutter Run","teach":"Speed differences \u00b7 magical spitters","boss":false,"waves":[["ENM-SLM-M02@6","ENM-SLM-M03@6","ENM-SLM-M01@6"],["ENM-SLM-M03@6","ENM-SLM-M03@6","ENM-SLM-M02@6"]]},{"id":"1-3","name":"Lantern Deep","teach":"Prism Ooze shifts its resistance","boss":false,"waves":[["ENM-SLM-M03@8","ENM-SLM-M04@8","ENM-SLM-M02@8"],["ENM-SLM-E02@8","ENM-SLM-M04@8"]]},{"id":"1-4","name":"The Undertow","teach":"Miniboss \u00b7 survive the Crash telegraph","boss":true,"waves":[["ENM-SLM-M04@10","ENM-SLM-M04@10"],["ENM-SLM-B01@10"]]},{"id":"1-5","name":"The Mother-Mass","teach":"Boss \u00b7 bank Surge for the detonation","boss":true,"waves":[["ENM-SLM-X01@12"]]}]};
+const CLASS={TNK:{hue:'--tnk',g:'🛡️',l:'Tank'},BSK:{hue:'--bsk',g:'🪓',l:'Berserker'},ASN:{hue:'--asn',g:'🗡️',l:'Assassin'},
+  MAG:{hue:'--mag',g:'✦',l:'Mage'},NEC:{hue:'--nec',g:'💀',l:'Necro'},HLR:{hue:'--hlr',g:'☀️',l:'Healer'},RNG:{hue:'--rng',g:'🏹',l:'Ranger'}};
+const RAR={C:'--rC',R:'--rR',E:'--rE',L:'--rL'};
+const EGLYPH={'ENM-SLM-M01':'🟢','ENM-SLM-M02':'🫧','ENM-SLM-M03':'🏮','ENM-SLM-M04':'🟩','ENM-SLM-E02':'🔷','ENM-SLM-B01':'🌀','ENM-SLM-X01':'🌊'};
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const rand=(a,b)=>a+Math.random()*(b-a),clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const hero=id=>DATA.heroes.find(h=>h.id===id);
 
-const CLASS = {
-  TNK:{hue:'--tnk',glyph:'🛡️',lbl:'Tank'}, BSK:{hue:'--bsk',glyph:'🪓',lbl:'Berserker'},
-  ASN:{hue:'--asn',glyph:'🗡️',lbl:'Assassin'}, MAG:{hue:'--mag',glyph:'✦',lbl:'Mage'},
-  HLR:{hue:'--hlr',glyph:'☀️',lbl:'Healer'}
-};
-const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
-const rand=(a,b)=>a+Math.random()*(b-a);
-const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+let cleared=new Set(), curStage=null, team=[], G=null, ui={speed:1,auto:false};
 
-let G; // game state
+/* ---------- screens ---------- */
+function show(id){$$('.screen').forEach(s=>s.classList.toggle('on',s.id===id));}
 
-function mkUnit(src,side){
-  const u={...src,side,hp:src.stats.hp,max:src.stats.hp,barrier:0,rage:0,cd:{},status:{},alive:true,el:null};
-  return u;
-}
-function newGame(){
-  const heroes=DATA.heroes.map(h=>mkUnit(h,'ally'));
-  const krul=mkUnit(DATA.enemies.find(e=>e.id==='ENM-SLM-X01'),'enemy');
-  krul.isBoss=true;
-  return {heroes,enemies:[krul],surge:0,round:1,over:false,busy:false,
-    auto:false,speed:1,telegraph:null,queuedUlt:null,tick:0};
-}
-const slimeSrc=()=>DATA.enemies.find(e=>e.id==='ENM-SLM-M01');
-
-// ---- damage model (mirrors sim/ashsim deal_damage) ----
-function statOf(u,key){
-  let v=u.stats[key];
-  const m={ 'STS-ATK-UP':['atk',.3],'STS-ATK-DOWN':['atk',-.3],'STS-DEF-DOWN':['def',-.3],
-    'STS-SPD-DOWN':['spd',-.25],'STS-DEF-UP':['def',.3] };
-  for(const s in u.status){const k=m[s]; if(k&&k[0]===key) v*=(1+k[1]);}
-  return v;
-}
-function dealDamage(src,tgt,power,root,subtag){
-  if(!tgt.alive) return 0;
-  let atk=statOf(src,'atk'), def=statOf(tgt,'def');
-  if(subtag==='pierce') def*=.7;
-  const mitig=1000/(1000+def);
-  const res = root==='physical'? (tgt.physRes||0):(tgt.magRes||0);
-  let elem = res<=-.2?1.25 : res>=.2?0.85 : 1;
-  if(subtag==='holy' && (tgt.traits||[]).includes('undead')) elem*=1.25;
-  const isCrit=Math.random() < (0.05 + (src.status['STS-CRIT-UP']?0.2:0));
-  const crit=isCrit?1.5:1;
-  let dmg=power*atk*mitig*elem*crit*rand(.95,1.05);
-  if(tgt.status['STS-DR-25']) dmg*=.75;
-  dmg=Math.round(dmg);
-  if(tgt.barrier>0 && subtag!=='bleed'){const ab=Math.min(tgt.barrier,dmg);tgt.barrier-=ab;dmg-=ab;}
-  tgt.hp=Math.max(0,tgt.hp-dmg);
-  if(src.side==='ally') gainSurge(4,false);
-  floatNum(tgt, dmg, isCrit?'crit':'', root, subtag);
-  shake(tgt);
-  if(tgt.hp<=0) onKill(src,tgt);
-  return dmg;
-}
-function heal(tgt,amt){ if(!tgt.alive)return; tgt.hp=Math.min(tgt.max,tgt.hp+amt); floatNum(tgt,amt,'heal'); }
-function onKill(src,tgt){ tgt.alive=false; tgt.hp=0; if(src.side==='ally') gainSurge(10,false); }
-function gainSurge(n){ G.surge=clamp(G.surge+n,0,100); }
-
-function livingEnemies(){return G.enemies.filter(e=>e.alive);}
-function livingHeroes(){return G.heroes.filter(h=>h.alive);}
-
-function pickTarget(src){
-  const foes=livingEnemies();
-  if(!foes.length) return null;
-  const taunt=livingHeroes().filter(h=>h.status['STS-TAUNT-ME']);
-  // enemies pick heroes; heroes pick enemies
-  if(src.side==='enemy'){
-    const heroes=livingHeroes();
-    if(taunt.length) return taunt[Math.floor(Math.random()*taunt.length)];
-    const front=heroes.filter(h=>h.row==='front'), back=heroes.filter(h=>h.row==='back');
-    const notStealth=heroes.filter(h=>!h.status['STS-STEALTH']);
-    const pool=(front.length&&back.length)?(Math.random()<.6?front:back):(notStealth.length?notStealth:heroes);
-    return pool[Math.floor(Math.random()*pool.length)];
-  }
-  // hero targets the boss preferentially if adds few, else lowest hp
-  return foes.sort((a,b)=>(b.isBoss?1:0)-(a.isBoss?1:0)||a.hp-b.hp)[0];
-}
-
-// ---- skill execution ----
-function rootFor(u,sk){ return sk.subtag?({bleed:'physical',pierce:'physical',arcane:'magical',shadow:'magical',holy:'magical',decay:'magical'}[sk.subtag]||u.damageRoot):u.damageRoot; }
-
-function runSkill(u,slot){
-  const sk=u.kit[slot];
-  const root=rootFor(u,sk), sub=sk.subtag;
-  const tgt=sk.target;
-  const foes=livingEnemies(), friends=livingHeroes();
-  // primary damage
-  if(sk.power>0){
-    if(tgt==='single_enemy'){const t=pickTarget(u); if(t)dealDamage(u,t,sk.power,root,sub);}
-    else if(tgt==='splash2'){const t=pickTarget(u); if(t){dealDamage(u,t,sk.power,root,sub);const other=foes.filter(f=>f!==t)[0]; if(other)dealDamage(u,other,sk.power*.6,root,sub);}}
-    else if(tgt==='all_enemies'){foes.forEach(f=>dealDamage(u,f,sk.power,root,sub));}
-  }
-  // effects
-  for(const e of (sk.effects||[])){
-    if(e.verb==='applyStatus'){
-      const dur=e.duration||2, st=e.status;
-      if(tgt==='team_ally'||e.status==='STS-DR-25'||e.status==='STS-IMMUNITY'&&tgt==='team_ally') friends.forEach(f=>f.status[st]=dur);
-      else if(st==='STS-TAUNT-ME') u.status[st]=dur;
-      else if(st==='STS-ATK-UP') u.status[st]=dur;
-      else if(st==='STS-STEALTH') u.status[st]=dur;
-      else if(st==='STS-SPD-DOWN') foes.forEach(f=>{if(!(f.immunities||[]).includes(st))f.status[st]=dur;});
-      else if(st==='STS-BLEED'){const t=pickTarget(u); if(t){t.status['STS-BLEED']=dur; t._bleed=(t._bleed||0)+(e.stacks||1); t._bleedAtk=statOf(u,'atk');}}
-      else {friends.forEach(f=>f.status[st]=dur);}
-    }
-    else if(e.verb==='heal'){const amt=Math.round(statOf(u,'atk')*(e.power||1)); friends.forEach(f=>heal(f,amt));}
-    else if(e.verb==='shield'){const amt=Math.round(statOf(u,'def')*(e.power||1)); friends.forEach(f=>f.barrier=Math.max(f.barrier,amt));}
-    else if(e.verb==='cleanse'){friends.forEach(f=>{for(const s in f.status){if(s.includes('DOWN')||s==='STS-BLEED'||s==='STS-DECAY')delete f.status[s];}});}
-    else if(e.verb==='strip'){foes.forEach(f=>{for(const s in f.status){if(s.includes('UP')){delete f.status[s];break;}}});}
-    else if(e.verb==='consumeStatus'){const t=pickTarget(u); if(t&&t._bleed){dealDamage(u,t,0.6*t._bleed,'physical','bleed');t._bleed=0;delete t.status['STS-BLEED'];}}
-    else if(e.verb==='execute'){const t=pickTarget(u); if(t&&!t.isBoss&&t.hp/t.max<=(e.threshold||.25))onKill(u,t); else if(t&&t.isBoss)dealDamage(u,t,1.0,root,sub);}
-    else if(e.verb==='teamInstantAttack'){friends.filter(f=>f!==u).forEach(f=>{const t=pickTarget(f);if(t)dealDamage(f,t,f.kit.S1.power,rootFor(f,f.kit.S1),f.kit.S1.subtag);});}
-    else if(e.verb==='rageMod'){u.rage=Math.min(10,u.rage+1);}
-  }
-  if(u.side==='ally') gainSurge(6,false);
-}
-
-// ---- enemy turn ----
-function enemyTurn(u){
-  if(G.telegraph && G.telegraph.owner===u){
-    G.telegraph.windup--; renderTelegraph();
-    if(G.telegraph.windup<=0){ detonate(u); G.telegraph=null; renderTelegraph(); }
-    return;
-  }
-  if(u.isBoss){
-    // spawn a slimelet every 2 rounds (max 2), or start a telegraph every ~4th round
-    if(G.round%4===0 && !G.telegraph && Math.random()<.9){
-      G.telegraph={owner:u,name:'Umbral Spray',windup:2,max:2}; renderTelegraph();
-      logMsg(`<b>Krul</b> begins to swell — <b style="color:var(--danger)">Umbral Spray</b> incoming`); return;
-    }
-    if(G.round%2===0 && G.enemies.filter(e=>e.alive&&!e.isBoss).length<2){
-      const s=mkUnit(slimeSrc(),'enemy'); s.name='Slimelet'; G.enemies.push(s); renderEnemies();
-      logMsg(`Krul buds a <b>Slimelet</b>`); return;
-    }
-  }
-  const t=pickTarget(u); if(t){dealDamage(u,t,u.skillPower||1,u.damageRoot,null);}
-}
-function detonate(u){
-  cutFlash(null); logMsg(`<b style="color:var(--danger)">Umbral Spray</b> washes the party`);
-  livingHeroes().forEach(h=>dealDamage(u,h,1.4,'magical',null));
-}
-
-// ---- turn order & loop ----
-function roundStart(){
-  // DoT ticks (bleed) + status decrement
-  [...G.heroes,...G.enemies].filter(u=>u.alive).forEach(u=>{
-    if(u._bleed){const d=Math.round((u._bleedAtk||120)*0.08*u._bleed); u.hp=Math.max(0,u.hp-d); floatNum(u,d,'','physical','bleed'); if(u.hp<=0)u.alive=false;}
+/* ---------- MAP ---------- */
+function buildMap(){
+  const list=$('#maplist'); [...list.querySelectorAll('.node')].forEach(n=>n.remove());
+  DATA.arc.forEach((s,i)=>{
+    const prevDone = i===0 || cleared.has(DATA.arc[i-1].id);
+    const done=cleared.has(s.id);
+    const playable = prevDone && !done || (prevDone);
+    const state = done?'done':(prevDone?'current':'locked');
+    const n=document.createElement('div');
+    n.className=`node ${state} ${s.boss?'boss':''} ${(prevDone)?'playable':''} ${done?'done':''}`;
+    const badge = done?'<span class="badge clr">Cleared</span>':(s.boss?'<span class="badge boss">Boss</span>':(prevDone?'<span class="badge go">Play</span>':''));
+    n.innerHTML=`<div class="dot">${done?'✓':(s.boss?'☠':(i+1))}</div>
+      <div class="card"><div><div class="stg">Stage ${s.id}</div><div class="snm">${s.name}</div><div class="teach">${s.teach}</div></div>${badge}</div>`;
+    if(prevDone){ n.querySelector('.card').addEventListener('click',()=>openTeam(s)); }
+    list.appendChild(n);
   });
-  [...G.heroes,...G.enemies].forEach(u=>{for(const s in u.status){u.status[s]--; if(u.status[s]<=0)delete u.status[s];}});
-}
-function order(){
-  return [...G.heroes,...G.enemies].filter(u=>u.alive)
-    .sort((a,b)=>statOf(b,'spd')-statOf(a,'spd') || (a.side==='ally'?-1:1));
 }
 
+/* ---------- TEAM SELECT ---------- */
+function openTeam(stage){
+  curStage=stage;
+  $('#teamStage').textContent='Stage '+stage.id+' · '+stage.name;
+  if(!team.length) suggestTeam();
+  buildRoster(); renderSlots(); show('screen-team');
+}
+function suggestTeam(){
+  const pick=['ASH-TNK-L01','ASH-BSK-L02','ASH-MAG-L01','ASH-RNG-E01','ASH-HLR-L01'];
+  team=pick.filter(id=>hero(id)); renderSlots(); if($('#roster').children.length)buildRoster();
+}
+function buildRoster(){
+  const box=$('#roster'); box.innerHTML='';
+  DATA.heroes.forEach(h=>{
+    const c=CLASS[h.class];
+    const el=document.createElement('div'); el.className='rcard'+(team.includes(h.id)?' picked':'');
+    el.style.setProperty('--hue',`var(${c.hue})`);
+    el.innerHTML=`<div class="rar" style="background:var(${RAR[h.rarity]})"></div><div class="chk">✓</div>
+      <div class="g">${c.g}</div><div class="rn">${h.name}</div><div class="rl">${h.role}</div>`;
+    el.addEventListener('click',()=>toggle(h.id));
+    box.appendChild(el);
+  });
+}
+function toggle(id){
+  if(team.includes(id)) team=team.filter(x=>x!==id);
+  else if(team.length<5) team.push(id);
+  buildRoster(); renderSlots();
+}
+function renderSlots(){
+  const box=$('#partyslots'); box.innerHTML='';
+  for(let i=0;i<5;i++){
+    const id=team[i], d=document.createElement('div');
+    if(id){const h=hero(id),c=CLASS[h.class]; d.className='slot filled'; d.style.setProperty('--hue',`var(${c.hue})`);
+      d.innerHTML=`<span class="x">✕</span><div class="g">${c.g}</div><div class="sn">${h.name}</div>`;
+      d.addEventListener('click',()=>toggle(id));}
+    else {d.className='slot'; d.innerHTML='<span class="empty">EMPTY</span>';}
+    box.appendChild(d);
+  }
+  $('#tcNum').textContent=team.length;
+  $('#startBtn').disabled = team.length!==5;
+}
+
+/* ---------- BATTLE ENGINE ---------- */
+function mkHero(id){const s=hero(id); return {...s,side:'ally',hp:s.stats.hp,max:s.stats.hp,barrier:0,rage:0,cd:{},status:{},alive:true,el:null};}
+function mkEnemy(key){const s=DATA.enemies[key]||Object.values(DATA.enemies).find(e=>key.startsWith(e.id))||Object.values(DATA.enemies)[0];
+  return {...s,key,side:'enemy',hp:s.stats.hp,max:s.stats.hp,barrier:0,status:{},alive:true,el:null,isBoss:s.tier==='X',isMini:s.tier==='B'};}
+function deploy(){
+  const waves=curStage.waves.map(w=>w.map(mkEnemy));
+  G={heroes:team.map(mkHero),waves,wi:0,enemies:waves[0],surge:0,round:1,over:false,busy:false,auto:ui.auto,speed:ui.speed,telegraph:null};
+  $('#speedBtn').textContent=ui.speed+'×';
+  $('#autoBtn').classList.toggle('active',ui.auto);
+  $('#btlName').textContent='Stage '+curStage.id+' · '+curStage.name;
+  buildParty(); renderEnemies(); render(); renderTelegraph();
+  $('#roundNum').textContent='1'; $('#result').style.display='none';
+  $('#wavepip').textContent = waves.length>1?`Wave 1 / ${waves.length}`:'';
+  logMsg('The flood stirs…');
+  show('screen-battle'); turnQueue=[]; setTimeout(step,450);
+}
+function statOf(u,k){let v=u.stats[k];const m={'STS-ATK-UP':['atk',.3],'STS-ATK-DOWN':['atk',-.3],'STS-DEF-DOWN':['def',-.3],'STS-SPD-DOWN':['spd',-.25],'STS-DEF-UP':['def',.3]};
+  for(const s in u.status){const q=m[s];if(q&&q[0]===k)v*=(1+q[1]);}return v;}
+function dealDamage(src,tgt,power,root,sub){
+  if(!tgt.alive)return 0;
+  let atk=statOf(src,'atk'),def=statOf(tgt,'def'); if(sub==='pierce')def*=.7;
+  const mit=1000/(1000+def), res=root==='physical'?(tgt.physRes||0):(tgt.magRes||0);
+  let elem=res<=-.2?1.25:res>=.2?.85:1; if(sub==='holy'&&(tgt.traits||[]).includes('undead'))elem*=1.25;
+  const isCrit=Math.random()<(.05+(src.status['STS-CRIT-UP']?.2:0)),crit=isCrit?1.5:1;
+  let d=power*atk*mit*elem*crit*rand(.95,1.05); if(tgt.status['STS-DR-25'])d*=.75; d=Math.round(d);
+  if(tgt.barrier>0&&sub!=='bleed'){const ab=Math.min(tgt.barrier,d);tgt.barrier-=ab;d-=ab;}
+  tgt.hp=Math.max(0,tgt.hp-d); if(src.side==='ally')gainSurge(4);
+  floatNum(tgt,d,isCrit?'crit':'',root,sub); shake(tgt);
+  if(tgt.hp<=0)onKill(src,tgt); return d;
+}
+function heal(t,a){if(!t.alive)return;t.hp=Math.min(t.max,t.hp+a);floatNum(t,a,'heal');}
+function onKill(src,t){t.alive=false;t.hp=0;if(src.side==='ally')gainSurge(10);}
+function gainSurge(n){G.surge=clamp(G.surge+n,0,100);}
+const livingE=()=>G.enemies.filter(e=>e.alive), livingH=()=>G.heroes.filter(h=>h.alive);
+function pickTarget(src){
+  if(src.side==='enemy'){const H=livingH();const t=H.filter(h=>h.status['STS-TAUNT-ME']);if(t.length)return t[0|Math.random()*t.length];
+    const ns=H.filter(h=>!h.status['STS-STEALTH']),front=ns.filter(h=>h.row==='front'),back=ns.filter(h=>h.row==='back');
+    const pool=(front.length&&back.length)?(Math.random()<.6?front:back):(ns.length?ns:H);return pool[0|Math.random()*pool.length];}
+  const F=livingE();return F.sort((a,b)=>(b.isBoss?2:b.isMini?1:0)-(a.isBoss?2:a.isMini?1:0)||a.hp-b.hp)[0];
+}
+function rootFor(u,sk){return sk.subtag?({bleed:'physical',pierce:'physical',arcane:'magical',shadow:'magical',holy:'magical',decay:'magical'}[sk.subtag]||u.damageRoot):u.damageRoot;}
+function runSkill(u,slot){
+  const sk=u.kit[slot],root=rootFor(u,sk),sub=sk.subtag,tgt=sk.target,F=livingE(),Fr=livingH();
+  if(sk.power>0){
+    if(tgt==='single_enemy'){const t=pickTarget(u);if(t)dealDamage(u,t,sk.power,root,sub);}
+    else if(tgt==='splash2'){const t=pickTarget(u);if(t){dealDamage(u,t,sk.power,root,sub);const o=F.filter(f=>f!==t)[0];if(o)dealDamage(u,o,sk.power*.6,root,sub);}}
+    else if(tgt==='all_enemies')F.forEach(f=>dealDamage(u,f,sk.power,root,sub));
+  }
+  for(const e of (sk.effects||[])){
+    const st=e.status,dur=e.duration||2;
+    if(e.verb==='applyStatus'){
+      if(st==='STS-TAUNT-ME'||st==='STS-ATK-UP'||st==='STS-STEALTH')u.status[st]=dur;
+      else if(st==='STS-SPD-DOWN')F.forEach(f=>{if(!(f.immunities||[]).includes(st))f.status[st]=dur;});
+      else if(st==='STS-BLEED'){const t=pickTarget(u);if(t){t.status['STS-BLEED']=dur;t._bleed=(t._bleed||0)+(e.stacks||1);t._ba=statOf(u,'atk');}}
+      else Fr.forEach(f=>f.status[st]=dur);
+    }
+    else if(e.verb==='heal'){const a=Math.round(statOf(u,'atk')*(e.power||1));Fr.forEach(f=>heal(f,a));}
+    else if(e.verb==='shield'){const a=Math.round(statOf(u,'def')*(e.power||1));Fr.forEach(f=>f.barrier=Math.max(f.barrier,a));}
+    else if(e.verb==='cleanse')Fr.forEach(f=>{for(const s in f.status)if(s.includes('DOWN')||s==='STS-BLEED'||s==='STS-DECAY')delete f.status[s];});
+    else if(e.verb==='strip')F.forEach(f=>{for(const s in f.status)if(s.includes('UP')){delete f.status[s];break;}});
+    else if(e.verb==='consumeStatus'){const t=pickTarget(u);if(t&&t._bleed){dealDamage(u,t,.6*t._bleed,'physical','bleed');t._bleed=0;delete t.status['STS-BLEED'];}}
+    else if(e.verb==='execute'){const t=pickTarget(u);if(t&&!t.isBoss&&t.hp/t.max<=(e.threshold||.25))onKill(u,t);else if(t&&t.isBoss)dealDamage(u,t,1,root,sub);}
+    else if(e.verb==='teamInstantAttack')Fr.filter(f=>f!==u).forEach(f=>{const t=pickTarget(f);if(t)dealDamage(f,t,f.kit.S1.power,rootFor(f,f.kit.S1),f.kit.S1.subtag);});
+    else if(e.verb==='rageMod')u.rage=Math.min(10,u.rage+1);
+    else if(e.verb==='summon'){/* simplified: small self-heal placeholder for necro summon economy */u.barrier=Math.max(u.barrier,Math.round(statOf(u,'def')*.5));}
+  }
+  if(u.side==='ally')gainSurge(6);
+}
+function enemyTurn(u){
+  if(G.telegraph&&G.telegraph.owner===u){G.telegraph.windup--;renderTelegraph();
+    if(G.telegraph.windup<=0){detonate(u);G.telegraph=null;renderTelegraph();}return;}
+  if(u.isBoss){
+    if(G.round%4===0&&!G.telegraph&&Math.random()<.9){G.telegraph={owner:u,name:'Umbral Spray',windup:2,max:2};renderTelegraph();logMsg(`<b>Krul</b> swells — <b style="color:var(--danger)">Umbral Spray</b> incoming`);return;}
+    if(G.round%2===0&&livingE().filter(e=>!e.isBoss).length<2){const s=mkEnemy('ENM-SLM-M01@12');s.name='Slimelet';G.enemies.push(s);renderEnemies();logMsg('Krul buds a <b>Slimelet</b>');return;}
+  } else if(u.isMini){
+    if(G.round%3===0&&!G.telegraph&&Math.random()<.85){G.telegraph={owner:u,name:'Crash',windup:2,max:2};renderTelegraph();logMsg(`<b>The Undertow</b> rears — <b style="color:var(--danger)">Crash</b> incoming`);return;}
+  }
+  const t=pickTarget(u);if(t)dealDamage(u,t,u.skillPower||1,u.damageRoot,null);
+}
+function detonate(u){logMsg(`<b style="color:var(--danger)">${u.isBoss?'Umbral Spray':'Crash'}</b> washes the party`);livingH().forEach(h=>dealDamage(u,h,1.4,'magical',null));}
+function roundStart(){
+  [...G.heroes,...G.enemies].filter(u=>u.alive).forEach(u=>{if(u._bleed){const d=Math.round((u._ba||120)*.08*u._bleed);u.hp=Math.max(0,u.hp-d);floatNum(u,d,'','physical','bleed');if(u.hp<=0)u.alive=false;}});
+  [...G.heroes,...G.enemies].forEach(u=>{for(const s in u.status){u.status[s]--;if(u.status[s]<=0)delete u.status[s];}});
+}
+function order(){return [...G.heroes,...G.enemies].filter(u=>u.alive).sort((a,b)=>statOf(b,'spd')-statOf(a,'spd')||(a.side==='ally'?-1:1));}
 let turnQueue=[];
 function step(){
-  if(G.over||G.busy) return;
-  if(checkEnd()) return;
+  if(G.over||G.busy)return; if(checkEnd())return;
+  if(!turnQueue.length){roundStart();render();if(checkEnd())return;turnQueue=order();}
+  const u=turnQueue.shift(); if(!u||!u.alive)return scheduleNext(0);
+  actUnit(u); render(); if(checkEnd())return;
   if(!turnQueue.length){
-    roundStart(); render();
-    if(checkEnd()) return;
-    turnQueue=order();
-    G.round=Math.max(G.round, G.round); // round already incremented at end
+    G.round++;$('#roundNum').textContent=G.round;
+    if(G.round>20){G.timeout=true;endGame(false);return;}  // doc 02 round cap
   }
-  const u=turnQueue.shift();
-  if(!u||!u.alive){ return scheduleNext(0); }
-  // fire a queued player ult first, on this ally's slot if it's theirs
-  actUnit(u);
-  render();
-  if(checkEnd()) return;
-  if(!turnQueue.length){ G.round++; $('#roundNum').textContent=G.round; }
   scheduleNext();
 }
 function actUnit(u){
   markActing(u);
-  if(u.side==='enemy'){ enemyTurn(u); return; }
-  if(u.status['STS-STUN']) return;
-  // auto-ult
-  if(G.auto && G.surge>= (u.kit.S3.surgeCost||60) && ultWorthIt(u)){ fireUlt(u); return; }
-  // S2 if off cooldown, else S1
+  if(u.side==='enemy')return enemyTurn(u);
+  if(u.status['STS-STUN'])return;
+  if(G.auto&&G.surge>=(u.kit.S3.surgeCost||60)&&ultWorth(u))return fireUlt(u);
   if(u.cd.S2>0)u.cd.S2--;
-  if((u.cd.S2||0)===0 && shouldS2(u)){ runSkill(u,'S2'); u.cd.S2=u.kit.S2.cooldown||3; logAct(u,'S2'); }
-  else { runSkill(u,'S1'); logAct(u,'S1'); }
+  if((u.cd.S2||0)===0&&shouldS2(u)){runSkill(u,'S2');u.cd.S2=u.kit.S2.cooldown||3;logAct(u,'S2');}
+  else{runSkill(u,'S1');logAct(u,'S1');}
 }
-function shouldS2(u){
-  const sk=u.kit.S2;
-  if(u.class==='HLR'||u.class==='TNK') return livingHeroes().some(h=>h.hp/h.max<.7);
-  return true;
-}
-function ultWorthIt(u){
-  if(u.class==='HLR') return livingHeroes().some(h=>h.hp/h.max<.6);
-  if(u.class==='TNK') return !!G.telegraph;
-  return true;
-}
-function fireUlt(u){
-  if(!u.alive || G.surge<(u.kit.S3.surgeCost||60)) return;
-  G.surge-=(u.kit.S3.surgeCost||60);
-  cutIn(u); runSkill(u,'S3'); logAct(u,'S3');
-  render();
-}
-function logAct(u,slot){ const nm=u.side==='ally'?`<b>${u.name}</b>`:u.name; logMsg(`${nm} · ${u.kit?u.kit[slot].name:''}`); }
-
-function scheduleNext(extra){
-  const d=(extra!=null?extra:520)/G.speed;
-  setTimeout(step, d);
-}
-
+function shouldS2(u){if(u.class==='HLR'||u.class==='TNK')return livingH().some(h=>h.hp/h.max<.7);return true;}
+function ultWorth(u){if(u.class==='HLR')return livingH().some(h=>h.hp/h.max<.6);if(u.class==='TNK')return !!G.telegraph;return true;}
+function fireUlt(u){if(!u.alive||G.surge<(u.kit.S3.surgeCost||60))return;G.surge-=(u.kit.S3.surgeCost||60);cutIn(u);runSkill(u,'S3');logAct(u,'S3');render();}
+function logAct(u,slot){logMsg(`${u.side==='ally'?'<b>'+u.name+'</b>':u.name} · ${u.kit?u.kit[slot].name:''}`);}
+function scheduleNext(x){setTimeout(step,(x!=null?x:520)/G.speed);}
 function checkEnd(){
-  if(!livingHeroes().length){ endGame(false); return true; }
-  if(!livingEnemies().length){ endGame(true); return true; }
+  if(!livingH().length){endGame(false);return true;}
+  if(!livingE().length){
+    if(G.wi<G.waves.length-1){ G.wi++; G.enemies=G.waves[G.wi]; renderEnemies();
+      $('#wavepip').textContent=`Wave ${G.wi+1} / ${G.waves.length}`; logMsg(`<b>Wave ${G.wi+1}</b> — hold the line`);
+      turnQueue=[]; render(); return false; }
+    endGame(true); return true;
+  }
   return false;
 }
-
-// ---- rendering ----
-function pct(u){return clamp(u.hp/u.max,0,1);}
-function hpColor(p){return p>.5?'var(--good)':p>.25?'var(--warn)':'var(--crit)';}
+/* ---------- render ---------- */
+const pct=u=>clamp(u.hp/u.max,0,1), hpColor=p=>p>.5?'var(--good)':p>.25?'var(--warn)':'var(--crit)';
 function render(){
-  const boss=G.enemies.find(e=>e.isBoss);
-  $('#bossHp').style.transform=`scaleX(${pct(boss)})`;
-  $('#bossHp').style.background=hpColor(pct(boss));
-  $('#bossHpTxt').textContent=`${boss.hp.toLocaleString()} / ${boss.max.toLocaleString()}`;
-  $('#bossPhase').textContent = pct(boss)>.6?'Phase I':pct(boss)>.3?'Phase II — Absorbing':'Phase II';
-  renderAdds();
-  // surge
   $('#surgefill').style.transform=`scaleX(${G.surge/100})`;
   $('#surgeval').innerHTML=`<b>${Math.floor(G.surge)}</b> / 100`;
-  // party
-  G.heroes.forEach(h=>{
-    const p=pct(h); const f=h.el.querySelector('.hpfill');
-    f.style.transform=`scaleX(${p})`; f.style.background=hpColor(p);
-    h.el.querySelector('.cd').textContent = (h.cd.S2>0)?`${h.cd.S2}`:'';
-    const ready = h.alive && G.surge>=(h.kit.S3.surgeCost||60);
-    h.el.classList.toggle('ready',ready);
-    h.el.classList.toggle('dead',!h.alive);
-  });
+  G.enemies.forEach(e=>{if(!e.el)return;const f=e.el.querySelector('.hpfill');if(f){f.style.transform=`scaleX(${pct(e)})`;f.style.background=hpColor(pct(e));}
+    const t=e.el.querySelector('.hptext');if(t&&(e.isBoss||e.isMini))t.textContent=`${e.hp.toLocaleString()} / ${e.max.toLocaleString()}`;
+    e.el.style.opacity=e.alive?'1':'.25';});
+  G.heroes.forEach(h=>{const f=h.el.querySelector('.hpfill');f.style.transform=`scaleX(${pct(h)})`;f.style.background=hpColor(pct(h));
+    h.el.querySelector('.cd').textContent=(h.cd.S2>0)?h.cd.S2:'';
+    h.el.classList.toggle('ready',h.alive&&G.surge>=(h.kit.S3.surgeCost||60));
+    h.el.classList.toggle('dead',!h.alive);});
 }
-function renderAdds(){
-  const adds=G.enemies.filter(e=>e.alive&&!e.isBoss);
-  const box=$('#adds'); box.innerHTML='';
-  adds.forEach(a=>{
-    const d=document.createElement('div'); d.className='add';
-    d.innerHTML=`<div class="p">🟢</div><div class="hpwrap"><div class="hpfill" style="transform:scaleX(${pct(a)});background:var(--slime)"></div></div>`;
-    a.el=d; box.appendChild(d);
+function renderEnemies(){
+  const row=$('#enemyRow');row.innerHTML='';
+  G.enemies.filter(e=>e.alive).forEach(e=>{
+    const size=e.isBoss?'big':e.isMini?'mid':'small';
+    const d=document.createElement('div');d.className='ecard '+size;
+    const core=(e.isBoss||e.isMini)?'<div class="core"></div>':'';
+    d.innerHTML=`<div class="p">${EGLYPH[e.id]||'🟢'}${core}</div><div class="en">${e.name}</div>
+      <div class="hpwrap"><div class="hpfill" style="background:var(--slime)"></div>${(e.isBoss||e.isMini)?'<div class="hptext"></div>':''}</div>`;
+    e.el=d;row.appendChild(d);
   });
+  render();
 }
-function renderEnemies(){ renderAdds(); }
-function renderTelegraph(){
-  const el=$('#telegraph');
-  if(!G.telegraph){el.classList.remove('show');return;}
-  el.classList.add('show');
-  el.querySelector('.tgname').textContent=G.telegraph.name;
+function renderTelegraph(){const el=$('#telegraph');if(!G.telegraph){el.classList.remove('show');return;}
+  el.classList.add('show');el.querySelector('.tgname').textContent=G.telegraph.name;
   const done=G.telegraph.max-G.telegraph.windup;
-  el.querySelector('.pips').innerHTML=Array.from({length:G.telegraph.max},(_,i)=>`<span class="pip ${i<done?'lit':''}"></span>`).join('');
-}
-function buildParty(){
-  const box=$('#party'); box.innerHTML='';
-  G.heroes.forEach(h=>{
-    const c=CLASS[h.class];
-    const el=document.createElement('div'); el.className='hero'; el.style.setProperty('--hue',`var(${c.hue})`);
-    el.innerHTML=`<div class="cls">${c.lbl}</div><div class="cd num"></div>
-      <div class="p">${c.glyph}</div><div class="nm">${h.name}</div>
-      <div class="hpwrap"><div class="hpfill" style="background:var(--good)"></div></div>`;
-    el.addEventListener('click',()=>{ if(el.classList.contains('ready')&&!G.over) fireUlt(h); });
-    h.el=el; box.appendChild(el);
-  });
-}
-function markActing(u){ if(u.el){u.el.classList.add('acting'); setTimeout(()=>u.el&&u.el.classList.remove('acting'),200/G.speed);} }
-function shake(u){ if(u.el){u.el.classList.add('hit'); setTimeout(()=>u.el&&u.el.classList.remove('hit'),300);} }
-function floatNum(u,val,cls,root,sub){
-  const host = u.el || (u.isBoss?$('#boss .portrait'):null); if(!host)return;
-  const r=host.getBoundingClientRect(), stage=$('#stage').getBoundingClientRect();
-  const s=document.createElement('div'); s.className='dmg '+(cls||'');
-  const col = cls==='heal'?'var(--good)': sub==='bleed'?'#ff6b8a': root==='magical'?'#b9a5ff':'#ffd9a0';
-  s.style.color=col; s.textContent=(cls==='heal'?'+':'')+Math.round(val).toLocaleString();
-  s.style.left=(r.left-stage.left + r.width/2 - 14 + rand(-14,14))+'px';
-  s.style.top=(r.top-stage.top + r.height/2 - 10)+'px';
-  $('#fx').appendChild(s); setTimeout(()=>s.remove(),1000);
-}
-let logT;
-function logMsg(html){ clearTimeout(logT); $('#log').innerHTML=html; }
-function cutIn(u){
-  const c=$('#cutin'), hue=CLASS[u.class].hue;
-  c.style.setProperty('--hue',`var(${hue})`);
-  c.querySelector('.who').textContent=u.name;
-  c.querySelector('.skill').textContent=u.kit.S3.name;
-  c.classList.add('show');
-  G.busy=true;
-  setTimeout(()=>{c.classList.remove('show'); G.busy=false; if(!G.over) scheduleNext(120);}, 720/G.speed);
-}
-function cutFlash(){ const c=$('#cutin'); c.style.setProperty('--hue','var(--danger)'); }
-
-// ---- lifecycle ----
+  el.querySelector('.pips').innerHTML=Array.from({length:G.telegraph.max},(_,i)=>`<span class="pip ${i<done?'lit':''}"></span>`).join('');}
+function buildParty(){const box=$('#party');box.innerHTML='';G.heroes.forEach(h=>{const c=CLASS[h.class];
+  const el=document.createElement('div');el.className='hero';el.style.setProperty('--hue',`var(${c.hue})`);
+  el.innerHTML=`<div class="cls">${c.l}</div><div class="cd num"></div><div class="p">${c.g}</div><div class="nm">${h.name}</div>
+    <div class="hpwrap"><div class="hpfill" style="background:var(--good)"></div></div>`;
+  el.addEventListener('click',()=>{if(el.classList.contains('ready')&&!G.over)fireUlt(h);});h.el=el;box.appendChild(el);});}
+function markActing(u){if(u.el){u.el.classList.add('acting');setTimeout(()=>u.el&&u.el.classList.remove('acting'),200/G.speed);}}
+function shake(u){if(u.el){u.el.classList.add('hit');setTimeout(()=>u.el&&u.el.classList.remove('hit'),300);}}
+function floatNum(u,val,cls,root,sub){const host=u.el;if(!host)return;const r=host.getBoundingClientRect(),a=$('#app').getBoundingClientRect();
+  const s=document.createElement('div');s.className='dmg '+(cls||'');
+  s.style.color=cls==='heal'?'var(--good)':sub==='bleed'?'#ff6b8a':root==='magical'?'#b9a5ff':'#ffd9a0';
+  s.textContent=(cls==='heal'?'+':'')+Math.round(val).toLocaleString();
+  s.style.left=(r.left-a.left+r.width/2-14+rand(-12,12))+'px';s.style.top=(r.top-a.top+r.height/2-10)+'px';
+  $('#fx').appendChild(s);setTimeout(()=>s.remove(),1000);}
+function logMsg(h){$('#log').innerHTML=h;}
+function cutIn(u){const c=$('#cutin');c.style.setProperty('--hue',`var(${CLASS[u.class].hue})`);
+  c.querySelector('.who').textContent=u.name;c.querySelector('.skill').textContent=u.kit.S3.name;c.classList.add('show');G.busy=true;
+  setTimeout(()=>{c.classList.remove('show');G.busy=false;if(!G.over)scheduleNext(120);},720/G.speed);}
 function endGame(win){
-  G.over=true; renderTelegraph();
-  const r=$('#result'); r.style.display='flex';
-  $('#resEyebrow').textContent = win?'The Gate holds':'The party falls';
-  const v=$('#resVerdict'); v.textContent = win?'VICTORY':'DEFEAT'; v.className='verdict '+(win?'win':'lose');
-  $('#resSub').innerHTML = win
-    ? `Krul dissolves back into the flood. In the full game this drops the chapter-clear chest and unlocks the Boss menu — and the real fight adds her phase-2 absorb-heal you just saw teased.`
-    : `The Mother-Mass overwhelms the squad. Try banking Surge for <b>Roland's</b> team-immunity right before the Umbral Spray lands, then answer with <b>Aurelia's</b> full heal.`;
-}
-function reset(){
-  G=newGame(); buildParty(); renderEnemies(); render(); renderTelegraph();
-  $('#roundNum').textContent='1'; $('#result').style.display='none'; logMsg('The flood stirs…');
-  turnQueue=[];
-}
-function start(){ reset(); $('#intro').style.display='none'; setTimeout(step,400); }
-
-// intro team preview
-function buildIntroTeam(){
-  const box=$('#introTeam');
-  DATA.heroes.forEach(h=>{const c=CLASS[h.class];
-    const d=document.createElement('div'); d.className='t'; d.style.setProperty('--hue',`var(${c.hue})`);
-    d.innerHTML=`<div class="d">${c.glyph}</div>${c.lbl}`; box.appendChild(d);});
+  G.over=true;renderTelegraph();
+  if(win)cleared.add(curStage.id);
+  const r=$('#result');r.style.display='flex';
+  const last = DATA.arc.every(s=>cleared.has(s.id));
+  $('#resEyebrow').textContent=win?(last?'The Gate is sealed':'Stage cleared'):(G.timeout?'Time runs out':'The party falls');
+  const v=$('#resVerdict');v.textContent=win?'VICTORY':'DEFEAT';v.className='verdict '+(win?'win':'lose');
+  $('#resSub').innerHTML=win?(last
+      ?`You closed the Drowned Quarter. The full game continues into three more chapters, co-op raids, and the gacha tower — all specified in the design docs.`
+      :`On to the next gate. Your squad carries no fatigue here — pick a fresh five or keep your winners.`)
+    :`The flood takes them. Try banking Surge for <b>Roland's</b> team-immunity before a telegraphed hit, then answer with <b>Aurelia's</b> heal — or bring more sustain.`;
+  const nx=$('#resNext');
+  if(win&&!last){nx.textContent='Continue';nx.onclick=()=>{buildMap();show('screen-map');};}
+  else if(win&&last){nx.textContent='Roster';nx.onclick=()=>{buildMap();show('screen-map');};}
+  else{nx.textContent='Retry';nx.onclick=()=>deploy();}
 }
 
-// controls
-$('#startBtn').addEventListener('click',start);
-$('#againBtn').addEventListener('click',start);
-$('#autoBtn').addEventListener('click',e=>{G.auto=!G.auto; e.target.classList.toggle('active',G.auto);});
-$('#speedBtn').addEventListener('click',e=>{G.speed = G.speed>=3?1:G.speed+1; e.target.textContent=G.speed+'×';});
-
-G=newGame(); buildIntroTeam(); buildParty(); renderEnemies(); render();
+/* ---------- controls ---------- */
+$('#toMap').addEventListener('click',()=>{buildMap();show('screen-map');});
+$('#teamBack').addEventListener('click',()=>{buildMap();show('screen-map');});
+$('#suggestBtn').addEventListener('click',suggestTeam);
+$('#startBtn').addEventListener('click',()=>{if(team.length===5)deploy();});
+$('#resMap').addEventListener('click',()=>{buildMap();show('screen-map');});
+$('#autoBtn').addEventListener('click',e=>{ui.auto=!ui.auto;if(G)G.auto=ui.auto;e.target.classList.toggle('active',ui.auto);});
+$('#speedBtn').addEventListener('click',e=>{ui.speed=ui.speed>=3?1:ui.speed+1;if(G)G.speed=ui.speed;e.target.textContent=ui.speed+'×';});
 </script>
