@@ -272,6 +272,7 @@
     <div class="tag">A dark-fantasy squad RPG. Push through the Drowned Quarter, build your five, and close the Gate on the Mother-Mass.</div>
     <button class="cta" id="toMap">Begin the Descent</button>
     <div class="hint">Playable vertical slice · real unit stats & the doc-02 turn engine, in your browser.</div>
+    <button id="resetBtn" style="background:none;border:none;color:var(--faint);font-size:10px;letter-spacing:.18em;text-transform:uppercase;cursor:pointer;margin-top:2px;display:none">⟲ Reset progress</button>
   </section>
 
   <!-- MAP -->
@@ -399,6 +400,16 @@ function renderCrys(){
   document.querySelectorAll('.shardN').forEach(e=>e.textContent=starShards.toLocaleString());
   const pl=$('#pityLeft');if(pl)pl.textContent=Math.max(0,70-pity);}
 
+/* ---------- save / load (localStorage, graceful fallback) ---------- */
+const SAVE_KEY='ashgate_save_v1';
+let hasSave=false;
+function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(
+  {v:1,owned:[...owned],progress,cleared:[...cleared],crystals,gold,starShards,pity}));}catch(e){}}
+function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s||s.v!==1)return false;
+  owned=new Set(s.owned);progress=s.progress||{};cleared=new Set(s.cleared);
+  crystals=s.crystals??crystals;gold=s.gold??gold;starShards=s.starShards??starShards;pity=s.pity??0;return true;}catch(e){return false;}}
+function resetSave(){try{localStorage.removeItem(SAVE_KEY);}catch(e){}location.reload();}
+
 /* ---------- screens ---------- */
 function show(id){$$('.screen').forEach(s=>s.classList.toggle('on',s.id===id));}
 
@@ -506,6 +517,7 @@ function pull(n){
     return {h,rar,isNew};
   });
   renderCrys();
+  saveGame();
   showPulls(cards);
 }
 function showPulls(cards){
@@ -563,9 +575,9 @@ function renderHero(){
   renderCrys();
 }
 function doLevel(){const pr=prog(curHero),cap=DATA.levelCapByStar[pr.stars],lc=levelCost(pr);
-  if(pr.level>=cap||gold<lc)return;gold-=lc;pr.level++;renderHero();}
+  if(pr.level>=cap||gold<lc)return;gold-=lc;pr.level++;renderHero();saveGame();}
 function doStar(){const h=hero(curHero),pr=prog(curHero),sc=starCost(h,pr);
-  if(pr.stars>=h.starCap||starShards<sc.shards||gold<sc.gold)return;starShards-=sc.shards;gold-=sc.gold;pr.stars++;renderHero();}
+  if(pr.stars>=h.starCap||starShards<sc.shards||gold<sc.gold)return;starShards-=sc.shards;gold-=sc.gold;pr.stars++;renderHero();saveGame();}
 
 /* ---------- BATTLE ENGINE ---------- */
 function mkHero(id){const s=hero(id),st=effStats(s); return {...s,stats:st,side:'ally',hp:st.hp,max:st.hp,barrier:0,rage:0,cd:{},status:{},alive:true,el:null};}
@@ -741,6 +753,7 @@ function endGame(win){
     goldR=curStage.boss?8000:4000;gold+=goldR;shardR=curStage.boss?30:12;starShards+=shardR;}
   if(win)cleared.add(curStage.id);
   renderCrys();
+  if(win)saveGame();
   const r=$('#result');r.style.display='flex';
   const last = DATA.arc.every(s=>cleared.has(s.id));
   $('#resEyebrow').textContent=win?(last?'The Gate is sealed':'Stage cleared'):(G.timeout?'Time runs out':'The party falls');
@@ -758,6 +771,9 @@ function endGame(win){
 
 /* ---------- controls ---------- */
 $('#toMap').addEventListener('click',()=>{buildMap();renderCrys();show('screen-map');});
+$('#resetBtn').addEventListener('click',()=>{if(confirm('Reset all progress — roster, upgrades, and chapter clears?'))resetSave();});
+hasSave=loadGame();
+if(hasSave){$('#toMap').textContent='Continue';$('#resetBtn').style.display='block';}
 renderCrys();
 $('#toGacha').addEventListener('click',()=>{renderCrys();show('screen-gacha');});
 $('#toHeroes').addEventListener('click',()=>{buildHeroGrid();renderCrys();show('screen-heroes');});
