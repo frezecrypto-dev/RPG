@@ -18,6 +18,9 @@ something you can actually tap and play.
 - A **telegraphed detonation** (Krul's Umbral Spray) with a windup pip row —
   bank Surge for Roland's team-immunity or answer with Aurelia's heal.
 - Ultimate **cut-ins**, floating damage numbers, budding Slimelet adds.
+- **Synthesized sound** — hits, crits, heals, telegraph warnings, ultimate
+  swells, and gacha fanfares are generated live with the Web Audio API (no
+  audio files, CSP-safe). Toggle with the speaker button; the choice persists.
 
 ## Faithful data
 
@@ -39,7 +42,9 @@ Gear stats feed the same `computeStats` the battle engine reads, so ATK%, HP%,
 DEF, SPD, **crit rate/damage**, and **lifesteal** all change how fights play;
 **Aegis 4-pc** grants a battle-start barrier and **Mending** boosts heals.
 Pieces come from **stage drops** (bosses drop better) and a gold **Forge**;
-**Auto-Equip** fills a hero from the bag. Two set 4-pc effects that aren't pure
+**Auto-Equip** fills a hero from the bag. Browsing a slot shows each candidate's
+**Gear-Power delta** (▲/▼) vs. what's equipped, and unwanted pieces **scrap for
+Gold** (single or bulk "Scrap Commons"). Two set 4-pc effects that aren't pure
 numbers in the doc (Vanguard/Gravebind) use a stat proxy here.
 
 ## Scope / honesty

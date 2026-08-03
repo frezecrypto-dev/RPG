@@ -306,6 +306,9 @@
     background:var(--panel);color:var(--ink);cursor:pointer;white-space:nowrap}
   .gcard .gcbtns button.eq{border-color:var(--umbra-dim);color:var(--umbra)}
   .gcard .gcbtns button:disabled{opacity:.4;cursor:default}
+  .gcard .gcbtns button.scrap{border-color:transparent;color:var(--faint);font-size:9px;padding:3px 9px}
+  .gcard .gcbtns button.scrap:hover{color:var(--warn);border-color:var(--line)}
+  .gcdelta{font-size:9px;font-weight:700;margin-left:5px}
   #geBar{display:flex;gap:8px;align-items:center;padding:11px 14px;border-top:1px solid var(--line);
     background:linear-gradient(0deg,rgba(14,11,24,.98),transparent)}
   #sndBtn{position:absolute;top:8px;right:8px;z-index:40;width:30px;height:30px;border-radius:50%;
@@ -394,6 +397,7 @@
     <div id="geActions">
       <button class="ghost" id="geAuto">Auto-Equip</button>
       <button class="ghost costbtn" id="geForge"><span>Forge Gear</span><small>◉ 12,000</small></button>
+      <button class="ghost" id="geScrap">Scrap Commons</button>
       <div class="gefilter" id="geFilter">Showing: all</div>
     </div>
     <div id="geInv"></div>
@@ -764,6 +768,18 @@ let geSlotSel=null;
 const GCONTRIB={atk_flat:1,def_flat:1.6,hp_flat:.12,spd_flat:12,atk_pct:900,def_pct:900,hp_pct:900,spd_pct:1100,crit_rate:800,crit_dmg:600,lifesteal:700,heal_pct:700,aegis:600};
 function pieceScore(p){let s=mainVal(p)*(GCONTRIB[p.main.k]||400);p.subs.forEach(x=>s+=x.v*(GCONTRIB[x.k]||400));return s;}
 function heroGearPower(id){const a=gearBonus(id).agg;let p=0;for(const k in a)p+=a[k]*(GCONTRIB[k]||400);return Math.round(p);}
+// true Gear-Power delta if we equipped uid into its slot on curHero (incl. set bonuses)
+function powerDelta(uid){const p=pieceById(uid);if(!p)return 0;const cur=gearOn[curHero]||{};
+  if(cur[p.slot]===uid)return 0;const save=cur;gearOn[curHero]={...cur,[p.slot]:uid};
+  const d=heroGearPower(curHero);gearOn[curHero]=save;return d-heroGearPower(curHero);}
+function scrapValue(p){const tierIdx=['T1','T2','T3','T4'].indexOf(p.tier)+1,rarMult={C:1,R:2,E:4,L:8}[p.rar];
+  return Math.round((300+p.lvl*220)*tierIdx*rarMult*0.5);}
+function scrapPiece(uid){const p=pieceById(uid);if(!p||whoHas(p.uid))return; // never scrap an equipped piece
+  if((p.rar==='E'||p.rar==='L')&&!confirm('Scrap the '+GRAR[p.rar].n+' '+GSETS[p.set].n+' '+GSLOT[p.slot].n+'? This is permanent.'))return;
+  gold+=scrapValue(p);inventory=inventory.filter(x=>x.uid!==uid);renderGear();saveGame();}
+function scrapCommons(){const junk=inventory.filter(p=>p.rar==='C'&&!whoHas(p.uid));if(!junk.length)return;
+  if(!confirm('Scrap '+junk.length+' unequipped Common piece'+(junk.length>1?'s':'')+' for '+junk.reduce((s,p)=>s+scrapValue(p),0).toLocaleString()+' Gold?'))return;
+  junk.forEach(p=>gold+=scrapValue(p));const ids=new Set(junk.map(p=>p.uid));inventory=inventory.filter(p=>!ids.has(p.uid));renderGear();saveGame();}
 function whoHas(uid){for(const id in gearOn)for(const sl in gearOn[id])if(gearOn[id][sl]===uid)return id;return null;}
 function isEquippedHere(p){return (gearOn[curHero]||{})[p.slot]===p.uid;}
 function enhanceCost(p){return Math.round(300*(p.lvl+1)*(1+['T1','T2','T3','T4'].indexOf(p.tier)*.5));}
@@ -797,15 +813,21 @@ function gcardHTML(p){
   const subs=p.subs.map(s=>STATLBL[s.k]+' '+fmtStat(s.k,s.v)).join(' · ')||'—';
   const ec=enhanceCost(p), eqLabel=eqHere?'Unequip':(owner&&owner!==curHero?'Move here':'Equip');
   const onTxt=owner&&owner!==curHero?' · on '+hero(owner).name.split(' ')[0]:'';
+  // power delta vs currently equipped (only meaningful when viewing this slot & not equipped here)
+  let delta='';
+  if(geSlotSel===p.slot&&!eqHere){const d=powerDelta(p.uid);
+    delta=` <span class="gcdelta" style="color:var(${d>0?'--good':d<0?'--crit':'--faint'})">${d>0?'▲+':d<0?'▼':'±'}${Math.abs(d)}</span>`;}
+  const canScrap=!owner;
   return `<div class="gcard${eqHere?' equipped':''}" data-uid="${p.uid}">
     <div class="gci" style="color:var(${GRAR[p.rar].c})">${GSLOT[p.slot].i}</div>
     <div class="gcmain">
       <div class="gctop"><span class="gcname" style="color:var(${GRAR[p.rar].c})">${GSETS[p.set].n}</span>
         <span class="gctier">${GSLOT[p.slot].n} · ${p.tier} · ${GRAR[p.rar].n}${onTxt}</span>
-        <span class="gclv">+${p.lvl}</span></div>
+        <span class="gclv">+${p.lvl}${delta}</span></div>
       <div class="gcstat">${mainStr}</div><div class="gcsubs">${subs}</div></div>
     <div class="gcbtns"><button class="eq" data-act="eq">${eqLabel}</button>
-      <button data-act="enh" ${p.lvl>=15?'disabled':''}>${p.lvl>=15?'Max':'+ ◉'+(ec>=1000?(Math.round(ec/100)/10)+'k':ec)}</button></div></div>`;
+      <button data-act="enh" ${p.lvl>=15?'disabled':''}>${p.lvl>=15?'Max':'+ ◉'+(ec>=1000?(Math.round(ec/100)/10)+'k':ec)}</button>
+      ${canScrap?`<button class="scrap" data-act="scrap" title="Scrap for Gold">⤵ ◉${(scrapValue(p)>=1000?(Math.round(scrapValue(p)/100)/10)+'k':scrapValue(p))}</button>`:''}</div></div>`;
 }
 function renderGear(){
   const h=hero(curHero); $('#geHero').textContent=h.name+' · '+h.role;
@@ -826,7 +848,10 @@ function renderGear(){
   inv.innerHTML=list.length?list.map(gcardHTML).join(''):'<div class="empty">No gear'+(geSlotSel?' for this slot':'')+' yet — Forge a piece or clear a stage for a drop.</div>';
   inv.querySelectorAll('.gcard').forEach(c=>{const uid=+c.dataset.uid;
     c.querySelector('[data-act=eq]').addEventListener('click',()=>toggleEquip(uid));
-    c.querySelector('[data-act=enh]').addEventListener('click',()=>enhancePiece(uid));});
+    c.querySelector('[data-act=enh]').addEventListener('click',()=>enhancePiece(uid));
+    const sc=c.querySelector('[data-act=scrap]');if(sc)sc.addEventListener('click',()=>scrapPiece(uid));});
+  const nJunk=inventory.filter(p=>p.rar==='C'&&!whoHas(p.uid)).length;
+  const bScrap=$('#geScrap');bScrap.textContent='Scrap Commons'+(nJunk?' ('+nJunk+')':'');bScrap.disabled=!nJunk;
   $('#geForge').disabled=gold<12000;
   renderCrys();
 }
@@ -1072,6 +1097,7 @@ $('#hdGear').addEventListener('click',openGear);
 $('#geBack').addEventListener('click',()=>{renderHero();show('screen-hero');});
 $('#geAuto').addEventListener('click',autoEquip);
 $('#geForge').addEventListener('click',forge);
+$('#geScrap').addEventListener('click',scrapCommons);
 $('#gachaBack').addEventListener('click',()=>{buildMap();renderCrys();show('screen-map');});
 $('#pull1').addEventListener('click',()=>pull(1));
 $('#pull10').addEventListener('click',()=>pull(10));
