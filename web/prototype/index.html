@@ -308,10 +308,16 @@
   .gcard .gcbtns button:disabled{opacity:.4;cursor:default}
   #geBar{display:flex;gap:8px;align-items:center;padding:11px 14px;border-top:1px solid var(--line);
     background:linear-gradient(0deg,rgba(14,11,24,.98),transparent)}
+  #sndBtn{position:absolute;top:8px;right:8px;z-index:40;width:30px;height:30px;border-radius:50%;
+    border:1px solid var(--line);background:rgba(20,16,34,.7);color:var(--ink);font-size:13px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);padding:0;line-height:1}
+  #sndBtn:hover{border-color:var(--umbra-dim)}
+  #sndBtn.muted{opacity:.5}
   @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.05ms!important}}
 </style>
 
 <div id="app">
+  <button id="sndBtn" title="Sound on/off" aria-label="Toggle sound">🔊</button>
   <!-- TITLE -->
   <section class="screen on" id="screen-title">
     <div class="mark">Ashgate</div>
@@ -454,7 +460,46 @@ const rand=(a,b)=>a+Math.random()*(b-a),clamp=(v,a,b)=>Math.max(a,Math.min(b,v))
 const hero=id=>DATA.heroes.find(h=>h.id===id);
 
 const STARTER=['ASH-TNK-C01','ASH-ASN-C01','ASH-RNG-C01','ASH-MAG-C01','ASH-NEC-C01','ASH-HLR-C01','ASH-BSK-C01','ASH-ASN-E01'];
-let cleared=new Set(), curStage=null, team=[], G=null, ui={speed:1,auto:false};
+let cleared=new Set(), curStage=null, team=[], G=null, ui={speed:1,auto:false,muted:false};
+
+/* ---------- SFX: synthesized Web Audio, no external assets (CSP-safe) ---------- */
+const SFX=(()=>{
+  let ctx=null, master=null;
+  function ac(){ if(!ctx){ try{ const AC=window.AudioContext||window.webkitAudioContext; ctx=new AC();
+    master=ctx.createGain(); master.gain.value=ui.muted?0:0.45; master.connect(ctx.destination);}catch(e){ctx=null;} } return ctx; }
+  function resume(){ const c=ac(); if(c&&c.state==='suspended')c.resume(); }
+  function tone(o){ const c=ac(); if(!c)return; const {freq=440,type='sine',dur=.15,vol=.3,delay=0,slideTo=null,pan=0}=o;
+    const t=c.currentTime+delay, osc=c.createOscillator(), g=c.createGain();
+    osc.type=type; osc.frequency.setValueAtTime(freq,t);
+    if(slideTo)osc.frequency.exponentialRampToValueAtTime(Math.max(20,slideTo),t+dur);
+    g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(vol,t+0.008); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    let node=g; if(pan&&c.createStereoPanner){const p=c.createStereoPanner();p.pan.value=pan;g.connect(p);node=p;}
+    osc.connect(g); node.connect(master); osc.start(t); osc.stop(t+dur+0.03); }
+  function noise(o){ const c=ac(); if(!c)return; const {dur=.12,vol=.25,delay=0,freq=2500,q=0.7}=o;
+    const t=c.currentTime+delay, n=Math.floor(c.sampleRate*dur), buf=c.createBuffer(1,n,c.sampleRate), d=buf.getChannelData(0);
+    for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n);
+    const s=c.createBufferSource(); s.buffer=buf; const g=c.createGain();
+    g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    let node=s; if(c.createBiquadFilter){const f=c.createBiquadFilter();f.type='bandpass';f.frequency.value=freq;f.Q.value=q;s.connect(f);node=f;}
+    node.connect(g); g.connect(master); s.start(t); s.stop(t+dur+0.02); }
+  return {
+    resume, warm:ac,
+    setMuted(m){ const c=ac(); if(master&&c)master.gain.setTargetAtTime(m?0:0.45,c.currentTime,0.01); },
+    hit(){ noise({dur:.08,vol:.16,freq:2200,q:0.6}); tone({freq:170,type:'square',dur:.07,vol:.10,slideTo:90}); },
+    crit(){ noise({dur:.14,vol:.26,freq:3200,q:0.5}); tone({freq:340,type:'sawtooth',dur:.16,vol:.15,slideTo:120}); },
+    heal(){ tone({freq:520,type:'sine',dur:.26,vol:.14,slideTo:780}); tone({freq:660,type:'sine',dur:.3,vol:.09,delay:.05,slideTo:990}); },
+    surge(){ tone({freq:300,type:'triangle',dur:.32,vol:.13,slideTo:900}); },
+    ult(){ tone({freq:170,type:'sawtooth',dur:.5,vol:.18,slideTo:520}); noise({dur:.4,vol:.16,delay:.02,freq:1400,q:0.3}); tone({freq:760,type:'square',dur:.18,vol:.09,delay:.12}); },
+    tele(){ tone({freq:900,type:'square',dur:.11,vol:.11}); tone({freq:900,type:'square',dur:.11,vol:.11,delay:.17}); },
+    death(){ tone({freq:200,type:'sawtooth',dur:.28,vol:.13,slideTo:55}); noise({dur:.2,vol:.12,freq:700,q:0.4}); },
+    tap(){ tone({freq:460,type:'sine',dur:.05,vol:.07}); },
+    win(){ [523,659,784,1047].forEach((f,i)=>tone({freq:f,type:'triangle',dur:.42,vol:.15,delay:i*.12})); },
+    lose(){ [392,330,262].forEach((f,i)=>tone({freq:f,type:'sine',dur:.5,vol:.15,delay:i*.16,slideTo:f*.8})); },
+    rare(r){ if(r==='L'){[659,988,1319,1976].forEach((f,i)=>tone({freq:f,type:'triangle',dur:.5,vol:.16,delay:i*.1}));}
+      else if(r==='E'){[587,880].forEach((f,i)=>tone({freq:f,type:'triangle',dur:.34,vol:.14,delay:i*.09}));}
+      else tone({freq:440,type:'sine',dur:.16,vol:.09}); }
+  };
+})();
 let owned=new Set(STARTER), crystals=4500, gold=20000, starShards=120, pity=0;
 let progress={};
 const RATES={L:0.03,E:0.14,R:0.38,C:0.45};
@@ -528,11 +573,12 @@ function renderCrys(){
 const SAVE_KEY='ashgate_save_v1';
 let hasSave=false;
 function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(
-  {v:2,owned:[...owned],progress,cleared:[...cleared],crystals,gold,starShards,pity,inventory,gearOn,gearUID}));}catch(e){}}
+  {v:2,owned:[...owned],progress,cleared:[...cleared],crystals,gold,starShards,pity,inventory,gearOn,gearUID,muted:ui.muted}));}catch(e){}}
 function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s||(s.v!==1&&s.v!==2))return false;
   owned=new Set(s.owned);progress=s.progress||{};cleared=new Set(s.cleared);
   crystals=s.crystals??crystals;gold=s.gold??gold;starShards=s.starShards??starShards;pity=s.pity??0;
   inventory=s.inventory||[];gearOn=s.gearOn||{};gearUID=s.gearUID||inventory.reduce((m,p)=>Math.max(m,p.uid),0);
+  ui.muted=s.muted??false;
   return true;}catch(e){return false;}}
 function resetSave(){try{localStorage.removeItem(SAVE_KEY);}catch(e){}location.reload();}
 
@@ -656,6 +702,7 @@ function pull(n){
 function showPulls(cards){
   const grid=$('#pullGrid'); grid.innerHTML=''; grid.className=cards.length===1?'one':'';
   const best=cards.reduce((a,c)=>RORDER[c.rar]<RORDER[a]?c.rar:a,'C');
+  SFX.rare(best);
   $('#pullBurst').textContent = best==='L'?'✦ LEGENDARY ✦':best==='E'?'Epic find':'';
   $('#pullBurst').style.color = best==='L'?'var(--rL)':best==='E'?'var(--rE)':'var(--muted)';
   cards.forEach((c,i)=>{
@@ -830,12 +877,12 @@ function dealDamage(src,tgt,power,root,sub){
   if(tgt.barrier>0&&sub!=='bleed'){const ab=Math.min(tgt.barrier,d);tgt.barrier-=ab;d-=ab;}
   tgt.hp=Math.max(0,tgt.hp-d); if(src.side==='ally')gainSurge(4);
   if(src.side==='ally'&&(src.stats.lifesteal||0)>0&&d>0)heal(src,Math.round(d*src.stats.lifesteal));
-  floatNum(tgt,d,isCrit?'crit':'',root,sub); shake(tgt);
+  floatNum(tgt,d,isCrit?'crit':'',root,sub); shake(tgt); if(d>0)SFX[isCrit?'crit':'hit']();
   if(tgt.hp<=0)onKill(src,tgt); return d;
 }
 function heal(t,a){if(!t.alive)return;t.hp=Math.min(t.max,t.hp+a);floatNum(t,a,'heal');}
-function onKill(src,t){t.alive=false;t.hp=0;if(src.side==='ally')gainSurge(10);}
-function gainSurge(n){G.surge=clamp(G.surge+n,0,100);}
+function onKill(src,t){t.alive=false;t.hp=0;if(src.side==='ally')gainSurge(10);SFX.death();}
+function gainSurge(n){const b=G.surge;G.surge=clamp(G.surge+n,0,100);if(b<100&&G.surge>=100)SFX.surge();}
 const livingE=()=>G.enemies.filter(e=>e.alive), livingH=()=>G.heroes.filter(h=>h.alive);
 function pickTarget(src){
   if(src.side==='enemy'){const H=livingH();const t=H.filter(h=>h.status['STS-TAUNT-ME']);if(t.length)return t[0|Math.random()*t.length];
@@ -859,7 +906,7 @@ function runSkill(u,slot){
       else if(st==='STS-BLEED'){const t=pickTarget(u);if(t){t.status['STS-BLEED']=dur;t._bleed=(t._bleed||0)+(e.stacks||1);t._ba=statOf(u,'atk');}}
       else Fr.forEach(f=>f.status[st]=dur);
     }
-    else if(e.verb==='heal'){const a=Math.round(statOf(u,'atk')*(e.power||1)*(1+(u.stats.heal_pct||0)));Fr.forEach(f=>heal(f,a));}
+    else if(e.verb==='heal'){const a=Math.round(statOf(u,'atk')*(e.power||1)*(1+(u.stats.heal_pct||0)));Fr.forEach(f=>heal(f,a));SFX.heal();}
     else if(e.verb==='shield'){const a=Math.round(statOf(u,'def')*(e.power||1));Fr.forEach(f=>f.barrier=Math.max(f.barrier,a));}
     else if(e.verb==='cleanse')Fr.forEach(f=>{for(const s in f.status)if(s.includes('DOWN')||s==='STS-BLEED'||s==='STS-DECAY')delete f.status[s];});
     else if(e.verb==='strip')F.forEach(f=>{for(const s in f.status)if(s.includes('UP')){delete f.status[s];break;}});
@@ -878,7 +925,7 @@ function enemyTurn(u){
   if((u.isBoss||u.isMini) && !G.telegraph){
     const interval=u.isBoss?4:3;
     if(G.round%interval===0 && Math.random()<.88){
-      G.telegraph={owner:u,name:tg,windup:2,max:2};renderTelegraph();
+      G.telegraph={owner:u,name:tg,windup:2,max:2};renderTelegraph();SFX.tele();
       logMsg(`<b>${u.name}</b> — <b style="color:var(--danger)">${tg}</b> incoming`);return;}
   }
   // Krul buds Slimelets
@@ -978,11 +1025,11 @@ function floatNum(u,val,cls,root,sub){const host=u.el;if(!host)return;const r=ho
   s.style.left=(r.left-a.left+r.width/2-14+rand(-12,12))+'px';s.style.top=(r.top-a.top+r.height/2-10)+'px';
   $('#fx').appendChild(s);setTimeout(()=>s.remove(),1000);}
 function logMsg(h){$('#log').innerHTML=h;}
-function cutIn(u){const c=$('#cutin');c.style.setProperty('--hue',`var(${CLASS[u.class].hue})`);
+function cutIn(u){const c=$('#cutin');SFX.ult();c.style.setProperty('--hue',`var(${CLASS[u.class].hue})`);
   c.querySelector('.who').textContent=u.name;c.querySelector('.skill').textContent=u.kit.S3.name;c.classList.add('show');G.busy=true;
   setTimeout(()=>{c.classList.remove('show');G.busy=false;if(!G.over)scheduleNext(120);},720/G.speed);}
 function endGame(win){
-  G.over=true;renderTelegraph();
+  G.over=true;renderTelegraph();SFX[win?'win':'lose']();
   let reward=0,goldR=0,shardR=0,gp=null;
   if(win && !cleared.has(curStage.id)){reward=curStage.boss?300:150;crystals+=reward;
     goldR=curStage.boss?8000:4000;gold+=goldR;shardR=curStage.boss?30:12;starShards+=shardR;}
@@ -1035,6 +1082,11 @@ $('#teamBack').addEventListener('click',()=>{buildMap();show('screen-map');});
 $('#suggestBtn').addEventListener('click',suggestTeam);
 $('#startBtn').addEventListener('click',()=>{if(team.length===5)deploy();});
 $('#resMap').addEventListener('click',()=>{buildMap();show('screen-map');});
+function syncSnd(){const b=$('#sndBtn');b.textContent=ui.muted?'🔇':'🔊';b.classList.toggle('muted',ui.muted);}
+$('#sndBtn').addEventListener('click',()=>{ui.muted=!ui.muted;SFX.setMuted(ui.muted);if(!ui.muted)SFX.tap();syncSnd();saveGame();});
+// unlock/resume Web Audio on first user gesture (browser autoplay policy)
+document.addEventListener('pointerdown',()=>SFX.resume(),{once:true});
+syncSnd();
 $('#autoBtn').addEventListener('click',e=>{ui.auto=!ui.auto;if(G)G.auto=ui.auto;e.target.classList.toggle('active',ui.auto);});
 $('#speedBtn').addEventListener('click',e=>{ui.speed=ui.speed>=3?1:ui.speed+1;if(G)G.speed=ui.speed;e.target.textContent=ui.speed+'×';});
 </script>
