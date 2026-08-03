@@ -50,6 +50,15 @@ tap; applying a preset pulls its pieces back even if another hero borrowed them.
 Two set 4-pc effects that aren't pure numbers in the doc (Vanguard/Gravebind)
 use a stat proxy here.
 
+## PvP Arena
+
+An 8-tier ladder (Bronze → Diamond) of AI **defense squads** built from the real
+roster — each a balanced five (tank, two DPS, mage captain, healer) scaled by
+rank, with the captain throwing a telegraphed **signature** hit you answer like
+a mini-boss. Beat the squad at your rank to climb; each first clear pays out
+Crystals and Gold that grow with the tier. It reuses the same turn engine and
+damage math as the campaign — the opponents are just heroes fighting back.
+
 ## Home / lobby (doc 16)
 
 The map doubles as a lobby: a persistent **resource header** (Crystals / Gold /
@@ -73,9 +82,9 @@ This is a **playable slice**, not the game. It now covers the core loop —
 summon → equip/upgrade → team-build → multi-wave combat across the full
 four-chapter campaign (Slimes, Giants, Guardians, Undead — each family flips the
 damage-type puzzle, and the finale boss reknits once at the Gate) → **Hard-mode
-farm** → persist — but not the backend, PvP/co-op, or the remaining 20 stages of
-the 40-stage design, which are specified in `docs/` and `data/` but not built.
-Class art is CSS/emoji
+farm** → **PvP-Arena ladder** → persist — but not the backend, co-op raids, or
+the remaining 20 stages of the 40-stage design, which are specified in `docs/`
+and `data/` but not built. Class art is CSS/emoji
 placeholders (the AI art canon in `art/canon-manifest.json` isn't integrated).
 It's the fastest bridge from "validated spec" to "something you can hold."
 
