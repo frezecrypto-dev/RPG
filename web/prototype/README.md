@@ -50,6 +50,16 @@ tap; applying a preset pulls its pieces back even if another hero borrowed them.
 Two set 4-pc effects that aren't pure numbers in the doc (Vanguard/Gravebind)
 use a stat proxy here.
 
+## Co-op Raid
+
+A weekly **multi-phase raid boss** — Krul Ascended, the Drowned Crown (120k HP)
+— fought as a 30-round **damage race**. She enrages and summons Drowned Hands at
+66%, raises a ward and rises into Tidal Cataclysm at 33%. True to doc 07, raids
+pay out **by damage percent**: every run banks Crystals and Gold scaled to how
+far you got, gear drops at 50%+, and your **best damage %** is tracked — a full
+kill is 100%. It's the reason to keep pushing a stronger five even when you
+can't one-shot the boss yet.
+
 ## PvP Arena
 
 An 8-tier ladder (Bronze → Diamond) of AI **defense squads** built from the real
@@ -82,9 +92,9 @@ This is a **playable slice**, not the game. It now covers the core loop —
 summon → equip/upgrade → team-build → multi-wave combat across the full
 four-chapter campaign (Slimes, Giants, Guardians, Undead — each family flips the
 damage-type puzzle, and the finale boss reknits once at the Gate) → **Hard-mode
-farm** → **PvP-Arena ladder** → persist — but not the backend, co-op raids, or
-the remaining 20 stages of the 40-stage design, which are specified in `docs/`
-and `data/` but not built. Class art is CSS/emoji
+farm** → **PvP-Arena ladder** → **co-op raid** → persist — but not the backend,
+real multiplayer, or the remaining 20 stages of the 40-stage design, which are
+specified in `docs/` and `data/` but not built. Class art is CSS/emoji
 placeholders (the AI art canon in `art/canon-manifest.json` isn't integrated).
 It's the fastest bridge from "validated spec" to "something you can hold."
 

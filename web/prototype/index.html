@@ -77,6 +77,16 @@
   .fbsub{font-size:10px;color:var(--muted)}
   .fbcta{align-self:center;font-size:12px;padding:8px 16px;border-radius:10px;border:1px solid var(--hue);
     color:var(--ink);background:color-mix(in srgb,var(--hue) 22%,transparent);cursor:pointer;white-space:nowrap}
+  #raidCard{padding:6px 20px 4px}
+  .rcwrap{display:flex;align-items:center;gap:12px;border:1px solid var(--danger);border-radius:14px;padding:11px 13px;
+    background:linear-gradient(100deg,rgba(255,59,92,.14),var(--panel2) 60%);position:relative}
+  .rcglyph{font-size:28px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.5))}
+  .rcmeta{flex:1;min-width:0}
+  .rctag{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--danger)}
+  .rcname{font-family:var(--font-title);font-size:15px;line-height:1.1;margin:1px 0}
+  .rcsub{font-size:10px;color:var(--muted)}
+  .rccta{align-self:center;font-size:12px;padding:8px 15px;border-radius:10px;border:1px solid var(--danger);
+    color:var(--ink);background:rgba(255,59,92,.18);cursor:pointer;white-space:nowrap}
   #daily{padding:6px 20px 2px}
   .dhead{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:5px}
   .dhead .ddone{color:var(--good);letter-spacing:.04em}
@@ -397,6 +407,7 @@
       <span class="res"><span class="di" style="color:var(--hlr)">✦</span> <b class="num shardN">0</b></span>
     </div>
     <div id="featBanner"></div>
+    <div id="raidCard"></div>
     <div id="daily"></div>
     <div id="mapModes"><button class="modebtn on" data-mode="normal">Normal</button><button class="modebtn" data-mode="hard">⚔ Hard</button></div>
     <div id="maplist"><div class="track"></div></div>
@@ -660,12 +671,12 @@ function renderCrys(){
 const SAVE_KEY='ashgate_save_v1';
 let hasSave=false;
 function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(
-  {v:2,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,crystals,gold,starShards,pity,inventory,gearOn,gearUID,loadouts,daily,muted:ui.muted}));}catch(e){}}
+  {v:2,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,raidBest,crystals,gold,starShards,pity,inventory,gearOn,gearUID,loadouts,daily,muted:ui.muted}));}catch(e){}}
 function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s||(s.v!==1&&s.v!==2))return false;
   owned=new Set(s.owned);progress=s.progress||{};cleared=new Set(s.cleared);
   crystals=s.crystals??crystals;gold=s.gold??gold;starShards=s.starShards??starShards;pity=s.pity??0;
   inventory=s.inventory||[];gearOn=s.gearOn||{};gearUID=s.gearUID||inventory.reduce((m,p)=>Math.max(m,p.uid),0);
-  loadouts=s.loadouts||{};clearedHard=new Set(s.clearedHard||[]);arenaRank=s.arenaRank||0;
+  loadouts=s.loadouts||{};clearedHard=new Set(s.clearedHard||[]);arenaRank=s.arenaRank||0;raidBest=s.raidBest||0;
   daily=s.daily||{date:'',win:0,summon:0,enhance:0,claimed:[]};dailyCheck();ui.muted=s.muted??false;
   return true;}catch(e){return false;}}
 function resetSave(){try{localStorage.removeItem(SAVE_KEY);}catch(e){}location.reload();}
@@ -715,6 +726,14 @@ function renderHome(){
         <div class="fbname">${fh.name}</div><div class="fbsub">${RARNAME[fh.rarity]} · ${fh.role} · ${fc.l}</div></div>
       <button class="fbcta" id="fbCta">Summon ▸</button></div>`;
   $('#fbCta').addEventListener('click',()=>{SFX.tap();renderCrys();show('screen-gacha');});
+  // weekly raid card
+  $('#raidCard').innerHTML=`<div class="rcwrap">
+      <div class="rcglyph">👑</div>
+      <div class="rcmeta"><div class="rctag">Weekly Raid</div>
+        <div class="rcname">Krul Ascended, the Drowned Crown</div>
+        <div class="rcsub">Multi-phase boss · 30-round damage race${raidBest>0?` · best <b style="color:var(--warn)">${raidBest}%</b>`:''}</div></div>
+      <button class="rccta" id="rcCta">Raid ▸</button></div>`;
+  $('#rcCta').addEventListener('click',()=>{SFX.tap();openRaidTeam();});
   const allClaimed=DAILY_TASKS.every(t=>daily.claimed.includes(t.id));
   $('#daily').innerHTML=`<div class="dhead">Daily Objectives${allClaimed?' <span class="ddone">all done ✓</span>':''}</div>`+
     `<div class="drow">`+DAILY_TASKS.map(t=>{const cur=Math.min(daily[t.id]||0,t.goal),done=cur>=t.goal,claimed=daily.claimed.includes(t.id);
@@ -806,9 +825,63 @@ function endArena(win){
   const nx=$('#resNext');nx.textContent='Arena';nx.onclick=()=>{openArena();};
 }
 
+/* ---------- CO-OP RAID (doc 07): multi-phase boss, damage-% scoreboard ---------- */
+let raidBest=0, raidPending=false;
+const RAID={hp:120000, atk:360, def:180, spd:118};
+function mkRaidBoss(){
+  return {id:'ENM-RAID-X01',name:'Krul Ascended, the Drowned Crown',
+    stats:{hp:RAID.hp,atk:RAID.atk,def:RAID.def,spd:RAID.spd},
+    side:'enemy',hp:RAID.hp,max:RAID.hp,barrier:0,status:{},alive:true,el:null,cd:{},
+    damageRoot:'physical',skillPower:1.3,traits:[],physRes:0,magRes:0,immunities:['STS-STUN','STS-ATK-DOWN'],
+    tier:'X',isBoss:true,isMini:false,tgName:'Tidal Cataclysm',_glyph:'👑',_efx:'var(--slime)'};
+}
+function raidCheck(){
+  const boss=G.raidBoss; if(!boss||!boss.alive)return;
+  const pct=boss.hp/boss.max;
+  if(G.raidPhase<2 && pct<=.66){G.raidPhase=2;boss.status['STS-ATK-UP']=99;
+    for(let i=0;i<2;i++){const a=mkEnemy('ENM-SLM-M01@12');a.name='Drowned Hand';a._glyph='🖐️';a._efx='var(--slime)';G.enemies.push(a);}
+    renderEnemies();logMsg('<b>Krul Ascended</b> — <b style="color:var(--slime)">the crown drowns you</b> · Phase 2 (enrage + adds)');}
+  else if(G.raidPhase<3 && pct<=.33){G.raidPhase=3;boss.status['STS-ATK-UP']=99;
+    boss.barrier=Math.max(boss.barrier,Math.round(boss.max*.05));SFX.surge();
+    logMsg('<b>Krul Ascended</b> — <b style="color:var(--danger)">Tidal Cataclysm rises</b> · Phase 3');}
+}
+function openRaidTeam(){raidPending=true;arenaTarget=null;curStage=null;
+  $('#teamStage').textContent='Weekly Raid · Krul Ascended';
+  if(!team.length)suggestTeam();buildRoster();renderSlots();show('screen-team');}
+function deployRaid(){
+  curHard=false; const boss=mkRaidBoss();
+  G={heroes:team.map(mkHero),waves:[[boss]],wi:0,enemies:[boss],surge:0,round:1,over:false,busy:false,auto:ui.auto,speed:ui.speed,telegraph:null,hard:false,raid:true,raidPhase:1,raidBoss:boss};
+  $('#speedBtn').textContent=ui.speed+'×';$('#autoBtn').classList.toggle('active',ui.auto);
+  $('#btlChapter').textContent='☠ WEEKLY RAID';
+  $('#btlName').textContent='Krul Ascended, the Drowned Crown';
+  buildParty();renderEnemies();render();renderTelegraph();
+  $('#roundNum').textContent='1';$('#result').style.display='none';
+  $('#wavepip').textContent='30-round damage race';
+  logMsg('The Drowned Crown surfaces…');
+  show('screen-battle');turnQueue=[];setTimeout(step,450);
+}
+function endRaid(win){
+  const boss=G.raidBoss; const dmg=Math.max(0,Math.min(1,1-(boss.hp/boss.max)));
+  const pct=win?100:Math.round(dmg*100);
+  const improved=pct>raidBest; raidBest=Math.max(raidBest,pct);
+  const reward=Math.round(pct*3)+(win?150:0); crystals+=reward;
+  const goldR=Math.round(pct*400)+(win?8000:0); gold+=goldR;
+  let gp=null; if(pct>=50)gp=dropGear(true,pct>=85);
+  if(win)dailyBump('win'); saveGame(); renderCrys();
+  const r=$('#result');r.style.display='flex';
+  $('#resEyebrow').textContent=win?'Raid felled':(G.timeout?`Raid — ${pct}% damage`:'The raid falls');
+  const v=$('#resVerdict');v.textContent=win?'VICTORY':(pct>=50?'GOOD RUN':'DEFEAT');v.className='verdict '+(win?'win':'lose');
+  const dropTxt=gp?`<div style="color:var(${GRAR[gp.rar].c});margin-bottom:6px">✦ Raid gear — ${GRAR[gp.rar].n} ${GSETS[gp.set].n} ${GSLOT[gp.slot].n} (${gp.tier})</div>`:'';
+  const rewTxt=`<div style="color:var(--umbra);margin-bottom:6px">◆ +${reward} Crystals · <span style="color:var(--warn)">◉ +${goldR.toLocaleString()} Gold</span></div>`;
+  $('#resSub').innerHTML=rewTxt+dropTxt+
+    `<div>Damage dealt: <b style="color:var(--warn)">${pct}%</b>${improved?' — new best!':` · best ${raidBest}%`}. `+
+    (win?'The Drowned Crown falls — the raid is fully cleared.':'Raids pay out by damage — re-gear, level up, and push for a full kill.')+`</div>`;
+  const nx=$('#resNext');nx.textContent='Raid';nx.onclick=()=>{buildMap();show('screen-map');};
+}
+
 /* ---------- TEAM SELECT ---------- */
 function openTeam(stage){
-  arenaTarget=null;
+  arenaTarget=null; raidPending=false;
   curStage=stage;
   $('#teamStage').textContent='Stage '+stage.id+' · '+stage.name;
   if(!team.length) suggestTeam();
@@ -1196,6 +1269,7 @@ function detonate(u){const tg=u.tgName||'Detonation';const single=/fist|toll|mar
 function roundStart(){
   [...G.heroes,...G.enemies].filter(u=>u.alive).forEach(u=>{if(u._bleed){const d=Math.round((u._ba||120)*.08*u._bleed);u.hp=Math.max(0,u.hp-d);floatNum(u,d,'','physical','bleed');if(u.hp<=0)u.alive=false;}});
   [...G.heroes,...G.enemies].forEach(u=>{for(const s in u.status){u.status[s]--;if(u.status[s]<=0)delete u.status[s];}});
+  if(G.raid)raidCheck();
 }
 function order(){return [...G.heroes,...G.enemies].filter(u=>u.alive).sort((a,b)=>statOf(b,'spd')-statOf(a,'spd')||(a.side==='ally'?-1:1));}
 let turnQueue=[];
@@ -1206,7 +1280,7 @@ function step(){
   actUnit(u); render(); if(checkEnd())return;
   if(!turnQueue.length){
     G.round++;$('#roundNum').textContent=G.round;
-    if(G.round>20){G.timeout=true;endGame(false);return;}  // doc 02 round cap
+    if(G.round>(G.raid?30:20)){G.timeout=true;endGame(false);return;}  // doc 02 round cap (raids run longer)
   }
   scheduleNext();
 }
@@ -1285,6 +1359,7 @@ function cutIn(u){const c=$('#cutin');SFX.ult();c.style.setProperty('--hue',`var
 function endGame(win){
   G.over=true;renderTelegraph();SFX[win?'win':'lose']();
   if(G.pvp)return endArena(win);
+  if(G.raid)return endRaid(win);
   const H=curHard;
   const firstNormal = win && !cleared.has(curStage.id);
   const firstHard = win && H && !clearedHard.has(curStage.id);
@@ -1348,9 +1423,9 @@ $('#pull10').addEventListener('click',()=>pull(10));
 $('#pullResults').addEventListener('click',()=>$('#pullResults').classList.remove('show'));
 function flashBar(){const b=$('#gachaBar');b.style.transition='none';b.style.background='rgba(255,59,92,.25)';
   setTimeout(()=>{b.style.transition='background .5s';b.style.background='';},60);}
-$('#teamBack').addEventListener('click',()=>{const a=arenaTarget;arenaTarget=null;if(a){renderArena();show('screen-arena');}else{buildMap();show('screen-map');}});
+$('#teamBack').addEventListener('click',()=>{const a=arenaTarget;arenaTarget=null;raidPending=false;if(a){renderArena();show('screen-arena');}else{buildMap();show('screen-map');}});
 $('#suggestBtn').addEventListener('click',suggestTeam);
-$('#startBtn').addEventListener('click',()=>{if(team.length!==5)return;arenaTarget?deployArena(arenaTarget):deploy();});
+$('#startBtn').addEventListener('click',()=>{if(team.length!==5)return;raidPending?deployRaid():arenaTarget?deployArena(arenaTarget):deploy();});
 $('#resMap').addEventListener('click',()=>{buildMap();show('screen-map');});
 function syncSnd(){const b=$('#sndBtn');b.textContent=ui.muted?'🔇':'🔊';b.classList.toggle('muted',ui.muted);}
 $('#sndBtn').addEventListener('click',()=>{ui.muted=!ui.muted;SFX.setMuted(ui.muted);if(!ui.muted)SFX.tap();syncSnd();saveGame();});
