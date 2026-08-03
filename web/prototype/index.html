@@ -267,6 +267,47 @@
   .costbtn{display:flex;flex-direction:column;align-items:center;gap:1px;line-height:1.2}
   .costbtn small{font-size:8px;opacity:.8;letter-spacing:.06em}
 
+  /* ---- gear / equipment ---- */
+  #hdGear{margin:14px 0 4px;border:1px solid var(--line);border-radius:12px;padding:11px 13px;cursor:pointer;
+    display:flex;align-items:center;gap:10px;background:var(--panel2);transition:border-color .15s}
+  #hdGear:hover{border-color:var(--umbra-dim)}
+  #hdGear .gpwr{font-family:var(--font-title);font-size:16px;color:var(--warn)}
+  #hdGear .gsub{font-size:10px;color:var(--muted);letter-spacing:.04em}
+  #hdGear .arr{margin-left:auto;color:var(--umbra);font-size:16px}
+  #geSlots{display:flex;gap:7px;padding:2px 0 4px}
+  .gslot{flex:1;border:1px solid var(--line);border-radius:10px;padding:8px 4px 7px;text-align:center;cursor:pointer;
+    background:var(--panel2);position:relative;min-width:0;transition:border-color .15s,transform .1s}
+  .gslot:hover{transform:translateY(-1px)}
+  .gslot.sel{border-color:var(--umbra);box-shadow:0 0 0 1px var(--umbra) inset}
+  .gslot .gi{font-size:16px;line-height:1}
+  .gslot .gsn{font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-top:3px}
+  .gslot .glv{font-size:9px;font-weight:700;margin-top:2px}
+  .gslot.empty .glv{color:var(--faint)}
+  .gslot .grdot{position:absolute;top:5px;right:6px;width:6px;height:6px;border-radius:50%}
+  #geSets{display:flex;flex-wrap:wrap;gap:6px;padding:8px 0 2px;min-height:14px}
+  .setchip{font-size:9px;letter-spacing:.05em;padding:3px 8px;border-radius:20px;border:1px solid var(--line);color:var(--muted)}
+  .setchip.on{color:var(--umbra);border-color:var(--umbra-dim);background:rgba(123,92,255,.08)}
+  #geActions{display:flex;gap:8px;align-items:center;padding:8px 0}
+  #geActions .gefilter{margin-left:auto;font-size:10px;color:var(--muted);letter-spacing:.08em}
+  #geInv{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:7px;padding:2px 1px 8px}
+  #geInv .empty{color:var(--faint);font-size:12px;text-align:center;padding:26px 10px}
+  .gcard{border:1px solid var(--line);border-radius:11px;padding:9px 11px;background:var(--panel2);display:flex;gap:10px;align-items:center}
+  .gcard.equipped{border-color:var(--umbra-dim);background:rgba(123,92,255,.06)}
+  .gcard .gci{font-size:18px;width:22px;text-align:center}
+  .gcard .gcmain{flex:1;min-width:0}
+  .gcard .gctop{display:flex;align-items:baseline;gap:7px}
+  .gcard .gcname{font-size:12px;font-weight:600}
+  .gcard .gctier{font-size:8px;letter-spacing:.1em;color:var(--faint)}
+  .gcard .gclv{font-size:10px;color:var(--warn);font-weight:700;margin-left:auto}
+  .gcard .gcstat{font-size:10px;color:var(--ink);margin-top:2px}
+  .gcard .gcsubs{font-size:9px;color:var(--muted);margin-top:2px;letter-spacing:.02em}
+  .gcard .gcbtns{display:flex;flex-direction:column;gap:5px}
+  .gcard .gcbtns button{font-size:10px;padding:5px 9px;border-radius:8px;border:1px solid var(--line);
+    background:var(--panel);color:var(--ink);cursor:pointer;white-space:nowrap}
+  .gcard .gcbtns button.eq{border-color:var(--umbra-dim);color:var(--umbra)}
+  .gcard .gcbtns button:disabled{opacity:.4;cursor:default}
+  #geBar{display:flex;gap:8px;align-items:center;padding:11px 14px;border-top:1px solid var(--line);
+    background:linear-gradient(0deg,rgba(14,11,24,.98),transparent)}
   @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.05ms!important}}
 </style>
 
@@ -327,6 +368,7 @@
         <div id="hdMeta"><div id="hdRarity" class="lbl">—</div><div class="hdlvl" id="hdLevel">Lv 20</div><div class="hdstars" id="hdStars">★★★</div></div>
       </div>
       <div id="hdStats"></div>
+      <div id="hdGear"></div>
       <div id="hdKit"></div>
     </div>
     <div id="hdBar">
@@ -334,6 +376,24 @@
       <span class="crys"><span class="di">✦</span> <b class="num shardN">0</b></span>
       <button class="ghost costbtn" id="btnLevel"><span>Level Up</span><small>—</small></button>
       <button class="cta costbtn" id="btnStar"><span>Star Up</span><small>—</small></button>
+    </div>
+  </section>
+
+  <!-- EQUIPMENT -->
+  <section class="screen" id="screen-gear">
+    <div class="scrhead"><div><div class="eyebrow" id="geHero">—</div><h1>Equipment</h1></div>
+      <button class="ghost back" id="geBack">Back</button></div>
+    <div id="geSlots"></div>
+    <div id="geSets"></div>
+    <div id="geActions">
+      <button class="ghost" id="geAuto">Auto-Equip</button>
+      <button class="ghost costbtn" id="geForge"><span>Forge Gear</span><small>◉ 12,000</small></button>
+      <div class="gefilter" id="geFilter">Showing: all</div>
+    </div>
+    <div id="geInv"></div>
+    <div id="geBar">
+      <span class="crys"><span class="di" style="color:var(--warn)">◉</span> <b class="num goldN">0</b> Gold</span>
+      <span class="crys" style="margin-left:auto;color:var(--faint);font-size:10px">Enhance +5/+10/+15 rolls a substat higher (doc 09)</span>
     </div>
   </section>
 
@@ -397,12 +457,67 @@ const STARTER=['ASH-TNK-C01','ASH-ASN-C01','ASH-RNG-C01','ASH-MAG-C01','ASH-NEC-
 let cleared=new Set(), curStage=null, team=[], G=null, ui={speed:1,auto:false};
 let owned=new Set(STARTER), crystals=4500, gold=20000, starShards=120, pity=0;
 let progress={};
-const RATES={L:0.03,E:0.14,R:0.38,C:0.45}, DEMO_GEAR=1.2;
+const RATES={L:0.03,E:0.14,R:0.38,C:0.45};
 function prog(id){if(!progress[id]){const h=hero(id);progress[id]={level:20,stars:h?h.startStars:1};}return progress[id];}
-function effStats(h){const pr=prog(h.id);
-  const g=1+h.perLevel*h.rarityGrowth*(pr.level-1), sf=1+DATA.starBonusPerStar*(pr.stars-h.startStars);
-  return {hp:Math.round(h.baseL1.hp*g*sf*DEMO_GEAR),atk:Math.round(h.baseL1.atk*g*sf*DEMO_GEAR),
-          def:Math.round(h.baseL1.def*g*sf),spd:h.baseL1.spd};}
+
+/* ---------- gear system (doc 09 s5): 5 slots · 6 sets · T1–T4 · C/R/E/L ---------- */
+let inventory=[], gearOn={}, gearUID=0;
+const GSLOTS=['WPN','ARM','HLM','CHM','SGL'];
+const GSLOT={WPN:{n:'Weapon',i:'⚔',main:['atk_flat','atk_pct']},
+             ARM:{n:'Armor', i:'❖',main:['def_flat','hp_pct']},
+             HLM:{n:'Helm',  i:'△',main:['hp_flat','def_pct']},
+             CHM:{n:'Charm',  i:'◈',main:['spd_flat','crit_rate','crit_dmg']},
+             SGL:{n:'Sigil',  i:'✦',main:['lifesteal','crit_dmg']}};
+/* set 4pc effects that are pure numbers are wired live; the two "special" effects
+   (Vanguard/Gravebind in doc 09) are approximated with a stat proxy for the slice. */
+const GSETS={VANGUARD:{n:'Vanguard',b2:{def_pct:.12},b4:{def_pct:.12}},
+             SLAUGHTER:{n:'Slaughter',b2:{atk_pct:.08},b4:{crit_dmg:.20}},
+             SWIFTVOW:{n:'Swiftvow',b2:{spd_pct:.06},b4:{spd_pct:.18}},
+             MENDING:{n:'Mending',b2:{heal_pct:.08},b4:{heal_pct:.20}},
+             GRAVEBIND:{n:'Gravebind',b2:{crit_rate:.06},b4:{atk_pct:.12}},
+             AEGIS:{n:'Aegis',b2:{hp_pct:.10},b4:{aegis:1}}};
+const GRAR={C:{n:'Common',subs:1,c:'--rC'},R:{n:'Rare',subs:2,c:'--rR'},E:{n:'Epic',subs:3,c:'--rE'},L:{n:'Legend',subs:4,c:'--rL'}};
+const GTIER={T1:1.0,T2:1.25,T3:1.55,T4:1.9};
+const MAINBASE={atk_flat:45,atk_pct:.07,def_flat:28,hp_pct:.07,hp_flat:320,def_pct:.09,spd_flat:7,crit_rate:.055,crit_dmg:.11,lifesteal:.07};
+const SUBBASE={atk_pct:.045,def_pct:.05,hp_pct:.045,spd_flat:4,crit_rate:.035,crit_dmg:.06};
+const SUBPOOL=['atk_pct','def_pct','hp_pct','spd_flat','crit_rate','crit_dmg'];
+const STATLBL={atk_flat:'ATK',atk_pct:'ATK',def_flat:'DEF',def_pct:'DEF',hp_flat:'HP',hp_pct:'HP',spd_flat:'SPD',spd_pct:'SPD',crit_rate:'Crit',crit_dmg:'CritDmg',lifesteal:'Lifesteal',heal_pct:'Healing',aegis:'Aegis'};
+const PCTSTAT=new Set(['atk_pct','def_pct','hp_pct','spd_pct','crit_rate','crit_dmg','lifesteal','heal_pct']);
+const rand0=n=>Math.floor(Math.random()*n);
+const fmtStat=(k,v)=>PCTSTAT.has(k)?('+'+(Math.round(v*1000)/10)+'%'):('+'+Math.round(v));
+function pieceById(uid){return inventory.find(p=>p.uid===uid);}
+function mainVal(p){return p.main.base*(1+0.10*p.lvl);}
+function makePiece(tier,rar,slot,set){
+  slot=slot||GSLOTS[rand0(5)]; set=set||Object.keys(GSETS)[rand0(6)];
+  const mk=GSLOT[slot].main[rand0(GSLOT[slot].main.length)];
+  const main={k:mk,base:MAINBASE[mk]*GTIER[tier]*rand(.92,1.08)};
+  const pool=SUBPOOL.filter(s=>s!==mk), subs=[];
+  for(let i=0;i<GRAR[rar].subs&&pool.length;i++){const k=pool.splice(rand0(pool.length),1)[0];subs.push({k,v:SUBBASE[k]*rand(.8,1.2)});}
+  return {uid:++gearUID,slot,set,rar,tier,lvl:0,main,subs};
+}
+const add=(o,k,v)=>{o[k]=(o[k]||0)+v;};
+function gearBonus(id){
+  const lo=gearOn[id]||{}, agg={}, setCount={};
+  for(const sl of GSLOTS){const p=lo[sl]&&pieceById(lo[sl]);if(!p)continue;
+    setCount[p.set]=(setCount[p.set]||0)+1; add(agg,p.main.k,mainVal(p)); p.subs.forEach(s=>add(agg,s.k,s.v));}
+  for(const set in setCount){const c=setCount[set],S=GSETS[set];
+    if(c>=2)for(const k in S.b2)add(agg,k,S.b2[k]);
+    if(c>=4)for(const k in S.b4)add(agg,k,S.b4[k]);}
+  return {agg,setCount};
+}
+function computeStats(h,level,stars){
+  const g=1+h.perLevel*h.rarityGrowth*(level-1), sf=1+DATA.starBonusPerStar*(stars-h.startStars);
+  const b={hp:h.baseL1.hp*g*sf,atk:h.baseL1.atk*g*sf,def:h.baseL1.def*g*sf,spd:h.baseL1.spd};
+  const a=gearBonus(h.id).agg;
+  return {
+    hp:Math.round((b.hp+(a.hp_flat||0))*(1+(a.hp_pct||0))),
+    atk:Math.round((b.atk+(a.atk_flat||0))*(1+(a.atk_pct||0))),
+    def:Math.round((b.def+(a.def_flat||0))*(1+(a.def_pct||0))),
+    spd:Math.round((b.spd+(a.spd_flat||0))*(1+(a.spd_pct||0))),
+    crit_rate:.05+(a.crit_rate||0), crit_dmg:.5+(a.crit_dmg||0),
+    lifesteal:a.lifesteal||0, heal_pct:a.heal_pct||0, aegis:a.aegis?1:0 };
+}
+function effStats(h){const pr=prog(h.id);return computeStats(h,pr.level,pr.stars);}
 function renderCrys(){
   document.querySelectorAll('.crysN').forEach(e=>e.textContent=crystals.toLocaleString());
   document.querySelectorAll('.goldN').forEach(e=>e.textContent=gold.toLocaleString());
@@ -413,10 +528,12 @@ function renderCrys(){
 const SAVE_KEY='ashgate_save_v1';
 let hasSave=false;
 function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(
-  {v:1,owned:[...owned],progress,cleared:[...cleared],crystals,gold,starShards,pity}));}catch(e){}}
-function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s||s.v!==1)return false;
+  {v:2,owned:[...owned],progress,cleared:[...cleared],crystals,gold,starShards,pity,inventory,gearOn,gearUID}));}catch(e){}}
+function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s||(s.v!==1&&s.v!==2))return false;
   owned=new Set(s.owned);progress=s.progress||{};cleared=new Set(s.cleared);
-  crystals=s.crystals??crystals;gold=s.gold??gold;starShards=s.starShards??starShards;pity=s.pity??0;return true;}catch(e){return false;}}
+  crystals=s.crystals??crystals;gold=s.gold??gold;starShards=s.starShards??starShards;pity=s.pity??0;
+  inventory=s.inventory||[];gearOn=s.gearOn||{};gearUID=s.gearUID||inventory.reduce((m,p)=>Math.max(m,p.uid),0);
+  return true;}catch(e){return false;}}
 function resetSave(){try{localStorage.removeItem(SAVE_KEY);}catch(e){}location.reload();}
 
 /* ---------- screens ---------- */
@@ -567,8 +684,7 @@ function buildHeroGrid(){
 function openHero(id){curHero=id;renderHero();show('screen-hero');}
 const levelCost=pr=>250*pr.level;
 const starCost=(h,pr)=>({shards:40+40*(pr.stars-h.startStars),gold:5000});
-function statsAt(h,level,stars){const g=1+h.perLevel*h.rarityGrowth*(level-1),sf=1+DATA.starBonusPerStar*(stars-h.startStars);
-  return {hp:Math.round(h.baseL1.hp*g*sf*DEMO_GEAR),atk:Math.round(h.baseL1.atk*g*sf*DEMO_GEAR),def:Math.round(h.baseL1.def*g*sf),spd:h.baseL1.spd};}
+function statsAt(h,level,stars){return computeStats(h,level,stars);}
 function renderHero(){
   const h=hero(curHero),c=CLASS[h.class],pr=prog(curHero),st=statsAt(h,pr.level,pr.stars),cap=DATA.levelCapByStar[pr.stars];
   $('#hdRole').textContent=h.role+' · '+c.l;
@@ -588,6 +704,7 @@ function renderHero(){
   const sc=starCost(h,pr),bS=$('#btnStar');
   if(pr.stars>=h.starCap){bS.disabled=true;bS.querySelector('small').textContent='max ★';}
   else{bS.disabled=(starShards<sc.shards||gold<sc.gold);bS.querySelector('small').textContent='✦'+sc.shards+' · ◉'+(sc.gold/1000)+'k';}
+  renderHdGear();
   renderCrys();
 }
 function doLevel(){const pr=prog(curHero),cap=DATA.levelCapByStar[pr.stars],lc=levelCost(pr);
@@ -595,8 +712,96 @@ function doLevel(){const pr=prog(curHero),cap=DATA.levelCapByStar[pr.stars],lc=l
 function doStar(){const h=hero(curHero),pr=prog(curHero),sc=starCost(h,pr);
   if(pr.stars>=h.starCap||starShards<sc.shards||gold<sc.gold)return;starShards-=sc.shards;gold-=sc.gold;pr.stars++;renderHero();saveGame();}
 
+/* ---------- EQUIPMENT screen ---------- */
+let geSlotSel=null;
+const GCONTRIB={atk_flat:1,def_flat:1.6,hp_flat:.12,spd_flat:12,atk_pct:900,def_pct:900,hp_pct:900,spd_pct:1100,crit_rate:800,crit_dmg:600,lifesteal:700,heal_pct:700,aegis:600};
+function pieceScore(p){let s=mainVal(p)*(GCONTRIB[p.main.k]||400);p.subs.forEach(x=>s+=x.v*(GCONTRIB[x.k]||400));return s;}
+function heroGearPower(id){const a=gearBonus(id).agg;let p=0;for(const k in a)p+=a[k]*(GCONTRIB[k]||400);return Math.round(p);}
+function whoHas(uid){for(const id in gearOn)for(const sl in gearOn[id])if(gearOn[id][sl]===uid)return id;return null;}
+function isEquippedHere(p){return (gearOn[curHero]||{})[p.slot]===p.uid;}
+function enhanceCost(p){return Math.round(300*(p.lvl+1)*(1+['T1','T2','T3','T4'].indexOf(p.tier)*.5));}
+function rollRar(w){const r=Math.random();let a=0;for(const k in w){a+=w[k];if(r<a)return k;}return Object.keys(w).pop();}
+function dropGear(boss){
+  const t=cleared.size>=10?rollRar({T3:.3,T2:.55,T1:.15}):rollRar({T2:.45,T1:.55});
+  const r=boss?rollRar({L:.12,E:.38,R:.40,C:.10}):rollRar({L:.04,E:.24,R:.46,C:.26});
+  const p=makePiece(t,r);inventory.push(p);return p;
+}
+function grantStarterGear(){
+  [['T1','R','WPN','SLAUGHTER'],['T1','R','ARM','VANGUARD'],['T1','R','HLM','AEGIS'],
+   ['T1','R','CHM','SWIFTVOW'],['T1','R','SGL','MENDING'],['T1','E','WPN','SLAUGHTER'],
+   ['T1','C','ARM','AEGIS'],['T1','C','CHM','SLAUGHTER'],['T1','R','HLM','VANGUARD']]
+    .forEach(s=>inventory.push(makePiece(s[0],s[1],s[2],s[3])));
+  // kit the two starter frontliners so gear is visible and difficulty holds out of the box
+  ['ASH-TNK-C01','ASH-BSK-C01'].forEach(id=>{gearOn[id]=gearOn[id]||{};
+    for(const sl of GSLOTS){const c=inventory.filter(p=>p.slot===sl&&!whoHas(p.uid));
+      if(c.length){c.sort((a,b)=>pieceScore(b)-pieceScore(a));gearOn[id][sl]=c[0].uid;}}});
+}
+function renderHdGear(){
+  const {setCount}=gearBonus(curHero), lo=gearOn[curHero]||{};
+  const n=GSLOTS.filter(s=>lo[s]).length;
+  const sets=Object.entries(setCount).filter(([,c])=>c>=2).map(([s,c])=>GSETS[s].n+(c>=4?' ×4':' ×2'));
+  $('#hdGear').innerHTML=`<div><div class="gpwr">⚔ Gear Power ${heroGearPower(curHero)}</div>
+    <div class="gsub">${n}/5 slots${sets.length?' · '+sets.join(', '):' · tap to equip'}</div></div><div class="arr">▸</div>`;
+}
+function openGear(){geSlotSel=null;renderGear();show('screen-gear');}
+function gcardHTML(p){
+  const eqHere=isEquippedHere(p), owner=whoHas(p.uid);
+  const mainStr=STATLBL[p.main.k]+' '+fmtStat(p.main.k,mainVal(p));
+  const subs=p.subs.map(s=>STATLBL[s.k]+' '+fmtStat(s.k,s.v)).join(' · ')||'—';
+  const ec=enhanceCost(p), eqLabel=eqHere?'Unequip':(owner&&owner!==curHero?'Move here':'Equip');
+  const onTxt=owner&&owner!==curHero?' · on '+hero(owner).name.split(' ')[0]:'';
+  return `<div class="gcard${eqHere?' equipped':''}" data-uid="${p.uid}">
+    <div class="gci" style="color:var(${GRAR[p.rar].c})">${GSLOT[p.slot].i}</div>
+    <div class="gcmain">
+      <div class="gctop"><span class="gcname" style="color:var(${GRAR[p.rar].c})">${GSETS[p.set].n}</span>
+        <span class="gctier">${GSLOT[p.slot].n} · ${p.tier} · ${GRAR[p.rar].n}${onTxt}</span>
+        <span class="gclv">+${p.lvl}</span></div>
+      <div class="gcstat">${mainStr}</div><div class="gcsubs">${subs}</div></div>
+    <div class="gcbtns"><button class="eq" data-act="eq">${eqLabel}</button>
+      <button data-act="enh" ${p.lvl>=15?'disabled':''}>${p.lvl>=15?'Max':'+ ◉'+(ec>=1000?(Math.round(ec/100)/10)+'k':ec)}</button></div></div>`;
+}
+function renderGear(){
+  const h=hero(curHero); $('#geHero').textContent=h.name+' · '+h.role;
+  const lo=gearOn[curHero]||{};
+  $('#geSlots').innerHTML=GSLOTS.map(sl=>{const p=lo[sl]&&pieceById(lo[sl]);
+    const dot=p?`<span class="grdot" style="background:var(${GRAR[p.rar].c})"></span>`:'';
+    return `<div class="gslot${geSlotSel===sl?' sel':''}${p?'':' empty'}" data-sl="${sl}">${dot}<div class="gi">${GSLOT[sl].i}</div>
+      <div class="gsn">${sl}</div><div class="glv">${p?('+'+p.lvl):'—'}</div></div>`;}).join('');
+  $('#geSlots').querySelectorAll('.gslot').forEach(el=>el.addEventListener('click',()=>{
+    geSlotSel=geSlotSel===el.dataset.sl?null:el.dataset.sl;renderGear();}));
+  const {setCount}=gearBonus(curHero);
+  const chips=Object.entries(GSETS).filter(([k])=>setCount[k]).map(([k,S])=>`<span class="setchip${setCount[k]>=2?' on':''}">${S.n} ${setCount[k]}/4</span>`).join('');
+  $('#geSets').innerHTML=chips||'<span class="setchip">No set bonus — match 2 or 4 pieces of a set</span>';
+  $('#geFilter').textContent=geSlotSel?('Showing: '+GSLOT[geSlotSel].n):'Showing: all slots';
+  let list=inventory.slice(); if(geSlotSel)list=list.filter(p=>p.slot===geSlotSel);
+  list.sort((a,b)=>{const ea=isEquippedHere(a),eb=isEquippedHere(b);if(ea!==eb)return ea?-1:1;return pieceScore(b)-pieceScore(a);});
+  const inv=$('#geInv');
+  inv.innerHTML=list.length?list.map(gcardHTML).join(''):'<div class="empty">No gear'+(geSlotSel?' for this slot':'')+' yet — Forge a piece or clear a stage for a drop.</div>';
+  inv.querySelectorAll('.gcard').forEach(c=>{const uid=+c.dataset.uid;
+    c.querySelector('[data-act=eq]').addEventListener('click',()=>toggleEquip(uid));
+    c.querySelector('[data-act=enh]').addEventListener('click',()=>enhancePiece(uid));});
+  $('#geForge').disabled=gold<12000;
+  renderCrys();
+}
+function toggleEquip(uid){const p=pieceById(uid);if(!p)return;gearOn[curHero]=gearOn[curHero]||{};
+  if(gearOn[curHero][p.slot]===uid)delete gearOn[curHero][p.slot];
+  else{const owner=whoHas(uid);if(owner&&gearOn[owner])delete gearOn[owner][p.slot];gearOn[curHero][p.slot]=uid;}
+  renderGear();saveGame();}
+function enhancePiece(uid){const p=pieceById(uid);if(!p||p.lvl>=15)return;const c=enhanceCost(p);if(gold<c)return;
+  gold-=c;p.lvl++;if(p.lvl%5===0&&p.subs.length){const s=p.subs[rand0(p.subs.length)];s.v+=SUBBASE[s.k]*rand(.85,1.15);}
+  renderGear();saveGame();}
+function forge(){if(gold<12000)return;gold-=12000;
+  const t=cleared.size>=10?rollRar({T3:.35,T2:.5,T1:.15}):rollRar({T2:.4,T1:.6});
+  const r=rollRar({L:.06,E:.28,R:.44,C:.22});inventory.push(makePiece(t,r));renderGear();saveGame();}
+function autoEquip(){gearOn[curHero]=gearOn[curHero]||{};
+  for(const sl of GSLOTS){const cands=inventory.filter(p=>p.slot===sl&&(!whoHas(p.uid)||whoHas(p.uid)===curHero));
+    if(!cands.length)continue;cands.sort((a,b)=>pieceScore(b)-pieceScore(a));
+    const best=cands[0],owner=whoHas(best.uid);if(owner&&owner!==curHero&&gearOn[owner])delete gearOn[owner][sl];
+    gearOn[curHero][sl]=best.uid;}
+  renderGear();saveGame();}
+
 /* ---------- BATTLE ENGINE ---------- */
-function mkHero(id){const s=hero(id),st=effStats(s); return {...s,stats:st,side:'ally',hp:st.hp,max:st.hp,barrier:0,rage:0,cd:{},status:{},alive:true,el:null};}
+function mkHero(id){const s=hero(id),st=effStats(s); return {...s,stats:st,side:'ally',hp:st.hp,max:st.hp,barrier:st.aegis?Math.round(st.hp*.15):0,rage:0,cd:{},status:{},alive:true,el:null};}
 function mkEnemy(key){const s=DATA.enemies[key]||Object.values(DATA.enemies).find(e=>key.startsWith(e.id))||Object.values(DATA.enemies)[0];
   return {...s,key,side:'enemy',hp:s.stats.hp,max:s.stats.hp,barrier:0,status:{},alive:true,el:null,isBoss:s.tier==='X',isMini:s.tier==='B'};}
 function deploy(){
@@ -620,10 +825,11 @@ function dealDamage(src,tgt,power,root,sub){
   let atk=statOf(src,'atk'),def=statOf(tgt,'def'); if(sub==='pierce')def*=.7;
   const mit=1000/(1000+def), res=root==='physical'?(tgt.physRes||0):(tgt.magRes||0);
   let elem=res<=-.2?1.25:res>=.2?.85:1; if(sub==='holy'&&(tgt.traits||[]).includes('undead'))elem*=1.25;
-  const isCrit=Math.random()<(.05+(src.status['STS-CRIT-UP']?.2:0)),crit=isCrit?1.5:1;
+  const isCrit=Math.random()<((src.stats.crit_rate||.05)+(src.status['STS-CRIT-UP']?.2:0)),crit=isCrit?(1+(src.stats.crit_dmg||.5)):1;
   let d=power*atk*mit*elem*crit*rand(.95,1.05); if(tgt.status['STS-DR-25'])d*=.75; d=Math.round(d);
   if(tgt.barrier>0&&sub!=='bleed'){const ab=Math.min(tgt.barrier,d);tgt.barrier-=ab;d-=ab;}
   tgt.hp=Math.max(0,tgt.hp-d); if(src.side==='ally')gainSurge(4);
+  if(src.side==='ally'&&(src.stats.lifesteal||0)>0&&d>0)heal(src,Math.round(d*src.stats.lifesteal));
   floatNum(tgt,d,isCrit?'crit':'',root,sub); shake(tgt);
   if(tgt.hp<=0)onKill(src,tgt); return d;
 }
@@ -653,7 +859,7 @@ function runSkill(u,slot){
       else if(st==='STS-BLEED'){const t=pickTarget(u);if(t){t.status['STS-BLEED']=dur;t._bleed=(t._bleed||0)+(e.stacks||1);t._ba=statOf(u,'atk');}}
       else Fr.forEach(f=>f.status[st]=dur);
     }
-    else if(e.verb==='heal'){const a=Math.round(statOf(u,'atk')*(e.power||1));Fr.forEach(f=>heal(f,a));}
+    else if(e.verb==='heal'){const a=Math.round(statOf(u,'atk')*(e.power||1)*(1+(u.stats.heal_pct||0)));Fr.forEach(f=>heal(f,a));}
     else if(e.verb==='shield'){const a=Math.round(statOf(u,'def')*(e.power||1));Fr.forEach(f=>f.barrier=Math.max(f.barrier,a));}
     else if(e.verb==='cleanse')Fr.forEach(f=>{for(const s in f.status)if(s.includes('DOWN')||s==='STS-BLEED'||s==='STS-DECAY')delete f.status[s];});
     else if(e.verb==='strip')F.forEach(f=>{for(const s in f.status)if(s.includes('UP')){delete f.status[s];break;}});
@@ -774,9 +980,11 @@ function cutIn(u){const c=$('#cutin');c.style.setProperty('--hue',`var(${CLASS[u
   setTimeout(()=>{c.classList.remove('show');G.busy=false;if(!G.over)scheduleNext(120);},720/G.speed);}
 function endGame(win){
   G.over=true;renderTelegraph();
-  let reward=0,goldR=0,shardR=0;
+  let reward=0,goldR=0,shardR=0,gp=null;
   if(win && !cleared.has(curStage.id)){reward=curStage.boss?300:150;crystals+=reward;
     goldR=curStage.boss?8000:4000;gold+=goldR;shardR=curStage.boss?30:12;starShards+=shardR;}
+  if(win&&(!cleared.has(curStage.id)||curStage.boss||Math.random()<.45))gp=dropGear(!!curStage.boss);
+  const dropTxt=gp?`<div style="color:var(${GRAR[gp.rar].c});margin-bottom:6px">✦ Gear drop — ${GRAR[gp.rar].n} ${GSETS[gp.set].n} ${GSLOT[gp.slot].n} (${gp.tier}) · equip it in Heroes ▸ Equipment</div>`:'';
   if(win)cleared.add(curStage.id);
   renderCrys();
   if(win)saveGame();
@@ -786,7 +994,7 @@ function endGame(win){
   const v=$('#resVerdict');v.textContent=win?'VICTORY':'DEFEAT';v.className='verdict '+(win?'win':'lose');
   const rewTxt = reward?`<div style="color:var(--umbra);margin-bottom:6px">◆ +${reward} Crystals · <span style="color:var(--warn)">◉ +${goldR.toLocaleString()} Gold</span> · <span style="color:var(--hlr)">✦ +${shardR} Shards</span></div>`:'';
   const chapDone = win && curStage.boss && DATA.chapters.find(c=>c.stages.some(s=>s.id===curStage.id)).stages.every(s=>cleared.has(s.id));
-  $('#resSub').innerHTML=(win?rewTxt:'')+(win?(last
+  $('#resSub').innerHTML=(win?rewTxt+dropTxt:'')+(win?(last
       ?`Two chapters cleared. The full game continues into two more chapters, co-op raids, and live events — all specified in the design docs.`
       :chapDone?`Chapter complete. The next chapter is open on the map — its enemies hit harder, so summon and upgrade before you push in.`
       :`On to the next gate. Summon and level between fights to stay ahead of the curve.`)
@@ -802,6 +1010,7 @@ $('#toMap').addEventListener('click',()=>{buildMap();renderCrys();show('screen-m
 $('#resetBtn').addEventListener('click',()=>{if(confirm('Reset all progress — roster, upgrades, and chapter clears?'))resetSave();});
 hasSave=loadGame();
 if(hasSave){$('#toMap').textContent='Continue';$('#resetBtn').style.display='block';}
+else{grantStarterGear();}
 renderCrys();
 $('#toGacha').addEventListener('click',()=>{renderCrys();show('screen-gacha');});
 $('#toHeroes').addEventListener('click',()=>{buildHeroGrid();renderCrys();show('screen-heroes');});
@@ -809,6 +1018,10 @@ $('#heroesBack').addEventListener('click',()=>{buildMap();renderCrys();show('scr
 $('#hdBack').addEventListener('click',()=>{buildHeroGrid();show('screen-heroes');});
 $('#btnLevel').addEventListener('click',doLevel);
 $('#btnStar').addEventListener('click',doStar);
+$('#hdGear').addEventListener('click',openGear);
+$('#geBack').addEventListener('click',()=>{renderHero();show('screen-hero');});
+$('#geAuto').addEventListener('click',autoEquip);
+$('#geForge').addEventListener('click',forge);
 $('#gachaBack').addEventListener('click',()=>{buildMap();renderCrys();show('screen-map');});
 $('#pull1').addEventListener('click',()=>pull(1));
 $('#pull10').addEventListener('click',()=>pull(10));

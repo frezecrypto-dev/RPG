@@ -28,13 +28,27 @@ harness uses). The combat math mirrors `sim/ashsim.deal_damage`.
 showcase *pacing* — long enough to see Surge fill and a telegraph fire. That is
 a demo knob, not campaign balance; the real tuning lives in the data + sim.
 
+## Equipment (doc 09 s5)
+
+The 5-slot gear system is live, not a placeholder multiplier. Each hero has
+**Weapon / Armor / Helm / Charm / Sigil** slots; pieces roll a main stat by
+slot, 1–4 substats by rarity (C/R/E/L), a tier (T1–T4), and one of six sets.
+Enhancing to +5/+10/+15 rerolls a substat higher (the bounded-grind rule).
+Gear stats feed the same `computeStats` the battle engine reads, so ATK%, HP%,
+DEF, SPD, **crit rate/damage**, and **lifesteal** all change how fights play;
+**Aegis 4-pc** grants a battle-start barrier and **Mending** boosts heals.
+Pieces come from **stage drops** (bosses drop better) and a gold **Forge**;
+**Auto-Equip** fills a hero from the bag. Two set 4-pc effects that aren't pure
+numbers in the doc (Vanguard/Gravebind) use a stat proxy here.
+
 ## Scope / honesty
 
-This is a **combat vertical slice**, not the game. No gacha, roster, progression,
-backend, audio, or the other 39 stages — those are specified in `docs/` and
-`data/` but not built. Class art is CSS/emoji placeholders (the AI art canon in
-`art/canon-manifest.json` isn't integrated). It's the fastest bridge from
-"validated spec" to "something you can hold."
+This is a **playable slice**, not the game. It now covers the core loop —
+summon → equip/upgrade → team-build → multi-wave combat across two chapters →
+farm → persist — but not the backend, audio, PvP/co-op, or the other 20 stages,
+which are specified in `docs/` and `data/` but not built. Class art is CSS/emoji
+placeholders (the AI art canon in `art/canon-manifest.json` isn't integrated).
+It's the fastest bridge from "validated spec" to "something you can hold."
 
 ## Run
 
