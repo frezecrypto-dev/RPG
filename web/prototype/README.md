@@ -50,15 +50,24 @@ tap; applying a preset pulls its pieces back even if another hero borrowed them.
 Two set 4-pc effects that aren't pure numbers in the doc (Vanguard/Gravebind)
 use a stat proxy here.
 
+## Hard mode (endgame farm)
+
+Clearing a chapter's boss on Normal unlocks a **Normal / Hard** toggle on the
+map. Any stage you've beaten on Normal can be replayed on **Hard**, where
+enemies hit far harder (HP ×1.6, ATK ×1.45, DEF ×1.3) and rewards are the
+endgame loop: **doubled** gold and shards every run, a one-time Crystal bonus on
+first Hard clear, and gear drops biased to **T3/T4** and Epic/Legendary. It's
+the repeatable reason to keep building your five after the story ends.
+
 ## Scope / honesty
 
 This is a **playable slice**, not the game. It now covers the core loop —
 summon → equip/upgrade → team-build → multi-wave combat across the full
 four-chapter campaign (Slimes, Giants, Guardians, Undead — each family flips the
-damage-type puzzle, and the finale boss reknits once at the Gate) → farm →
-persist — but not the backend, PvP/co-op, hard mode, or the remaining 20 stages
-of the 40-stage design, which are specified in `docs/` and `data/` but not
-built. Class art is CSS/emoji
+damage-type puzzle, and the finale boss reknits once at the Gate) → **Hard-mode
+farm** → persist — but not the backend, PvP/co-op, or the remaining 20 stages of
+the 40-stage design, which are specified in `docs/` and `data/` but not built.
+Class art is CSS/emoji
 placeholders (the AI art canon in `art/canon-manifest.json` isn't integrated).
 It's the fastest bridge from "validated spec" to "something you can hold."
 

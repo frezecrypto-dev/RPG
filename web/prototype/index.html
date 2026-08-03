@@ -49,7 +49,12 @@
   #screen-title .hint{font-size:11px;color:var(--faint);letter-spacing:.04em;max-width:34ch;line-height:1.5}
 
   /* ---------- map ---------- */
-  #maplist{flex:1;overflow-y:auto;padding:22px 20px 30px;position:relative}
+  #mapModes{display:none;gap:6px;padding:8px 20px 0}
+  #mapModes .modebtn{font-size:11px;letter-spacing:.04em;padding:5px 14px;border-radius:20px;border:1px solid var(--line);
+    background:var(--panel2);color:var(--muted);cursor:pointer}
+  #mapModes .modebtn.on{color:var(--ink);border-color:var(--umbra-dim);background:rgba(123,92,255,.10)}
+  #mapModes .modebtn[data-mode=hard].on{color:var(--danger);border-color:var(--danger);background:rgba(255,59,92,.10)}
+  #maplist{flex:1;overflow-y:auto;padding:16px 20px 30px;position:relative}
   .track{position:absolute;left:44px;top:36px;bottom:36px;width:2px;background:linear-gradient(180deg,var(--umbra-dim),transparent)}
   .node{position:relative;display:flex;gap:16px;align-items:center;padding:11px 0;z-index:1}
   .node .dot{width:26px;height:26px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;
@@ -346,6 +351,7 @@
       <span class="crys back" style="margin-left:auto"><span class="di">◆</span> <b class="num crysN">0</b></span>
       <button class="ghost" id="toHeroes">Heroes</button>
       <button class="ghost" id="toGacha">Summon</button></div>
+    <div id="mapModes"><button class="modebtn on" data-mode="normal">Normal</button><button class="modebtn" data-mode="hard">⚔ Hard</button></div>
     <div id="maplist"><div class="track"></div></div>
   </section>
 
@@ -475,6 +481,9 @@ const hero=id=>DATA.heroes.find(h=>h.id===id);
 
 const STARTER=['ASH-TNK-C01','ASH-ASN-C01','ASH-RNG-C01','ASH-MAG-C01','ASH-NEC-C01','ASH-HLR-C01','ASH-BSK-C01','ASH-ASN-E01'];
 let cleared=new Set(), curStage=null, team=[], G=null, ui={speed:1,auto:false,muted:false};
+let hardMode=false, curHard=false, clearedHard=new Set();
+const HARD={hp:1.6, atk:1.45, def:1.3, lvl:12};  // endgame difficulty multipliers
+function campaignHasBoss(){return DATA.chapters.some(c=>c.stages.some(s=>s.boss&&cleared.has(s.id)));}
 
 /* ---------- SFX: synthesized Web Audio, no external assets (CSP-safe) ---------- */
 const SFX=(()=>{
@@ -587,12 +596,12 @@ function renderCrys(){
 const SAVE_KEY='ashgate_save_v1';
 let hasSave=false;
 function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(
-  {v:2,owned:[...owned],progress,cleared:[...cleared],crystals,gold,starShards,pity,inventory,gearOn,gearUID,loadouts,muted:ui.muted}));}catch(e){}}
+  {v:2,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],crystals,gold,starShards,pity,inventory,gearOn,gearUID,loadouts,muted:ui.muted}));}catch(e){}}
 function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s||(s.v!==1&&s.v!==2))return false;
   owned=new Set(s.owned);progress=s.progress||{};cleared=new Set(s.cleared);
   crystals=s.crystals??crystals;gold=s.gold??gold;starShards=s.starShards??starShards;pity=s.pity??0;
   inventory=s.inventory||[];gearOn=s.gearOn||{};gearUID=s.gearUID||inventory.reduce((m,p)=>Math.max(m,p.uid),0);
-  loadouts=s.loadouts||{};ui.muted=s.muted??false;
+  loadouts=s.loadouts||{};clearedHard=new Set(s.clearedHard||[]);ui.muted=s.muted??false;
   return true;}catch(e){return false;}}
 function resetSave(){try{localStorage.removeItem(SAVE_KEY);}catch(e){}location.reload();}
 
@@ -603,22 +612,29 @@ function show(id){$$('.screen').forEach(s=>s.classList.toggle('on',s.id===id));}
 function allStages(){return DATA.chapters.flatMap(c=>c.stages);}
 function buildMap(){
   const list=$('#maplist'); [...list.querySelectorAll('.node,.chdiv')].forEach(n=>n.remove());
+  const H=hardMode;
+  $('#mapModes').style.display=campaignHasBoss()?'flex':'none';
+  $$('#mapModes .modebtn').forEach(b=>b.classList.toggle('on',b.dataset.mode===(H?'hard':'normal')));
   const flat=allStages(); let idx=0;
   DATA.chapters.forEach((ch,ci)=>{
     const prevChapterDone = ci===0 || DATA.chapters[ci-1].stages.every(s=>cleared.has(s.id));
+    const chNormalDone = ch.stages.every(s=>cleared.has(s.id));
     const div=document.createElement('div'); div.className='chdiv'+(ci===0?' first':'');
-    div.innerHTML=`<span class="chnum">Chapter ${ch.id}</span><span class="chname">${ch.name}</span>`+
-      (prevChapterDone?'':`<span class="chlock">🔒 clear Chapter ${DATA.chapters[ci-1].id}</span>`);
+    const lockTxt = H ? (chNormalDone?'':'🔒 clear on Normal first') : (prevChapterDone?'':`🔒 clear Chapter ${DATA.chapters[ci-1].id}`);
+    div.innerHTML=`<span class="chnum">Chapter ${ch.id}${H?' · Hard':''}</span><span class="chname">${ch.name}</span>`+
+      (lockTxt?`<span class="chlock">${lockTxt}</span>`:'');
     list.appendChild(div);
     ch.stages.forEach((s,si)=>{
-      const prevDone = idx===0 || cleared.has(flat[idx-1].id);
-      const done=cleared.has(s.id), state=done?'done':(prevDone?'current':'locked');
+      let done,playable;
+      if(H){ done=clearedHard.has(s.id); playable=cleared.has(s.id); }
+      else { playable = idx===0 || cleared.has(flat[idx-1].id); done=cleared.has(s.id); }
+      const state=done?'done':(playable?'current':'locked');
       const n=document.createElement('div');
-      n.className=`node ${state} ${s.boss?'boss':''} ${prevDone?'playable':''} ${done?'done':''}`;
-      const badge=done?'<span class="badge clr">Cleared</span>':(s.boss?'<span class="badge boss">Boss</span>':(prevDone?'<span class="badge go">Play</span>':''));
+      n.className=`node ${state} ${s.boss?'boss':''} ${playable?'playable':''} ${done?'done':''}`;
+      const badge=done?'<span class="badge clr">Cleared</span>':(s.boss?'<span class="badge boss">Boss</span>':(playable?'<span class="badge go">Play</span>':''));
       n.innerHTML=`<div class="dot">${done?'✓':(s.boss?'☠':(si+1))}</div>
-        <div class="card"><div><div class="stg">Stage ${s.id}</div><div class="snm">${s.name}</div><div class="teach">${s.teach}</div></div>${badge}</div>`;
-      if(prevDone){ n.querySelector('.card').addEventListener('click',()=>openTeam(s)); }
+        <div class="card"><div><div class="stg">Stage ${s.id}${H?' · Hard':''}</div><div class="snm">${s.name}</div><div class="teach">${s.teach}</div></div>${badge}</div>`;
+      if(playable){ n.querySelector('.card').addEventListener('click',()=>openTeam(s)); }
       list.appendChild(n); idx++;
     });
   });
@@ -794,9 +810,11 @@ function whoHas(uid){for(const id in gearOn)for(const sl in gearOn[id])if(gearOn
 function isEquippedHere(p){return (gearOn[curHero]||{})[p.slot]===p.uid;}
 function enhanceCost(p){return Math.round(300*(p.lvl+1)*(1+['T1','T2','T3','T4'].indexOf(p.tier)*.5));}
 function rollRar(w){const r=Math.random();let a=0;for(const k in w){a+=w[k];if(r<a)return k;}return Object.keys(w).pop();}
-function dropGear(boss){
-  const t=cleared.size>=10?rollRar({T3:.3,T2:.55,T1:.15}):rollRar({T2:.45,T1:.55});
-  const r=boss?rollRar({L:.12,E:.38,R:.40,C:.10}):rollRar({L:.04,E:.24,R:.46,C:.26});
+function dropGear(boss,hard){
+  const t=hard?rollRar({T4:.3,T3:.5,T2:.2})
+    :(cleared.size>=10?rollRar({T3:.3,T2:.55,T1:.15}):rollRar({T2:.45,T1:.55}));
+  const r=hard?(boss?rollRar({L:.22,E:.48,R:.30}):rollRar({L:.10,E:.40,R:.45,C:.05}))
+    :(boss?rollRar({L:.12,E:.38,R:.40,C:.10}):rollRar({L:.04,E:.24,R:.46,C:.26}));
   const p=makePiece(t,r);inventory.push(p);return p;
 }
 function grantStarterGear(){
@@ -908,14 +926,16 @@ function autoEquip(){gearOn[curHero]=gearOn[curHero]||{};
 /* ---------- BATTLE ENGINE ---------- */
 function mkHero(id){const s=hero(id),st=effStats(s); return {...s,stats:st,side:'ally',hp:st.hp,max:st.hp,barrier:st.aegis?Math.round(st.hp*.15):0,rage:0,cd:{},status:{},alive:true,el:null};}
 function mkEnemy(key){const s=DATA.enemies[key]||Object.values(DATA.enemies).find(e=>key.startsWith(e.id))||Object.values(DATA.enemies)[0];
-  return {...s,key,side:'enemy',hp:s.stats.hp,max:s.stats.hp,barrier:0,status:{},alive:true,el:null,isBoss:s.tier==='X',isMini:s.tier==='B'};}
+  const st=curHard?{hp:Math.round(s.stats.hp*HARD.hp),atk:Math.round(s.stats.atk*HARD.atk),def:Math.round(s.stats.def*HARD.def),spd:s.stats.spd}:s.stats;
+  return {...s,stats:st,key,side:'enemy',hp:st.hp,max:st.hp,barrier:0,status:{},alive:true,el:null,isBoss:s.tier==='X',isMini:s.tier==='B'};}
 function deploy(){
+  curHard=hardMode;
   const waves=curStage.waves.map(w=>w.map(mkEnemy));
-  G={heroes:team.map(mkHero),waves,wi:0,enemies:waves[0],surge:0,round:1,over:false,busy:false,auto:ui.auto,speed:ui.speed,telegraph:null};
+  G={heroes:team.map(mkHero),waves,wi:0,enemies:waves[0],surge:0,round:1,over:false,busy:false,auto:ui.auto,speed:ui.speed,telegraph:null,hard:curHard};
   $('#speedBtn').textContent=ui.speed+'×';
   $('#autoBtn').classList.toggle('active',ui.auto);
   const _ch=DATA.chapters.find(c=>c.stages.some(s=>s.id===curStage.id));
-  if(_ch)$('#btlChapter').textContent='Ch.'+_ch.id+' · '+_ch.name;
+  if(_ch)$('#btlChapter').textContent=(curHard?'⚔ HARD · ':'')+'Ch.'+_ch.id+' · '+_ch.name;
   $('#btlName').textContent='Stage '+curStage.id+' · '+curStage.name;
   buildParty(); renderEnemies(); render(); renderTelegraph();
   $('#roundNum').textContent='1'; $('#result').style.display='none';
@@ -1096,25 +1116,33 @@ function cutIn(u){const c=$('#cutin');SFX.ult();c.style.setProperty('--hue',`var
   setTimeout(()=>{c.classList.remove('show');G.busy=false;if(!G.over)scheduleNext(120);},720/G.speed);}
 function endGame(win){
   G.over=true;renderTelegraph();SFX[win?'win':'lose']();
+  const H=curHard;
+  const firstNormal = win && !cleared.has(curStage.id);
+  const firstHard = win && H && !clearedHard.has(curStage.id);
   let reward=0,goldR=0,shardR=0,gp=null;
-  if(win && !cleared.has(curStage.id)){reward=curStage.boss?300:150;crystals+=reward;
-    goldR=curStage.boss?8000:4000;gold+=goldR;shardR=curStage.boss?30:12;starShards+=shardR;}
-  if(win&&(!cleared.has(curStage.id)||curStage.boss||Math.random()<.45))gp=dropGear(!!curStage.boss);
+  if(win){
+    if(H){ goldR=(curStage.boss?8000:4000)*2;gold+=goldR; shardR=(curStage.boss?30:12)*2;starShards+=shardR;
+      if(firstHard){reward=curStage.boss?200:80;crystals+=reward;} }
+    else if(firstNormal){ reward=curStage.boss?300:150;crystals+=reward;
+      goldR=curStage.boss?8000:4000;gold+=goldR; shardR=curStage.boss?30:12;starShards+=shardR; }
+  }
+  if(win&&(H||firstNormal||curStage.boss||Math.random()<.45))gp=dropGear(!!curStage.boss,H);
   const dropTxt=gp?`<div style="color:var(${GRAR[gp.rar].c});margin-bottom:6px">✦ Gear drop — ${GRAR[gp.rar].n} ${GSETS[gp.set].n} ${GSLOT[gp.slot].n} (${gp.tier}) · equip it in Heroes ▸ Equipment</div>`:'';
-  if(win)cleared.add(curStage.id);
+  if(win){cleared.add(curStage.id);if(H)clearedHard.add(curStage.id);}
   renderCrys();
   if(win)saveGame();
   const r=$('#result');r.style.display='flex';
   const last = allStages().every(s=>cleared.has(s.id));
-  $('#resEyebrow').textContent=win?(last?'The Gate is sealed':'Stage cleared'):(G.timeout?'Time runs out':'The party falls');
+  $('#resEyebrow').textContent=win?(H?'Hard clear':(last?'The Gate is sealed':'Stage cleared')):(G.timeout?'Time runs out':'The party falls');
   const v=$('#resVerdict');v.textContent=win?'VICTORY':'DEFEAT';v.className='verdict '+(win?'win':'lose');
-  const rewTxt = reward?`<div style="color:var(--umbra);margin-bottom:6px">◆ +${reward} Crystals · <span style="color:var(--warn)">◉ +${goldR.toLocaleString()} Gold</span> · <span style="color:var(--hlr)">✦ +${shardR} Shards</span></div>`:'';
-  const chapDone = win && curStage.boss && DATA.chapters.find(c=>c.stages.some(s=>s.id===curStage.id)).stages.every(s=>cleared.has(s.id));
-  $('#resSub').innerHTML=(win?rewTxt+dropTxt:'')+(win?(last
-      ?`All four campaign chapters cleared — the Gate is sealed. The full game continues into hard mode, co-op raids, PvP, and live events, all specified in the design docs.`
-      :chapDone?`Chapter complete. The next chapter is open on the map — its enemies hit harder, so summon and upgrade before you push in.`
-      :`On to the next gate. Summon and level between fights to stay ahead of the curve.`)
-    :`The party falls. Bank Surge for a tank's team-immunity before a telegraphed hit, answer with a healer — or upgrade your five and try again.`);
+  const rewTxt = (goldR||reward)?`<div style="color:var(--umbra);margin-bottom:6px">${reward?`◆ +${reward} Crystals · `:''}<span style="color:var(--warn)">◉ +${goldR.toLocaleString()} Gold</span> · <span style="color:var(--hlr)">✦ +${shardR} Shards</span></div>`:'';
+  const chapDone = win && !H && !last && curStage.boss && DATA.chapters.find(c=>c.stages.some(s=>s.id===curStage.id)).stages.every(s=>cleared.has(s.id));
+  const msg = !win ? `The party falls. Bank Surge for a tank's team-immunity before a telegraphed hit, answer with a healer — or upgrade your five and try again.`
+    : H ? `⚔ Hard clear${firstHard?' — first time!':''}. Replay any cleared stage on Hard to farm gold, shards, and higher-tier gear (T3/T4).`
+    : (firstNormal&&last) ? `All four campaign chapters cleared — the Gate is sealed. <b style="color:var(--warn)">Hard mode is now open</b>: replay any stage for tougher fights and better loot.`
+    : chapDone ? `Chapter complete. The next chapter is open on the map — its enemies hit harder, so summon and upgrade before you push in.`
+    : `On to the next gate. Summon and level between fights to stay ahead of the curve.`;
+  $('#resSub').innerHTML=(win?rewTxt+dropTxt:'')+msg;
   const nx=$('#resNext');
   if(win&&!last){nx.textContent='Continue';nx.onclick=()=>{buildMap();show('screen-map');};}
   else if(win&&last){nx.textContent='Roster';nx.onclick=()=>{buildMap();show('screen-map');};}
@@ -1123,6 +1151,9 @@ function endGame(win){
 
 /* ---------- controls ---------- */
 $('#toMap').addEventListener('click',()=>{buildMap();renderCrys();show('screen-map');});
+$$('#mapModes .modebtn').forEach(btn=>btn.addEventListener('click',()=>{
+  const wantHard=btn.dataset.mode==='hard'; if(wantHard&&!campaignHasBoss())return;
+  hardMode=wantHard;SFX.tap();buildMap();}));
 $('#resetBtn').addEventListener('click',()=>{if(confirm('Reset all progress — roster, upgrades, and chapter clears?'))resetSave();});
 hasSave=loadGame();
 if(hasSave){$('#toMap').textContent='Continue';$('#resetBtn').style.display='block';}
