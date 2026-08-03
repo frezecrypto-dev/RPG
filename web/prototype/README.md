@@ -50,6 +50,14 @@ tap; applying a preset pulls its pieces back even if another hero borrowed them.
 Two set 4-pc effects that aren't pure numbers in the doc (Vanguard/Gravebind)
 use a stat proxy here.
 
+## Home / lobby (doc 16)
+
+The map doubles as a lobby: a persistent **resource header** (Crystals / Gold /
+Shards), a **Featured Summon** card for the rotating banner unit (Branwen
+Oathbreaker) that jumps straight to the gate, and **Daily Objectives** — win 3
+battles, summon once, enhance gear once — that track your play and pay out
+Crystals/Gold on claim, resetting each day.
+
 ## Hard mode (endgame farm)
 
 Clearing a chapter's boss on Normal unlocks a **Normal / Hard** toggle on the

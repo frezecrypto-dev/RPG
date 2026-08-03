@@ -49,6 +49,31 @@
   #screen-title .hint{font-size:11px;color:var(--faint);letter-spacing:.04em;max-width:34ch;line-height:1.5}
 
   /* ---------- map ---------- */
+  #mapRes{display:flex;gap:16px;padding:2px 20px 8px;border-bottom:1px solid var(--line)}
+  #mapRes .res{font-size:12px;color:var(--muted)}#mapRes .res .num{color:var(--ink);font-weight:600}
+  #featBanner{padding:10px 20px 4px}
+  .fbwrap{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:14px;padding:11px 13px;
+    background:linear-gradient(100deg,color-mix(in srgb,var(--hue) 20%,transparent),var(--panel2) 60%);position:relative;overflow:hidden}
+  .fbwrap::after{content:"";position:absolute;inset:0;border-radius:14px;box-shadow:0 0 0 1px color-mix(in srgb,var(--hue) 35%,transparent) inset;pointer-events:none}
+  .fbglyph{font-size:30px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.5))}
+  .fbmeta{flex:1;min-width:0}
+  .fbtag{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--hue)}
+  .fbname{font-family:var(--font-title);font-size:17px;line-height:1.1;margin:1px 0}
+  .fbsub{font-size:10px;color:var(--muted)}
+  .fbcta{align-self:center;font-size:12px;padding:8px 16px;border-radius:10px;border:1px solid var(--hue);
+    color:var(--ink);background:color-mix(in srgb,var(--hue) 22%,transparent);cursor:pointer;white-space:nowrap}
+  #daily{padding:6px 20px 2px}
+  .dhead{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:5px}
+  .dhead .ddone{color:var(--good);letter-spacing:.04em}
+  .drow{display:flex;gap:6px}
+  .dtask{flex:1;border:1px solid var(--line);border-radius:10px;padding:7px 8px;background:var(--panel2);min-width:0}
+  .dtask.ready{border-color:var(--warn)}
+  .dtask.claimed{opacity:.55}
+  .dlabel{font-size:10px;line-height:1.2;color:var(--ink)}
+  .dprog{font-size:9px;color:var(--muted);margin:2px 0 5px}
+  .dclaim{width:100%;font-size:10px;padding:4px;border-radius:7px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+  .dtask.ready .dclaim{border-color:var(--warn);color:var(--warn);font-weight:700}
+  .dclaim:disabled{opacity:.5;cursor:default}
   #mapModes{display:none;gap:6px;padding:8px 20px 0}
   #mapModes .modebtn{font-size:11px;letter-spacing:.04em;padding:5px 14px;border-radius:20px;border:1px solid var(--line);
     background:var(--panel2);color:var(--muted);cursor:pointer}
@@ -347,10 +372,16 @@
 
   <!-- MAP -->
   <section class="screen" id="screen-map">
-    <div class="scrhead"><div><div class="eyebrow">Chapter 1</div><h1>The Drowned Quarter</h1></div>
-      <span class="crys back" style="margin-left:auto"><span class="di">◆</span> <b class="num crysN">0</b></span>
+    <div class="scrhead"><div><div class="eyebrow">Campaign</div><h1>Ashgate</h1></div>
       <button class="ghost" id="toHeroes">Heroes</button>
       <button class="ghost" id="toGacha">Summon</button></div>
+    <div id="mapRes">
+      <span class="res"><span class="di" style="color:var(--umbra)">◆</span> <b class="num crysN">0</b></span>
+      <span class="res"><span class="di" style="color:var(--warn)">◉</span> <b class="num goldN">0</b></span>
+      <span class="res"><span class="di" style="color:var(--hlr)">✦</span> <b class="num shardN">0</b></span>
+    </div>
+    <div id="featBanner"></div>
+    <div id="daily"></div>
     <div id="mapModes"><button class="modebtn on" data-mode="normal">Normal</button><button class="modebtn" data-mode="hard">⚔ Hard</button></div>
     <div id="maplist"><div class="track"></div></div>
   </section>
@@ -482,6 +513,15 @@ const hero=id=>DATA.heroes.find(h=>h.id===id);
 const STARTER=['ASH-TNK-C01','ASH-ASN-C01','ASH-RNG-C01','ASH-MAG-C01','ASH-NEC-C01','ASH-HLR-C01','ASH-BSK-C01','ASH-ASN-E01'];
 let cleared=new Set(), curStage=null, team=[], G=null, ui={speed:1,auto:false,muted:false};
 let hardMode=false, curHard=false, clearedHard=new Set();
+let daily={date:'',win:0,summon:0,enhance:0,claimed:[]};
+const DAILY_TASKS=[
+  {id:'win',    label:'Win 3 battles',    goal:3, reward:{crystals:80}, rtxt:'◆ 80'},
+  {id:'summon', label:'Summon once',      goal:1, reward:{gold:8000},   rtxt:'◉ 8k'},
+  {id:'enhance',label:'Enhance gear once',goal:1, reward:{gold:6000},   rtxt:'◉ 6k'},
+];
+const FEATURED_ID='ASH-BSK-L02';
+function dailyCheck(){const t=new Date().toDateString();if(daily.date!==t){daily={date:t,win:0,summon:0,enhance:0,claimed:[]};}}
+function dailyBump(k){dailyCheck();daily[k]=(daily[k]||0)+1;}
 const HARD={hp:1.6, atk:1.45, def:1.3, lvl:12};  // endgame difficulty multipliers
 function campaignHasBoss(){return DATA.chapters.some(c=>c.stages.some(s=>s.boss&&cleared.has(s.id)));}
 
@@ -596,12 +636,13 @@ function renderCrys(){
 const SAVE_KEY='ashgate_save_v1';
 let hasSave=false;
 function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(
-  {v:2,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],crystals,gold,starShards,pity,inventory,gearOn,gearUID,loadouts,muted:ui.muted}));}catch(e){}}
+  {v:2,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],crystals,gold,starShards,pity,inventory,gearOn,gearUID,loadouts,daily,muted:ui.muted}));}catch(e){}}
 function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s||(s.v!==1&&s.v!==2))return false;
   owned=new Set(s.owned);progress=s.progress||{};cleared=new Set(s.cleared);
   crystals=s.crystals??crystals;gold=s.gold??gold;starShards=s.starShards??starShards;pity=s.pity??0;
   inventory=s.inventory||[];gearOn=s.gearOn||{};gearUID=s.gearUID||inventory.reduce((m,p)=>Math.max(m,p.uid),0);
-  loadouts=s.loadouts||{};clearedHard=new Set(s.clearedHard||[]);ui.muted=s.muted??false;
+  loadouts=s.loadouts||{};clearedHard=new Set(s.clearedHard||[]);
+  daily=s.daily||{date:'',win:0,summon:0,enhance:0,claimed:[]};dailyCheck();ui.muted=s.muted??false;
   return true;}catch(e){return false;}}
 function resetSave(){try{localStorage.removeItem(SAVE_KEY);}catch(e){}location.reload();}
 
@@ -613,6 +654,7 @@ function allStages(){return DATA.chapters.flatMap(c=>c.stages);}
 function buildMap(){
   const list=$('#maplist'); [...list.querySelectorAll('.node,.chdiv')].forEach(n=>n.remove());
   const H=hardMode;
+  renderHome();
   $('#mapModes').style.display=campaignHasBoss()?'flex':'none';
   $$('#mapModes .modebtn').forEach(b=>b.classList.toggle('on',b.dataset.mode===(H?'hard':'normal')));
   const flat=allStages(); let idx=0;
@@ -639,6 +681,29 @@ function buildMap(){
     });
   });
 }
+
+function renderHome(){
+  dailyCheck();
+  const fh=hero(FEATURED_ID)||DATA.heroes.find(h=>h.rarity==='L'), fc=CLASS[fh.class];
+  $('#featBanner').innerHTML=`<div class="fbwrap" style="--hue:var(${fc.hue})">
+      <div class="fbglyph">${fc.g}</div>
+      <div class="fbmeta"><div class="fbtag">Featured Summon</div>
+        <div class="fbname">${fh.name}</div><div class="fbsub">${RARNAME[fh.rarity]} · ${fh.role} · ${fc.l}</div></div>
+      <button class="fbcta" id="fbCta">Summon ▸</button></div>`;
+  $('#fbCta').addEventListener('click',()=>{SFX.tap();renderCrys();show('screen-gacha');});
+  const allClaimed=DAILY_TASKS.every(t=>daily.claimed.includes(t.id));
+  $('#daily').innerHTML=`<div class="dhead">Daily Objectives${allClaimed?' <span class="ddone">all done ✓</span>':''}</div>`+
+    `<div class="drow">`+DAILY_TASKS.map(t=>{const cur=Math.min(daily[t.id]||0,t.goal),done=cur>=t.goal,claimed=daily.claimed.includes(t.id);
+      return `<div class="dtask ${claimed?'claimed':done?'ready':''}"><div class="dlabel">${t.label}</div>
+        <div class="dprog">${cur}/${t.goal}</div>
+        <button class="dclaim" data-id="${t.id}" ${done&&!claimed?'':'disabled'}>${claimed?'✓':t.rtxt}</button></div>`;}).join('')+`</div>`;
+  $('#daily').querySelectorAll('.dclaim').forEach(bn=>bn.addEventListener('click',()=>claimDaily(bn.dataset.id)));
+  renderCrys();
+}
+function claimDaily(id){const t=DAILY_TASKS.find(x=>x.id===id);
+  if(!t||daily.claimed.includes(id)||(daily[id]||0)<t.goal)return;
+  if(t.reward.crystals)crystals+=t.reward.crystals; if(t.reward.gold)gold+=t.reward.gold;
+  daily.claimed.push(id);SFX.rare('E');renderHome();saveGame();}
 
 /* ---------- TEAM SELECT ---------- */
 function openTeam(stage){
@@ -708,7 +773,7 @@ function drawOne(rarity){
 }
 function pull(n){
   if(crystals < n*150){flashBar();return;}
-  crystals-=n*150;
+  crystals-=n*150; dailyBump('summon');
   const results=[];
   let gotEpicPlus=false;
   for(let i=0;i<n;i++){
@@ -911,7 +976,7 @@ function toggleEquip(uid){const p=pieceById(uid);if(!p)return;gearOn[curHero]=ge
   else{const owner=whoHas(uid);if(owner&&gearOn[owner])delete gearOn[owner][p.slot];gearOn[curHero][p.slot]=uid;}
   renderGear();saveGame();}
 function enhancePiece(uid){const p=pieceById(uid);if(!p||p.lvl>=15)return;const c=enhanceCost(p);if(gold<c)return;
-  gold-=c;p.lvl++;if(p.lvl%5===0&&p.subs.length){const s=p.subs[rand0(p.subs.length)];s.v+=SUBBASE[s.k]*rand(.85,1.15);}
+  gold-=c;p.lvl++;dailyBump('enhance');if(p.lvl%5===0&&p.subs.length){const s=p.subs[rand0(p.subs.length)];s.v+=SUBBASE[s.k]*rand(.85,1.15);}
   renderGear();saveGame();}
 function forge(){if(gold<12000)return;gold-=12000;
   const t=cleared.size>=10?rollRar({T3:.35,T2:.5,T1:.15}):rollRar({T2:.4,T1:.6});
@@ -1129,6 +1194,7 @@ function endGame(win){
   if(win&&(H||firstNormal||curStage.boss||Math.random()<.45))gp=dropGear(!!curStage.boss,H);
   const dropTxt=gp?`<div style="color:var(${GRAR[gp.rar].c});margin-bottom:6px">✦ Gear drop — ${GRAR[gp.rar].n} ${GSETS[gp.set].n} ${GSLOT[gp.slot].n} (${gp.tier}) · equip it in Heroes ▸ Equipment</div>`:'';
   if(win){cleared.add(curStage.id);if(H)clearedHard.add(curStage.id);}
+  if(win)dailyBump('win');
   renderCrys();
   if(win)saveGame();
   const r=$('#result');r.style.display='flex';
