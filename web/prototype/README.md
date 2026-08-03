@@ -44,8 +44,11 @@ DEF, SPD, **crit rate/damage**, and **lifesteal** all change how fights play;
 Pieces come from **stage drops** (bosses drop better) and a gold **Forge**;
 **Auto-Equip** fills a hero from the bag. Browsing a slot shows each candidate's
 **Gear-Power delta** (▲/▼) vs. what's equipped, and unwanted pieces **scrap for
-Gold** (single or bulk "Scrap Commons"). Two set 4-pc effects that aren't pure
-numbers in the doc (Vanguard/Gravebind) use a stat proxy here.
+Gold** (single or bulk "Scrap Commons"). Each hero also keeps **three saveable
+loadout presets** (doc 09) — snapshot the current gear, then swap builds in one
+tap; applying a preset pulls its pieces back even if another hero borrowed them.
+Two set 4-pc effects that aren't pure numbers in the doc (Vanguard/Gravebind)
+use a stat proxy here.
 
 ## Scope / honesty
 

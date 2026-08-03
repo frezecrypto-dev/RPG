@@ -274,6 +274,15 @@
   #hdGear .gpwr{font-family:var(--font-title);font-size:16px;color:var(--warn)}
   #hdGear .gsub{font-size:10px;color:var(--muted);letter-spacing:.04em}
   #hdGear .arr{margin-left:auto;color:var(--umbra);font-size:16px}
+  #gePresets{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:6px 0 2px}
+  #gePresets .pslbl{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-right:2px}
+  .pcard{display:flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:9px;padding:4px 6px;background:var(--panel2)}
+  .pcard.empty{opacity:.75}
+  .pcard .pnm{font-family:var(--font-title);font-size:12px;color:var(--umbra);width:11px;text-align:center}
+  .pcard .pcnt{font-size:9px;color:var(--muted)}
+  .pcard .pbtn{font-size:9px;padding:3px 7px;border-radius:7px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;line-height:1}
+  .pcard .pbtn.eq{border-color:var(--umbra-dim);color:var(--umbra)}
+  .pcard .pbtn:hover{border-color:var(--umbra-dim)}
   #geSlots{display:flex;gap:7px;padding:2px 0 4px}
   .gslot{flex:1;border:1px solid var(--line);border-radius:10px;padding:8px 4px 7px;text-align:center;cursor:pointer;
     background:var(--panel2);position:relative;min-width:0;transition:border-color .15s,transform .1s}
@@ -392,6 +401,7 @@
   <section class="screen" id="screen-gear">
     <div class="scrhead"><div><div class="eyebrow" id="geHero">—</div><h1>Equipment</h1></div>
       <button class="ghost back" id="geBack">Back</button></div>
+    <div id="gePresets"></div>
     <div id="geSlots"></div>
     <div id="geSets"></div>
     <div id="geActions">
@@ -510,7 +520,7 @@ const RATES={L:0.03,E:0.14,R:0.38,C:0.45};
 function prog(id){if(!progress[id]){const h=hero(id);progress[id]={level:20,stars:h?h.startStars:1};}return progress[id];}
 
 /* ---------- gear system (doc 09 s5): 5 slots · 6 sets · T1–T4 · C/R/E/L ---------- */
-let inventory=[], gearOn={}, gearUID=0;
+let inventory=[], gearOn={}, gearUID=0, loadouts={};
 const GSLOTS=['WPN','ARM','HLM','CHM','SGL'];
 const GSLOT={WPN:{n:'Weapon',i:'⚔',main:['atk_flat','atk_pct']},
              ARM:{n:'Armor', i:'❖',main:['def_flat','hp_pct']},
@@ -577,12 +587,12 @@ function renderCrys(){
 const SAVE_KEY='ashgate_save_v1';
 let hasSave=false;
 function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(
-  {v:2,owned:[...owned],progress,cleared:[...cleared],crystals,gold,starShards,pity,inventory,gearOn,gearUID,muted:ui.muted}));}catch(e){}}
+  {v:2,owned:[...owned],progress,cleared:[...cleared],crystals,gold,starShards,pity,inventory,gearOn,gearUID,loadouts,muted:ui.muted}));}catch(e){}}
 function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s||(s.v!==1&&s.v!==2))return false;
   owned=new Set(s.owned);progress=s.progress||{};cleared=new Set(s.cleared);
   crystals=s.crystals??crystals;gold=s.gold??gold;starShards=s.starShards??starShards;pity=s.pity??0;
   inventory=s.inventory||[];gearOn=s.gearOn||{};gearUID=s.gearUID||inventory.reduce((m,p)=>Math.max(m,p.uid),0);
-  ui.muted=s.muted??false;
+  loadouts=s.loadouts||{};ui.muted=s.muted??false;
   return true;}catch(e){return false;}}
 function resetSave(){try{localStorage.removeItem(SAVE_KEY);}catch(e){}location.reload();}
 
@@ -807,6 +817,28 @@ function renderHdGear(){
     <div class="gsub">${n}/5 slots${sets.length?' · '+sets.join(', '):' · tap to equip'}</div></div><div class="arr">▸</div>`;
 }
 function openGear(){geSlotSel=null;renderGear();show('screen-gear');}
+/* ---- loadout presets (doc 09: 3 per unit) ---- */
+function heroLoadouts(id){if(!loadouts[id])loadouts[id]=[null,null,null];return loadouts[id];}
+function presetSlotCount(pr){return pr?GSLOTS.filter(sl=>pr.slots[sl]&&pieceById(pr.slots[sl])).length:0;}
+function savePreset(idx){const lo=gearOn[curHero]||{},slots={};GSLOTS.forEach(sl=>{if(lo[sl])slots[sl]=lo[sl];});
+  heroLoadouts(curHero)[idx]={slots};SFX.tap();renderGear();saveGame();}
+function applyPreset(idx){const pr=heroLoadouts(curHero)[idx];if(!pr)return;const want=pr.slots||{},next={};
+  GSLOTS.forEach(sl=>{const uid=want[sl];if(uid&&pieceById(uid)){const owner=whoHas(uid);
+    if(owner&&owner!==curHero&&gearOn[owner])delete gearOn[owner][sl];next[sl]=uid;}});
+  gearOn[curHero]=next;SFX.tap();renderGear();saveGame();}
+function clearPreset(idx){heroLoadouts(curHero)[idx]=null;renderGear();saveGame();}
+function renderPresets(){
+  const arr=heroLoadouts(curHero),L=['A','B','C'];
+  $('#gePresets').innerHTML=`<span class="pslbl">Loadouts</span>`+arr.map((pr,i)=>{
+    if(!pr)return `<div class="pcard empty"><span class="pnm">${L[i]}</span><button data-pact="save" data-i="${i}" class="pbtn">Save current</button></div>`;
+    return `<div class="pcard"><span class="pnm">${L[i]}</span><span class="pcnt">${presetSlotCount(pr)}/5</span>`+
+      `<button data-pact="apply" data-i="${i}" class="pbtn eq">Apply</button>`+
+      `<button data-pact="save" data-i="${i}" class="pbtn" title="Overwrite with current">⤓</button>`+
+      `<button data-pact="clear" data-i="${i}" class="pbtn" title="Clear">✕</button></div>`;
+  }).join('');
+  $('#gePresets').querySelectorAll('button[data-pact]').forEach(bn=>bn.addEventListener('click',()=>{
+    const i=+bn.dataset.i,a=bn.dataset.pact;a==='save'?savePreset(i):a==='apply'?applyPreset(i):clearPreset(i);}));
+}
 function gcardHTML(p){
   const eqHere=isEquippedHere(p), owner=whoHas(p.uid);
   const mainStr=STATLBL[p.main.k]+' '+fmtStat(p.main.k,mainVal(p));
@@ -831,6 +863,7 @@ function gcardHTML(p){
 }
 function renderGear(){
   const h=hero(curHero); $('#geHero').textContent=h.name+' · '+h.role;
+  renderPresets();
   const lo=gearOn[curHero]||{};
   $('#geSlots').innerHTML=GSLOTS.map(sl=>{const p=lo[sl]&&pieceById(lo[sl]);
     const dot=p?`<span class="grdot" style="background:var(${GRAR[p.rar].c})"></span>`:'';
