@@ -1,8 +1,8 @@
 # ASHGATE — Playable Combat Slice
 
 A single-file, self-contained browser prototype of ASHGATE's core loop —
-**summon a roster, equip and upgrade your five, and fight through three
-campaign chapters** (Slimes → Giants → Guardians). It turns the spec into
+**summon a roster, equip and upgrade your five, and fight the full four-chapter
+campaign** (Slimes → Giants → Guardians → Undead). It turns the spec into
 something you can actually tap and play.
 
 ## What it demonstrates
@@ -50,10 +50,12 @@ numbers in the doc (Vanguard/Gravebind) use a stat proxy here.
 ## Scope / honesty
 
 This is a **playable slice**, not the game. It now covers the core loop —
-summon → equip/upgrade → team-build → multi-wave combat across three chapters
-(Slimes, Giants, Guardians — each family flips the damage-type puzzle) → farm →
-persist — but not the backend, audio, PvP/co-op, or the other 25 stages, which
-are specified in `docs/` and `data/` but not built. Class art is CSS/emoji
+summon → equip/upgrade → team-build → multi-wave combat across the full
+four-chapter campaign (Slimes, Giants, Guardians, Undead — each family flips the
+damage-type puzzle, and the finale boss reknits once at the Gate) → farm →
+persist — but not the backend, PvP/co-op, hard mode, or the remaining 20 stages
+of the 40-stage design, which are specified in `docs/` and `data/` but not
+built. Class art is CSS/emoji
 placeholders (the AI art canon in `art/canon-manifest.json` isn't integrated).
 It's the fastest bridge from "validated spec" to "something you can hold."
 
