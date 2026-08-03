@@ -1,7 +1,8 @@
 # ASHGATE — Playable Combat Slice
 
-A single-file, self-contained browser prototype of one boss fight — **five
-Vowbound vs. Krul, the Mother-Mass** (Chapter 1 finale). It turns the spec into
+A single-file, self-contained browser prototype of ASHGATE's core loop —
+**summon a roster, equip and upgrade your five, and fight through three
+campaign chapters** (Slimes → Giants → Guardians). It turns the spec into
 something you can actually tap and play.
 
 ## What it demonstrates
@@ -44,9 +45,10 @@ numbers in the doc (Vanguard/Gravebind) use a stat proxy here.
 ## Scope / honesty
 
 This is a **playable slice**, not the game. It now covers the core loop —
-summon → equip/upgrade → team-build → multi-wave combat across two chapters →
-farm → persist — but not the backend, audio, PvP/co-op, or the other 20 stages,
-which are specified in `docs/` and `data/` but not built. Class art is CSS/emoji
+summon → equip/upgrade → team-build → multi-wave combat across three chapters
+(Slimes, Giants, Guardians — each family flips the damage-type puzzle) → farm →
+persist — but not the backend, audio, PvP/co-op, or the other 25 stages, which
+are specified in `docs/` and `data/` but not built. Class art is CSS/emoji
 placeholders (the AI art canon in `art/canon-manifest.json` isn't integrated).
 It's the fastest bridge from "validated spec" to "something you can hold."
 
