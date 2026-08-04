@@ -118,6 +118,14 @@ endgame loop: **doubled** gold and shards every run, a one-time Crystal bonus on
 first Hard clear, and gear drops biased to **T3/T4** and Epic/Legendary. It's
 the repeatable reason to keep building your five after the story ends.
 
+## Onboarding
+
+First launch opens a five-slide primer — what ASHGATE is, roles & faction
+synergy, shared Surge and manual ultimates, reading boss telegraphs, and the
+progression/endgame loop — so a new player knows the hooks before the first
+fight. Returning players skip it; anyone can replay it from ⚙ Settings ▸ How to
+play.
+
 ## Settings
 
 A ⚙ menu (top-right) holds sound, default battle speed, and default Auto-Ult

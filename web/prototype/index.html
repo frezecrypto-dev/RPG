@@ -434,6 +434,23 @@
   .gcdelta{font-size:9px;font-weight:700;margin-left:5px}
   #geBar{display:flex;gap:8px;align-items:center;padding:11px 14px;border-top:1px solid var(--line);
     background:linear-gradient(0deg,rgba(14,11,24,.98),transparent)}
+  #onboard{position:absolute;inset:0;z-index:60;display:none;align-items:center;justify-content:center;padding:22px;
+    background:rgba(6,5,12,.82);backdrop-filter:blur(6px)}
+  #onboard.show{display:flex;animation:obfade .25s ease}
+  @keyframes obfade{from{opacity:0}to{opacity:1}}
+  .obcard{width:100%;max-width:360px;border:1px solid var(--line);border-radius:18px;padding:26px 22px 20px;text-align:center;
+    background:radial-gradient(120% 80% at 50% 0%,rgba(40,30,72,.8),var(--panel2))}
+  .obglyph{font-size:46px;filter:drop-shadow(0 3px 10px rgba(0,0,0,.6))}
+  .obtag{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--umbra);margin-top:10px}
+  .obcard h2{font-family:var(--font-title);font-size:26px;margin:3px 0 10px;font-weight:500}
+  .obcard p{font-size:13px;line-height:1.5;color:var(--muted);margin:0 0 16px}
+  .obdots{display:flex;gap:6px;justify-content:center;margin-bottom:16px}
+  .obdot{width:6px;height:6px;border-radius:50%;background:var(--line)}
+  .obdot.on{background:var(--umbra);width:16px;border-radius:3px}
+  .obbtns{display:flex;gap:9px;align-items:center}
+  .obskip{background:none;border:none;color:var(--faint);font-size:12px;cursor:pointer;padding:8px}
+  .obnext{flex:1;font-size:13px;padding:11px;border-radius:11px;border:1px solid var(--umbra);
+    background:color-mix(in srgb,var(--umbra) 22%,transparent);color:var(--ink);cursor:pointer;font-weight:600}
   #setBtn{position:absolute;top:8px;right:44px;z-index:40;width:30px;height:30px;border-radius:50%;
     border:1px solid var(--line);background:rgba(20,16,34,.7);color:var(--ink);font-size:14px;cursor:pointer;
     display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);padding:0;line-height:1}
@@ -460,6 +477,14 @@
 </style>
 
 <div id="app">
+  <div id="onboard"><div class="obcard">
+    <div class="obglyph" id="obGlyph">✦</div>
+    <div class="obtag" id="obTag">Welcome</div>
+    <h2 id="obTitle">—</h2>
+    <p id="obBody">—</p>
+    <div class="obdots" id="obDots"></div>
+    <div class="obbtns"><button class="obskip" id="obSkip">Skip</button><button class="obnext" id="obNext">Next ▸</button></div>
+  </div></div>
   <button id="setBtn" title="Settings" aria-label="Settings">⚙</button>
   <button id="sndBtn" title="Sound on/off" aria-label="Toggle sound">🔊</button>
   <!-- TITLE -->
@@ -806,6 +831,23 @@ function renderSettings(){
   $('#setAuto').textContent=ui.auto?'On':'Off';$('#setAuto').classList.toggle('on',ui.auto);
 }
 function openSettings(){setMsg('');$('#setSave').value='';renderSettings();show('screen-settings');}
+/* ---------- onboarding ---------- */
+const ONBOARD=[
+  {g:'⚔', tag:'Welcome, Gatewarden', title:'ASHGATE', body:'A dark-fantasy squad RPG. Summon a roster of Vowbound, forge a party of five, and fight through four chapters to close the Gate on the Mother-Mass.'},
+  {g:'🛡️', tag:'Build your five', title:'Roles & Synergy', body:'A strong party wants a frontline to hold, damage to kill, and sustain to survive. Field 2+ heroes of the same faction (Emberguard, Freeblades, Hollowed, Choir, Gravebound) for a team synergy bonus — the team-select screen previews it live.'},
+  {g:'✦', tag:'Combat', title:'Shared Surge & Ultimates', body:'Heroes act in SPD order and auto-attack. The team fills one Surge bar — when a hero lights up, tap them to fire their Ultimate. Manual ults at the right moment are the skill hook over auto-battling.'},
+  {g:'⚠️', tag:'Combat', title:'Read the telegraphs', body:'Bosses wind up big hits behind a red telegraph with warning pips. Bank Surge for a tank’s team-immunity, or answer with a healer, before it lands. Damage-type matters too — some enemies resist physical or magic.'},
+  {g:'👑', tag:'Grow stronger', title:'Progress & Endgame', body:'Level, star, gear, skill-up, and ascend your heroes. Then farm Hard mode, climb the PvP Arena, and race the weekly Raid boss. Your whole save lives in this browser — back it up under ⚙ Settings.'},
+];
+let obStep=0;
+function renderOnboard(){
+  const s=ONBOARD[obStep];
+  $('#obGlyph').textContent=s.g;$('#obTag').textContent=s.tag;$('#obTitle').textContent=s.title;$('#obBody').textContent=s.body;
+  $('#obDots').innerHTML=ONBOARD.map((_,i)=>`<span class="obdot ${i===obStep?'on':''}"></span>`).join('');
+  $('#obNext').textContent=obStep>=ONBOARD.length-1?'Begin the Descent':'Next ▸';
+}
+function showOnboard(){obStep=0;renderOnboard();$('#onboard').classList.add('show');}
+function closeOnboard(){$('#onboard').classList.remove('show');}
 
 /* ---------- screens ---------- */
 function show(id){$$('.screen').forEach(s=>s.classList.toggle('on',s.id===id));}
@@ -1676,7 +1718,7 @@ $$('#mapModes .modebtn').forEach(btn=>btn.addEventListener('click',()=>{
 $('#resetBtn').addEventListener('click',()=>{if(confirm('Reset all progress — roster, upgrades, and chapter clears?'))resetSave();});
 hasSave=loadGame();
 if(hasSave){$('#toMap').textContent='Continue';$('#resetBtn').style.display='block';}
-else{grantStarterGear();}
+else{grantStarterGear();showOnboard();}  // first run: teach the basics
 renderCrys();
 $('#toGacha').addEventListener('click',()=>{openGacha();});
 $('#toHeroes').addEventListener('click',()=>{buildHeroGrid();renderCrys();show('screen-heroes');});
@@ -1719,6 +1761,11 @@ $('#setImport').addEventListener('click',()=>{const v=$('#setSave').value;if(!v.
   if(confirm('Import this save? It replaces your current progress.')){if(importSave(v)){setMsg('Imported — reloading…',true);setTimeout(()=>location.reload(),500);}else setMsg('Invalid save code.',false);}});
 $('#setSelect').addEventListener('click',()=>{$('#setSave').focus();$('#setSave').select();});
 $('#setReset').addEventListener('click',()=>{if(confirm('Reset ALL progress — roster, upgrades, gear, and clears? This cannot be undone.'))resetSave();});
+// onboarding controls
+$('#obNext').addEventListener('click',()=>{SFX.tap();if(obStep>=ONBOARD.length-1)closeOnboard();else{obStep++;renderOnboard();}});
+$('#obSkip').addEventListener('click',()=>{closeOnboard();});
+$('#setBody').insertAdjacentHTML('afterbegin','<button id="setHowto" class="settgl" style="width:100%;margin-bottom:6px">How to play ▸</button>');
+$('#setHowto').addEventListener('click',()=>{show('screen-title');showOnboard();});
 $('#autoBtn').addEventListener('click',e=>{ui.auto=!ui.auto;if(G)G.auto=ui.auto;e.target.classList.toggle('active',ui.auto);});
 $('#speedBtn').addEventListener('click',e=>{ui.speed=ui.speed>=3?1:ui.speed+1;if(G)G.speed=ui.speed;e.target.textContent=ui.speed+'×';});
 </script>
