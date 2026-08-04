@@ -47,10 +47,10 @@
   #screen-title{align-items:center;justify-content:center;text-align:center;padding:32px;gap:18px;
     background:radial-gradient(circle at 50% 38%,rgba(24,18,44,.9),rgba(6,5,12,.98))}
   #titleBg,#mapBg{position:absolute;inset:0;z-index:0;background-size:cover;background-position:center;opacity:0;transition:opacity .5s}
-  #titleBg::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 34%,rgba(8,6,16,.35),rgba(6,5,12,.9) 78%)}
-  #titleBg.on{opacity:.5}
-  #mapBg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,9,16,.86),rgba(10,9,16,.94))}
-  #mapBg.on{opacity:.5}
+  #titleBg::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 34%,rgba(8,6,16,.20),rgba(6,5,12,.82) 78%)}
+  #titleBg.on{opacity:.68}
+  #mapBg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,9,16,.78),rgba(10,9,16,.9))}
+  #mapBg.on{opacity:.6}
   #screen-title>*:not(#titleBg),#screen-map>*:not(#mapBg){position:relative;z-index:1}
   #screen-title .mark{font-size:11px;letter-spacing:.4em;text-transform:uppercase;color:var(--umbra)}
   #screen-title h1{font-family:var(--font-title);font-size:44px;line-height:1;margin:0;letter-spacing:.02em;text-wrap:balance}
@@ -218,7 +218,7 @@
   #bossIntro .bihint{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--faint);margin-top:16px;animation:bislide .5s .5s both}
   @keyframes bislide{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
   #battleBg{position:absolute;inset:0;z-index:0;background-size:cover;background-position:center;opacity:0;transition:opacity .45s}
-  #battleBg.on{opacity:.6}
+  #battleBg.on{opacity:.72}
   #battleBg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,9,16,.45) 0%,rgba(10,9,16,.35) 40%,rgba(10,9,16,.86) 100%)}
   #screen-battle>*:not(#battleBg):not(#bossIntro):not(#cutin):not(#result){position:relative;z-index:1}
   #top{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);
@@ -611,8 +611,81 @@
   /* softer, springier hero-card hover */
   .rcard,.hcard{transition:transform .16s cubic-bezier(.2,1.2,.3,1),border-color .2s,box-shadow .2s}
 
+  /* ============ combat life: idle, attack, hit, death ============ */
+  /* living idle breathing on portraits */
+  .hero .p,.ecard .p{animation:idleBreathe 3.4s ease-in-out infinite;will-change:transform}
+  .ecard.big .p{animation:idleBoss 4.2s ease-in-out infinite}
+  .ecard.mid .p{animation:idleBreathe 3.8s ease-in-out infinite}
+  @keyframes idleBreathe{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-2.5px) scale(1.014)}}
+  @keyframes idleBoss{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-4px) scale(1.02)}}
+  /* de-sync idle across cards */
+  #party .hero:nth-child(2) .p{animation-delay:-.5s}#party .hero:nth-child(3) .p{animation-delay:-1s}
+  #party .hero:nth-child(4) .p{animation-delay:-1.6s}#party .hero:nth-child(5) .p{animation-delay:-2.2s}
+  #enemyRow .ecard:nth-child(2) .p{animation-delay:-.7s}#enemyRow .ecard:nth-child(3) .p{animation-delay:-1.5s}
+
+  /* attack lunge — heroes surge up-forward, enemies press down toward the party */
+  .hero.acting{z-index:3}
+  .hero.acting .p{animation:lungeUp .34s cubic-bezier(.3,1.5,.4,1)}
+  .ecard.acting .p{animation:lungeDown .34s cubic-bezier(.3,1.5,.4,1)}
+  @keyframes lungeUp{0%{transform:translateY(0) scale(1)}35%{transform:translateY(-12px) scale(1.12);filter:brightness(1.3)}100%{transform:translateY(0) scale(1)}}
+  @keyframes lungeDown{0%{transform:translateY(0) scale(1)}35%{transform:translateY(9px) scale(1.1);filter:brightness(1.28)}100%{transform:translateY(0) scale(1)}}
+
+  /* hit reaction — shake + red impact flash */
+  .hit{animation:shake .32s}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+  .hero.hit .p::before,.ecard.hit .p::before{content:"";position:absolute;inset:0;z-index:4;border-radius:inherit;pointer-events:none;
+    background:radial-gradient(circle at 50% 45%,rgba(255,90,120,.6),transparent 70%);animation:hitFlash .32s ease-out}
+  @keyframes hitFlash{0%{opacity:.9}100%{opacity:0}}
+
+  /* enemy death poof */
+  .ecard.dying .p{animation:enemyDie .55s ease forwards}
+  @keyframes enemyDie{0%{filter:brightness(2.2) saturate(.4)}30%{filter:brightness(1.4)}100%{transform:scale(.62) rotate(-6deg);filter:brightness(.4) blur(2px);opacity:.2}}
+
+  /* screen shake for crits + boss detonations */
+  #screen-battle.qshake{animation:qshake .3s}
+  #screen-battle.qshake-big{animation:qshakeBig .45s}
+  @keyframes qshake{0%,100%{transform:translate(0,0)}25%{transform:translate(-3px,2px)}50%{transform:translate(3px,-2px)}75%{transform:translate(-2px,-1px)}}
+  @keyframes qshakeBig{0%,100%{transform:translate(0,0)}15%{transform:translate(-7px,4px)}30%{transform:translate(7px,-5px)}45%{transform:translate(-6px,3px)}60%{transform:translate(5px,-4px)}80%{transform:translate(-3px,2px)}}
+
+  /* ============ cinematic ultimate cut-in ============ */
+  #cutin.show::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+    background:radial-gradient(circle at 50% 50%,color-mix(in srgb,var(--hue,#7b5cff) 55%,transparent),transparent 60%);
+    animation:cutFlash .6s ease-out}
+  @keyframes cutFlash{0%{opacity:0}18%{opacity:1}100%{opacity:0}}
+  #cutin .band::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:-1;
+    background:repeating-linear-gradient(115deg,transparent 0 12px,color-mix(in srgb,var(--hue,#7b5cff) 22%,transparent) 12px 13px);
+    -webkit-mask:linear-gradient(90deg,transparent,#000 30%,#000 70%,transparent);
+    mask:linear-gradient(90deg,transparent,#000 30%,#000 70%,transparent);
+    animation:speedLines .6s linear;opacity:.7}
+  @keyframes speedLines{from{background-position:60px 0}to{background-position:-60px 0}}
+  #cutin .cutportrait::after{content:"";position:absolute;top:0;left:-40%;width:35%;height:100%;transform:skewX(-20deg);
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.85),transparent);animation:cutSlash .55s ease .12s}
+  @keyframes cutSlash{from{left:-40%}to{left:130%}}
+
+  /* ============ cinematic gacha reveal ============ */
+  #pullResults.charging::before{content:"";position:absolute;inset:0;pointer-events:none;
+    background:conic-gradient(from 0deg,transparent,rgba(185,165,255,.16),transparent 30%,rgba(185,165,255,.16),transparent 60%,rgba(185,165,255,.16),transparent);
+    animation:chargeSpin 1s linear infinite}
+  @keyframes chargeSpin{to{transform:rotate(360deg)}}
+  #pullResults.legendary::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+    background:radial-gradient(circle at 50% 46%,rgba(255,207,107,.35),transparent 55%);animation:legAura 2.4s ease-in-out infinite}
+  @keyframes legAura{0%,100%{opacity:.5}50%{opacity:1}}
+  #pullBurst{animation:burstIn .5s cubic-bezier(.2,1.5,.3,1)}
+  @keyframes burstIn{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:scale(1)}}
+  .pr.L .g::after{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;border-radius:inherit;
+    background:linear-gradient(115deg,transparent 40%,rgba(255,235,160,.7) 50%,transparent 60%);background-size:250% 250%;
+    animation:sheen 2.8s ease-in-out .3s infinite}
+  .pr.L{animation:reveal .4s ease forwards,legPop .6s ease}
+  @keyframes legPop{0%{box-shadow:0 0 0 rgba(255,207,107,0)}40%{box-shadow:0 0 40px rgba(255,207,107,.9)}100%{box-shadow:0 0 26px color-mix(in srgb,var(--rL) 65%,transparent)}}
+
+  /* ============ living backgrounds (slow ken-burns) ============ */
+  #battleBg.on,#titleBg.on,#mapBg.on{animation:kenburns 32s ease-in-out infinite alternate}
+  @keyframes kenburns{from{transform:scale(1.04) translate(0,0)}to{transform:scale(1.12) translate(-1.5%,-1.5%)}}
+  #battleBg{background-position:50% 40%}
+
   @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.05ms!important}
-    #ambient{display:none}}
+    #ambient{display:none}
+    .hero .p,.ecard .p,#battleBg.on,#titleBg.on,#mapBg.on{animation:none!important}}
 </style>
 
 <div id="app">
@@ -1407,7 +1480,11 @@ function showPulls(cards){
     grid.appendChild(el);
   });
   wireArt(grid);
-  $('#pullResults').classList.add('show');
+  const pr=$('#pullResults');
+  pr.classList.remove('legendary');
+  pr.classList.add('show','charging');
+  if(best==='L')pr.classList.add('legendary');
+  setTimeout(()=>pr.classList.remove('charging'),best==='L'?1100:750);
   renderForge();
 }
 /* ---------- Mercy Forge (doc 08 s5): spend Ember Sigils on guaranteed units ---------- */
@@ -1747,6 +1824,7 @@ function dealDamage(src,tgt,power,root,sub){
   tgt.hp=Math.max(0,tgt.hp-d); if(src.side==='ally'){gainSurge(4);src._dmg=(src._dmg||0)+d;}
   if(src.side==='ally'&&(src.stats.lifesteal||0)>0&&d>0)heal(src,Math.round(d*src.stats.lifesteal));
   floatNum(tgt,d,isCrit?'crit':'',root,sub); shake(tgt); if(d>0)SFX[isCrit?'crit':'hit']();
+  if(d>0&&isCrit)battleShake(false);
   if(tgt.hp<=0)onKill(src,tgt); return d;
 }
 function heal(t,a){if(!t.alive)return;t.hp=Math.min(t.max,t.hp+a);floatNum(t,a,'heal');}
@@ -1755,7 +1833,8 @@ function onKill(src,t){
   if(t.id==='ENM-UND-X01' && !t._revived){t._revived=true;t.hp=Math.round(t.max*.35);t.barrier=0;
     for(const s in t.status)delete t.status[s];SFX.surge();floatNum(t,0,'heal');
     logMsg('<b>Mortmain</b> <b style="color:var(--bone)">reknits at the Gate</b> — 35% HP');renderEnemies();return;}
-  t.alive=false;t.hp=0;if(src.side==='ally')gainSurge(10);SFX.death();}
+  t.alive=false;t.hp=0;if(src.side==='ally')gainSurge(10);SFX.death();
+  if(t.side==='enemy'&&t.el){t.el.classList.add('dying');if(t.isBoss||t.isMini)battleShake(true);}}
 function gainSurge(n){const b=G.surge;G.surge=clamp(G.surge+n,0,100);if(b<100&&G.surge>=100)SFX.surge();}
 const livingE=()=>G.enemies.filter(e=>e.alive), livingH=()=>G.heroes.filter(h=>h.alive);
 function pickTarget(src){
@@ -1815,7 +1894,7 @@ function enemyTurn(u){
   const t=pickTarget(u);if(t)dealDamage(u,t,u.skillPower||1,u.damageRoot,null);
 }
 function detonate(u){const tg=u.tgName||'Detonation';const single=/fist|toll|marker|lens/i.test(tg);
-  logMsg(`<b style="color:var(--danger)">${tg}</b> ${single?'lands':'washes the party'}`);
+  logMsg(`<b style="color:var(--danger)">${tg}</b> ${single?'lands':'washes the party'}`);battleShake(true);
   if(single){const t=pickTarget(u);if(t)dealDamage(u,t,2.4,u.damageRoot,null);}
   else livingH().forEach(h=>dealDamage(u,h,1.4,u.damageRoot,null));}
 function roundStart(){
@@ -1902,8 +1981,12 @@ function buildParty(){const box=$('#party');box.innerHTML='';G.heroes.forEach(h=
   el.addEventListener('click',fire);
   el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();fire();}});
   h.el=el;box.appendChild(el);});wireArt(box);}
-function markActing(u){if(u.el){u.el.classList.add('acting');setTimeout(()=>u.el&&u.el.classList.remove('acting'),200/G.speed);}}
-function shake(u){if(u.el){u.el.classList.add('hit');setTimeout(()=>u.el&&u.el.classList.remove('hit'),300);}}
+function markActing(u){if(u.el){u.el.classList.add('acting');setTimeout(()=>u.el&&u.el.classList.remove('acting'),340/G.speed);}}
+function shake(u){if(u.el){u.el.classList.add('hit');setTimeout(()=>u.el&&u.el.classList.remove('hit'),320);}}
+let _shakeT=null;
+function battleShake(big){const s=$('#screen-battle');if(!s)return;const cls=big?'qshake-big':'qshake';
+  s.classList.remove('qshake','qshake-big');void s.offsetWidth;s.classList.add(cls);
+  clearTimeout(_shakeT);_shakeT=setTimeout(()=>s.classList.remove('qshake','qshake-big'),big?460:320);}
 function floatNum(u,val,cls,root,sub){const host=u.el;if(!host)return;const r=host.getBoundingClientRect(),a=$('#app').getBoundingClientRect();
   const s=document.createElement('div');s.className='dmg '+(cls||'');
   s.style.color=cls==='heal'?'var(--good)':sub==='bleed'?'#ff6b8a':root==='magical'?'#b9a5ff':'#ffd9a0';
