@@ -73,6 +73,11 @@
   .cxfo{font-family:var(--font-title);font-size:13px;color:var(--muted)}
   .cxfbon{font-size:9px;color:var(--faint);letter-spacing:.04em;margin:2px 0 6px}
   .cxglyphs{display:flex;flex-wrap:wrap;gap:5px}
+  .bestrow{display:flex;gap:6px;overflow-x:auto;padding-top:6px}
+  .bestthumb{flex:none;width:46px;height:46px;border-radius:8px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;
+    font-size:20px;background:linear-gradient(180deg,#171326,#0e0b18);border:1px solid var(--line)}
+  .bestthumb.locked{filter:grayscale(1) brightness(.4)}
+  .bestthumb.locked .artimg{filter:brightness(.5)}
   .cxg{font-size:17px;cursor:pointer;filter:drop-shadow(0 1px 3px rgba(0,0,0,.5))}
   .cxg.locked{filter:grayscale(1);opacity:.28;cursor:default}
   #arRankBar{padding:6px 20px 10px;font-size:12px;color:var(--warn);border-bottom:1px solid var(--line);letter-spacing:.03em}
@@ -1357,12 +1362,30 @@ function renderCodex(){
     return `<div class="cxfac" style="--hue:var(${f.color})">
       <div class="cxfhead"><span class="cxfn">${f.name}</span><span class="cxfo">${b.o}/${b.t}</span></div>
       <div class="cxfbon">Synergy · +${f.bonus}</div><div class="cxglyphs">${glyphs}</div></div>`;}).join('');
+  // ---- Bestiary: enemy families ----
+  const BFAM={SLM:{n:'Slimes',ch:'The Drowned Quarter',ci:0},GNT:{n:'Giants',ch:'The Broken Reach',ci:1},
+    GRD:{n:'Guardians',ch:"The Warden's Vault",ci:2},UND:{n:'Undead',ch:'The Sealed Gate',ci:3}};
+  const enemyByBase=base=>Object.values(DATA.enemies).find(e=>e.id===base);
+  const eartKeys=(typeof EART!=='undefined')?Object.keys(EART):[];
+  const bestCards=Object.keys(BFAM).map(fk=>{const fam=BFAM[fk];
+    const members=eartKeys.filter(k=>k.split('-')[1]===fk&&!k.endsWith('-P2'));
+    const reached=DATA.chapters[fam.ci]&&DATA.chapters[fam.ci].stages.some(s=>cleared.has(s.id));
+    const rep=members.map(enemyByBase).find(Boolean), tag=rep?threatTag(rep):{t:'',c:'--muted'};
+    const thumbs=members.map(base=>{const e=enemyByBase(base);
+      const art=(EART&&EART[base])?`<img class="artimg" src="${EART[base]}" alt="${e?e.name:base}" loading="lazy">`:(EGLYPH[base]||'🟢');
+      return `<div class="bestthumb${reached?'':' locked'}" title="${reached&&e?e.name:'???'}">${art}</div>`;}).join('');
+    return `<div class="cxfac" style="--hue:var(${FAMILY_FX[fk]||'--slime'})">
+      <div class="cxfhead"><span class="cxfn">${fam.n}</span><span class="cxfo">${fam.ch}</span></div>
+      <div class="cxfbon"${reached&&tag.t?` style="color:var(${tag.c})"`:''}>${reached?(tag.t||'Neutral defenses'):'🔒 reach this chapter to reveal'}</div>
+      <div class="bestrow">${thumbs}</div></div>`;}).join('');
   $('#codexBody').innerHTML=`
     <div class="cxtop"><div class="cxpct">${pctC}%</div><div class="cxpctl">Collection<br><b>${ownedN}</b> / ${total} Vowbound</div></div>
     <div class="cxsec">By Rarity</div><div class="cxgrid">${rarRow}</div>
     <div class="cxsec">By Class</div><div class="cxgrid">${clsRow}</div>
-    <div class="cxsec">By Faction</div><div class="cxfacs">${facCards}</div>`;
+    <div class="cxsec">By Faction</div><div class="cxfacs">${facCards}</div>
+    <div class="cxsec">Bestiary</div><div class="cxfacs">${bestCards}</div>`;
   $('#codexBody').querySelectorAll('.cxg:not(.locked)').forEach(g=>g.addEventListener('click',()=>openHero(g.dataset.id)));
+  wireArt($('#codexBody'));
 }
 const levelCost=pr=>250*pr.level;
 const starCost=(h,pr)=>({shards:40+40*(pr.stars-h.startStars),gold:5000});
