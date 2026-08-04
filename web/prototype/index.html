@@ -160,13 +160,21 @@
   .slot{aspect-ratio:3/4;border-radius:12px;border:1.5px dashed var(--line);display:flex;align-items:center;justify-content:center;
     position:relative;background:rgba(20,16,34,.4);overflow:hidden}
   .slot.filled{border-style:solid;--hue:var(--umbra);border-color:color-mix(in srgb,var(--hue) 55%,var(--line));cursor:pointer}
-  .slot .g{font-size:26px}
+  .slot .g{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:26px}
   .slot .sn{position:absolute;bottom:4px;left:0;right:0;text-align:center;font-size:8px;color:var(--ink);
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 3px}
   .slot .empty{font-size:9px;color:var(--faint);letter-spacing:.14em}
   .slot .x{position:absolute;top:3px;right:4px;font-size:11px;color:var(--muted)}
   #teamcount{padding:2px 16px 4px;font-size:11px;color:var(--muted)}
   #teamcount b{color:var(--umbra)}
+  #teamThreats{padding:2px 16px 8px}
+  #teamThreats .thlbl{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin-bottom:5px}
+  #teamThreats .throw{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px}
+  #teamThreats .thcard{flex:none;width:64px;text-align:center}
+  #teamThreats .thart{width:64px;height:64px;border-radius:10px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;
+    font-size:26px;background:linear-gradient(180deg,#171326,#0e0b18);border:1px solid var(--line)}
+  #teamThreats .thn{font-size:8px;color:var(--muted);margin-top:3px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #teamThreats .thtag{font-size:8px;font-weight:700;margin-top:1px;line-height:1.1}
   #teamSyn{padding:0 16px 8px;display:flex;flex-wrap:wrap;gap:6px;min-height:16px}
   #teamSyn .synchip{font-size:10px;padding:3px 9px;border-radius:20px;border:1px solid var(--hue);
     color:var(--hue);background:color-mix(in srgb,var(--hue) 12%,transparent)}
@@ -655,6 +663,7 @@
     <div id="partyslots"></div>
     <div id="teamcount"><b id="tcNum">0</b> / 5 chosen · a balanced five wants frontline, damage, and sustain</div>
     <div id="teamSyn"></div>
+    <div id="teamThreats"></div>
     <div id="roster"></div>
     <div id="teambar">
       <div class="hint2">Tap heroes to add · rarity mixes are viable by design</div>
@@ -1152,10 +1161,28 @@ function endTrial(win){
 }
 
 /* ---------- TEAM SELECT ---------- */
+function threatTag(e){let t='',c='--muted';
+  if((e.traits||[]).includes('undead')){t='Weak: Holy';c='--good';}
+  else if(e.magRes<=-0.2){t='Weak: Magic';c='--good';}
+  else if(e.physRes<=-0.2){t='Weak: Physical';c='--good';}
+  else if(e.physRes>=0.2){t='Resists Physical';c='--warn';}
+  else if(e.magRes>=0.2){t='Resists Magic';c='--warn';}
+  if((e.traits||[]).includes('armored'))t=(t?t+' · ':'')+'Armored';
+  return {t,c};}
+function renderThreats(stage){
+  const el=$('#teamThreats');if(!el)return;const seen=new Set(),items=[];
+  stage.waves.forEach(w=>w.forEach(key=>{const base=key.split('@')[0];if(seen.has(base))return;seen.add(base);
+    const e=DATA.enemies[key]||Object.values(DATA.enemies).find(x=>key.startsWith(x.id));if(e)items.push(e);}));
+  el.innerHTML=`<div class="thlbl">You'll face</div><div class="throw">`+items.map(e=>{
+    const tag=threatTag(e), boss=e.tier==='X'?' (boss)':e.tier==='B'?' (elite)':'';
+    const art=(typeof EART!=='undefined'&&EART[e.id])?`<img class="artimg" src="${EART[e.id]}" alt="${e.name}" loading="lazy">`:(EGLYPH[e.id]||'🟢');
+    return `<div class="thcard"><div class="thart">${art}</div><div class="thn">${e.name}${boss}</div>${tag.t?`<div class="thtag" style="color:var(${tag.c})">${tag.t}</div>`:''}</div>`;}).join('')+`</div>`;
+  wireArt(el);}
 function openTeam(stage){
   arenaTarget=null; raidPending=false;
   curStage=stage;
   $('#teamStage').textContent='Stage '+stage.id+' · '+stage.name;
+  renderThreats(stage);
   if(!team.length) suggestTeam();
   buildRoster(); renderSlots(); show('screen-team');
 }
@@ -1191,11 +1218,12 @@ function renderSlots(){
   for(let i=0;i<5;i++){
     const id=team[i], d=document.createElement('div');
     if(id){const h=hero(id),c=CLASS[h.class]; d.className='slot filled'; d.style.setProperty('--hue',`var(${c.hue})`);
-      d.innerHTML=`<span class="x">✕</span><div class="g">${c.g}</div><div class="sn">${h.name}</div>`;
+      d.innerHTML=`<span class="x">✕</span><div class="g">${classArt(h.class,32)}${artImg(h.id,h.name)}</div><div class="sn">${h.name}</div>`;
       d.addEventListener('click',()=>toggle(id));}
     else {d.className='slot'; d.innerHTML='<span class="empty">EMPTY</span>';}
     box.appendChild(d);
   }
+  wireArt(box);
   $('#tcNum').textContent=team.length;
   const syn=synergies(team.filter(Boolean));
   $('#teamSyn').innerHTML=syn.length
