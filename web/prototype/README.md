@@ -152,23 +152,15 @@ farm** → **PvP-Arena ladder** → **co-op raid** → persist — but not the b
 real multiplayer, or the remaining 20 stages of the 40-stage design, which are
 specified in `docs/` and `data/` but not built.
 
-**To make the portraits fully local/offline** (and embeddable in the artifact),
-run `node tools/fetch_portraits.mjs` on a machine with internet access — it
-downloads all 70 canon portraits into `web/prototype/art/<hero-id>.png`. The
-prototype already prefers `art/<id>.png` over the remote URL, so once that folder
-exists the real portraits load with no network at all.
-
-**Character art:** each hero's real generated portrait (the AI art canon in
-`art/canon-manifest.json`) is now wired in — the roster, detail, and battle
-screens load it from the canon URL over a **procedural class crest** (inline SVG
-line-art: shield, axe, dagger, bow, star, skull, halo-cross, in the class hue).
-If the portrait can't load, the image removes itself and the crest shows through.
-Open `index.html` in a browser with internet access and you'll see the real
-portraits; inside the published claude.ai artifact a strict CSP blocks external
-images, so it falls back to the crests. (The art host also can't be reached from
-this sandbox, so the portraits can't be embedded as data URIs here.) Enemies
-still use emoji. It's the fastest bridge from "validated spec" to "something you
-can hold."
+**Character art:** all 70 heroes' real generated portraits (the AI art canon in
+`art/canon-manifest.json`) are **embedded** into the page — downsized to compact
+WebP `data:` URIs (~1.7 MB for the whole set) — so they render everywhere,
+offline and inside the CSP-locked artifact, with no external requests. Each
+portrait sits over a **procedural class crest** (inline SVG line-art: shield,
+axe, dagger, bow, star, skull, halo-cross, in the class hue) that shows through
+if an image is ever missing. Enemies still use emoji. `tools/fetch_portraits.mjs`
+can pull the full-resolution originals into `web/prototype/art/` if you want
+them. It's the fastest bridge from "validated spec" to "something you can hold."
 
 ## Run
 
