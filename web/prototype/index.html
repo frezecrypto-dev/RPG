@@ -220,7 +220,7 @@
   #battleBg{position:absolute;inset:0;z-index:0;background-size:cover;background-position:center;opacity:0;transition:opacity .45s}
   #battleBg.on{opacity:.72}
   #battleBg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,9,16,.45) 0%,rgba(10,9,16,.35) 40%,rgba(10,9,16,.86) 100%)}
-  #screen-battle>*:not(#battleBg):not(#bossIntro):not(#cutin):not(#result){position:relative;z-index:1}
+  #screen-battle>*:not(#battleBg):not(#bossIntro):not(#cutin):not(#result):not(#fx){position:relative;z-index:1}
   #top{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);
     background:linear-gradient(180deg,rgba(20,16,34,.9),transparent)}
   #top .world{flex:1;min-width:0}
@@ -683,9 +683,32 @@
   @keyframes kenburns{from{transform:scale(1.04) translate(0,0)}to{transform:scale(1.12) translate(-1.5%,-1.5%)}}
   #battleBg{background-position:50% 40%}
 
+  /* ============ impact particles ============ */
+  .sparkfx{position:absolute;border-radius:50%;pointer-events:none;box-shadow:0 0 7px currentColor;z-index:9;
+    animation:sparkOut .6s ease-out forwards}
+  @keyframes sparkOut{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--dx,0),var(--dy,0)) scale(.25)}}
+  .ringfx{position:absolute;width:30px;height:30px;border-radius:50%;border:2px solid currentColor;pointer-events:none;z-index:9;
+    box-shadow:0 0 12px currentColor;animation:ringOut .4s ease-out forwards}
+  @keyframes ringOut{0%{opacity:.9;transform:scale(.28)}100%{opacity:0;transform:scale(1.7)}}
+  .slashfx{position:absolute;width:64px;height:4px;border-radius:2px;pointer-events:none;z-index:9;filter:blur(.4px);
+    transform:rotate(var(--rot,-32deg)) scaleX(.2);animation:slashOut .34s ease-out forwards}
+  @keyframes slashOut{0%{opacity:0;transform:rotate(var(--rot,-32deg)) scaleX(.2)}
+    35%{opacity:1;transform:rotate(var(--rot,-32deg)) scaleX(1)}100%{opacity:0;transform:rotate(var(--rot,-32deg)) scaleX(1.05)}}
+
+  /* ============ map path life ============ */
+  .track{background:repeating-linear-gradient(180deg,var(--umbra) 0 6px,transparent 6px 20px)!important;
+    opacity:.5;background-size:100% 40px!important;animation:trackFlow 1.4s linear infinite}
+  @keyframes trackFlow{from{background-position:0 0}to{background-position:0 40px}}
+  .node.current .dot{animation:nodePulse 1.7s ease-in-out infinite}
+  @keyframes nodePulse{0%,100%{box-shadow:0 0 16px var(--umbra)}50%{box-shadow:0 0 30px var(--umbra),0 0 0 7px rgba(123,92,255,.16)}}
+  .node.done .dot{animation:nodeClear .5s cubic-bezier(.2,1.4,.3,1)}
+  @keyframes nodeClear{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.18)}100%{transform:scale(1);opacity:1}}
+  .node.playable .card{animation:cardArrive .4s ease both}
+  @keyframes cardArrive{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+
   @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.05ms!important}
     #ambient{display:none}
-    .hero .p,.ecard .p,#battleBg.on,#titleBg.on,#mapBg.on{animation:none!important}}
+    .hero .p,.ecard .p,#battleBg.on,#titleBg.on,#mapBg.on,.track,.node.current .dot{animation:none!important}}
 </style>
 
 <div id="app">
@@ -1824,10 +1847,11 @@ function dealDamage(src,tgt,power,root,sub){
   tgt.hp=Math.max(0,tgt.hp-d); if(src.side==='ally'){gainSurge(4);src._dmg=(src._dmg||0)+d;}
   if(src.side==='ally'&&(src.stats.lifesteal||0)>0&&d>0)heal(src,Math.round(d*src.stats.lifesteal));
   floatNum(tgt,d,isCrit?'crit':'',root,sub); shake(tgt); if(d>0)SFX[isCrit?'crit':'hit']();
+  if(d>0){const kind=sub==='bleed'?'bleed':sub==='holy'?'holy':root==='magical'?'mag':'phys';impactFx(tgt,{kind,crit:isCrit});}
   if(d>0&&isCrit)battleShake(false);
   if(tgt.hp<=0)onKill(src,tgt); return d;
 }
-function heal(t,a){if(!t.alive)return;t.hp=Math.min(t.max,t.hp+a);floatNum(t,a,'heal');}
+function heal(t,a){if(!t.alive)return;t.hp=Math.min(t.max,t.hp+a);floatNum(t,a,'heal');impactFx(t,{kind:'heal'});}
 function onKill(src,t){
   // Mortmain (Ch.4 finale) reknits once at the Gate — burst it down again after
   if(t.id==='ENM-UND-X01' && !t._revived){t._revived=true;t.hp=Math.round(t.max*.35);t.barrier=0;
@@ -1993,6 +2017,33 @@ function floatNum(u,val,cls,root,sub){const host=u.el;if(!host)return;const r=ho
   s.textContent=(cls==='heal'?'+':'')+Math.round(val).toLocaleString();
   s.style.left=(r.left-a.left+r.width/2-14+rand(-12,12))+'px';s.style.top=(r.top-a.top+r.height/2-10)+'px';
   $('#fx').appendChild(s);setTimeout(()=>s.remove(),1000);}
+const FXCOL={phys:'#ffd9a0',mag:'#c6a8ff',bleed:'#ff6b8a',heal:'#7dffb0',holy:'#fff2b0'};
+function impactFx(u,opt){opt=opt||{};const host=u.el;if(!host)return;
+  const r=host.getBoundingClientRect(),a=$('#app').getBoundingClientRect();
+  const cx=r.left-a.left+r.width/2, cy=r.top-a.top+r.height*(opt.kind==='heal'?.6:.46);
+  const fx=$('#fx'),col=FXCOL[opt.kind]||FXCOL.phys,crit=!!opt.crit;
+  // slash streak on martial hits
+  if((opt.kind==='phys'||opt.kind==='holy')&&opt.kind!=='heal'){
+    const sl=document.createElement('div');sl.className='slashfx';
+    sl.style.left=(cx-32)+'px';sl.style.top=(cy-2)+'px';
+    sl.style.setProperty('--rot',(rand(-42,-22)).toFixed(0)+'deg');
+    sl.style.background=`linear-gradient(90deg,transparent,${col},#fff,transparent)`;
+    fx.appendChild(sl);setTimeout(()=>sl.remove(),360);}
+  // impact ring (skip for heal)
+  if(opt.kind!=='heal'){const ring=document.createElement('div');ring.className='ringfx';
+    ring.style.left=(cx-15)+'px';ring.style.top=(cy-15)+'px';ring.style.color=col;
+    fx.appendChild(ring);setTimeout(()=>ring.remove(),400);}
+  // spark burst — heal sparks rise, hits scatter
+  const n=opt.kind==='heal'?8:(crit?13:7);
+  for(let i=0;i<n;i++){const sp=document.createElement('div');sp.className='sparkfx';
+    const ang=Math.random()*Math.PI*2,dist=16+Math.random()*(crit?48:30);
+    const rise=opt.kind==='heal'?-(26+Math.random()*30):0;
+    sp.style.left=cx+'px';sp.style.top=cy+'px';sp.style.color=col;sp.style.background=col;
+    sp.style.setProperty('--dx',(Math.cos(ang)*dist).toFixed(0)+'px');
+    sp.style.setProperty('--dy',(Math.sin(ang)*dist*(opt.kind==='heal'?.4:1)+rise).toFixed(0)+'px');
+    const sz=((opt.kind==='heal'?2:2.4)+Math.random()*2.4).toFixed(1);sp.style.width=sz+'px';sp.style.height=sz+'px';
+    fx.appendChild(sp);setTimeout(()=>sp.remove(),620);}
+}
 function logMsg(h){$('#log').innerHTML=h;}
 function cutIn(u){const c=$('#cutin');SFX.ult();c.style.setProperty('--hue',`var(${CLASS[u.class].hue})`);
   const cp=$('#cutPortrait');cp.innerHTML=classArt(u.class,40)+artImg(u.id,u.name);wireArt(cp);
