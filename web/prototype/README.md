@@ -83,6 +83,14 @@ a mini-boss. Beat the squad at your rank to climb; each first clear pays out
 Crystals and Gold that grow with the tier. It reuses the same turn engine and
 damage math as the campaign — the opponents are just heroes fighting back.
 
+## Codex
+
+A collection screen (Heroes ▸ Codex) tracks completion — owned / 70 with a big
+percentage — and breaks the roster down **by rarity, by class, and by faction**.
+Each faction card shows its roster as class glyphs (owned lit, missing greyed)
+and its synergy bonus; tapping an owned glyph jumps to that hero's detail page,
+which now names their faction alongside role and class.
+
 ## Faction synergies (doc 03/04)
 
 Every hero belongs to one of five factions (Emberguard, Freeblades, Hollowed,
