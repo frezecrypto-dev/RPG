@@ -83,6 +83,15 @@ a mini-boss. Beat the squad at your rank to climb; each first clear pays out
 Crystals and Gold that grow with the tier. It reuses the same turn engine and
 damage math as the campaign — the opponents are just heroes fighting back.
 
+## Faction synergies (doc 03/04)
+
+Every hero belongs to one of five factions (Emberguard, Freeblades, Hollowed,
+Choir, Gravebound). Field **2+ of the same faction** and the team gains a
+matching bonus that scales with the count (+8/14/20/28% at 2/3/4/5): Emberguard
+buffs DEF+HP, Freeblades and Gravebound ATK, Hollowed crit, Choir healing+ATK.
+The bonus previews live as chips on the team-select screen and fires at battle
+start, so thematic teams are a real, visible payoff — not just flavour.
+
 ## Home / lobby (doc 16)
 
 The map doubles as a lobby: a persistent **resource header** (Crystals / Gold /
