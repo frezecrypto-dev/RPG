@@ -269,11 +269,16 @@
   .hit{animation:shake .3s}@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
   #cutin{position:absolute;inset:0;z-index:12;display:none;align-items:center;justify-content:center;pointer-events:none}
   #cutin.show{display:flex}
-  #cutin .band{width:100%;padding:22px 0;text-align:center;
+  #cutin .band{width:100%;padding:16px 0;display:flex;align-items:center;justify-content:center;gap:16px;
     background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--hue,#7b5cff) 30%,#0a0910) 20%,color-mix(in srgb,var(--hue,#7b5cff) 30%,#0a0910) 80%,transparent);
     border-top:1px solid var(--hue,#7b5cff);border-bottom:1px solid var(--hue,#7b5cff);animation:bandin .55s cubic-bezier(.2,.9,.2,1)}
   @keyframes bandin{from{transform:translateX(-100%);opacity:0}to{transform:translateX(0);opacity:1}}
-  #cutin .who{font-family:var(--font-title);font-size:28px}#cutin .skill{font-size:12px;letter-spacing:.26em;text-transform:uppercase;color:var(--hue,#7b5cff);margin-top:4px}
+  #cutin .cutportrait{width:72px;height:72px;flex:none;border-radius:12px;position:relative;overflow:hidden;
+    border:2px solid var(--hue,#7b5cff);box-shadow:0 0 18px color-mix(in srgb,var(--hue,#7b5cff) 55%,transparent);
+    display:flex;align-items:center;justify-content:center;background:#0e0b18;animation:cutpop .5s cubic-bezier(.2,1.3,.3,1)}
+  @keyframes cutpop{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+  #cutin .cuttext{text-align:left}
+  #cutin .who{font-family:var(--font-title);font-size:26px;line-height:1.05}#cutin .skill{font-size:12px;letter-spacing:.26em;text-transform:uppercase;color:var(--hue,#7b5cff);margin-top:4px}
 
   #result{position:absolute;inset:0;z-index:20;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;
     padding:32px;gap:14px;background:radial-gradient(circle at 50% 40%,rgba(20,16,36,.88),rgba(6,5,12,.97))}
@@ -671,7 +676,7 @@
       <div id="surge"><div id="surgefill"></div></div></div>
     <div id="party"></div>
     <div id="fx"></div>
-    <div id="cutin"><div class="band"><div class="who"></div><div class="skill"></div></div></div>
+    <div id="cutin"><div class="band"><div class="cutportrait" id="cutPortrait"></div><div class="cuttext"><div class="who"></div><div class="skill"></div></div></div></div>
     <div id="result" role="alertdialog" aria-live="assertive" aria-labelledby="resVerdict" aria-describedby="resSub">
       <div class="eyebrow" id="resEyebrow"></div>
       <div class="verdict" id="resVerdict"></div>
@@ -1731,6 +1736,7 @@ function floatNum(u,val,cls,root,sub){const host=u.el;if(!host)return;const r=ho
   $('#fx').appendChild(s);setTimeout(()=>s.remove(),1000);}
 function logMsg(h){$('#log').innerHTML=h;}
 function cutIn(u){const c=$('#cutin');SFX.ult();c.style.setProperty('--hue',`var(${CLASS[u.class].hue})`);
+  const cp=$('#cutPortrait');cp.innerHTML=classArt(u.class,40)+artImg(u.id,u.name);wireArt(cp);
   c.querySelector('.who').textContent=u.name;c.querySelector('.skill').textContent=u.kit.S3.name;c.classList.add('show');G.busy=true;
   setTimeout(()=>{c.classList.remove('show');G.busy=false;if(!G.over)scheduleNext(120);},720/G.speed);}
 function endGame(win){
