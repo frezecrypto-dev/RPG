@@ -78,10 +78,11 @@ damage math as the campaign — the opponents are just heroes fighting back.
 ## Home / lobby (doc 16)
 
 The map doubles as a lobby: a persistent **resource header** (Crystals / Gold /
-Shards), a **Featured Summon** card for the rotating banner unit (Branwen
-Oathbreaker) that jumps straight to the gate, and **Daily Objectives** — win 3
-battles, summon once, enhance gear once — that track your play and pay out
-Crystals/Gold on claim, resetting each day.
+Shards / Ash Relics), a **Featured Summon** card for the rotating banner unit
+(Branwen Oathbreaker) with a **Try** button that runs a **banner trial** (doc
+08) — test-drive her in a showcase fight against Guardians before you pull, no
+reward or roster change — and **Daily Objectives** (win 3 battles, summon once,
+enhance gear once) that track your play and pay out on claim, resetting each day.
 
 ## Hard mode (endgame farm)
 

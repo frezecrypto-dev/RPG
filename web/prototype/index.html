@@ -75,8 +75,12 @@
   .fbtag{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--hue)}
   .fbname{font-family:var(--font-title);font-size:17px;line-height:1.1;margin:1px 0}
   .fbsub{font-size:10px;color:var(--muted)}
-  .fbcta{align-self:center;font-size:12px;padding:8px 16px;border-radius:10px;border:1px solid var(--hue);
+  .fbbtns{align-self:center;display:flex;flex-direction:column;gap:5px}
+  .fbcta{font-size:12px;padding:7px 16px;border-radius:10px;border:1px solid var(--hue);
     color:var(--ink);background:color-mix(in srgb,var(--hue) 22%,transparent);cursor:pointer;white-space:nowrap}
+  .fbtry{font-size:11px;padding:5px 16px;border-radius:10px;border:1px solid var(--line);
+    color:var(--muted);background:var(--panel);cursor:pointer;white-space:nowrap}
+  .fbtry:hover{color:var(--ink);border-color:var(--hue)}
   #raidCard{padding:6px 20px 4px}
   .rcwrap{display:flex;align-items:center;gap:12px;border:1px solid var(--danger);border-radius:14px;padding:11px 13px;
     background:linear-gradient(100deg,rgba(255,59,92,.14),var(--panel2) 60%);position:relative}
@@ -751,8 +755,9 @@ function renderHome(){
       <div class="fbglyph">${fc.g}</div>
       <div class="fbmeta"><div class="fbtag">Featured Summon</div>
         <div class="fbname">${fh.name}</div><div class="fbsub">${RARNAME[fh.rarity]} · ${fh.role} · ${fc.l}</div></div>
-      <button class="fbcta" id="fbCta">Summon ▸</button></div>`;
+      <div class="fbbtns"><button class="fbtry" id="fbTry">Try</button><button class="fbcta" id="fbCta">Summon ▸</button></div></div>`;
   $('#fbCta').addEventListener('click',()=>{SFX.tap();renderCrys();show('screen-gacha');});
+  $('#fbTry').addEventListener('click',()=>{SFX.tap();deployTrial();});
   // weekly raid card
   $('#raidCard').innerHTML=`<div class="rcwrap">
       <div class="rcglyph">👑</div>
@@ -905,6 +910,36 @@ function endRaid(win){
     `<div>Damage dealt: <b style="color:var(--warn)">${pct}%</b>${improved?' — new best!':` · best ${raidBest}%`}. `+
     (win?'The Drowned Crown falls — the raid is fully cleared.':'Raids pay out by damage — re-gear, level up, and push for a full kill.')+`</div>`;
   const nx=$('#resNext');nx.textContent='Raid';nx.onclick=()=>{buildMap();show('screen-map');};
+}
+
+/* ---------- BANNER TRIAL (doc 08): test-drive the featured unit before pulling ---------- */
+const TRIAL_ALLIES=['ASH-TNK-L01','ASH-HLR-L01',FEATURED_ID,'ASH-MAG-L01','ASH-RNG-L01'];
+const TRIAL_FOES=['ENM-GRD-B01@40','ENM-GRD-M03@40','ENM-GRD-M01@34'];
+function trialStats(h){const lvl=60,stars=h.starCap,g=1+h.perLevel*h.rarityGrowth*(lvl-1),sf=1+DATA.starBonusPerStar*(stars-h.startStars),gm=1.3;
+  return {hp:Math.round(h.baseL1.hp*g*sf*gm),atk:Math.round(h.baseL1.atk*g*sf*gm),def:Math.round(h.baseL1.def*g*sf),spd:h.baseL1.spd,crit_rate:.12,crit_dmg:.7,lifesteal:0,heal_pct:0,aegis:0};}
+function mkTrialHero(id){const h=hero(id),st=trialStats(h);
+  return {...h,stats:st,skl:{S1:3,S2:3,S3:3},side:'ally',hp:st.hp,max:st.hp,barrier:0,rage:0,cd:{},status:{},alive:true,el:null};}
+function deployTrial(){
+  curHard=false;
+  const allies=TRIAL_ALLIES.map(mkTrialHero), foes=TRIAL_FOES.map(mkEnemy);
+  G={heroes:allies,waves:[foes],wi:0,enemies:foes,surge:50,round:1,over:false,busy:false,auto:ui.auto,speed:ui.speed,telegraph:null,hard:false,trial:true};
+  $('#speedBtn').textContent=ui.speed+'×';$('#autoBtn').classList.toggle('active',ui.auto);
+  $('#btlChapter').textContent='★ FEATURED TRIAL';
+  $('#btlName').textContent=hero(FEATURED_ID).name;
+  buildParty();renderEnemies();render();renderTelegraph();
+  $('#roundNum').textContent='1';$('#result').style.display='none';
+  $('#wavepip').textContent='Surge ready — tap a lit hero to ult';
+  logMsg('Trial run — <b>'+hero(FEATURED_ID).name+'</b> leads the vanguard');
+  show('screen-battle');turnQueue=[];setTimeout(step,450);
+}
+function endTrial(win){
+  const fh=hero(FEATURED_ID);
+  const r=$('#result');r.style.display='flex';
+  $('#resEyebrow').textContent=win?'Trial cleared':'Trial ended';
+  const v=$('#resVerdict');v.textContent=win?'VICTORY':'DEFEAT';v.className='verdict '+(win?'win':'lose');
+  $('#resSub').innerHTML=`This was a <b>trial</b> — ${fh.name} isn't in your roster yet. `+
+    (win?`She tore through the Guardians (weak to physical). `:``)+`Summon her at the featured gate to keep her.`;
+  const nx=$('#resNext');nx.textContent='Summon';nx.onclick=()=>{renderCrys();show('screen-gacha');};
 }
 
 /* ---------- TEAM SELECT ---------- */
@@ -1409,6 +1444,7 @@ function endGame(win){
   G.over=true;renderTelegraph();SFX[win?'win':'lose']();
   if(G.pvp)return endArena(win);
   if(G.raid)return endRaid(win);
+  if(G.trial)return endTrial(win);
   const H=curHard;
   const firstNormal = win && !cleared.has(curStage.id);
   const firstHard = win && H && !clearedHard.has(curStage.id);
