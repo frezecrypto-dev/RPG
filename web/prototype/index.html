@@ -46,6 +46,12 @@
   /* ---------- title screen ---------- */
   #screen-title{align-items:center;justify-content:center;text-align:center;padding:32px;gap:18px;
     background:radial-gradient(circle at 50% 38%,rgba(24,18,44,.9),rgba(6,5,12,.98))}
+  #titleBg,#mapBg{position:absolute;inset:0;z-index:0;background-size:cover;background-position:center;opacity:0;transition:opacity .5s}
+  #titleBg::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 34%,rgba(8,6,16,.35),rgba(6,5,12,.9) 78%)}
+  #titleBg.on{opacity:.5}
+  #mapBg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,9,16,.86),rgba(10,9,16,.94))}
+  #mapBg.on{opacity:.5}
+  #screen-title>*:not(#titleBg),#screen-map>*:not(#mapBg){position:relative;z-index:1}
   #screen-title .mark{font-size:11px;letter-spacing:.4em;text-transform:uppercase;color:var(--umbra)}
   #screen-title h1{font-family:var(--font-title);font-size:44px;line-height:1;margin:0;letter-spacing:.02em;text-wrap:balance}
   #screen-title .tag{color:var(--muted);font-size:13px;line-height:1.7;max-width:32ch}
@@ -498,6 +504,7 @@
   <button id="sndBtn" title="Sound on/off" aria-label="Toggle sound">🔊</button>
   <!-- TITLE -->
   <section class="screen on" id="screen-title">
+    <div id="titleBg"></div>
     <div class="mark">Ashgate</div>
     <h1>ASHGATE</h1>
     <div class="tag">A dark-fantasy squad RPG. Push through the Drowned Quarter, build your five, and close the Gate on the Mother-Mass.</div>
@@ -508,6 +515,7 @@
 
   <!-- MAP -->
   <section class="screen" id="screen-map">
+    <div id="mapBg"></div>
     <div class="scrhead"><div><div class="eyebrow">Campaign</div><h1>Ashgate</h1></div>
       <button class="ghost" id="toArena">Arena</button>
       <button class="ghost" id="toHeroes">Heroes</button>
@@ -896,6 +904,9 @@ function buildMap(){
   const list=$('#maplist'); [...list.querySelectorAll('.node,.chdiv')].forEach(n=>n.remove());
   const H=hardMode;
   renderHome();
+  { let ck='1'; DATA.chapters.forEach(c=>{ if(c.stages.some(s=>cleared.has(s.id))) ck=c.id; });
+    const mb=$('#mapBg'), u=(typeof BG!=='undefined')?BG[ck]:null;
+    if(mb){ mb.style.backgroundImage=u?`url(${u})`:'none'; mb.classList.toggle('on',!!u); } }
   $('#mapModes').style.display=campaignHasBoss()?'flex':'none';
   $$('#mapModes .modebtn').forEach(b=>b.classList.toggle('on',b.dataset.mode===(H?'hard':'normal')));
   const flat=allStages(); let idx=0;
@@ -1770,6 +1781,8 @@ hasSave=loadGame();
 if(hasSave){$('#toMap').textContent='Continue';$('#resetBtn').style.display='block';}
 else{grantStarterGear();showOnboard();}  // first run: teach the basics
 renderCrys();
+{ const tb=$('#titleBg'), u=(typeof BG!=='undefined')?BG['1']:null;
+  if(tb&&u){ tb.style.backgroundImage=`url(${u})`; tb.classList.add('on'); } }
 $('#toGacha').addEventListener('click',()=>{openGacha();});
 $('#toHeroes').addEventListener('click',()=>{buildHeroGrid();renderCrys();show('screen-heroes');});
 $('#toArena').addEventListener('click',()=>{SFX.tap();openArena();});
