@@ -539,7 +539,80 @@
     display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);padding:0;line-height:1}
   #sndBtn:hover{border-color:var(--umbra-dim)}
   #sndBtn.muted{opacity:.5}
-  @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.05ms!important}}
+  /* ============ visual polish pass ============ */
+  /* ambient ember/dust atmosphere over the whole app */
+  #ambient{position:absolute;inset:0;z-index:4;pointer-events:none;overflow:hidden;mix-blend-mode:screen}
+  .mote{position:absolute;bottom:-14px;border-radius:50%;filter:blur(.4px);opacity:0;
+    background:radial-gradient(circle,var(--mc,#ffcf6b),transparent 68%);
+    animation:drift var(--dur,16s) linear var(--del,0s) infinite}
+  @keyframes drift{
+    0%{opacity:0;transform:translateY(0) translateX(0) scale(.7)}
+    10%{opacity:var(--mo,.5)}
+    50%{transform:translateY(-52vh) translateX(var(--sway,10px)) scale(1)}
+    90%{opacity:var(--mo,.5)}
+    100%{opacity:0;transform:translateY(-104vh) translateX(0) scale(.6)}}
+
+  /* premium glass gloss over portrait art */
+  .hcard .g::after,.rcard .g::after,.pr .g::after,.slot.filled::after,.fbglyph::after{
+    content:"";position:absolute;inset:0;z-index:2;pointer-events:none;border-radius:inherit;
+    background:linear-gradient(158deg,rgba(255,255,255,.20) 0%,rgba(255,255,255,.05) 22%,transparent 46%),
+      linear-gradient(0deg,rgba(0,0,0,.34),transparent 42%)}
+  .hdportrait::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;border-radius:inherit;
+    background:linear-gradient(158deg,rgba(255,255,255,.22),rgba(255,255,255,.04) 24%,transparent 48%)}
+
+  /* legendary/epic cards get a slow animated rim shimmer */
+  .rcard.rar-L,.hcard.rar-L{box-shadow:0 0 0 1px color-mix(in srgb,var(--rL) 40%,transparent),0 4px 20px rgba(0,0,0,.4)}
+  .rcard.rar-L .g,.hcard.rar-L .g,.rcard.rar-E .g,.hcard.rar-E .g{position:relative}
+  .rcard.rar-L .g::before,.hcard.rar-L .g::before{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;border-radius:inherit;
+    background:linear-gradient(115deg,transparent 38%,rgba(255,231,150,.5) 50%,transparent 62%);
+    background-size:260% 260%;animation:sheen 3.6s ease-in-out infinite}
+  .rcard.rar-E .g::before,.hcard.rar-E .g::before{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;border-radius:inherit;
+    background:linear-gradient(115deg,transparent 40%,rgba(196,150,255,.42) 50%,transparent 60%);
+    background-size:260% 260%;animation:sheen 4.4s ease-in-out infinite}
+  @keyframes sheen{0%,62%{background-position:150% 0}100%{background-position:-40% 0}}
+
+  /* card entrance cascade for the roster + hero grids */
+  #roster .rcard,#heroGrid .hcard{animation:cardIn .34s cubic-bezier(.2,.7,.2,1) both}
+  @keyframes cardIn{from{opacity:0;transform:translateY(9px) scale(.97)}to{opacity:1;transform:none}}
+  #roster .rcard:nth-child(1),#heroGrid .hcard:nth-child(1){animation-delay:.00s}
+  #roster .rcard:nth-child(2),#heroGrid .hcard:nth-child(2){animation-delay:.02s}
+  #roster .rcard:nth-child(3),#heroGrid .hcard:nth-child(3){animation-delay:.04s}
+  #roster .rcard:nth-child(4),#heroGrid .hcard:nth-child(4){animation-delay:.06s}
+  #roster .rcard:nth-child(5),#heroGrid .hcard:nth-child(5){animation-delay:.08s}
+  #roster .rcard:nth-child(6),#heroGrid .hcard:nth-child(6){animation-delay:.10s}
+  #roster .rcard:nth-child(7),#heroGrid .hcard:nth-child(7){animation-delay:.12s}
+  #roster .rcard:nth-child(8),#heroGrid .hcard:nth-child(8){animation-delay:.14s}
+  #roster .rcard:nth-child(n+9),#heroGrid .hcard:nth-child(n+9){animation-delay:.16s}
+  #roster .rcard:nth-child(n+13),#heroGrid .hcard:nth-child(n+13){animation-delay:.2s}
+
+  /* CTA light sweep on hover */
+  .cta{position:relative;overflow:hidden}
+  .cta::after{content:"";position:absolute;top:0;left:-60%;width:45%;height:100%;transform:skewX(-18deg);
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);opacity:0;transition:opacity .2s}
+  .cta:hover:not(:disabled)::after{opacity:1;animation:ctaSweep .7s ease}
+  @keyframes ctaSweep{from{left:-60%}to{left:120%}}
+
+  /* currency counter feedback when a value changes */
+  .num.bump{animation:numBump .55s cubic-bezier(.2,1.4,.3,1)}
+  @keyframes numBump{0%{transform:scale(1)}30%{transform:scale(1.32);color:#fff;text-shadow:0 0 12px currentColor}100%{transform:scale(1)}}
+  .cur.flash{animation:curFlash .55s ease}
+  @keyframes curFlash{0%{filter:drop-shadow(0 1px 1px rgba(0,0,0,.5))}30%{filter:drop-shadow(0 0 8px rgba(255,255,255,.9)) brightness(1.4)}100%{filter:drop-shadow(0 1px 1px rgba(0,0,0,.5))}}
+
+  /* depth: glass blur on chrome bars */
+  .scrhead,#top{backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+  #teambar,#party,#gachaBar,#geBar,#hdBar,#mapRes{backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px)}
+
+  /* title logo living glow */
+  #screen-title h1{animation:titlePulse 5s ease-in-out infinite}
+  @keyframes titlePulse{0%,100%{text-shadow:0 0 24px rgba(123,92,255,.28)}50%{text-shadow:0 0 40px rgba(123,92,255,.6),0 0 12px rgba(185,165,255,.5)}}
+  #screen-title .mark{animation:markGlow 5s ease-in-out infinite}
+  @keyframes markGlow{0%,100%{opacity:.7}50%{opacity:1;text-shadow:0 0 14px var(--umbra)}}
+
+  /* softer, springier hero-card hover */
+  .rcard,.hcard{transition:transform .16s cubic-bezier(.2,1.2,.3,1),border-color .2s,box-shadow .2s}
+
+  @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.05ms!important}
+    #ambient{display:none}}
 </style>
 
 <div id="app">
@@ -899,11 +972,22 @@ function computeStats(h,level,stars){
     lifesteal:a.lifesteal||0, heal_pct:a.heal_pct||0, aegis:a.aegis?1:0 };
 }
 function effStats(h){const pr=prog(h.id);return computeStats(h,pr.level,pr.stars);}
+let _prevCur={crystals:null,gold:null,starShards:null,relics:null};
+function _setCur(cls,val,prevKey){
+  const changed=_prevCur[prevKey]!==null&&_prevCur[prevKey]!==val;
+  document.querySelectorAll('.'+cls).forEach(e=>{
+    e.textContent=val.toLocaleString();
+    if(changed){e.classList.remove('bump');void e.offsetWidth;e.classList.add('bump');
+      const ic=e.parentElement&&e.parentElement.querySelector('.cur');
+      if(ic){ic.classList.remove('flash');void ic.offsetWidth;ic.classList.add('flash');}}
+  });
+  _prevCur[prevKey]=val;
+}
 function renderCrys(){
-  document.querySelectorAll('.crysN').forEach(e=>e.textContent=crystals.toLocaleString());
-  document.querySelectorAll('.goldN').forEach(e=>e.textContent=gold.toLocaleString());
-  document.querySelectorAll('.shardN').forEach(e=>e.textContent=starShards.toLocaleString());
-  document.querySelectorAll('.relicN').forEach(e=>e.textContent=relics.toLocaleString());
+  _setCur('crysN',crystals,'crystals');
+  _setCur('goldN',gold,'gold');
+  _setCur('shardN',starShards,'starShards');
+  _setCur('relicN',relics,'relics');
   const pl=$('#pityLeft');if(pl)pl.textContent=Math.max(0,70-pity);}
 
 /* ---------- save / load (localStorage, graceful fallback) ---------- */
@@ -1234,7 +1318,7 @@ function buildRoster(){
   const box=$('#roster'); box.innerHTML='';
   DATA.heroes.filter(h=>owned.has(h.id)).sort((a,b)=>RORDER[a.rarity]-RORDER[b.rarity]).forEach(h=>{
     const c=CLASS[h.class];
-    const el=document.createElement('div'); el.className='rcard'+(team.includes(h.id)?' picked':'');
+    const el=document.createElement('div'); el.className='rcard'+(team.includes(h.id)?' picked':'')+(h.rarity==='L'?' rar-L':h.rarity==='E'?' rar-E':'');
     el.style.setProperty('--hue',`var(${c.hue})`);
     el.innerHTML=`<div class="rar" style="background:var(${RAR[h.rarity]})"></div><div class="chk">✓</div>
       <div class="g">${classArt(h.class,34)}${artImg(h.id,h.name)}</div><div class="rn">${h.name}</div><div class="rl">${h.role}</div>`;
@@ -1367,7 +1451,7 @@ function buildHeroGrid(){
   const box=$('#heroGrid');box.innerHTML='';
   DATA.heroes.filter(h=>owned.has(h.id)).sort((a,b)=>RORDER[a.rarity]-RORDER[b.rarity]).forEach(h=>{
     const c=CLASS[h.class],pr=prog(h.id),el=document.createElement('div');
-    el.className='hcard';el.style.setProperty('--hue',`var(${c.hue})`);
+    el.className='hcard'+(h.rarity==='L'?' rar-L':h.rarity==='E'?' rar-E':'');el.style.setProperty('--hue',`var(${c.hue})`);
     el.innerHTML=`<div class="rar" style="background:var(${RAR[h.rarity]})"></div><div class="g">${classArt(h.class,40)}${artImg(h.id,h.name)}</div>
       <div class="rn">${h.name}</div><div class="lv">Lv ${pr.level} · ${'★'.repeat(pr.stars)}</div>`;
     el.addEventListener('click',()=>openHero(h.id));box.appendChild(el);
@@ -1897,6 +1981,26 @@ hasSave=loadGame();
 if(hasSave){$('#toMap').textContent='Continue';$('#resetBtn').style.display='block';}
 else{grantStarterGear();showOnboard();}  // first run: teach the basics
 renderCrys();
+// ambient ember/dust atmosphere
+(function buildAmbient(){
+  if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  const app=$('#app');if(!app)return;
+  const amb=document.createElement('div');amb.id='ambient';
+  const cols=['#ffcf6b','#ffb14e','#b9a5ff','#7b5cff','#6fe3a0'];
+  for(let i=0;i<16;i++){
+    const m=document.createElement('span');m.className='mote';
+    const s=(2+Math.random()*3.4).toFixed(1);
+    m.style.width=s+'px';m.style.height=s+'px';
+    m.style.left=(Math.random()*100).toFixed(1)+'%';
+    m.style.setProperty('--mc',cols[0|Math.random()*cols.length]);
+    m.style.setProperty('--dur',(13+Math.random()*12).toFixed(1)+'s');
+    m.style.setProperty('--del',(-Math.random()*18).toFixed(1)+'s');
+    m.style.setProperty('--sway',((Math.random()*2-1)*22).toFixed(0)+'px');
+    m.style.setProperty('--mo',(0.28+Math.random()*0.35).toFixed(2));
+    amb.appendChild(m);
+  }
+  app.appendChild(amb);
+})();
 { const tb=$('#titleBg'), u=(typeof BG!=='undefined')?BG['1']:null;
   if(tb&&u){ tb.style.backgroundImage=`url(${u})`; tb.classList.add('on'); } }
 $('#toGacha').addEventListener('click',()=>{openGacha();});
