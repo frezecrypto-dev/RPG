@@ -332,7 +332,8 @@
     background:linear-gradient(180deg,#171326,#0e0b18);border:1.5px solid var(--rc);overflow:hidden;
     box-shadow:0 0 16px color-mix(in srgb,var(--rc) 40%,transparent);opacity:0;transform:translateY(10px) scale(.9);
     animation:reveal .4s ease forwards}
-  .pr .g{font-size:26px}.pr .n{font-size:8px;text-align:center;padding:0 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  .pr .g{flex:1;width:100%;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:30px;border-radius:9px}
+  .pr .n{font-size:8px;text-align:center;padding:2px 3px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
   .pr .tag{position:absolute;top:4px;left:0;right:0;text-align:center;font-size:7px;letter-spacing:.14em;text-transform:uppercase}
   .pr .tag.new{color:#0a0910;background:var(--rc);margin:0 auto;width:fit-content;padding:1px 6px;border-radius:4px;left:auto;right:auto;position:absolute}
   .pr .tag.dupe{color:var(--muted)}
@@ -1242,9 +1243,10 @@ function showPulls(cards){
     const cl=CLASS[c.h.class], el=document.createElement('div');
     el.className='pr '+c.rar; el.style.setProperty('--rc',`var(${RAR[c.rar]})`); el.style.animationDelay=(i*0.06)+'s';
     el.innerHTML=`<div class="tag ${c.isNew?'new':'dupe'}">${c.isNew?'NEW':'+'+DUPE_SHARDS[c.rar]+' shard'}</div>
-      <div class="g">${cl.g}</div><div class="n">${c.h.name}</div>`;
+      <div class="g">${classArt(c.h.class,44)}${artImg(c.h.id,c.h.name)}</div><div class="n">${c.h.name}</div>`;
     grid.appendChild(el);
   });
+  wireArt(grid);
   $('#pullResults').classList.add('show');
   renderForge();
 }
