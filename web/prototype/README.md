@@ -161,9 +161,12 @@ axe, dagger, bow, star, skull, halo-cross, in the class hue) that shows through
 if an image is ever missing. **Enemies use their real generated art too** — the
 36 monster/boss portraits (Slimes, Giants, Guardians, Undead) are embedded the
 same way and fill the enemy cards in combat; arena opponents show the real hero
-portraits since they're heroes fighting back. `tools/fetch_portraits.mjs` can
-pull the full-resolution originals into `web/prototype/art/` if you want them.
-It's the fastest bridge from "validated spec" to "something you can hold."
+portraits since they're heroes fighting back. Fights also play over the chapter's **key-art
+background** (the four environment paintings from the manifest, embedded and
+dimmed for readability); arena, raid, and trial pick a themed one.
+`tools/fetch_portraits.mjs` can pull the full-resolution originals into
+`web/prototype/art/` if you want them. It's the fastest bridge from "validated
+spec" to "something you can hold."
 
 ## Run
 
