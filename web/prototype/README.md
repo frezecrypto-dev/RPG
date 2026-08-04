@@ -150,13 +150,19 @@ four-chapter campaign (Slimes, Giants, Guardians, Undead — each family flips t
 damage-type puzzle, and the finale boss reknits once at the Gate) → **Hard-mode
 farm** → **PvP-Arena ladder** → **co-op raid** → persist — but not the backend,
 real multiplayer, or the remaining 20 stages of the 40-stage design, which are
-specified in `docs/` and `data/` but not built. Heroes wear **procedural class
-crests** — inline SVG line-art (shield, axe, dagger, bow, star, skull,
-halo-cross) glowing in each class's hue — on the roster, detail, and battle
-screens; enemies still use emoji. It's a self-contained stand-in for the AI art
-canon in `art/canon-manifest.json`, which is served from a host the sandbox
-can't reach. It's the fastest bridge from "validated spec" to "something you can
-hold."
+specified in `docs/` and `data/` but not built.
+
+**Character art:** each hero's real generated portrait (the AI art canon in
+`art/canon-manifest.json`) is now wired in — the roster, detail, and battle
+screens load it from the canon URL over a **procedural class crest** (inline SVG
+line-art: shield, axe, dagger, bow, star, skull, halo-cross, in the class hue).
+If the portrait can't load, the image removes itself and the crest shows through.
+Open `index.html` in a browser with internet access and you'll see the real
+portraits; inside the published claude.ai artifact a strict CSP blocks external
+images, so it falls back to the crests. (The art host also can't be reached from
+this sandbox, so the portraits can't be embedded as data URIs here.) Enemies
+still use emoji. It's the fastest bridge from "validated spec" to "something you
+can hold."
 
 ## Run
 
