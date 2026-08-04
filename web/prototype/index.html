@@ -186,7 +186,7 @@
   #teamSyn .synchip{font-size:10px;padding:3px 9px;border-radius:20px;border:1px solid var(--hue);
     color:var(--hue);background:color-mix(in srgb,var(--hue) 12%,transparent)}
   #teamSyn .synhint{font-size:10px;color:var(--faint)}
-  #roster{flex:1;overflow-y:auto;padding:6px 14px 90px;display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+  #roster{flex:1;overflow-y:auto;padding:6px 14px 90px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
   .rcard{position:relative;border-radius:11px;background:var(--panel);border:1px solid var(--line);padding:7px 5px 8px;
     text-align:center;cursor:pointer;transition:transform .12s,border-color .2s,box-shadow .2s;--hue:var(--umbra)}
   .rcard:hover{transform:translateY(-3px)}
@@ -195,7 +195,7 @@
     background:radial-gradient(70% 80% at 50% 30%,color-mix(in srgb,var(--hue) 42%,transparent),transparent),linear-gradient(180deg,#171326,#0e0b18);
     border:1px solid color-mix(in srgb,var(--hue) 40%,var(--line))}
   .rcard .rn{font-size:9px;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .rcard .rl{font-size:8px;color:var(--muted);letter-spacing:.08em;margin-top:1px}
+  .rcard .rl{font-size:8px;color:var(--muted);letter-spacing:.08em;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
   .rcard .rar{position:absolute;top:5px;left:6px;width:7px;height:7px;border-radius:2px}
   .rcard .chk{position:absolute;top:4px;right:5px;font-size:10px;color:var(--hue);opacity:0;transition:opacity .15s}
   .rcard.picked .chk{opacity:1}
@@ -382,13 +382,15 @@
   #pullResults .rareburst{font-family:var(--font-title);font-size:22px}
 
   /* ---------- heroes + upgrade ---------- */
-  #heroGrid{flex:1;overflow-y:auto;padding:10px 14px 24px;display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+  #heroGrid{flex:1;overflow-y:auto;padding:10px 14px 24px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
   .hcard{position:relative;border-radius:11px;background:var(--panel);border:1px solid var(--line);padding:7px 5px 8px;text-align:center;cursor:pointer;
     transition:transform .12s,border-color .2s;--hue:var(--umbra)}
   .hcard:hover{transform:translateY(-3px);border-color:var(--hue)}
   .artimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit;z-index:1;object-position:50% 22%}
   /* frame full-body portraits tighter on the head/upper body in the selection cards */
   .rcard .artimg,.hcard .artimg,.slot .artimg,.pr .artimg,#teamThreats .artimg,#resMvp .artimg,#cutPortrait .artimg{object-position:50% 10%}
+  /* the small hero-detail icon: head first, upper body if it fits */
+  .hdportrait .artimg{object-position:50% 6%}
   .hcard .g,.rcard .g,.hero .p,.hdportrait{position:relative;overflow:hidden}
   .hcard .g{aspect-ratio:4/5;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;
     background:radial-gradient(70% 80% at 50% 30%,color-mix(in srgb,var(--hue) 42%,transparent),transparent),linear-gradient(180deg,#171326,#0e0b18);
