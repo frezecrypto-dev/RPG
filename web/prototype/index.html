@@ -314,8 +314,13 @@
   #hdKit{display:flex;flex-direction:column;gap:6px}
   #hdKit .kh{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
   .krow{display:flex;gap:9px;align-items:center;font-size:12px}
-  .krow .slot{font-size:8px;letter-spacing:.1em;color:var(--umbra);width:20px}
-  .krow .kn{color:var(--ink)}.krow .kt{margin-left:auto;font-size:9px;color:var(--faint);letter-spacing:.1em;text-transform:uppercase}
+  .krow .slot{font-size:8px;letter-spacing:.1em;color:var(--umbra);width:20px;flex:none}
+  .krow .kn{color:var(--ink);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .krow .kt{font-size:8px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase;margin-left:4px}
+  .krow .sklv{margin-left:auto;font-size:10px;color:var(--warn);font-weight:700;flex:none}
+  .krow .skbtn{flex:none;font-size:10px;padding:4px 8px;border-radius:7px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;white-space:nowrap}
+  .krow .skbtn:hover:not(:disabled){border-color:var(--umbra-dim)}
+  .krow .skbtn:disabled{opacity:.45;cursor:default}
   #hdBar{display:flex;gap:8px;align-items:center;padding:12px 14px;border-top:1px solid var(--line);flex-wrap:wrap;
     background:linear-gradient(0deg,rgba(14,11,24,.98),transparent)}
   #hdBar .crys{font-size:11px}
@@ -601,7 +606,11 @@ const SFX=(()=>{
 let owned=new Set(STARTER), crystals=4500, gold=20000, starShards=120, pity=0;
 let progress={};
 const RATES={L:0.03,E:0.14,R:0.38,C:0.45};
-function prog(id){if(!progress[id]){const h=hero(id);progress[id]={level:20,stars:h?h.startStars:1};}return progress[id];}
+function prog(id){if(!progress[id]){const h=hero(id);progress[id]={level:20,stars:h?h.startStars:1,skills:{S1:1,S2:1,S3:1}};}
+  if(!progress[id].skills)progress[id].skills={S1:1,S2:1,S3:1};return progress[id];}
+const SKILL_CAP=5;
+const skillCost=(slot,lv)=>Math.round(3500*lv*(slot==='S3'?1.6:1));
+const skillMult=lv=>1+0.06*((lv||1)-1);
 
 /* ---------- gear system (doc 09 s5): 5 slots · 6 sets · T1–T4 · C/R/E/L ---------- */
 let inventory=[], gearOn={}, gearUID=0, loadouts={};
@@ -1013,8 +1022,10 @@ function renderHero(){
   const nxt = pr.level<cap ? statsAt(h,pr.level+1,pr.stars) : null;
   const rows=[['HP',st.hp,nxt&&nxt.hp],['ATK',st.atk,nxt&&nxt.atk],['DEF',st.def,nxt&&nxt.def],['SPD',st.spd,nxt&&nxt.spd]];
   $('#hdStats').innerHTML=rows.map(([k,v,n])=>`<div class="statrow"><span class="k">${k}</span><span class="v">${v.toLocaleString()}${(n&&n>v)?`<span class="up">▲${(n-v).toLocaleString()}</span>`:''}</span></div>`).join('');
-  $('#hdKit').innerHTML=`<div class="kh">Kit</div>`+['S1','S2','S3'].map(s=>{const sk=h.kit[s];
-    return `<div class="krow"><span class="slot">${s}</span><span class="kn">${sk.name}</span><span class="kt">${s==='S3'?'Ultimate':s==='S2'?'Cooldown '+(sk.cooldown||3):'Basic'}</span></div>`;}).join('');
+  $('#hdKit').innerHTML=`<div class="kh">Kit · Skill Levels</div>`+['S1','S2','S3'].map(s=>{const sk=h.kit[s],lv=pr.skills[s],max=lv>=SKILL_CAP,cost=skillCost(s,lv);
+    const btn=max?`<button class="skbtn" disabled>Max</button>`:`<button class="skbtn" data-s="${s}" ${gold<cost?'disabled':''}>▸ ◉${cost>=1000?(Math.round(cost/100)/10)+'k':cost}</button>`;
+    return `<div class="krow"><span class="slot">${s}</span><span class="kn">${sk.name} <span class="kt">${s==='S3'?'Ult':s==='S2'?'CD'+(sk.cooldown||3):'Basic'}</span></span><span class="sklv">Lv${lv}</span>${btn}</div>`;}).join('');
+  $('#hdKit').querySelectorAll('.skbtn[data-s]').forEach(b=>b.addEventListener('click',()=>doSkill(b.dataset.s)));
   const lc=levelCost(pr),bL=$('#btnLevel');
   if(pr.level>=cap){bL.disabled=true;bL.querySelector('small').textContent=(pr.stars>=h.starCap?'max level':'raise stars ↑');}
   else{bL.disabled=gold<lc;bL.querySelector('small').textContent='◉ '+lc.toLocaleString();}
@@ -1028,6 +1039,8 @@ function doLevel(){const pr=prog(curHero),cap=DATA.levelCapByStar[pr.stars],lc=l
   if(pr.level>=cap||gold<lc)return;gold-=lc;pr.level++;renderHero();saveGame();}
 function doStar(){const h=hero(curHero),pr=prog(curHero),sc=starCost(h,pr);
   if(pr.stars>=h.starCap||starShards<sc.shards||gold<sc.gold)return;starShards-=sc.shards;gold-=sc.gold;pr.stars++;renderHero();saveGame();}
+function doSkill(slot){const pr=prog(curHero),lv=pr.skills[slot];if(lv>=SKILL_CAP)return;const c=skillCost(slot,lv);if(gold<c)return;
+  gold-=c;pr.skills[slot]++;SFX.tap();renderHero();saveGame();}
 
 /* ---------- EQUIPMENT screen ---------- */
 let geSlotSel=null;
@@ -1164,7 +1177,7 @@ function autoEquip(){gearOn[curHero]=gearOn[curHero]||{};
   renderGear();saveGame();}
 
 /* ---------- BATTLE ENGINE ---------- */
-function mkHero(id){const s=hero(id),st=effStats(s); return {...s,stats:st,side:'ally',hp:st.hp,max:st.hp,barrier:st.aegis?Math.round(st.hp*.15):0,rage:0,cd:{},status:{},alive:true,el:null};}
+function mkHero(id){const s=hero(id),st=effStats(s); return {...s,stats:st,skl:{...prog(id).skills},side:'ally',hp:st.hp,max:st.hp,barrier:st.aegis?Math.round(st.hp*.15):0,rage:0,cd:{},status:{},alive:true,el:null};}
 function mkEnemy(key){const s=DATA.enemies[key]||Object.values(DATA.enemies).find(e=>key.startsWith(e.id))||Object.values(DATA.enemies)[0];
   const st=curHard?{hp:Math.round(s.stats.hp*HARD.hp),atk:Math.round(s.stats.atk*HARD.atk),def:Math.round(s.stats.def*HARD.def),spd:s.stats.spd}:s.stats;
   return {...s,stats:st,key,side:'enemy',hp:st.hp,max:st.hp,barrier:0,status:{},alive:true,el:null,isBoss:s.tier==='X',isMini:s.tier==='B'};}
@@ -1216,10 +1229,11 @@ function pickTarget(src){
 function rootFor(u,sk){return sk.subtag?({bleed:'physical',pierce:'physical',arcane:'magical',shadow:'magical',holy:'magical',decay:'magical'}[sk.subtag]||u.damageRoot):u.damageRoot;}
 function runSkill(u,slot){
   const sk=u.kit[slot],root=rootFor(u,sk),sub=sk.subtag,tgt=sk.target,F=livingE(),Fr=livingH();
+  const m=skillMult(u.skl&&u.skl[slot]), P=sk.power*m;
   if(sk.power>0){
-    if(tgt==='single_enemy'){const t=pickTarget(u);if(t)dealDamage(u,t,sk.power,root,sub);}
-    else if(tgt==='splash2'){const t=pickTarget(u);if(t){dealDamage(u,t,sk.power,root,sub);const o=F.filter(f=>f!==t)[0];if(o)dealDamage(u,o,sk.power*.6,root,sub);}}
-    else if(tgt==='all_enemies')F.forEach(f=>dealDamage(u,f,sk.power,root,sub));
+    if(tgt==='single_enemy'){const t=pickTarget(u);if(t)dealDamage(u,t,P,root,sub);}
+    else if(tgt==='splash2'){const t=pickTarget(u);if(t){dealDamage(u,t,P,root,sub);const o=F.filter(f=>f!==t)[0];if(o)dealDamage(u,o,P*.6,root,sub);}}
+    else if(tgt==='all_enemies')F.forEach(f=>dealDamage(u,f,P,root,sub));
   }
   for(const e of (sk.effects||[])){
     const st=e.status,dur=e.duration||2;
@@ -1229,8 +1243,8 @@ function runSkill(u,slot){
       else if(st==='STS-BLEED'){const t=pickTarget(u);if(t){t.status['STS-BLEED']=dur;t._bleed=(t._bleed||0)+(e.stacks||1);t._ba=statOf(u,'atk');}}
       else Fr.forEach(f=>f.status[st]=dur);
     }
-    else if(e.verb==='heal'){const a=Math.round(statOf(u,'atk')*(e.power||1)*(1+(u.stats.heal_pct||0)));Fr.forEach(f=>heal(f,a));SFX.heal();}
-    else if(e.verb==='shield'){const a=Math.round(statOf(u,'def')*(e.power||1));Fr.forEach(f=>f.barrier=Math.max(f.barrier,a));}
+    else if(e.verb==='heal'){const a=Math.round(statOf(u,'atk')*(e.power||1)*m*(1+(u.stats.heal_pct||0)));Fr.forEach(f=>heal(f,a));SFX.heal();}
+    else if(e.verb==='shield'){const a=Math.round(statOf(u,'def')*(e.power||1)*m);Fr.forEach(f=>f.barrier=Math.max(f.barrier,a));}
     else if(e.verb==='cleanse')Fr.forEach(f=>{for(const s in f.status)if(s.includes('DOWN')||s==='STS-BLEED'||s==='STS-DECAY')delete f.status[s];});
     else if(e.verb==='strip')F.forEach(f=>{for(const s in f.status)if(s.includes('UP')){delete f.status[s];break;}});
     else if(e.verb==='consumeStatus'){const t=pickTarget(u);if(t&&t._bleed){dealDamage(u,t,.6*t._bleed,'physical','bleed');t._bleed=0;delete t.status['STS-BLEED'];}}

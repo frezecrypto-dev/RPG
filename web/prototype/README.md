@@ -18,6 +18,9 @@ something you can actually tap and play.
 - A **telegraphed detonation** (Krul's Umbral Spray) with a windup pip row —
   bank Surge for Roland's team-immunity or answer with Aurelia's heal.
 - Ultimate **cut-ins**, floating damage numbers, budding Slimelet adds.
+- **Hero progression** on the detail screen: level, star up, equip gear, and
+  **skill-ups** — level each of S1/S2/S3 (to 5) with Gold to scale that skill's
+  damage, healing, and shielding live in the engine (+6% per level).
 - **Synthesized sound** — hits, crits, heals, telegraph warnings, ultimate
   swells, and gacha fanfares are generated live with the Web Audio API (no
   audio files, CSP-safe). Toggle with the speaker button; the choice persists.
