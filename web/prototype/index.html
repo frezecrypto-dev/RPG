@@ -184,7 +184,7 @@
     text-align:center;cursor:pointer;transition:transform .12s,border-color .2s,box-shadow .2s;--hue:var(--umbra)}
   .rcard:hover{transform:translateY(-3px)}
   .rcard.picked{border-color:var(--hue);box-shadow:0 0 0 1px var(--hue),0 0 18px color-mix(in srgb,var(--hue) 40%,transparent)}
-  .rcard .g{height:46px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;
+  .rcard .g{aspect-ratio:4/5;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;
     background:radial-gradient(70% 80% at 50% 30%,color-mix(in srgb,var(--hue) 42%,transparent),transparent),linear-gradient(180deg,#171326,#0e0b18);
     border:1px solid color-mix(in srgb,var(--hue) 40%,var(--line))}
   .rcard .rn{font-size:9px;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -367,8 +367,10 @@
     transition:transform .12s,border-color .2s;--hue:var(--umbra)}
   .hcard:hover{transform:translateY(-3px);border-color:var(--hue)}
   .artimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit;z-index:1}
+  /* frame full-body portraits on the head/upper body in the selection cards */
+  .rcard .artimg,.hcard .artimg,.slot .artimg,.pr .artimg,#teamThreats .artimg{object-position:50% 10%}
   .hcard .g,.rcard .g,.hero .p,.hdportrait{position:relative;overflow:hidden}
-  .hcard .g{height:46px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;
+  .hcard .g{aspect-ratio:4/5;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;
     background:radial-gradient(70% 80% at 50% 30%,color-mix(in srgb,var(--hue) 42%,transparent),transparent),linear-gradient(180deg,#171326,#0e0b18);
     border:1px solid color-mix(in srgb,var(--hue) 40%,var(--line))}
   .hcard .rn{font-size:9px;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
