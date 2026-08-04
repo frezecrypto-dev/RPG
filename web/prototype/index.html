@@ -101,7 +101,8 @@
   .fbwrap{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:14px;padding:11px 13px;
     background:linear-gradient(100deg,color-mix(in srgb,var(--hue) 20%,transparent),var(--panel2) 60%);position:relative;overflow:hidden}
   .fbwrap::after{content:"";position:absolute;inset:0;border-radius:14px;box-shadow:0 0 0 1px color-mix(in srgb,var(--hue) 35%,transparent) inset;pointer-events:none}
-  .fbglyph{font-size:30px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.5))}
+  .fbglyph{width:54px;height:54px;flex:none;border-radius:11px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;
+    font-size:26px;background:#0e0b18;border:1px solid color-mix(in srgb,var(--hue) 45%,var(--line))}
   .fbmeta{flex:1;min-width:0}
   .fbtag{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--hue)}
   .fbname{font-family:var(--font-title);font-size:17px;line-height:1.1;margin:1px 0}
@@ -115,7 +116,8 @@
   #raidCard{padding:6px 20px 4px}
   .rcwrap{display:flex;align-items:center;gap:12px;border:1px solid var(--danger);border-radius:14px;padding:11px 13px;
     background:linear-gradient(100deg,rgba(255,59,92,.14),var(--panel2) 60%);position:relative}
-  .rcglyph{font-size:28px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.5))}
+  .rcglyph{width:54px;height:54px;flex:none;border-radius:11px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;
+    font-size:26px;background:#0e0b18;border:1px solid var(--danger)}
   .rcmeta{flex:1;min-width:0}
   .rctag{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--danger)}
   .rcname{font-family:var(--font-title);font-size:15px;line-height:1.1;margin:1px 0}
@@ -384,9 +386,9 @@
   .hcard{position:relative;border-radius:11px;background:var(--panel);border:1px solid var(--line);padding:7px 5px 8px;text-align:center;cursor:pointer;
     transition:transform .12s,border-color .2s;--hue:var(--umbra)}
   .hcard:hover{transform:translateY(-3px);border-color:var(--hue)}
-  .artimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit;z-index:1}
-  /* frame full-body portraits on the head/upper body in the selection cards */
-  .rcard .artimg,.hcard .artimg,.slot .artimg,.pr .artimg,#teamThreats .artimg{object-position:50% 10%}
+  .artimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit;z-index:1;object-position:50% 22%}
+  /* frame full-body portraits tighter on the head/upper body in the selection cards */
+  .rcard .artimg,.hcard .artimg,.slot .artimg,.pr .artimg,#teamThreats .artimg,#resMvp .artimg,#cutPortrait .artimg{object-position:50% 10%}
   .hcard .g,.rcard .g,.hero .p,.hdportrait{position:relative;overflow:hidden}
   .hcard .g{aspect-ratio:4/5;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;
     background:radial-gradient(70% 80% at 50% 30%,color-mix(in srgb,var(--hue) 42%,transparent),transparent),linear-gradient(180deg,#171326,#0e0b18);
@@ -981,19 +983,21 @@ function renderHome(){
   dailyCheck();
   const fh=hero(FEATURED_ID)||DATA.heroes.find(h=>h.rarity==='L'), fc=CLASS[fh.class];
   $('#featBanner').innerHTML=`<div class="fbwrap" style="--hue:var(${fc.hue})">
-      <div class="fbglyph">${fc.g}</div>
+      <div class="fbglyph">${classArt(fh.class,30)}${artImg(fh.id,fh.name)}</div>
       <div class="fbmeta"><div class="fbtag">Featured Summon</div>
         <div class="fbname">${fh.name}</div><div class="fbsub">${RARNAME[fh.rarity]} · ${fh.role} · ${fc.l}</div></div>
       <div class="fbbtns"><button class="fbtry" id="fbTry">Try</button><button class="fbcta" id="fbCta">Summon ▸</button></div></div>`;
+  wireArt($('#featBanner'));
   $('#fbCta').addEventListener('click',()=>{SFX.tap();openGacha();});
   $('#fbTry').addEventListener('click',()=>{SFX.tap();deployTrial();});
   // weekly raid card
   $('#raidCard').innerHTML=`<div class="rcwrap">
-      <div class="rcglyph">👑</div>
+      <div class="rcglyph">👑${(typeof EART!=='undefined'&&EART['ENM-SLM-X01'])?`<img class="artimg" src="${EART['ENM-SLM-X01']}" alt="Krul Ascended" loading="lazy">`:''}</div>
       <div class="rcmeta"><div class="rctag">Weekly Raid</div>
         <div class="rcname">Krul Ascended, the Drowned Crown</div>
         <div class="rcsub">Multi-phase boss · 30-round damage race${raidBest>0?` · best <b style="color:var(--warn)">${raidBest}%</b>`:''}</div></div>
       <button class="rccta" id="rcCta">Raid ▸</button></div>`;
+  wireArt($('#raidCard'));
   $('#rcCta').addEventListener('click',()=>{SFX.tap();openRaidTeam();});
   const allClaimed=DAILY_TASKS.every(t=>daily.claimed.includes(t.id));
   $('#daily').innerHTML=`<div class="dhead">Daily Objectives${allClaimed?' <span class="ddone">all done ✓</span>':''}</div>`+
