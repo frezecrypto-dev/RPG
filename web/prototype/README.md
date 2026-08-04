@@ -38,6 +38,14 @@ harness uses). The combat math mirrors `sim/ashsim.deal_damage`.
 showcase *pacing* — long enough to see Surge fill and a telegraph fire. That is
 a demo knob, not campaign balance; the real tuning lives in the data + sim.
 
+## Mercy Forge (doc 08 s5)
+
+Every summon banks an **Ember Sigil**, and the gate's **Mercy Forge** spends them
+on guaranteed units — a Rare Vow (40), an Epic Vow (120), or a **Legendary Vow
+(400) you pick yourself** from all fourteen Legendaries. It's the bad-luck floor
+under the RNG: pull enough and you choose exactly who you want. Claims prefer new
+units and turn dupes into Soul Shards, just like a pull.
+
 ## Equipment (doc 09 s5)
 
 The 5-slot gear system is live, not a placeholder multiplier. Each hero has

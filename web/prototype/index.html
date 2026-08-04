@@ -253,6 +253,23 @@
     padding:5px 11px;border-radius:8px;background:rgba(123,92,255,.14);border:1px solid var(--line)}
   .crys .di{color:var(--umbra)}
   #screen-gacha{background:radial-gradient(circle at 50% 34%,rgba(28,20,52,.7),transparent 60%)}
+  #mercyForge{margin-top:16px;width:100%;max-width:440px;border-top:1px solid var(--line);padding-top:12px}
+  .mfhead{font-size:11px;letter-spacing:.06em;color:var(--muted);margin-bottom:8px;text-align:center}
+  .mfhead .mfsub{color:var(--faint);font-size:9px}
+  .mfrow{display:flex;gap:7px;justify-content:center}
+  .mfbtn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 6px;border-radius:10px;
+    border:1px solid var(--line);background:var(--panel2);color:var(--ink);cursor:pointer}
+  .mfbtn:hover:not(:disabled){border-color:var(--umbra-dim)}
+  .mfbtn:disabled{opacity:.4;cursor:default}
+  .mfbtn .mfl{font-size:11px;font-weight:600}.mfbtn .mfc{font-size:10px;color:var(--rE)}
+  .mfpick{margin-top:10px}
+  .mfpicktitle{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:center;margin-bottom:7px}
+  .mfpickgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+  .mfpickcard{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;border-radius:9px;
+    border:1px solid var(--line);background:var(--panel2);color:var(--ink);cursor:pointer}
+  .mfpickcard:hover{border-color:var(--hue)}
+  .mfpickcard .mpg{font-size:20px}.mfpickcard .mpn{font-size:9px;color:var(--muted)}
+  .mfpickcard .mpown{position:absolute;top:2px;right:3px;font-size:7px;color:var(--faint)}
   #gachaMain{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:20px;text-align:center}
   .altar{width:190px;height:190px;border-radius:50%;position:relative;display:flex;align-items:center;justify-content:center;
     background:radial-gradient(circle,rgba(123,92,255,.5),rgba(123,92,255,.08) 62%,transparent 72%);
@@ -452,6 +469,7 @@
       <div class="gtitle">Featured Gate</div>
       <div class="pity">Legendary guaranteed within <b id="pityLeft">70</b> pulls</div>
       <div class="grates">Rates — <b>Legendary 3%</b> · Epic 14% · Rare 38% · Common 45%<br>Soft pity from pull 51 · 10-pull guarantees an Epic or better · dupes become Soul Shards</div>
+      <div id="mercyForge"></div>
     </div>
     <div id="gachaBar">
       <span class="crys"><span class="di">◆</span> <b class="num crysN">0</b></span>
@@ -621,7 +639,7 @@ const SFX=(()=>{
       else tone({freq:440,type:'sine',dur:.16,vol:.09}); }
   };
 })();
-let owned=new Set(STARTER), crystals=4500, gold=20000, starShards=120, relics=0, pity=0;
+let owned=new Set(STARTER), crystals=4500, gold=20000, starShards=120, relics=0, sigils=0, pity=0;
 let progress={};
 const RATES={L:0.03,E:0.14,R:0.38,C:0.45};
 function prog(id){if(!progress[id]){const h=hero(id);progress[id]={level:20,stars:h?h.startStars:1,skills:{S1:1,S2:1,S3:1},asc:0};}
@@ -702,10 +720,10 @@ function renderCrys(){
 const SAVE_KEY='ashgate_save_v1';
 let hasSave=false;
 function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(
-  {v:2,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,raidBest,crystals,gold,starShards,relics,pity,inventory,gearOn,gearUID,loadouts,daily,muted:ui.muted}));}catch(e){}}
+  {v:2,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,raidBest,crystals,gold,starShards,relics,sigils,pity,inventory,gearOn,gearUID,loadouts,daily,muted:ui.muted}));}catch(e){}}
 function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s||(s.v!==1&&s.v!==2))return false;
   owned=new Set(s.owned);progress=s.progress||{};cleared=new Set(s.cleared);
-  crystals=s.crystals??crystals;gold=s.gold??gold;starShards=s.starShards??starShards;relics=s.relics??0;pity=s.pity??0;
+  crystals=s.crystals??crystals;gold=s.gold??gold;starShards=s.starShards??starShards;relics=s.relics??0;sigils=s.sigils??0;pity=s.pity??0;
   inventory=s.inventory||[];gearOn=s.gearOn||{};gearUID=s.gearUID||inventory.reduce((m,p)=>Math.max(m,p.uid),0);
   loadouts=s.loadouts||{};clearedHard=new Set(s.clearedHard||[]);arenaRank=s.arenaRank||0;raidBest=s.raidBest||0;
   daily=s.daily||{date:'',win:0,summon:0,enhance:0,claimed:[]};dailyCheck();ui.muted=s.muted??false;
@@ -756,7 +774,7 @@ function renderHome(){
       <div class="fbmeta"><div class="fbtag">Featured Summon</div>
         <div class="fbname">${fh.name}</div><div class="fbsub">${RARNAME[fh.rarity]} · ${fh.role} · ${fc.l}</div></div>
       <div class="fbbtns"><button class="fbtry" id="fbTry">Try</button><button class="fbcta" id="fbCta">Summon ▸</button></div></div>`;
-  $('#fbCta').addEventListener('click',()=>{SFX.tap();renderCrys();show('screen-gacha');});
+  $('#fbCta').addEventListener('click',()=>{SFX.tap();openGacha();});
   $('#fbTry').addEventListener('click',()=>{SFX.tap();deployTrial();});
   // weekly raid card
   $('#raidCard').innerHTML=`<div class="rcwrap">
@@ -939,7 +957,7 @@ function endTrial(win){
   const v=$('#resVerdict');v.textContent=win?'VICTORY':'DEFEAT';v.className='verdict '+(win?'win':'lose');
   $('#resSub').innerHTML=`This was a <b>trial</b> — ${fh.name} isn't in your roster yet. `+
     (win?`She tore through the Guardians (weak to physical). `:``)+`Summon her at the featured gate to keep her.`;
-  const nx=$('#resNext');nx.textContent='Summon';nx.onclick=()=>{renderCrys();show('screen-gacha');};
+  const nx=$('#resNext');nx.textContent='Summon';nx.onclick=()=>{openGacha();};
 }
 
 /* ---------- TEAM SELECT ---------- */
@@ -1011,7 +1029,7 @@ function drawOne(rarity){
 }
 function pull(n){
   if(crystals < n*150){flashBar();return;}
-  crystals-=n*150; dailyBump('summon');
+  crystals-=n*150; dailyBump('summon'); sigils+=n;  // Ember Sigil per pull -> Mercy Forge
   const results=[];
   let gotEpicPlus=false;
   for(let i=0;i<n;i++){
@@ -1046,6 +1064,40 @@ function showPulls(cards){
     grid.appendChild(el);
   });
   $('#pullResults').classList.add('show');
+  renderForge();
+}
+/* ---------- Mercy Forge (doc 08 s5): spend Ember Sigils on guaranteed units ---------- */
+const FORGE_OPTS=[
+  {id:'R', label:'Rare Vow',  cost:40,  rarity:'R'},
+  {id:'E', label:'Epic Vow',  cost:120, rarity:'E'},
+  {id:'L', label:'Legendary Vow',cost:400,rarity:'L', pick:true},
+];
+function openGacha(){renderForge();renderCrys();show('screen-gacha');}
+function renderForge(){
+  const mf=$('#mercyForge');if(!mf)return;
+  mf.innerHTML=`<div class="mfhead">Mercy Forge · <b class="sigN" style="color:var(--rE)">${sigils}</b> ❂ Ember Sigils <span class="mfsub">(earn 1 per summon)</span></div>`+
+    `<div class="mfrow">`+FORGE_OPTS.map(o=>`<button class="mfbtn" data-id="${o.id}" ${sigils<o.cost?'disabled':''}>
+       <span class="mfl" style="color:var(${RAR[o.rarity]})">${o.label}${o.pick?' ▾':''}</span><span class="mfc">❂ ${o.cost}</span></button>`).join('')+`</div>`+
+    `<div id="mfPick" class="mfpick"></div>`;
+  mf.querySelectorAll('.mfbtn').forEach(b=>b.addEventListener('click',()=>{
+    const o=FORGE_OPTS.find(x=>x.id===b.dataset.id);if(sigils<o.cost)return;
+    o.pick?renderForgePick(o):claimForge(o.rarity,o.cost);}));
+}
+function renderForgePick(o){
+  const legends=DATA.heroes.filter(h=>h.rarity==='L');
+  $('#mfPick').innerHTML=`<div class="mfpicktitle">Choose your Legendary (❂ ${o.cost})</div><div class="mfpickgrid">`+
+    legends.map(h=>{const c=CLASS[h.class];return `<button class="mfpickcard" data-id="${h.id}" style="--hue:var(${c.hue})">
+      <span class="mpg">${c.g}</span><span class="mpn">${h.name.split(' ')[0]}</span>${owned.has(h.id)?'<span class="mpown">owned</span>':''}</button>`;}).join('')+`</div>`;
+  $('#mfPick').querySelectorAll('.mfpickcard').forEach(b=>b.addEventListener('click',()=>claimForge('L',o.cost,b.dataset.id)));
+}
+function claimForge(rarity,cost,pickId){
+  if(sigils<cost)return;sigils-=cost;
+  let h;
+  if(pickId)h=hero(pickId);
+  else{const fresh=DATA.heroes.filter(x=>x.rarity===rarity&&!owned.has(x.id));
+    const src=fresh.length?fresh:DATA.heroes.filter(x=>x.rarity===rarity);h=src[0|Math.random()*src.length];}
+  const isNew=!owned.has(h.id);if(isNew){owned.add(h.id);prog(h.id);}else starShards+=DUPE_SHARDS[rarity];
+  renderCrys();saveGame();showPulls([{h,rar:rarity,isNew}]);
 }
 
 /* ---------- HEROES + UPGRADE (doc 09 level/star growth) ---------- */
@@ -1490,7 +1542,7 @@ hasSave=loadGame();
 if(hasSave){$('#toMap').textContent='Continue';$('#resetBtn').style.display='block';}
 else{grantStarterGear();}
 renderCrys();
-$('#toGacha').addEventListener('click',()=>{renderCrys();show('screen-gacha');});
+$('#toGacha').addEventListener('click',()=>{openGacha();});
 $('#toHeroes').addEventListener('click',()=>{buildHeroGrid();renderCrys();show('screen-heroes');});
 $('#toArena').addEventListener('click',()=>{SFX.tap();openArena();});
 $('#arBack').addEventListener('click',()=>{buildMap();show('screen-map');});
