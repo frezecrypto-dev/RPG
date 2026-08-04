@@ -281,7 +281,13 @@
   #cutin .who{font-family:var(--font-title);font-size:26px;line-height:1.05}#cutin .skill{font-size:12px;letter-spacing:.26em;text-transform:uppercase;color:var(--hue,#7b5cff);margin-top:4px}
 
   #result{position:absolute;inset:0;z-index:20;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;
-    padding:32px;gap:14px;background:radial-gradient(circle at 50% 40%,rgba(20,16,36,.88),rgba(6,5,12,.97))}
+    padding:32px;gap:14px;background:radial-gradient(circle at 50% 38%,rgba(16,12,28,.74),rgba(6,5,12,.93))}
+  #resMvp{display:none;flex-direction:column;align-items:center;gap:7px;margin-bottom:2px}
+  #resMvp .mvpport{width:96px;height:96px;border-radius:16px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;
+    background:#0e0b18;border:2px solid var(--warn);box-shadow:0 0 26px color-mix(in srgb,var(--warn) 45%,transparent)}
+  #resMvp .mvptag{font-size:10px;letter-spacing:.3em;color:var(--warn);font-weight:700}
+  #resMvp .mvpname{font-family:var(--font-title);font-size:18px;line-height:1.1}
+  #resMvp .mvpdmg{font-size:10px;color:var(--muted)}
   #result .verdict{font-family:var(--font-title);font-size:38px}.win{color:var(--good)}.lose{color:var(--crit)}
   #result .eyebrow{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--umbra)}
   #result .sub{color:var(--muted);font-size:13px;line-height:1.6;max-width:34ch}
@@ -678,6 +684,7 @@
     <div id="fx"></div>
     <div id="cutin"><div class="band"><div class="cutportrait" id="cutPortrait"></div><div class="cuttext"><div class="who"></div><div class="skill"></div></div></div></div>
     <div id="result" role="alertdialog" aria-live="assertive" aria-labelledby="resVerdict" aria-describedby="resSub">
+      <div id="resMvp"></div>
       <div class="eyebrow" id="resEyebrow"></div>
       <div class="verdict" id="resVerdict"></div>
       <div class="sub" id="resSub"></div>
@@ -1040,7 +1047,7 @@ function endArena(win){
   if(win){ dailyBump('win');
     if(firstClear){arenaRank=Math.max(arenaRank,sq.rank);reward=60+sq.rank*25;crystals+=reward;goldR=6000+sq.rank*2000;gold+=goldR;}
     saveGame(); }
-  renderCrys();
+  renderCrys(); setMvp(win);
   const r=$('#result');r.style.display='flex';
   $('#resEyebrow').textContent=win?(firstClear?'Rank up':'Arena win'):'Arena defeat';
   const v=$('#resVerdict');v.textContent=win?'VICTORY':'DEFEAT';v.className='verdict '+(win?'win':'lose');
@@ -1098,7 +1105,7 @@ function endRaid(win){
   const goldR=Math.round(pct*400)+(win?8000:0); gold+=goldR;
   const relicR=Math.round(pct/20)+(win?3:0); relics+=relicR;
   let gp=null; if(pct>=50)gp=dropGear(true,pct>=85);
-  if(win)dailyBump('win'); saveGame(); renderCrys();
+  if(win)dailyBump('win'); saveGame(); renderCrys(); setMvp(win);
   const r=$('#result');r.style.display='flex';
   $('#resEyebrow').textContent=win?'Raid felled':(G.timeout?`Raid — ${pct}% damage`:'The raid falls');
   const v=$('#resVerdict');v.textContent=win?'VICTORY':(pct>=50?'GOOD RUN':'DEFEAT');v.className='verdict '+(win?'win':'lose');
@@ -1135,6 +1142,7 @@ function deployTrial(){
 }
 function endTrial(win){
   const fh=hero(FEATURED_ID);
+  setMvp(false);
   const r=$('#result');r.style.display='flex';
   $('#resEyebrow').textContent=win?'Trial cleared':'Trial ended';
   const v=$('#resVerdict');v.textContent=win?'VICTORY':'DEFEAT';v.className='verdict '+(win?'win':'lose');
@@ -1568,7 +1576,7 @@ function dealDamage(src,tgt,power,root,sub){
   const isCrit=Math.random()<((src.stats.crit_rate||.05)+(src.status['STS-CRIT-UP']?.2:0)),crit=isCrit?(1+(src.stats.crit_dmg||.5)):1;
   let d=power*atk*mit*elem*crit*rand(.95,1.05); if(tgt.status['STS-DR-25'])d*=.75; d=Math.round(d);
   if(tgt.barrier>0&&sub!=='bleed'){const ab=Math.min(tgt.barrier,d);tgt.barrier-=ab;d-=ab;}
-  tgt.hp=Math.max(0,tgt.hp-d); if(src.side==='ally')gainSurge(4);
+  tgt.hp=Math.max(0,tgt.hp-d); if(src.side==='ally'){gainSurge(4);src._dmg=(src._dmg||0)+d;}
   if(src.side==='ally'&&(src.stats.lifesteal||0)>0&&d>0)heal(src,Math.round(d*src.stats.lifesteal));
   floatNum(tgt,d,isCrit?'crit':'',root,sub); shake(tgt); if(d>0)SFX[isCrit?'crit':'hit']();
   if(tgt.hp<=0)onKill(src,tgt); return d;
@@ -1739,6 +1747,14 @@ function cutIn(u){const c=$('#cutin');SFX.ult();c.style.setProperty('--hue',`var
   const cp=$('#cutPortrait');cp.innerHTML=classArt(u.class,40)+artImg(u.id,u.name);wireArt(cp);
   c.querySelector('.who').textContent=u.name;c.querySelector('.skill').textContent=u.kit.S3.name;c.classList.add('show');G.busy=true;
   setTimeout(()=>{c.classList.remove('show');G.busy=false;if(!G.over)scheduleNext(120);},720/G.speed);}
+function setMvp(win){const el=$('#resMvp');if(!el)return;
+  const top=(win&&G&&G.heroes)?G.heroes.filter(h=>h._dmg>0).sort((a,b)=>b._dmg-a._dmg)[0]:null;
+  if(!top){el.style.display='none';el.innerHTML='';return;}
+  el.style.display='flex';
+  el.innerHTML=`<div class="mvpport">${classArt(top.class,52)}${artImg(top.id,top.name)}</div>
+    <div class="mvptag">◆ MVP ◆</div><div class="mvpname">${top.name}</div>
+    <div class="mvpdmg">${Math.round(top._dmg).toLocaleString()} damage dealt</div>`;
+  wireArt(el);}
 function endGame(win){
   G.over=true;renderTelegraph();SFX[win?'win':'lose']();
   if(G.pvp)return endArena(win);
@@ -1760,7 +1776,7 @@ function endGame(win){
   if(win){cleared.add(curStage.id);if(H)clearedHard.add(curStage.id);}
   if(win)dailyBump('win');
   renderCrys();
-  if(win)saveGame();
+  if(win)saveGame(); setMvp(win);
   const r=$('#result');r.style.display='flex';
   const last = allStages().every(s=>cleared.has(s.id));
   $('#resEyebrow').textContent=win?(H?'Hard clear':(last?'The Gate is sealed':'Stage cleared')):(G.timeout?'Time runs out':'The party falls');
