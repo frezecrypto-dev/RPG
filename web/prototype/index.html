@@ -407,9 +407,13 @@
   .hcard .rar{position:absolute;top:5px;left:6px;width:7px;height:7px;border-radius:2px}
   #hdBody{flex:1;overflow-y:auto;padding:16px 18px 24px;display:flex;flex-direction:column;gap:16px}
   #hdTop{display:flex;gap:16px;align-items:center}
-  .hdportrait{width:96px;height:96px;flex:none;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:46px;--hue:var(--umbra);
+  .hdportrait{width:128px;height:128px;flex:none;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:52px;--hue:var(--umbra);
     background:radial-gradient(70% 80% at 50% 30%,color-mix(in srgb,var(--hue) 45%,transparent),transparent),linear-gradient(180deg,#171326,#0e0b18);
-    border:1px solid color-mix(in srgb,var(--hue) 45%,var(--line))}
+    border:1px solid color-mix(in srgb,var(--hue) 55%,var(--line));animation:auraBreathe 4s ease-in-out infinite}
+  @keyframes auraBreathe{0%,100%{box-shadow:0 0 22px color-mix(in srgb,var(--hue) 30%,transparent)}50%{box-shadow:0 0 40px color-mix(in srgb,var(--hue) 55%,transparent),0 0 0 1px color-mix(in srgb,var(--hue) 40%,transparent)}}
+  /* living portrait — slow drift/zoom inside the frame */
+  .hdportrait .artimg,#cutin .cutportrait .artimg,#resMvp .mvpport .artimg{animation:livingPortrait 9s ease-in-out infinite alternate}
+  @keyframes livingPortrait{from{transform:scale(1.04) translate(0,0)}to{transform:scale(1.11) translate(-2%,-1%)}}
   #hdMeta{display:flex;flex-direction:column;gap:5px}
   .hdlvl{font-family:var(--font-title);font-size:24px}
   .hdstars{font-size:16px;letter-spacing:2px;color:var(--rL)}
@@ -706,9 +710,16 @@
   .node.playable .card{animation:cardArrive .4s ease both}
   @keyframes cardArrive{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
 
+  /* ============ living hero-detail portrait ============ */
+  .hdportrait{transition:transform .18s ease;transform-style:preserve-3d}
+  .hdmote{position:absolute;bottom:6px;border-radius:50%;z-index:3;pointer-events:none;box-shadow:0 0 6px currentColor;
+    opacity:0;animation:hdRise 2.6s ease-out forwards}
+  @keyframes hdRise{0%{opacity:0;transform:translateY(0) translateX(0) scale(.6)}
+    15%{opacity:.85}80%{opacity:.5}100%{opacity:0;transform:translateY(-120px) translateX(var(--mx,0)) scale(1)}}
   @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.05ms!important}
     #ambient{display:none}
-    .hero .p,.ecard .p,#battleBg.on,#titleBg.on,#mapBg.on,.track,.node.current .dot{animation:none!important}}
+    .hero .p,.ecard .p,#battleBg.on,#titleBg.on,#mapBg.on,.track,.node.current .dot,
+    .hdportrait,.hdportrait .artimg,#cutin .cutportrait .artimg,#resMvp .mvpport .artimg{animation:none!important}}
 </style>
 
 <div id="app">
@@ -1602,11 +1613,34 @@ function renderCodex(){
 const levelCost=pr=>250*pr.level;
 const starCost=(h,pr)=>({shards:40+40*(pr.stars-h.startStars),gold:5000});
 function statsAt(h,level,stars){return computeStats(h,level,stars);}
+let _hdEmit=null;
+function enlivenPortrait(port,hue){
+  const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  // pointer parallax tilt (desktop) — gentle 3D
+  port.onmousemove=reduce?null:e=>{const r=port.getBoundingClientRect();
+    const px=(e.clientX-r.left)/r.width-0.5, py=(e.clientY-r.top)/r.height-0.5;
+    port.style.transform=`perspective(420px) rotateY(${(px*11).toFixed(1)}deg) rotateX(${(-py*11).toFixed(1)}deg)`;};
+  port.onmouseleave=()=>{port.style.transform='';};
+  // idle ember emitter in the class hue (one small mote at a time)
+  clearInterval(_hdEmit);
+  if(reduce)return;
+  _hdEmit=setInterval(()=>{
+    const sc=$('#screen-hero');if(!sc||!sc.classList.contains('on')){return;}
+    const cur=$('#hdPortrait');if(!cur)return;
+    const m=document.createElement('span');m.className='hdmote';
+    m.style.left=(12+Math.random()*76).toFixed(0)+'%';
+    m.style.color=`var(${hue})`;m.style.background=`var(${hue})`;
+    m.style.setProperty('--mx',((Math.random()*2-1)*14).toFixed(0)+'px');
+    const sz=(1.6+Math.random()*2).toFixed(1);m.style.width=sz+'px';m.style.height=sz+'px';
+    cur.appendChild(m);setTimeout(()=>m.remove(),2600);
+  },440);
+}
 function renderHero(){
   const h=hero(curHero),c=CLASS[h.class],pr=prog(curHero),st=statsAt(h,pr.level,pr.stars),cap=DATA.levelCapByStar[pr.stars];
   $('#hdRole').textContent=h.role+' · '+c.l+(FACTION[h.faction]?' · '+FACTION[h.faction].name:'');
   $('#hdName').textContent=h.name;
   const port=$('#hdPortrait');port.innerHTML=classArt(h.class,66)+artImg(h.id,h.name);port.style.setProperty('--hue',`var(${c.hue})`);wireArt(port);
+  enlivenPortrait(port,c.hue);
   $('#hdRarity').textContent=RARNAME[h.rarity];$('#hdRarity').style.color=`var(${RAR[h.rarity]})`;
   $('#hdLevel').textContent='Lv '+pr.level+'  /  '+cap;
   $('#hdStars').textContent='★'.repeat(pr.stars)+'☆'.repeat(h.starCap-pr.stars);
