@@ -311,6 +311,18 @@
   .statrow .k{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
   .statrow .v{font-family:var(--font-title);font-size:17px;font-variant-numeric:tabular-nums}
   .statrow .up{color:var(--good);font-size:10px;margin-left:6px}
+  #hdAsc{margin:12px 0 2px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--panel2)}
+  #hdAsc .asctop{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
+  #hdAsc .asclbl{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  #hdAsc .asclbl b{color:var(--nec);font-family:var(--font-title);font-size:13px}
+  #hdAsc .ascpips{color:var(--nec);font-size:11px;letter-spacing:2px}
+  #hdAsc .ascpips.dim{color:var(--faint);opacity:.6}
+  #hdAsc .ascrow{display:flex;align-items:center;gap:10px}
+  #hdAsc .ascbon{flex:1;font-size:10px;color:var(--ink)}
+  #hdAsc .ascnext{color:var(--good)}
+  #hdAsc .ascsub{font-size:10px;color:var(--faint)}
+  #hdAsc .ascbtn{font-size:10px;padding:6px 10px;border-radius:8px;border:1px solid var(--nec);color:var(--ink);background:rgba(111,227,160,.12);cursor:pointer;white-space:nowrap}
+  #hdAsc .ascbtn:disabled{opacity:.45;cursor:default;border-color:var(--line);background:var(--panel)}
   #hdKit{display:flex;flex-direction:column;gap:6px}
   #hdKit .kh{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
   .krow{display:flex;gap:9px;align-items:center;font-size:12px}
@@ -410,6 +422,7 @@
       <span class="res"><span class="di" style="color:var(--umbra)">◆</span> <b class="num crysN">0</b></span>
       <span class="res"><span class="di" style="color:var(--warn)">◉</span> <b class="num goldN">0</b></span>
       <span class="res"><span class="di" style="color:var(--hlr)">✦</span> <b class="num shardN">0</b></span>
+      <span class="res"><span class="di" style="color:var(--nec)">❖</span> <b class="num relicN">0</b></span>
     </div>
     <div id="featBanner"></div>
     <div id="raidCard"></div>
@@ -464,6 +477,7 @@
       </div>
       <div id="hdStats"></div>
       <div id="hdGear"></div>
+      <div id="hdAsc"></div>
       <div id="hdKit"></div>
     </div>
     <div id="hdBar">
@@ -603,11 +617,13 @@ const SFX=(()=>{
       else tone({freq:440,type:'sine',dur:.16,vol:.09}); }
   };
 })();
-let owned=new Set(STARTER), crystals=4500, gold=20000, starShards=120, pity=0;
+let owned=new Set(STARTER), crystals=4500, gold=20000, starShards=120, relics=0, pity=0;
 let progress={};
 const RATES={L:0.03,E:0.14,R:0.38,C:0.45};
-function prog(id){if(!progress[id]){const h=hero(id);progress[id]={level:20,stars:h?h.startStars:1,skills:{S1:1,S2:1,S3:1}};}
-  if(!progress[id].skills)progress[id].skills={S1:1,S2:1,S3:1};return progress[id];}
+function prog(id){if(!progress[id]){const h=hero(id);progress[id]={level:20,stars:h?h.startStars:1,skills:{S1:1,S2:1,S3:1},asc:0};}
+  if(!progress[id].skills)progress[id].skills={S1:1,S2:1,S3:1};if(progress[id].asc==null)progress[id].asc=0;return progress[id];}
+const ASC_CAP=6;
+const ascCost=rank=>({relics:2+rank, gold:20000*(rank+1)});
 const SKILL_CAP=5;
 const skillCost=(slot,lv)=>Math.round(3500*lv*(slot==='S3'?1.6:1));
 const skillMult=lv=>1+0.06*((lv||1)-1);
@@ -659,14 +675,15 @@ function gearBonus(id){
 }
 function computeStats(h,level,stars){
   const g=1+h.perLevel*h.rarityGrowth*(level-1), sf=1+DATA.starBonusPerStar*(stars-h.startStars);
-  const b={hp:h.baseL1.hp*g*sf,atk:h.baseL1.atk*g*sf,def:h.baseL1.def*g*sf,spd:h.baseL1.spd};
+  const asc=(progress[h.id]&&progress[h.id].asc)||0, am=1+0.04*asc;  // ascension: +4% core stats / rank
+  const b={hp:h.baseL1.hp*g*sf*am,atk:h.baseL1.atk*g*sf*am,def:h.baseL1.def*g*sf*am,spd:h.baseL1.spd};
   const a=gearBonus(h.id).agg;
   return {
     hp:Math.round((b.hp+(a.hp_flat||0))*(1+(a.hp_pct||0))),
     atk:Math.round((b.atk+(a.atk_flat||0))*(1+(a.atk_pct||0))),
     def:Math.round((b.def+(a.def_flat||0))*(1+(a.def_pct||0))),
     spd:Math.round((b.spd+(a.spd_flat||0))*(1+(a.spd_pct||0))),
-    crit_rate:.05+(a.crit_rate||0), crit_dmg:.5+(a.crit_dmg||0),
+    crit_rate:.05+(a.crit_rate||0)+(asc>=3?0.05:0), crit_dmg:.5+(a.crit_dmg||0)+(asc>=6?0.15:0),
     lifesteal:a.lifesteal||0, heal_pct:a.heal_pct||0, aegis:a.aegis?1:0 };
 }
 function effStats(h){const pr=prog(h.id);return computeStats(h,pr.level,pr.stars);}
@@ -674,16 +691,17 @@ function renderCrys(){
   document.querySelectorAll('.crysN').forEach(e=>e.textContent=crystals.toLocaleString());
   document.querySelectorAll('.goldN').forEach(e=>e.textContent=gold.toLocaleString());
   document.querySelectorAll('.shardN').forEach(e=>e.textContent=starShards.toLocaleString());
+  document.querySelectorAll('.relicN').forEach(e=>e.textContent=relics.toLocaleString());
   const pl=$('#pityLeft');if(pl)pl.textContent=Math.max(0,70-pity);}
 
 /* ---------- save / load (localStorage, graceful fallback) ---------- */
 const SAVE_KEY='ashgate_save_v1';
 let hasSave=false;
 function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(
-  {v:2,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,raidBest,crystals,gold,starShards,pity,inventory,gearOn,gearUID,loadouts,daily,muted:ui.muted}));}catch(e){}}
+  {v:2,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,raidBest,crystals,gold,starShards,relics,pity,inventory,gearOn,gearUID,loadouts,daily,muted:ui.muted}));}catch(e){}}
 function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s||(s.v!==1&&s.v!==2))return false;
   owned=new Set(s.owned);progress=s.progress||{};cleared=new Set(s.cleared);
-  crystals=s.crystals??crystals;gold=s.gold??gold;starShards=s.starShards??starShards;pity=s.pity??0;
+  crystals=s.crystals??crystals;gold=s.gold??gold;starShards=s.starShards??starShards;relics=s.relics??0;pity=s.pity??0;
   inventory=s.inventory||[];gearOn=s.gearOn||{};gearUID=s.gearUID||inventory.reduce((m,p)=>Math.max(m,p.uid),0);
   loadouts=s.loadouts||{};clearedHard=new Set(s.clearedHard||[]);arenaRank=s.arenaRank||0;raidBest=s.raidBest||0;
   daily=s.daily||{date:'',win:0,summon:0,enhance:0,claimed:[]};dailyCheck();ui.muted=s.muted??false;
@@ -875,13 +893,14 @@ function endRaid(win){
   const improved=pct>raidBest; raidBest=Math.max(raidBest,pct);
   const reward=Math.round(pct*3)+(win?150:0); crystals+=reward;
   const goldR=Math.round(pct*400)+(win?8000:0); gold+=goldR;
+  const relicR=Math.round(pct/20)+(win?3:0); relics+=relicR;
   let gp=null; if(pct>=50)gp=dropGear(true,pct>=85);
   if(win)dailyBump('win'); saveGame(); renderCrys();
   const r=$('#result');r.style.display='flex';
   $('#resEyebrow').textContent=win?'Raid felled':(G.timeout?`Raid — ${pct}% damage`:'The raid falls');
   const v=$('#resVerdict');v.textContent=win?'VICTORY':(pct>=50?'GOOD RUN':'DEFEAT');v.className='verdict '+(win?'win':'lose');
   const dropTxt=gp?`<div style="color:var(${GRAR[gp.rar].c});margin-bottom:6px">✦ Raid gear — ${GRAR[gp.rar].n} ${GSETS[gp.set].n} ${GSLOT[gp.slot].n} (${gp.tier})</div>`:'';
-  const rewTxt=`<div style="color:var(--umbra);margin-bottom:6px">◆ +${reward} Crystals · <span style="color:var(--warn)">◉ +${goldR.toLocaleString()} Gold</span></div>`;
+  const rewTxt=`<div style="color:var(--umbra);margin-bottom:6px">◆ +${reward} Crystals · <span style="color:var(--warn)">◉ +${goldR.toLocaleString()} Gold</span>${relicR?` · <span style="color:var(--nec)">❖ +${relicR} Relics</span>`:''}</div>`;
   $('#resSub').innerHTML=rewTxt+dropTxt+
     `<div>Damage dealt: <b style="color:var(--warn)">${pct}%</b>${improved?' — new best!':` · best ${raidBest}%`}. `+
     (win?'The Drowned Crown falls — the raid is fully cleared.':'Raids pay out by damage — re-gear, level up, and push for a full kill.')+`</div>`;
@@ -1033,8 +1052,24 @@ function renderHero(){
   if(pr.stars>=h.starCap){bS.disabled=true;bS.querySelector('small').textContent='max ★';}
   else{bS.disabled=(starShards<sc.shards||gold<sc.gold);bS.querySelector('small').textContent='✦'+sc.shards+' · ◉'+(sc.gold/1000)+'k';}
   renderHdGear();
+  renderHdAsc();
   renderCrys();
 }
+function ascBonusText(rank){const parts=[`+${rank*4}% core stats`];if(rank>=3)parts.push('+5% crit rate');if(rank>=6)parts.push('+15% crit dmg');return parts.join(' · ');}
+function renderHdAsc(){
+  const h=hero(curHero),pr=prog(curHero),maxed=pr.stars>=h.starCap,rank=pr.asc,atCap=rank>=ASC_CAP;
+  const pips='◆'.repeat(rank)+'◇'.repeat(ASC_CAP-rank);
+  let right;
+  if(!maxed) right=`<span class="ascsub">Reach ${h.starCap}★ to unlock</span>`;
+  else if(atCap) right=`<span class="ascsub" style="color:var(--good)">Fully ascended</span>`;
+  else {const c=ascCost(rank);right=`<button class="ascbtn" id="ascBtn" ${(relics<c.relics||gold<c.gold)?'disabled':''}>Ascend ❖${c.relics} · ◉${c.gold/1000}k</button>`;}
+  $('#hdAsc').innerHTML=`<div class="asctop"><span class="asclbl">Ascension <b>A${rank}</b>/${ASC_CAP}</span><span class="ascpips ${maxed?'':'dim'}">${pips}</span></div>
+    <div class="ascrow"><span class="ascbon">${maxed?ascBonusText(rank):'Locked'}${(maxed&&!atCap)?` <span class="ascnext">→ ${ascBonusText(rank+1)}</span>`:''}</span>${right}</div>`;
+  const bn=$('#ascBtn');if(bn)bn.addEventListener('click',doAscend);
+}
+function doAscend(){const h=hero(curHero),pr=prog(curHero);
+  if(pr.stars<h.starCap||pr.asc>=ASC_CAP)return;const c=ascCost(pr.asc);
+  if(relics<c.relics||gold<c.gold)return;relics-=c.relics;gold-=c.gold;pr.asc++;SFX.rare('E');renderHero();saveGame();}
 function doLevel(){const pr=prog(curHero),cap=DATA.levelCapByStar[pr.stars],lc=levelCost(pr);
   if(pr.level>=cap||gold<lc)return;gold-=lc;pr.level++;renderHero();saveGame();}
 function doStar(){const h=hero(curHero),pr=prog(curHero),sc=starCost(h,pr);
@@ -1377,9 +1412,10 @@ function endGame(win){
   const H=curHard;
   const firstNormal = win && !cleared.has(curStage.id);
   const firstHard = win && H && !clearedHard.has(curStage.id);
-  let reward=0,goldR=0,shardR=0,gp=null;
+  let reward=0,goldR=0,shardR=0,relicR=0,gp=null;
   if(win){
     if(H){ goldR=(curStage.boss?8000:4000)*2;gold+=goldR; shardR=(curStage.boss?30:12)*2;starShards+=shardR;
+      relicR=curStage.boss?3:1;relics+=relicR;
       if(firstHard){reward=curStage.boss?200:80;crystals+=reward;} }
     else if(firstNormal){ reward=curStage.boss?300:150;crystals+=reward;
       goldR=curStage.boss?8000:4000;gold+=goldR; shardR=curStage.boss?30:12;starShards+=shardR; }
@@ -1394,7 +1430,7 @@ function endGame(win){
   const last = allStages().every(s=>cleared.has(s.id));
   $('#resEyebrow').textContent=win?(H?'Hard clear':(last?'The Gate is sealed':'Stage cleared')):(G.timeout?'Time runs out':'The party falls');
   const v=$('#resVerdict');v.textContent=win?'VICTORY':'DEFEAT';v.className='verdict '+(win?'win':'lose');
-  const rewTxt = (goldR||reward)?`<div style="color:var(--umbra);margin-bottom:6px">${reward?`◆ +${reward} Crystals · `:''}<span style="color:var(--warn)">◉ +${goldR.toLocaleString()} Gold</span> · <span style="color:var(--hlr)">✦ +${shardR} Shards</span></div>`:'';
+  const rewTxt = (goldR||reward)?`<div style="color:var(--umbra);margin-bottom:6px">${reward?`◆ +${reward} Crystals · `:''}<span style="color:var(--warn)">◉ +${goldR.toLocaleString()} Gold</span> · <span style="color:var(--hlr)">✦ +${shardR} Shards</span>${relicR?` · <span style="color:var(--nec)">❖ +${relicR} Relics</span>`:''}</div>`:'';
   const chapDone = win && !H && !last && curStage.boss && DATA.chapters.find(c=>c.stages.some(s=>s.id===curStage.id)).stages.every(s=>cleared.has(s.id));
   const msg = !win ? `The party falls. Bank Surge for a tank's team-immunity before a telegraphed hit, answer with a healer — or upgrade your five and try again.`
     : H ? `⚔ Hard clear${firstHard?' — first time!':''}. Replay any cleared stage on Hard to farm gold, shards, and higher-tier gear (T3/T4).`
