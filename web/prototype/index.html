@@ -671,6 +671,20 @@ const DATA = {"heroes":[{"id":"ASH-TNK-C01","name":"Garrick Gatehouse Door","cla
 const CLASS={TNK:{hue:'--tnk',g:'🛡️',l:'Tank'},BSK:{hue:'--bsk',g:'🪓',l:'Berserker'},ASN:{hue:'--asn',g:'🗡️',l:'Assassin'},
   MAG:{hue:'--mag',g:'✦',l:'Mage'},NEC:{hue:'--nec',g:'💀',l:'Necro'},HLR:{hue:'--hlr',g:'☀️',l:'Healer'},RNG:{hue:'--rng',g:'🏹',l:'Ranger'}};
 const RAR={C:'--rC',R:'--rR',E:'--rE',L:'--rL'};
+/* procedural class crests — inline SVG line-art (no external assets) */
+const CLASS_ICON={
+  TNK:'<path d="M24 6 L38 11 V25 C38 34 32 40 24 43 C16 40 10 34 10 25 V11 Z"/><path d="M17 21 L24 16 L31 21"/>',
+  BSK:'<path d="M15 9 C28 9 35 17 34 28 L23 27 C23 19 20 15 14 17 Z"/><path d="M23 27 L29 41"/>',
+  ASN:'<path d="M24 6 L27 29 L24 33 L21 29 Z"/><path d="M16 29 H32"/><path d="M24 33 V42"/>',
+  RNG:'<path d="M16 8 C30 14 30 34 16 40"/><path d="M16 8 V40"/><path d="M11 24 H33 M29 20 L33 24 L29 28"/>',
+  MAG:'<path d="M24 6 L27.5 20.5 L42 24 L27.5 27.5 L24 42 L20.5 27.5 L6 24 L20.5 20.5 Z"/>',
+  NEC:'<path d="M24 8 C15 8 11 14 11 22 C11 26 13 29 16 31 V38 H32 V31 C35 29 37 26 37 22 C37 14 33 8 24 8 Z"/><circle cx="19" cy="22" r="2.3"/><circle cx="29" cy="22" r="2.3"/>',
+  HLR:'<ellipse cx="24" cy="10" rx="9" ry="3"/><path d="M24 15 V40 M13 26 H35"/>',
+};
+function classArt(cls,px){const c=CLASS[cls];
+  return `<svg class="cart" viewBox="0 0 48 48" width="${px}" height="${px}" role="img" aria-label="${c.l}">`+
+    `<g fill="none" stroke="#f4f0fb" stroke-width="2.3" stroke-linejoin="round" stroke-linecap="round" `+
+    `style="filter:drop-shadow(0 0 3.5px var(${c.hue}))">${CLASS_ICON[cls]}</g></svg>`;}
 const EGLYPH={'ENM-SLM-M01':'🟢','ENM-SLM-M02':'🫧','ENM-SLM-M03':'🏮','ENM-SLM-M04':'🟩','ENM-SLM-E02':'🔷','ENM-SLM-B01':'🌀','ENM-SLM-X01':'🌊',
   'ENM-GNT-M01':'🪨','ENM-GNT-M02':'🥌','ENM-GNT-M03':'⛓️','ENM-GNT-M04':'👹','ENM-GNT-E01':'🧱','ENM-GNT-E02':'🗿','ENM-GNT-B01':'🏛️','ENM-GNT-X01':'⛰️'};
 const FAMILY_FX={SLM:'--slime',GNT:'--granite',GRD:'--warden',UND:'--bone'};
@@ -1112,7 +1126,7 @@ function buildRoster(){
     const el=document.createElement('div'); el.className='rcard'+(team.includes(h.id)?' picked':'');
     el.style.setProperty('--hue',`var(${c.hue})`);
     el.innerHTML=`<div class="rar" style="background:var(${RAR[h.rarity]})"></div><div class="chk">✓</div>
-      <div class="g">${c.g}</div><div class="rn">${h.name}</div><div class="rl">${h.role}</div>`;
+      <div class="g">${classArt(h.class,34)}</div><div class="rn">${h.name}</div><div class="rl">${h.role}</div>`;
     el.addEventListener('click',()=>toggle(h.id));
     box.appendChild(el);
   });
@@ -1240,7 +1254,7 @@ function buildHeroGrid(){
   DATA.heroes.filter(h=>owned.has(h.id)).sort((a,b)=>RORDER[a.rarity]-RORDER[b.rarity]).forEach(h=>{
     const c=CLASS[h.class],pr=prog(h.id),el=document.createElement('div');
     el.className='hcard';el.style.setProperty('--hue',`var(${c.hue})`);
-    el.innerHTML=`<div class="rar" style="background:var(${RAR[h.rarity]})"></div><div class="g">${c.g}</div>
+    el.innerHTML=`<div class="rar" style="background:var(${RAR[h.rarity]})"></div><div class="g">${classArt(h.class,40)}</div>
       <div class="rn">${h.name}</div><div class="lv">Lv ${pr.level} · ${'★'.repeat(pr.stars)}</div>`;
     el.addEventListener('click',()=>openHero(h.id));box.appendChild(el);
   });
@@ -1275,7 +1289,7 @@ function renderHero(){
   const h=hero(curHero),c=CLASS[h.class],pr=prog(curHero),st=statsAt(h,pr.level,pr.stars),cap=DATA.levelCapByStar[pr.stars];
   $('#hdRole').textContent=h.role+' · '+c.l+(FACTION[h.faction]?' · '+FACTION[h.faction].name:'');
   $('#hdName').textContent=h.name;
-  const port=$('#hdPortrait');port.textContent=c.g;port.style.setProperty('--hue',`var(${c.hue})`);
+  const port=$('#hdPortrait');port.innerHTML=classArt(h.class,66);port.style.setProperty('--hue',`var(${c.hue})`);
   $('#hdRarity').textContent=RARNAME[h.rarity];$('#hdRarity').style.color=`var(${RAR[h.rarity]})`;
   $('#hdLevel').textContent='Lv '+pr.level+'  /  '+cap;
   $('#hdStars').textContent='★'.repeat(pr.stars)+'☆'.repeat(h.starCap-pr.stars);
@@ -1660,7 +1674,7 @@ function renderTelegraph(){const el=$('#telegraph');if(!G.telegraph){el.classLis
 function buildParty(){const box=$('#party');box.innerHTML='';G.heroes.forEach(h=>{const c=CLASS[h.class];
   const el=document.createElement('div');el.className='hero';el.style.setProperty('--hue',`var(${c.hue})`);
   el.setAttribute('role','button');el.tabIndex=0;el.setAttribute('aria-label',`${h.name}, ${c.l} — tap to fire ultimate ${h.kit.S3.name} when ready`);
-  el.innerHTML=`<div class="cls">${c.l}</div><div class="cd num"></div><div class="p">${c.g}</div><div class="nm">${h.name}</div>
+  el.innerHTML=`<div class="cls">${c.l}</div><div class="cd num"></div><div class="p">${classArt(h.class,40)}</div><div class="nm">${h.name}</div>
     <div class="hpwrap"><div class="hpfill" style="background:var(--good)"></div></div>`;
   const fire=()=>{if(el.classList.contains('ready')&&!G.over)fireUlt(h);};
   el.addEventListener('click',fire);

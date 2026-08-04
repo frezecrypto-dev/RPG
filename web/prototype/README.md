@@ -150,9 +150,13 @@ four-chapter campaign (Slimes, Giants, Guardians, Undead — each family flips t
 damage-type puzzle, and the finale boss reknits once at the Gate) → **Hard-mode
 farm** → **PvP-Arena ladder** → **co-op raid** → persist — but not the backend,
 real multiplayer, or the remaining 20 stages of the 40-stage design, which are
-specified in `docs/` and `data/` but not built. Class art is CSS/emoji
-placeholders (the AI art canon in `art/canon-manifest.json` isn't integrated).
-It's the fastest bridge from "validated spec" to "something you can hold."
+specified in `docs/` and `data/` but not built. Heroes wear **procedural class
+crests** — inline SVG line-art (shield, axe, dagger, bow, star, skull,
+halo-cross) glowing in each class's hue — on the roster, detail, and battle
+screens; enemies still use emoji. It's a self-contained stand-in for the AI art
+canon in `art/canon-manifest.json`, which is served from a host the sandbox
+can't reach. It's the fastest bridge from "validated spec" to "something you can
+hold."
 
 ## Run
 
