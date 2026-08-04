@@ -118,6 +118,14 @@ endgame loop: **doubled** gold and shards every run, a one-time Crystal bonus on
 first Hard clear, and gear drops biased to **T3/T4** and Epic/Legendary. It's
 the repeatable reason to keep building your five after the story ends.
 
+## Settings
+
+A ⚙ menu (top-right) holds sound, default battle speed, and default Auto-Ult
+toggles — all persisted — plus **save export/import**: your whole save encodes to
+a text code you can copy to back up or move to another browser, and paste back to
+restore. A guarded Reset wipes everything. It's the practical answer to
+localStorage-only progress.
+
 ## Scope / honesty
 
 This is a **playable slice**, not the game. It now covers the core loop —

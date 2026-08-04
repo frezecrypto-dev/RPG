@@ -434,6 +434,23 @@
   .gcdelta{font-size:9px;font-weight:700;margin-left:5px}
   #geBar{display:flex;gap:8px;align-items:center;padding:11px 14px;border-top:1px solid var(--line);
     background:linear-gradient(0deg,rgba(14,11,24,.98),transparent)}
+  #setBtn{position:absolute;top:8px;right:44px;z-index:40;width:30px;height:30px;border-radius:50%;
+    border:1px solid var(--line);background:rgba(20,16,34,.7);color:var(--ink);font-size:14px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);padding:0;line-height:1}
+  #setBtn:hover{border-color:var(--umbra-dim)}
+  #setBody{flex:1;overflow-y:auto;padding:16px 20px 28px;display:flex;flex-direction:column}
+  .setrow{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--line);font-size:13px}
+  .settgl{font-size:12px;min-width:56px;padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--muted);cursor:pointer}
+  .settgl.on{border-color:var(--umbra-dim);color:var(--umbra)}
+  .setsec{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin:18px 0 8px}
+  #setSave{width:100%;height:74px;resize:none;border:1px solid var(--line);border-radius:10px;background:var(--panel2);
+    color:var(--ink);font-family:ui-monospace,Menlo,Consolas,monospace;font-size:10px;padding:9px;word-break:break-all}
+  .setbtns{display:flex;gap:7px;margin-top:8px}
+  .setbtns button{flex:1;font-size:12px;padding:8px;border-radius:9px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+  .setbtns button:hover{border-color:var(--umbra-dim)}
+  .setmsg{font-size:11px;margin-top:8px;min-height:15px}
+  .setdanger{margin-top:20px;font-size:12px;padding:9px;border-radius:9px;border:1px solid var(--danger);background:rgba(255,59,92,.08);color:var(--danger);cursor:pointer}
+  .setnote{font-size:9px;color:var(--faint);text-align:center;margin-top:14px;letter-spacing:.04em}
   #sndBtn{position:absolute;top:8px;right:8px;z-index:40;width:30px;height:30px;border-radius:50%;
     border:1px solid var(--line);background:rgba(20,16,34,.7);color:var(--ink);font-size:13px;cursor:pointer;
     display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);padding:0;line-height:1}
@@ -443,6 +460,7 @@
 </style>
 
 <div id="app">
+  <button id="setBtn" title="Settings" aria-label="Settings">⚙</button>
   <button id="sndBtn" title="Sound on/off" aria-label="Toggle sound">🔊</button>
   <!-- TITLE -->
   <section class="screen on" id="screen-title">
@@ -515,6 +533,23 @@
     <div class="scrhead"><div><div class="eyebrow">Collection</div><h1>Codex</h1></div>
       <button class="ghost back" id="codexBack">Back</button></div>
     <div id="codexBody"></div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section class="screen" id="screen-settings">
+    <div class="scrhead"><div><div class="eyebrow">Options</div><h1>Settings</h1></div>
+      <button class="ghost back" id="setBack">Back</button></div>
+    <div id="setBody">
+      <div class="setrow"><span>Sound</span><button class="settgl" id="setSnd">On</button></div>
+      <div class="setrow"><span>Default battle speed</span><button class="settgl" id="setSpeed">1×</button></div>
+      <div class="setrow"><span>Auto-Ult by default</span><button class="settgl" id="setAuto">Off</button></div>
+      <div class="setsec">Save data · this browser only</div>
+      <textarea id="setSave" placeholder="Press Export to copy your save code here, or paste one and press Import" spellcheck="false"></textarea>
+      <div class="setbtns"><button id="setExport">Export</button><button id="setImport">Import</button><button id="setSelect">Select all</button></div>
+      <div class="setmsg" id="setMsg"></div>
+      <button id="setReset" class="setdanger">Reset all progress</button>
+      <div class="setnote">ASHGATE — playable slice · save v2 · stored locally, no account</div>
+    </div>
   </section>
 
   <!-- HERO DETAIL / UPGRADE -->
@@ -750,15 +785,27 @@ function renderCrys(){
 const SAVE_KEY='ashgate_save_v1';
 let hasSave=false;
 function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(
-  {v:2,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,raidBest,crystals,gold,starShards,relics,sigils,pity,inventory,gearOn,gearUID,loadouts,daily,muted:ui.muted}));}catch(e){}}
+  {v:2,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,raidBest,crystals,gold,starShards,relics,sigils,pity,inventory,gearOn,gearUID,loadouts,daily,muted:ui.muted,pref:{speed:ui.speed,auto:ui.auto}}));}catch(e){}}
 function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s||(s.v!==1&&s.v!==2))return false;
   owned=new Set(s.owned);progress=s.progress||{};cleared=new Set(s.cleared);
   crystals=s.crystals??crystals;gold=s.gold??gold;starShards=s.starShards??starShards;relics=s.relics??0;sigils=s.sigils??0;pity=s.pity??0;
   inventory=s.inventory||[];gearOn=s.gearOn||{};gearUID=s.gearUID||inventory.reduce((m,p)=>Math.max(m,p.uid),0);
   loadouts=s.loadouts||{};clearedHard=new Set(s.clearedHard||[]);arenaRank=s.arenaRank||0;raidBest=s.raidBest||0;
   daily=s.daily||{date:'',win:0,summon:0,enhance:0,claimed:[]};dailyCheck();ui.muted=s.muted??false;
+  if(s.pref){ui.speed=s.pref.speed||1;ui.auto=!!s.pref.auto;}
   return true;}catch(e){return false;}}
 function resetSave(){try{localStorage.removeItem(SAVE_KEY);}catch(e){}location.reload();}
+/* ---------- settings + save export/import ---------- */
+function exportSave(){saveGame();try{return btoa(unescape(encodeURIComponent(localStorage.getItem(SAVE_KEY)||'')));}catch(e){return '';}}
+function importSave(str){try{const json=decodeURIComponent(escape(atob((str||'').trim())));const o=JSON.parse(json);
+  if(!o||(o.v!==1&&o.v!==2))return false;localStorage.setItem(SAVE_KEY,json);return true;}catch(e){return false;}}
+function setMsg(t,ok){const el=$('#setMsg');if(!el)return;el.textContent=t;el.style.color=ok?'var(--good)':'var(--crit)';}
+function renderSettings(){
+  $('#setSnd').textContent=ui.muted?'Off':'On';$('#setSnd').classList.toggle('on',!ui.muted);
+  $('#setSpeed').textContent=ui.speed+'×';
+  $('#setAuto').textContent=ui.auto?'On':'Off';$('#setAuto').classList.toggle('on',ui.auto);
+}
+function openSettings(){setMsg('');$('#setSave').value='';renderSettings();show('screen-settings');}
 
 /* ---------- screens ---------- */
 function show(id){$$('.screen').forEach(s=>s.classList.toggle('on',s.id===id));}
@@ -1661,6 +1708,17 @@ $('#sndBtn').addEventListener('click',()=>{ui.muted=!ui.muted;SFX.setMuted(ui.mu
 // unlock/resume Web Audio on first user gesture (browser autoplay policy)
 document.addEventListener('pointerdown',()=>SFX.resume(),{once:true});
 syncSnd();
+// settings
+$('#setBtn').addEventListener('click',()=>{SFX.tap();openSettings();});
+$('#setBack').addEventListener('click',()=>{buildMap();renderCrys();show('screen-map');});
+$('#setSnd').addEventListener('click',()=>{ui.muted=!ui.muted;SFX.setMuted(ui.muted);if(!ui.muted)SFX.tap();syncSnd();renderSettings();saveGame();});
+$('#setSpeed').addEventListener('click',()=>{ui.speed=ui.speed>=3?1:ui.speed+1;renderSettings();saveGame();});
+$('#setAuto').addEventListener('click',()=>{ui.auto=!ui.auto;renderSettings();saveGame();});
+$('#setExport').addEventListener('click',()=>{const c=exportSave();$('#setSave').value=c;$('#setSave').focus();$('#setSave').select();setMsg(c?'Exported — copy this code to back up or transfer.':'Nothing to export yet.',!!c);});
+$('#setImport').addEventListener('click',()=>{const v=$('#setSave').value;if(!v.trim()){setMsg('Paste a save code first.',false);return;}
+  if(confirm('Import this save? It replaces your current progress.')){if(importSave(v)){setMsg('Imported — reloading…',true);setTimeout(()=>location.reload(),500);}else setMsg('Invalid save code.',false);}});
+$('#setSelect').addEventListener('click',()=>{$('#setSave').focus();$('#setSave').select();});
+$('#setReset').addEventListener('click',()=>{if(confirm('Reset ALL progress — roster, upgrades, gear, and clears? This cannot be undone.'))resetSave();});
 $('#autoBtn').addEventListener('click',e=>{ui.auto=!ui.auto;if(G)G.auto=ui.auto;e.target.classList.toggle('active',ui.auto);});
 $('#speedBtn').addEventListener('click',e=>{ui.speed=ui.speed>=3?1:ui.speed+1;if(G)G.speed=ui.speed;e.target.textContent=ui.speed+'×';});
 </script>
