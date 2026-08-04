@@ -152,6 +152,12 @@ farm** → **PvP-Arena ladder** → **co-op raid** → persist — but not the b
 real multiplayer, or the remaining 20 stages of the 40-stage design, which are
 specified in `docs/` and `data/` but not built.
 
+**To make the portraits fully local/offline** (and embeddable in the artifact),
+run `node tools/fetch_portraits.mjs` on a machine with internet access — it
+downloads all 70 canon portraits into `web/prototype/art/<hero-id>.png`. The
+prototype already prefers `art/<id>.png` over the remote URL, so once that folder
+exists the real portraits load with no network at all.
+
 **Character art:** each hero's real generated portrait (the AI art canon in
 `art/canon-manifest.json`) is now wired in — the roster, detail, and battle
 screens load it from the canon URL over a **procedural class crest** (inline SVG
