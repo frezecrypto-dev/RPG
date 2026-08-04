@@ -19,7 +19,10 @@
   #app{position:relative;height:100dvh;max-width:560px;margin:0 auto;display:flex;flex-direction:column;
     border-left:1px solid var(--line);border-right:1px solid var(--line);overflow:hidden}
   .screen{position:absolute;inset:0;display:none;flex-direction:column}
-  .screen.on{display:flex}
+  .screen.on{display:flex;animation:screenIn .22s ease}
+  @keyframes screenIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  :focus-visible{outline:2px solid var(--umbra);outline-offset:2px;border-radius:4px}
+  .hero:focus-visible{outline-offset:3px}
   .lbl{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
   .num{font-variant-numeric:tabular-nums}
   button{font:inherit;cursor:pointer}
@@ -647,13 +650,13 @@
       <div id="wavepip"></div>
       <div id="enemyRow"></div>
     </div>
-    <div id="log"></div>
+    <div id="log" role="status" aria-live="polite" aria-atomic="true"></div>
     <div id="surgebar"><div id="surgelabel"><span class="lbl">Team Surge</span><span id="surgeval" class="num"><b>0</b> / 100</span></div>
       <div id="surge"><div id="surgefill"></div></div></div>
     <div id="party"></div>
     <div id="fx"></div>
     <div id="cutin"><div class="band"><div class="who"></div><div class="skill"></div></div></div>
-    <div id="result">
+    <div id="result" role="alertdialog" aria-live="assertive" aria-labelledby="resVerdict" aria-describedby="resSub">
       <div class="eyebrow" id="resEyebrow"></div>
       <div class="verdict" id="resVerdict"></div>
       <div class="sub" id="resSub"></div>
@@ -1640,6 +1643,7 @@ function renderEnemies(){
   G.enemies.filter(e=>e.alive).forEach(e=>{
     const size=e.isBoss?'big':e.isMini?'mid':'small';
     const d=document.createElement('div');d.className='ecard '+size;
+    d.setAttribute('role','img');d.setAttribute('aria-label',`${e.name}${e.isBoss?' (boss)':e.isMini?' (elite)':''}`);
     const core=(e.isBoss||e.isMini)?'<div class="core"></div>':'';
     const efx=e._efx||efxOf(e.id);
     d.style.setProperty('--efx',efx);
@@ -1655,9 +1659,13 @@ function renderTelegraph(){const el=$('#telegraph');if(!G.telegraph){el.classLis
   el.querySelector('.pips').innerHTML=Array.from({length:G.telegraph.max},(_,i)=>`<span class="pip ${i<done?'lit':''}"></span>`).join('');}
 function buildParty(){const box=$('#party');box.innerHTML='';G.heroes.forEach(h=>{const c=CLASS[h.class];
   const el=document.createElement('div');el.className='hero';el.style.setProperty('--hue',`var(${c.hue})`);
+  el.setAttribute('role','button');el.tabIndex=0;el.setAttribute('aria-label',`${h.name}, ${c.l} — tap to fire ultimate ${h.kit.S3.name} when ready`);
   el.innerHTML=`<div class="cls">${c.l}</div><div class="cd num"></div><div class="p">${c.g}</div><div class="nm">${h.name}</div>
     <div class="hpwrap"><div class="hpfill" style="background:var(--good)"></div></div>`;
-  el.addEventListener('click',()=>{if(el.classList.contains('ready')&&!G.over)fireUlt(h);});h.el=el;box.appendChild(el);});}
+  const fire=()=>{if(el.classList.contains('ready')&&!G.over)fireUlt(h);};
+  el.addEventListener('click',fire);
+  el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();fire();}});
+  h.el=el;box.appendChild(el);});}
 function markActing(u){if(u.el){u.el.classList.add('acting');setTimeout(()=>u.el&&u.el.classList.remove('acting'),200/G.speed);}}
 function shake(u){if(u.el){u.el.classList.add('hit');setTimeout(()=>u.el&&u.el.classList.remove('hit'),300);}}
 function floatNum(u,val,cls,root,sub){const host=u.el;if(!host)return;const r=host.getBoundingClientRect(),a=$('#app').getBoundingClientRect();

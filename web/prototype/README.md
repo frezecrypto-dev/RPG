@@ -118,6 +118,14 @@ endgame loop: **doubled** gold and shards every run, a one-time Crystal bonus on
 first Hard clear, and gear drops biased to **T3/T4** and Epic/Legendary. It's
 the repeatable reason to keep building your five after the story ends.
 
+## Accessibility & polish
+
+The combat log and result screen are `aria-live` regions, so screen readers
+announce each action and the outcome. Party cards are real buttons — focusable
+and **keyboard-operable (Enter/Space fires the ultimate)** — and enemy cards
+carry labels. A focus-visible ring and a gentle screen-fade transition round it
+off, both respecting `prefers-reduced-motion`.
+
 ## Onboarding
 
 First launch opens a five-slide primer — what ASHGATE is, roles & faction
