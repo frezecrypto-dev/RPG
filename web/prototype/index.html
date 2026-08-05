@@ -734,6 +734,17 @@
     box-shadow:0 0 18px currentColor;animation:ultRune .82s linear forwards}
   @keyframes ultRune{0%{opacity:0;transform:translate(-50%,-50%) scale(.2) rotate(0)}25%{opacity:.9}100%{opacity:0;transform:translate(-50%,-50%) scale(1.15) rotate(170deg)}}
 
+  /* ============ enemy signature detonations (over the party) ============ */
+  .enmpart{position:absolute;border-radius:50%;pointer-events:none;z-index:9;box-shadow:0 0 8px currentColor;
+    animation:enmPart .72s ease-in forwards}
+  @keyframes enmPart{0%{opacity:0}15%{opacity:1}100%{opacity:0;transform:translate(var(--dx,0px),var(--dy,0px)) scale(.5)}}
+  .enmbeam{position:absolute;width:5px;pointer-events:none;z-index:9;border-radius:3px;transform-origin:top center;
+    box-shadow:0 0 14px currentColor;background:linear-gradient(180deg,transparent,currentColor);animation:enmBeam .5s ease-out forwards}
+  @keyframes enmBeam{0%{opacity:0;transform:scaleY(0)}30%{opacity:1;transform:scaleY(1)}100%{opacity:0;transform:scaleY(1)}}
+  .enmshock{position:absolute;height:6px;border-radius:4px;pointer-events:none;z-index:9;transform-origin:center;
+    box-shadow:0 0 18px currentColor;background:linear-gradient(90deg,transparent,currentColor,transparent);animation:enmShock .46s ease-out forwards}
+  @keyframes enmShock{0%{opacity:.9;transform:translateX(-50%) scaleX(.1)}100%{opacity:0;transform:translateX(-50%) scaleX(1)}}
+
   @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.05ms!important}
     #ambient{display:none}
     .hero .p,.ecard .p,#battleBg.on,#titleBg.on,#mapBg.on,.track,.node.current .dot,
@@ -1971,8 +1982,68 @@ function enemyTurn(u){
 }
 function detonate(u){const tg=u.tgName||'Detonation';const single=/fist|toll|marker|lens/i.test(tg);
   logMsg(`<b style="color:var(--danger)">${tg}</b> ${single?'lands':'washes the party'}`);battleShake(true);
+  enemyUltFx(u,single);
   if(single){const t=pickTarget(u);if(t)dealDamage(u,t,2.4,u.damageRoot,null);}
   else livingH().forEach(h=>dealDamage(u,h,1.4,u.damageRoot,null));}
+// each enemy family answers the party with its own signature strike when a telegraph detonates
+const ENMFX={
+  SLM:{col:'#3fd6c4',mode:'rain'},  // drowned goo rains down
+  GNT:{col:'#c9803f',mode:'quake'}, // granite shockwave + rockfall
+  GRD:{col:'#7fd0ff',mode:'beam'},  // warden light lances
+  UND:{col:'#b9a0d0',mode:'wisp'},  // necrotic wisps rise
+};
+function enemyUltFx(u,single){
+  const fam=((u&&u.id)||'').split('-')[1]||'SLM', cfg=ENMFX[fam]||ENMFX.SLM, fx=$('#fx'); if(!fx)return;
+  const a=$('#app').getBoundingClientRect(), party=$('#party');
+  let cx=a.width/2, top=a.height*0.80, w=a.width;
+  if(party){const r=party.getBoundingClientRect(); cx=r.left-a.left+r.width/2; top=r.top-a.top; w=Math.min(r.width,a.width);}
+  const tint=document.createElement('div');tint.className='ultTint';
+  tint.style.background=`radial-gradient(circle at 50% 100%,${cfg.col},transparent ${single?'45%':'62%'})`;
+  fx.appendChild(tint);setTimeout(()=>tint.remove(),620);
+  const N=single?0.55:1;  // single-target detonations are lighter
+  if(cfg.mode==='rain'){
+    for(let i=0;i<Math.round(20*N);i++){const d=document.createElement('div');d.className='enmpart';
+      d.style.color=cfg.col;d.style.background=cfg.col;
+      const sz=(3+Math.random()*4).toFixed(1);d.style.width=sz+'px';d.style.height=sz+'px';
+      d.style.left=(cx-w/2+Math.random()*w).toFixed(0)+'px';d.style.top=(top-50-Math.random()*30).toFixed(0)+'px';
+      d.style.setProperty('--dx',((Math.random()*2-1)*10).toFixed(0)+'px');
+      d.style.setProperty('--dy',(60+Math.random()*40).toFixed(0)+'px');
+      fx.appendChild(d);setTimeout(()=>d.remove(),740);}
+  } else if(cfg.mode==='quake'){
+    for(let k=0;k<2;k++){const s=document.createElement('div');s.className='enmshock';s.style.color=cfg.col;
+      s.style.width=w+'px';s.style.left=cx+'px';s.style.top=(top-6+k*10).toFixed(0)+'px';
+      s.style.animationDelay=(k*0.09)+'s';fx.appendChild(s);setTimeout(()=>s.remove(),560);}
+    for(let i=0;i<Math.round(12*N);i++){const d=document.createElement('div');d.className='enmpart';
+      d.style.color=cfg.col;d.style.background=cfg.col;const sz=(3+Math.random()*5).toFixed(1);
+      d.style.width=sz+'px';d.style.height=sz+'px';d.style.borderRadius='2px';
+      d.style.left=(cx-w/2+Math.random()*w).toFixed(0)+'px';d.style.top=(top-46-Math.random()*24).toFixed(0)+'px';
+      d.style.setProperty('--dx',((Math.random()*2-1)*14).toFixed(0)+'px');
+      d.style.setProperty('--dy',(50+Math.random()*36).toFixed(0)+'px');
+      fx.appendChild(d);setTimeout(()=>d.remove(),720);}
+  } else if(cfg.mode==='beam'){
+    const nb=single?2:5;
+    for(let i=0;i<nb;i++){const bm=document.createElement('div');bm.className='enmbeam';bm.style.color=cfg.col;
+      bm.style.height=(80+Math.random()*30).toFixed(0)+'px';
+      bm.style.left=(cx-w/2+ (i+0.5)*(w/nb) + (Math.random()*20-10)).toFixed(0)+'px';
+      bm.style.top=(top-95).toFixed(0)+'px';bm.style.animationDelay=(i*0.06)+'s';
+      fx.appendChild(bm);setTimeout(()=>bm.remove(),560);}
+    for(let i=0;i<Math.round(10*N);i++){const d=document.createElement('div');d.className='enmpart';
+      d.style.color=cfg.col;d.style.background=cfg.col;const sz=(2+Math.random()*2.5).toFixed(1);
+      d.style.width=sz+'px';d.style.height=sz+'px';
+      d.style.left=(cx-w/2+Math.random()*w).toFixed(0)+'px';d.style.top=(top-6).toFixed(0)+'px';
+      d.style.setProperty('--dx',((Math.random()*2-1)*24).toFixed(0)+'px');
+      d.style.setProperty('--dy',(-(14+Math.random()*30)).toFixed(0)+'px');
+      fx.appendChild(d);setTimeout(()=>d.remove(),720);}
+  } else { // wisp
+    for(let i=0;i<Math.round(18*N);i++){const d=document.createElement('div');d.className='enmpart';
+      d.style.color=cfg.col;d.style.background=cfg.col;const sz=(2.4+Math.random()*3).toFixed(1);
+      d.style.width=sz+'px';d.style.height=sz+'px';
+      d.style.left=(cx-w/2+Math.random()*w).toFixed(0)+'px';d.style.top=(top+8-Math.random()*10).toFixed(0)+'px';
+      d.style.setProperty('--dx',((Math.random()*2-1)*20).toFixed(0)+'px');
+      d.style.setProperty('--dy',(-(46+Math.random()*44)).toFixed(0)+'px');
+      fx.appendChild(d);setTimeout(()=>d.remove(),740);}
+  }
+}
 function roundStart(){
   [...G.heroes,...G.enemies].filter(u=>u.alive).forEach(u=>{if(u._bleed){const d=Math.round((u._ba||120)*.08*u._bleed);u.hp=Math.max(0,u.hp-d);floatNum(u,d,'','physical','bleed');if(u.hp<=0)u.alive=false;}});
   [...G.heroes,...G.enemies].forEach(u=>{for(const s in u.status){u.status[s]--;if(u.status[s]<=0)delete u.status[s];}});
