@@ -767,8 +767,32 @@
   @keyframes stShimmer{0%,100%{filter:brightness(1) drop-shadow(0 1px 1px rgba(0,0,0,.85))}50%{filter:brightness(1.5) drop-shadow(0 0 5px #7fd0ff)}}
   @keyframes stFade{0%,100%{opacity:1}50%{opacity:.35}}
 
+  /* ============ cinematic result screen ============ */
+  #result>*:not(.resfx){position:relative;z-index:1}
+  .resfx{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+  .rstar{position:absolute;top:-8%;filter:drop-shadow(0 0 5px currentColor);opacity:0;animation:starFall linear both}
+  @keyframes starFall{0%{opacity:0;transform:translateY(0) rotate(0) scale(.6)}12%{opacity:1}88%{opacity:1}100%{opacity:0;transform:translateY(115vh) rotate(240deg) scale(1)}}
+  .rash{position:absolute;top:-4%;width:3px;height:3px;border-radius:50%;background:#6b6474;opacity:0;animation:ashFall linear both}
+  @keyframes ashFall{0%{opacity:0;transform:translateY(0) translateX(0)}18%{opacity:.55}100%{opacity:0;transform:translateY(115vh) translateX(-26px)}}
+  /* victory: MVP flies in, verdict bursts with a living glow */
+  #result.res-win #resMvp .mvpport{animation:mvpFly .7s cubic-bezier(.2,1.35,.3,1) both}
+  @keyframes mvpFly{0%{opacity:0;transform:translateY(26px) scale(.5) rotate(-8deg)}100%{opacity:1;transform:none}}
+  #result.res-win #resVerdict{animation:verdictWin .7s cubic-bezier(.2,1.5,.3,1) both,winGlow 2.4s ease-in-out .7s infinite}
+  @keyframes verdictWin{0%{opacity:0;transform:scale(.3)}60%{opacity:1;transform:scale(1.12)}100%{transform:scale(1)}}
+  @keyframes winGlow{0%,100%{text-shadow:0 0 18px rgba(87,217,138,.4)}50%{text-shadow:0 0 34px rgba(87,217,138,.85),0 0 10px rgba(180,255,200,.6)}}
+  #result.res-win #resEyebrow{animation:resRise .5s ease .15s both}
+  #result.res-win #resSub{animation:resRise .5s ease .32s both}
+  #result.res-win .rowbtn{animation:resRise .5s ease .46s both}
+  @keyframes resRise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  /* defeat: heavy drop + desaturated somber fade */
+  #result.res-lose{filter:saturate(.6)}
+  #result.res-lose #resVerdict{animation:verdictLose .6s cubic-bezier(.3,.7,.3,1) both}
+  @keyframes verdictLose{0%{opacity:0;transform:translateY(-26px) scale(1.15)}55%{opacity:1;transform:translateY(3px) scale(1)}70%{transform:translateY(-2px)}100%{transform:none}}
+  #result.res-lose #resMvp .mvpport{animation:resRise .6s ease both}
+  #result.res-lose #resEyebrow,#result.res-lose #resSub,#result.res-lose .rowbtn{animation:resRise .5s ease .2s both}
+
   @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.05ms!important}
-    #ambient{display:none}
+    #ambient,.resfx{display:none}
     .hero .p,.ecard .p,#battleBg.on,#titleBg.on,#mapBg.on,.track,.node.current .dot,
     .hdportrait,.hdportrait .artimg,#cutin .cutportrait .artimg,#resMvp .mvpport .artimg{animation:none!important}}
 </style>
@@ -1334,7 +1358,7 @@ function endArena(win){
     if(firstClear){arenaRank=Math.max(arenaRank,sq.rank);reward=60+sq.rank*25;crystals+=reward;goldR=6000+sq.rank*2000;gold+=goldR;}
     saveGame(); }
   renderCrys(); setMvp(win);
-  const r=$('#result');r.style.display='flex';
+  const r=$('#result');r.style.display='flex';resultCinematic(win);
   $('#resEyebrow').textContent=win?(firstClear?'Rank up':'Arena win'):'Arena defeat';
   const v=$('#resVerdict');v.textContent=win?'VICTORY':'DEFEAT';v.className='verdict '+(win?'win':'lose');
   const rewTxt=(reward||goldR)?`<div style="color:var(--umbra);margin-bottom:6px"><i class="cur crystal"></i> +${reward} Crystals · <span style="color:var(--warn)"><i class="cur gold"></i> +${goldR.toLocaleString()} Gold</span></div>`:'';
@@ -1393,7 +1417,7 @@ function endRaid(win){
   const relicR=Math.round(pct/20)+(win?3:0); relics+=relicR;
   let gp=null; if(pct>=50)gp=dropGear(true,pct>=85);
   if(win)dailyBump('win'); saveGame(); renderCrys(); setMvp(win);
-  const r=$('#result');r.style.display='flex';
+  const r=$('#result');r.style.display='flex';resultCinematic(win);
   $('#resEyebrow').textContent=win?'Raid felled':(G.timeout?`Raid — ${pct}% damage`:'The raid falls');
   const v=$('#resVerdict');v.textContent=win?'VICTORY':(pct>=50?'GOOD RUN':'DEFEAT');v.className='verdict '+(win?'win':'lose');
   const dropTxt=gp?`<div style="color:var(${GRAR[gp.rar].c});margin-bottom:6px">✦ Raid gear — ${GRAR[gp.rar].n} ${GSETS[gp.set].n} ${GSLOT[gp.slot].n} (${gp.tier})</div>`:'';
@@ -1430,7 +1454,7 @@ function deployTrial(){
 function endTrial(win){
   const fh=hero(FEATURED_ID);
   setMvp(false);
-  const r=$('#result');r.style.display='flex';
+  const r=$('#result');r.style.display='flex';resultCinematic(win);
   $('#resEyebrow').textContent=win?'Trial cleared':'Trial ended';
   const v=$('#resVerdict');v.textContent=win?'VICTORY':'DEFEAT';v.className='verdict '+(win?'win':'lose');
   $('#resSub').innerHTML=`This was a <b>trial</b> — ${fh.name} isn't in your roster yet. `+
@@ -2309,6 +2333,23 @@ function setMvp(win){const el=$('#resMvp');if(!el)return;
     <div class="mvptag">◆ MVP ◆</div><div class="mvpname">${top.name}</div>
     <div class="mvpdmg">${Math.round(top._dmg).toLocaleString()} damage dealt</div>`;
   wireArt(el);}
+// cinematic result: star-rain on victory, ash-fall on defeat, plus entrance animations via .res-win/.res-lose
+function resultCinematic(win){
+  const r=$('#result');if(!r)return;
+  r.classList.remove('res-win','res-lose');void r.offsetWidth;r.classList.add(win?'res-win':'res-lose');
+  let fx=r.querySelector('.resfx');if(fx)fx.remove();
+  if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  fx=document.createElement('div');fx.className='resfx';r.insertBefore(fx,r.firstChild);
+  const n=win?28:18;
+  for(let i=0;i<n;i++){const s=document.createElement('span');
+    s.className=win?'rstar':'rash';
+    s.style.left=(Math.random()*100).toFixed(1)+'%';
+    s.style.animationDelay=(Math.random()*(win?1.4:2.2)).toFixed(2)+'s';
+    s.style.animationDuration=((win?1.7:3)+Math.random()*(win?1.6:2.4)).toFixed(2)+'s';
+    if(win){s.textContent='✦';s.style.fontSize=(8+Math.random()*13).toFixed(0)+'px';
+      s.style.color=Math.random()<.5?'#ffcf6b':(Math.random()<.5?'#fff2b0':'#b9f5cf');}
+    fx.appendChild(s);}
+}
 function endGame(win){
   G.over=true;renderTelegraph();SFX[win?'win':'lose']();
   if(G.pvp)return endArena(win);
@@ -2331,7 +2372,7 @@ function endGame(win){
   if(win)dailyBump('win');
   renderCrys();
   if(win)saveGame(); setMvp(win);
-  const r=$('#result');r.style.display='flex';
+  const r=$('#result');r.style.display='flex';resultCinematic(win);
   const last = allStages().every(s=>cleared.has(s.id));
   $('#resEyebrow').textContent=win?(H?'Hard clear':(last?'The Gate is sealed':'Stage cleared')):(G.timeout?'Time runs out':'The party falls');
   const v=$('#resVerdict');v.textContent=win?'VICTORY':'DEFEAT';v.className='verdict '+(win?'win':'lose');
