@@ -153,12 +153,16 @@ real multiplayer, or the remaining 20 stages of the 40-stage design, which are
 specified in `docs/` and `data/` but not built.
 
 **Character art:** all 70 heroes' real generated portraits (the AI art canon in
-`art/canon-manifest.json`) are **embedded** into the page — downsized to compact
-WebP `data:` URIs (~1.7 MB for the whole set) — so they render everywhere,
-offline and inside the CSP-locked artifact, with no external requests. Each
-portrait sits over a **procedural class crest** (inline SVG line-art: shield,
-axe, dagger, bow, star, skull, halo-cross, in the class hue) that shows through
-if an image is ever missing. **Enemies use their real generated art too** — the
+`art/canon-manifest.json`) are **embedded** into the page as compact WebP `data:`
+URIs — so they render everywhere, offline and inside the CSP-locked artifact,
+with no external requests. Each portrait sits over a **procedural class crest**
+(inline SVG line-art: shield, axe, dagger, bow, star, skull, halo-cross, in the
+class hue) that shows through if an image is ever missing. On the hero-detail
+screen every hero is a **living, background-separated portrait**: a
+background-removed cut-out of the character floats in front of a blurred,
+dimmed backdrop of the same art, and a `requestAnimationFrame` loop drifts the
+two layers by different amounts (idle sway, or pointer tilt) for a real sense of
+depth — plus a breathing class-hue aura and rising ember motes. **Enemies use their real generated art too** — the
 36 monster/boss portraits (Slimes, Giants, Guardians, Undead) are embedded the
 same way and fill the enemy cards in combat; arena opponents show the real hero
 portraits since they're heroes fighting back. Fights also play over the chapter's **key-art
