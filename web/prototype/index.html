@@ -716,6 +716,24 @@
     opacity:0;animation:hdRise 2.6s ease-out forwards}
   @keyframes hdRise{0%{opacity:0;transform:translateY(0) translateX(0) scale(.6)}
     15%{opacity:.85}80%{opacity:.5}100%{opacity:0;transform:translateY(-120px) translateX(var(--mx,0)) scale(1)}}
+
+  /* ============ class-signature ultimate VFX ============ */
+  .ultTint{position:absolute;inset:0;z-index:7;pointer-events:none;mix-blend-mode:screen;animation:ultTint .6s ease-out forwards}
+  @keyframes ultTint{0%{opacity:0}18%{opacity:.5}100%{opacity:0}}
+  .ultring{position:absolute;border-radius:50%;border:3px solid currentColor;pointer-events:none;z-index:9;
+    box-shadow:0 0 22px currentColor,inset 0 0 14px currentColor;animation:ultRing .72s cubic-bezier(.2,.7,.2,1) forwards}
+  @keyframes ultRing{0%{opacity:.95;transform:translate(-50%,-50%) scale(.08)}100%{opacity:0;transform:translate(-50%,-50%) scale(1)}}
+  .ultshard{position:absolute;pointer-events:none;z-index:9;border-radius:1.5px;box-shadow:0 0 9px currentColor;
+    animation:ultShard .72s ease-out forwards}
+  @keyframes ultShard{0%{opacity:1;transform:translate(-50%,-50%) rotate(var(--r,0deg)) scale(1)}
+    100%{opacity:0;transform:translate(calc(-50% + var(--dx,0px)),calc(-50% + var(--dy,0px))) rotate(var(--r,0deg)) scale(.3)}}
+  .ultstreak{position:absolute;height:3px;pointer-events:none;z-index:9;border-radius:2px;filter:blur(.5px);
+    transform-origin:left center;animation:ultStreak .42s ease-out forwards}
+  @keyframes ultStreak{0%{opacity:0;transform:rotate(var(--a,0deg)) scaleX(0)}35%{opacity:1;transform:rotate(var(--a,0deg)) scaleX(1)}100%{opacity:0;transform:rotate(var(--a,0deg)) scaleX(1.05)}}
+  .ultrune{position:absolute;border-radius:50%;pointer-events:none;z-index:9;border:2px dashed currentColor;
+    box-shadow:0 0 18px currentColor;animation:ultRune .82s linear forwards}
+  @keyframes ultRune{0%{opacity:0;transform:translate(-50%,-50%) scale(.2) rotate(0)}25%{opacity:.9}100%{opacity:0;transform:translate(-50%,-50%) scale(1.15) rotate(170deg)}}
+
   @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.05ms!important}
     #ambient{display:none}
     .hero .p,.ecard .p,#battleBg.on,#titleBg.on,#mapBg.on,.track,.node.current .dot,
@@ -1984,7 +2002,7 @@ function actUnit(u){
 }
 function shouldS2(u){if(u.class==='HLR'||u.class==='TNK')return livingH().some(h=>h.hp/h.max<.7);return true;}
 function ultWorth(u){if(u.class==='HLR')return livingH().some(h=>h.hp/h.max<.6);if(u.class==='TNK')return !!G.telegraph;return true;}
-function fireUlt(u){if(!u.alive||G.surge<(u.kit.S3.surgeCost||60))return;G.surge-=(u.kit.S3.surgeCost||60);cutIn(u);runSkill(u,'S3');logAct(u,'S3');render();}
+function fireUlt(u){if(!u.alive||G.surge<(u.kit.S3.surgeCost||60))return;G.surge-=(u.kit.S3.surgeCost||60);cutIn(u);classUltFx(u);runSkill(u,'S3');logAct(u,'S3');render();}
 function logAct(u,slot){logMsg(`${u.side==='ally'?'<b>'+u.name+'</b>':u.name} · ${u.kit?u.kit[slot].name:''}`);}
 function scheduleNext(x){setTimeout(step,(x!=null?x:520)/G.speed);}
 function checkEnd(){
@@ -2079,6 +2097,52 @@ function impactFx(u,opt){opt=opt||{};const host=u.el;if(!host)return;
     fx.appendChild(sp);setTimeout(()=>sp.remove(),620);}
 }
 function logMsg(h){$('#log').innerHTML=h;}
+// each class detonates its own signature burst over the enemy line when its ultimate fires
+const ULTFX={
+  TNK:{col:'#8fc0ff',ring:3,shard:14,extra:'streakX'},   // steel bulwark rings
+  BSK:{col:'#ff8a3d',ring:1,shard:26,extra:'rise'},       // rising fire/blood
+  ASN:{col:'#ff566f',ring:0,shard:16,extra:'slashCross'}, // crossing shadow slashes
+  MAG:{col:'#c6a8ff',ring:1,shard:22,extra:'rune'},       // arcane rune circle
+  NEC:{col:'#7dffb0',ring:1,shard:20,extra:'rise'},       // decay wisps
+  HLR:{col:'#ffe08a',ring:2,shard:16,extra:'rays'},       // holy light rays
+  RNG:{col:'#ffd9a0',ring:0,shard:12,extra:'streakX'},    // arrow streaks
+};
+function classUltFx(u){
+  const cfg=ULTFX[u.class]||ULTFX.MAG, fx=$('#fx'); if(!fx)return;
+  const hue=CLASS[u.class].hue, a=$('#app').getBoundingClientRect(), row=$('#enemyRow');
+  let cx=a.width/2, cy=a.height*0.42;
+  if(row){const r=row.getBoundingClientRect(); if(r.width){cx=r.left-a.left+r.width/2; cy=r.top-a.top+r.height/2;}}
+  const tint=document.createElement('div');tint.className='ultTint';
+  tint.style.background=`radial-gradient(circle at 50% 42%,var(${hue}),transparent 62%)`;
+  fx.appendChild(tint);setTimeout(()=>tint.remove(),620);
+  for(let i=0;i<cfg.ring;i++){const rg=document.createElement('div');rg.className='ultring';rg.style.color=cfg.col;
+    const d=120+i*70;rg.style.width=d+'px';rg.style.height=d+'px';rg.style.left=cx+'px';rg.style.top=cy+'px';
+    rg.style.animationDelay=(i*0.08)+'s';fx.appendChild(rg);setTimeout(()=>rg.remove(),820+i*90);}
+  for(let i=0;i<cfg.shard;i++){const sp=document.createElement('div');sp.className='ultshard';
+    const ang=Math.random()*Math.PI*2, dist=40+Math.random()*95, rise=cfg.extra==='rise'?-(28+Math.random()*66):0;
+    sp.style.color=cfg.col;sp.style.background=cfg.col;
+    sp.style.width=(2+Math.random()*3).toFixed(1)+'px';sp.style.height=(6+Math.random()*10).toFixed(1)+'px';
+    sp.style.left=cx+'px';sp.style.top=cy+'px';
+    sp.style.setProperty('--dx',(Math.cos(ang)*dist).toFixed(0)+'px');
+    sp.style.setProperty('--dy',(Math.sin(ang)*dist+rise).toFixed(0)+'px');
+    sp.style.setProperty('--r',(Math.random()*360).toFixed(0)+'deg');
+    fx.appendChild(sp);setTimeout(()=>sp.remove(),740);}
+  if(cfg.extra==='rune'){const ru=document.createElement('div');ru.className='ultrune';ru.style.color=cfg.col;
+    ru.style.width='132px';ru.style.height='132px';ru.style.left=cx+'px';ru.style.top=cy+'px';
+    fx.appendChild(ru);setTimeout(()=>ru.remove(),840);}
+  if(cfg.extra==='slashCross'||cfg.extra==='streakX'){const n=cfg.extra==='slashCross'?4:5;
+    for(let i=0;i<n;i++){const st=document.createElement('div');st.className='ultstreak';
+      const len=90+Math.random()*80;st.style.width=len+'px';
+      st.style.background=`linear-gradient(90deg,transparent,${cfg.col},#fff,transparent)`;
+      st.style.left=(cx-len/2)+'px';st.style.top=(cy-30+Math.random()*60)+'px';
+      st.style.setProperty('--a',((cfg.extra==='slashCross')?(i%2?34:-34):(-8+Math.random()*16)).toFixed(0)+'deg');
+      st.style.animationDelay=(i*0.05)+'s';fx.appendChild(st);setTimeout(()=>st.remove(),470+i*55);}}
+  if(cfg.extra==='rays'){for(let i=0;i<8;i++){const st=document.createElement('div');st.className='ultstreak';
+    st.style.width='70px';st.style.background=`linear-gradient(90deg,${cfg.col},transparent)`;
+    st.style.left=cx+'px';st.style.top=cy+'px';st.style.setProperty('--a',(i*45)+'deg');
+    fx.appendChild(st);setTimeout(()=>st.remove(),520);}}
+  battleShake(false);
+}
 function cutIn(u){const c=$('#cutin');SFX.ult();c.style.setProperty('--hue',`var(${CLASS[u.class].hue})`);
   const cp=$('#cutPortrait');cp.innerHTML=classArt(u.class,40)+artImg(u.id,u.name);wireArt(cp);
   c.querySelector('.who').textContent=u.name;c.querySelector('.skill').textContent=u.kit.S3.name;c.classList.add('show');G.busy=true;
