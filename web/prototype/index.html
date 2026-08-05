@@ -750,6 +750,23 @@
     box-shadow:0 0 18px currentColor;background:linear-gradient(90deg,transparent,currentColor,transparent);animation:enmShock .46s ease-out forwards}
   @keyframes enmShock{0%{opacity:.9;transform:translateX(-50%) scaleX(.1)}100%{opacity:0;transform:translateX(-50%) scaleX(1)}}
 
+  /* ============ animated status-effect icons ============ */
+  .statusrow{position:absolute;top:2px;left:0;right:0;display:flex;justify-content:center;gap:2px;z-index:6;pointer-events:none;flex-wrap:wrap;padding:0 20px}
+  .ecard .statusrow{top:4px}
+  .stchip{font-size:11px;line-height:1;filter:drop-shadow(0 1px 1px rgba(0,0,0,.85));animation-fill-mode:both}
+  .ecard.big .statusrow .stchip,.ecard.mid .statusrow .stchip{font-size:14px}
+  .stchip.stPulse{animation:stPulse 1.1s ease-in-out infinite}
+  .stchip.stSpin{animation:stSpin 1.4s linear infinite;display:inline-block}
+  .stchip.stDrip{animation:stDrip 1.25s ease-in-out infinite;display:inline-block}
+  .stchip.stShimmer{animation:stShimmer 1.4s ease-in-out infinite}
+  .stchip.stFade{animation:stFade 1.5s ease-in-out infinite}
+  .stchip.stDim{opacity:.65;filter:grayscale(.4) drop-shadow(0 1px 1px rgba(0,0,0,.85))}
+  @keyframes stPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.28)}}
+  @keyframes stSpin{to{transform:rotate(360deg)}}
+  @keyframes stDrip{0%,100%{transform:translateY(-1px)}50%{transform:translateY(2px)}}
+  @keyframes stShimmer{0%,100%{filter:brightness(1) drop-shadow(0 1px 1px rgba(0,0,0,.85))}50%{filter:brightness(1.5) drop-shadow(0 0 5px #7fd0ff)}}
+  @keyframes stFade{0%,100%{opacity:1}50%{opacity:.35}}
+
   @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.05ms!important}
     #ambient{display:none}
     .hero .p,.ecard .p,#battleBg.on,#titleBg.on,#mapBg.on,.track,.node.current .dot,
@@ -2120,14 +2137,40 @@ function checkEnd(){
 }
 /* ---------- render ---------- */
 const pct=u=>clamp(u.hp/u.max,0,1), hpColor=p=>p>.5?'var(--good)':p>.25?'var(--warn)':'var(--crit)';
+// animated status-effect icons shown on each combatant card
+const STMETA={
+  'STS-BLEED':{e:'🩸',a:'stDrip',t:'Bleeding'},
+  'STS-DECAY':{e:'🧪',a:'stDrip',t:'Decay'},
+  'STS-STUN':{e:'💫',a:'stSpin',t:'Stunned'},
+  'STS-ATK-UP':{e:'⚔️',a:'stPulse',t:'Attack Up'},
+  'STS-ATK-DOWN':{e:'⚔️',a:'stDim',t:'Attack Down'},
+  'STS-DEF-UP':{e:'🛡️',a:'stPulse',t:'Defense Up'},
+  'STS-DEF-DOWN':{e:'🛡️',a:'stDim',t:'Defense Down'},
+  'STS-SPD-DOWN':{e:'🐌',a:'',t:'Slowed'},
+  'STS-CRIT-UP':{e:'✴️',a:'stPulse',t:'Crit Up'},
+  'STS-DR-25':{e:'🔰',a:'',t:'Damage Reduction'},
+  'STS-TAUNT-ME':{e:'🎯',a:'stPulse',t:'Taunting'},
+  'STS-STEALTH':{e:'🌫️',a:'stFade',t:'Stealth'},
+};
+function statusStrip(u){
+  let out='';
+  if(u.barrier>0) out+=`<span class="stchip stShimmer" title="Barrier">🔷</span>`;
+  for(const s in u.status){const m=STMETA[s];if(m) out+=`<span class="stchip ${m.a}" title="${m.t}">${m.e}</span>`;}
+  return out;
+}
+function updateStatus(u){if(!u.el)return;const sr=u.el.querySelector('.statusrow');if(!sr)return;
+  const sig=(u.barrier>0?'B|':'')+Object.keys(u.status).sort().join(',');
+  if(sr.dataset.sig!==sig){sr.dataset.sig=sig;sr.innerHTML=statusStrip(u);}}
 function render(){
   $('#surgefill').style.transform=`scaleX(${G.surge/100})`;
   $('#surgeval').innerHTML=`<b>${Math.floor(G.surge)}</b> / 100`;
   G.enemies.forEach(e=>{if(!e.el)return;const f=e.el.querySelector('.hpfill');if(f){f.style.transform=`scaleX(${pct(e)})`;f.style.background=hpColor(pct(e));}
     const t=e.el.querySelector('.hptext');if(t&&(e.isBoss||e.isMini))t.textContent=`${e.hp.toLocaleString()} / ${e.max.toLocaleString()}`;
+    updateStatus(e);
     e.el.style.opacity=e.alive?'1':'.25';});
   G.heroes.forEach(h=>{const f=h.el.querySelector('.hpfill');f.style.transform=`scaleX(${pct(h)})`;f.style.background=hpColor(pct(h));
     h.el.querySelector('.cd').textContent=(h.cd.S2>0)?h.cd.S2:'';
+    updateStatus(h);
     h.el.classList.toggle('ready',h.alive&&G.surge>=(h.kit.S3.surgeCost||60));
     h.el.classList.toggle('dead',!h.alive);});
 }
@@ -2140,7 +2183,7 @@ function renderEnemies(){
     const core=(e.isBoss||e.isMini)?'<div class="core"></div>':'';
     const efx=e._efx||efxOf(e.id);
     d.style.setProperty('--efx',efx);
-    d.innerHTML=`<div class="p">${enemyArtImg(e)||e._glyph||EGLYPH[e.id]||'🟢'}${core}</div><div class="en">${e.name}</div>
+    d.innerHTML=`<div class="p">${enemyArtImg(e)||e._glyph||EGLYPH[e.id]||'🟢'}${core}</div><div class="statusrow"></div><div class="en">${e.name}</div>
       <div class="hpwrap"><div class="hpfill" style="background:${efx}"></div>${(e.isBoss||e.isMini)?'<div class="hptext"></div>':''}</div>`;
     e.el=d;row.appendChild(d);
   });
@@ -2154,7 +2197,7 @@ function renderTelegraph(){const el=$('#telegraph');if(!G.telegraph){el.classLis
 function buildParty(){const box=$('#party');box.innerHTML='';G.heroes.forEach(h=>{const c=CLASS[h.class];
   const el=document.createElement('div');el.className='hero';el.style.setProperty('--hue',`var(${c.hue})`);
   el.setAttribute('role','button');el.tabIndex=0;el.setAttribute('aria-label',`${h.name}, ${c.l} — tap to fire ultimate ${h.kit.S3.name} when ready`);
-  el.innerHTML=`<div class="cls">${c.l}</div><div class="cd num"></div><div class="p">${classArt(h.class,40)}${artImg(h.id,h.name)}</div><div class="nm">${h.name}</div>
+  el.innerHTML=`<div class="cls">${c.l}</div><div class="cd num"></div><div class="p">${classArt(h.class,40)}${artImg(h.id,h.name)}</div><div class="statusrow"></div><div class="nm">${h.name}</div>
     <div class="hpwrap"><div class="hpfill" style="background:var(--good)"></div></div>`;
   const fire=()=>{if(el.classList.contains('ready')&&!G.over)fireUlt(h);};
   el.addEventListener('click',fire);
