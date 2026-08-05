@@ -690,6 +690,10 @@
   .pr.revealed.E .flr,.pr.revealed.L .flr{opacity:1;background:radial-gradient(circle at 50% 45%,color-mix(in srgb,var(--rc) 75%,transparent),transparent 60%);animation:flrPop .55s ease-out both}
   @keyframes flrPop{0%{opacity:.9;transform:scale(.4)}100%{opacity:0;transform:scale(1.5)}}
 
+  /* real generated summon video (plays when the file is reachable; else CSS cutscene) */
+  #pullVideo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:6;display:none;background:#05040a}
+  #pullVideo.show{display:block}
+
   /* ============ epic summon cutscene: star -> temple -> impact ============ */
   #pullIntro{position:absolute;inset:0;z-index:6;display:none;overflow:hidden;background:#05040a;--gc:#9aa0b5}
   #pullIntro.show{display:block}
@@ -938,7 +942,7 @@
       <button class="ghost" id="pull1">Summon ×1 · 150</button>
       <button class="cta" id="pull10">Summon ×10 · 1500</button>
     </div>
-    <div id="pullResults"><div id="pullIntro"></div><div id="pullSpot"></div><div class="rareburst" id="pullBurst"></div><div id="pullGrid"></div><div class="cont" id="pullCont">tap to continue</div></div>
+    <div id="pullResults"><video id="pullVideo" playsinline preload="auto"></video><div id="pullIntro"></div><div id="pullSpot"></div><div class="rareburst" id="pullBurst"></div><div id="pullGrid"></div><div class="cont" id="pullCont">tap to continue</div></div>
   </section>
 
   <!-- HEROES -->
@@ -1680,7 +1684,28 @@ function showPulls(cards){
   renderForge();
   const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
   if(reduce){ giShowSummary(); return; }
-  giPlayIntro(best);
+  giPlayVideoOrCss(best);
+}
+// prefer the real generated summon video; fall back to the CSS cutscene if it can't load (e.g. CSP artifact)
+let _giVideoOK=null;   // null=unknown, true/false once probed
+function giPlayVideoOrCss(best){
+  const vid=$('#pullVideo');
+  if(!vid || _giVideoOK===false){ giPlayIntro(best); return; }
+  _giPhase='intro';
+  let done=false;
+  const toSpot=()=>{ if(done)return; done=true; vid.onended=null;vid.onerror=null; try{vid.pause();}catch(e){} vid.classList.remove('show'); giStartSpotlight(); };
+  const toCss=()=>{ if(done)return; done=true; vid.onended=null;vid.onerror=null; _giVideoOK=false; vid.classList.remove('show'); giPlayIntro(best); };
+  vid.onended=toSpot;
+  vid.onerror=toCss;
+  vid.muted=!!(typeof ui!=='undefined'&&ui.muted);
+  try{ vid.src='video/summon_'+best+'.mp4'; vid.currentTime=0; }catch(e){}
+  vid.classList.add('show');
+  const pr=vid.play&&vid.play();
+  if(pr&&pr.catch)pr.catch(()=>{ vid.muted=true; const p2=vid.play&&vid.play(); if(p2&&p2.catch)p2.catch(toCss); });
+  // if it hasn't started buffering shortly, treat as unavailable and use the cutscene
+  const t=setTimeout(()=>{ if(!done && vid.readyState<2) toCss(); }, 1500);
+  _giTimers.push(t);
+  vid.onplaying=()=>{ _giVideoOK=true; };
 }
 function giPlayIntro(best){
   _giPhase='intro';
@@ -1753,6 +1778,7 @@ function giRain(col,n){
 }
 function giShowSummary(){
   _giClear();
+  const vid=$('#pullVideo'); if(vid){vid.onended=null;vid.onerror=null;try{vid.pause();}catch(e){}vid.classList.remove('show');}
   $('#pullIntro').classList.remove('show'); $('#pullSpot').classList.remove('show');
   _giPhase='done';
   if(_giBest==='L')$('#pullResults').classList.add('legendary');
