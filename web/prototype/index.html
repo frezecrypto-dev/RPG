@@ -369,8 +369,9 @@
   #pullGrid.one{grid-template-columns:1fr;max-width:150px}
   .pr{position:relative;aspect-ratio:3/4;border-radius:11px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
     background:linear-gradient(180deg,#171326,#0e0b18);border:1.5px solid var(--rc);overflow:hidden;
-    box-shadow:0 0 16px color-mix(in srgb,var(--rc) 40%,transparent);opacity:0;transform:translateY(10px) scale(.9);
-    animation:reveal .4s ease forwards}
+    box-shadow:0 0 16px color-mix(in srgb,var(--rc) 40%,transparent);opacity:0;transform:translateY(10px) scale(.9)}
+  .pr.revealed{animation:cardReveal .5s cubic-bezier(.2,1.35,.3,1) both}
+  @keyframes cardReveal{0%{opacity:0;transform:perspective(500px) rotateY(85deg) scale(.82)}55%{opacity:1}100%{opacity:1;transform:none}}
   .pr .g{flex:1;width:100%;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:30px;border-radius:9px}
   .pr .n{font-size:8px;text-align:center;padding:2px 3px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
   .pr .tag{position:absolute;top:4px;left:0;right:0;text-align:center;font-size:7px;letter-spacing:.14em;text-transform:uppercase}
@@ -674,13 +675,47 @@
   #pullResults.legendary::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
     background:radial-gradient(circle at 50% 46%,rgba(255,207,107,.35),transparent 55%);animation:legAura 2.4s ease-in-out infinite}
   @keyframes legAura{0%,100%{opacity:.5}50%{opacity:1}}
-  #pullBurst{animation:burstIn .5s cubic-bezier(.2,1.5,.3,1)}
+  #pullBurst{opacity:0}
+  #pullBurst.show{animation:burstIn .5s cubic-bezier(.2,1.5,.3,1) both}
   @keyframes burstIn{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:scale(1)}}
+  #pullCont{opacity:0;transition:opacity .3s}
+  #pullCont.show{opacity:1}
   .pr.L .g::after{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;border-radius:inherit;
     background:linear-gradient(115deg,transparent 40%,rgba(255,235,160,.7) 50%,transparent 60%);background-size:250% 250%;
     animation:sheen 2.8s ease-in-out .3s infinite}
-  .pr.L{animation:reveal .4s ease forwards,legPop .6s ease}
-  @keyframes legPop{0%{box-shadow:0 0 0 rgba(255,207,107,0)}40%{box-shadow:0 0 40px rgba(255,207,107,.9)}100%{box-shadow:0 0 26px color-mix(in srgb,var(--rL) 65%,transparent)}}
+  .pr.revealed.L{animation:cardReveal .5s cubic-bezier(.2,1.35,.3,1) both,legPop .8s ease .1s}
+  @keyframes legPop{0%{box-shadow:0 0 0 rgba(255,207,107,0)}40%{box-shadow:0 0 44px rgba(255,207,107,.95)}100%{box-shadow:0 0 26px color-mix(in srgb,var(--rL) 65%,transparent)}}
+  /* per-card reveal flourish (Epic/Legendary) */
+  .pr .flr{position:absolute;inset:0;z-index:4;pointer-events:none;border-radius:inherit;opacity:0}
+  .pr.revealed.E .flr,.pr.revealed.L .flr{opacity:1;background:radial-gradient(circle at 50% 45%,color-mix(in srgb,var(--rc) 75%,transparent),transparent 60%);animation:flrPop .55s ease-out both}
+  @keyframes flrPop{0%{opacity:.9;transform:scale(.4)}100%{opacity:0;transform:scale(1.5)}}
+
+  /* ============ epic summon intro (cutscene) ============ */
+  #pullIntro{position:absolute;inset:0;z-index:5;display:none;align-items:center;justify-content:center;overflow:hidden;--gc:#9aa0b5;--gdur:1s}
+  #pullIntro.show{display:flex}
+  #pullIntro .gi-rays{position:absolute;width:150vmax;height:150vmax;border-radius:50%;opacity:0;
+    background:conic-gradient(from 0deg,transparent 0 8deg,color-mix(in srgb,var(--gc) 34%,transparent) 8deg 10deg,transparent 10deg 26deg);
+    animation:giSpin calc(var(--gdur)*1.1) linear both,giRaysFade var(--gdur) ease-in both}
+  @keyframes giSpin{to{transform:rotate(120deg)}}
+  @keyframes giRaysFade{0%{opacity:0}55%{opacity:.55}100%{opacity:0}}
+  #pullIntro .gi-core{position:absolute;width:64px;height:64px;border-radius:50%;
+    background:radial-gradient(circle,#fff 0%,var(--gc) 52%,transparent 74%);box-shadow:0 0 70px 16px var(--gc);
+    animation:giCore var(--gdur) cubic-bezier(.5,0,.85,.3) both}
+  @keyframes giCore{0%{transform:scale(.15);opacity:.5}62%{transform:scale(1);opacity:1}80%{transform:scale(1.5);filter:brightness(1.8)}100%{transform:scale(34);opacity:0;filter:brightness(3)}}
+  #pullIntro .gi-ring{position:absolute;width:120px;height:120px;border:2px solid var(--gc);border-radius:50%;opacity:0;
+    box-shadow:0 0 14px var(--gc);animation:giRing calc(var(--gdur)*.55) ease-out infinite}
+  #pullIntro .gi-ring.d1{animation-delay:calc(var(--gdur)*.12)}
+  #pullIntro .gi-ring.d2{animation-delay:calc(var(--gdur)*.30)}
+  @keyframes giRing{0%{opacity:.85;transform:scale(.3)}100%{opacity:0;transform:scale(2.2)}}
+  #pullIntro .gi-label{position:absolute;bottom:23%;font-family:var(--font-title);letter-spacing:.34em;text-transform:uppercase;
+    font-size:13px;color:var(--gc);text-shadow:0 0 16px var(--gc);white-space:nowrap;
+    animation:giLabel var(--gdur) ease both}
+  @keyframes giLabel{0%{opacity:0;letter-spacing:.1em}25%{opacity:1}80%{opacity:.9}100%{opacity:0}}
+  #pullIntro .gi-flash{position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,#fff,var(--gc) 40%,transparent 72%);opacity:0;
+    animation:giFlash var(--gdur) ease-in both}
+  @keyframes giFlash{0%,72%{opacity:0}84%{opacity:.95}100%{opacity:0}}
+  #pullIntro.rL .gi-core{width:80px;height:80px}
+  #pullResults.introShake{animation:qshake .3s 3}
 
   /* ============ living backgrounds (slow ken-burns) ============ */
   #battleBg.on,#titleBg.on,#mapBg.on{animation:kenburns 32s ease-in-out infinite alternate}
@@ -863,7 +898,7 @@
       <button class="ghost" id="pull1">Summon ×1 · 150</button>
       <button class="cta" id="pull10">Summon ×10 · 1500</button>
     </div>
-    <div id="pullResults"><div class="rareburst" id="pullBurst"></div><div id="pullGrid"></div><div class="cont">tap to continue</div></div>
+    <div id="pullResults"><div id="pullIntro"></div><div class="rareburst" id="pullBurst"></div><div id="pullGrid"></div><div class="cont" id="pullCont">tap to continue</div></div>
   </section>
 
   <!-- HEROES -->
@@ -1576,26 +1611,93 @@ function pull(n){
   saveGame();
   showPulls(cards);
 }
+// ---- epic summon sequence: intro cutscene (scaled to best rarity) -> one-by-one reveal ----
+const GI_COL={C:'#9aa0b5',R:'#5b8fd6',E:'#a970ff',L:'#ffcf6b'};
+const GI_DUR={C:850,R:1300,E:1900,L:2600};
+const GI_LBL={C:'Summoning',R:'A resonance stirs',E:'The Vow answers',L:'The Gate opens'};
+let _giTimers=[], _giPhase='idle', _giCards=null, _giBest='C';
+function _giClear(){_giTimers.forEach(clearTimeout);_giTimers=[];}
 function showPulls(cards){
+  _giClear();
   const grid=$('#pullGrid'); grid.innerHTML=''; grid.className=cards.length===1?'one':'';
   const best=cards.reduce((a,c)=>RORDER[c.rar]<RORDER[a]?c.rar:a,'C');
-  SFX.rare(best);
-  $('#pullBurst').textContent = best==='L'?'✦ LEGENDARY ✦':best==='E'?'Epic find':'';
-  $('#pullBurst').style.color = best==='L'?'var(--rL)':best==='E'?'var(--rE)':'var(--muted)';
-  cards.forEach((c,i)=>{
-    const cl=CLASS[c.h.class], el=document.createElement('div');
-    el.className='pr '+c.rar; el.style.setProperty('--rc',`var(${RAR[c.rar]})`); el.style.animationDelay=(i*0.06)+'s';
-    el.innerHTML=`<div class="tag ${c.isNew?'new':'dupe'}">${c.isNew?'NEW':'+'+DUPE_SHARDS[c.rar]+' shard'}</div>
+  _giCards=cards; _giBest=best;
+  cards.forEach((c)=>{
+    const el=document.createElement('div');
+    el.className='pr '+c.rar+' pending'; el.style.setProperty('--rc',`var(${RAR[c.rar]})`);
+    el.innerHTML=`<div class="flr"></div><div class="tag ${c.isNew?'new':'dupe'}">${c.isNew?'NEW':'+'+DUPE_SHARDS[c.rar]+' shard'}</div>
       <div class="g">${classArt(c.h.class,44)}${artImg(c.h.id,c.h.name)}</div><div class="n">${c.h.name}</div>`;
     grid.appendChild(el);
   });
   wireArt(grid);
   const pr=$('#pullResults');
-  pr.classList.remove('legendary');
-  pr.classList.add('show','charging');
-  if(best==='L')pr.classList.add('legendary');
-  setTimeout(()=>pr.classList.remove('charging'),best==='L'?1100:750);
+  pr.classList.remove('legendary','done','introShake');
+  $('#pullBurst').classList.remove('show'); $('#pullCont').classList.remove('show');
+  $('#pullBurst').textContent='';
+  pr.classList.add('show');
   renderForge();
+  const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  if(reduce){ giRevealAll(); return; }
+  giPlayIntro(best);
+}
+function giPlayIntro(best){
+  _giPhase='intro';
+  const intro=$('#pullIntro'), dur=GI_DUR[best];
+  intro.style.setProperty('--gc',GI_COL[best]);
+  intro.style.setProperty('--gdur',dur+'ms');
+  intro.className='r'+best;   // reset + rarity
+  intro.innerHTML=`<div class="gi-rays"></div><div class="gi-ring d1"></div><div class="gi-ring d2"></div><div class="gi-core"></div><div class="gi-flash"></div><div class="gi-label">${GI_LBL[best]}</div>`;
+  intro.classList.add('show');
+  SFX.surge&&SFX.surge();
+  if(best==='L'){ const t0=setTimeout(()=>{$('#pullResults').classList.add('introShake');SFX.rare&&SFX.rare('L');},dur-500); _giTimers.push(t0); }
+  else if(best==='E'){ const t0=setTimeout(()=>SFX.rare&&SFX.rare('E'),dur-350); _giTimers.push(t0); }
+  const t=setTimeout(()=>{ intro.classList.remove('show'); $('#pullResults').classList.remove('introShake'); giStartReveal(); }, dur);
+  _giTimers.push(t);
+}
+function giStartReveal(){
+  _giPhase='revealing';
+  if(_giBest==='L')$('#pullResults').classList.add('legendary');
+  const kids=[...$('#pullGrid').children];
+  let i=0;
+  const step=()=>{
+    if(i>=kids.length){ giFinish(); return; }
+    giRevealCard(kids[i], _giCards[i]);
+    i++;
+    const t=setTimeout(step, 300);
+    _giTimers.push(t);
+  };
+  step();
+}
+function giRevealCard(el, card){
+  el.classList.remove('pending'); el.classList.add('revealed');
+  if(card.rar==='L'){ SFX.rare&&SFX.rare('L'); giCardBurst(el,'#ffcf6b',16); $('#pullResults').classList.add('introShake'); const t=setTimeout(()=>$('#pullResults').classList.remove('introShake'),320); _giTimers.push(t); }
+  else if(card.rar==='E'){ SFX.rare&&SFX.rare('E'); giCardBurst(el,'#c6a8ff',9); }
+  else { SFX.tap&&SFX.tap(); }
+}
+function giCardBurst(el,col,n){
+  const pr=$('#pullResults'), a=pr.getBoundingClientRect(), r=el.getBoundingClientRect();
+  const cx=r.left-a.left+r.width/2, cy=r.top-a.top+r.height/2;
+  for(let i=0;i<n;i++){const s=document.createElement('span');s.className='sparkfx';
+    const ang=Math.random()*Math.PI*2, dist=20+Math.random()*46;
+    s.style.left=cx+'px';s.style.top=cy+'px';s.style.color=col;s.style.background=col;
+    s.style.setProperty('--dx',(Math.cos(ang)*dist).toFixed(0)+'px');
+    s.style.setProperty('--dy',(Math.sin(ang)*dist).toFixed(0)+'px');
+    const sz=(2+Math.random()*2.6).toFixed(1);s.style.width=sz+'px';s.style.height=sz+'px';s.style.zIndex=6;
+    pr.appendChild(s);setTimeout(()=>s.remove(),620);}
+}
+function giFinish(){
+  _giPhase='done';
+  $('#pullBurst').textContent = _giBest==='L'?'✦ LEGENDARY ✦':_giBest==='E'?'Epic find':'';
+  $('#pullBurst').style.color = _giBest==='L'?'var(--rL)':_giBest==='E'?'var(--rE)':'var(--muted)';
+  $('#pullBurst').classList.add('show');
+  $('#pullCont').classList.add('show');
+}
+function giRevealAll(){
+  _giClear();
+  $('#pullIntro').classList.remove('show');
+  if(_giBest==='L')$('#pullResults').classList.add('legendary');
+  [...$('#pullGrid').children].forEach(el=>{el.classList.remove('pending');el.classList.add('revealed');});
+  giFinish();
 }
 /* ---------- Mercy Forge (doc 08 s5): spend Ember Sigils on guaranteed units ---------- */
 const FORGE_OPTS=[
@@ -2440,7 +2542,11 @@ $('#geScrap').addEventListener('click',scrapCommons);
 $('#gachaBack').addEventListener('click',()=>{buildMap();renderCrys();show('screen-map');});
 $('#pull1').addEventListener('click',()=>pull(1));
 $('#pull10').addEventListener('click',()=>pull(10));
-$('#pullResults').addEventListener('click',()=>$('#pullResults').classList.remove('show'));
+$('#pullResults').addEventListener('click',()=>{
+  if(_giPhase==='intro'||_giPhase==='revealing'){ giRevealAll(); return; }   // tap to skip
+  $('#pullResults').classList.remove('show','legendary','done','introShake');
+  $('#pullIntro').classList.remove('show'); _giPhase='idle'; _giClear();
+});
 function flashBar(){const b=$('#gachaBar');b.style.transition='none';b.style.background='rgba(255,59,92,.25)';
   setTimeout(()=>{b.style.transition='background .5s';b.style.background='';},60);}
 $('#teamBack').addEventListener('click',()=>{const a=arenaTarget;arenaTarget=null;raidPending=false;if(a){renderArena();show('screen-arena');}else{buildMap();show('screen-map');}});
