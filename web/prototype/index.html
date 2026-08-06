@@ -909,6 +909,49 @@
   .bpck{position:absolute;top:3px;right:5px;font-size:11px;color:var(--good)}
   .bplocki{position:absolute;top:3px;right:5px;font-size:9px;opacity:.7}
 
+  /* ============ Home hub (city) ============ */
+  #screen-home{overflow:hidden}
+  #homeSky{position:absolute;inset:0;z-index:0;background:
+    radial-gradient(130% 80% at 50% 122%,#2a1f5c 0%,transparent 56%),
+    radial-gradient(70% 40% at 74% 16%,rgba(63,214,196,.16),transparent 60%),
+    radial-gradient(60% 30% at 24% 20%,rgba(123,92,255,.14),transparent 60%),
+    linear-gradient(180deg,#0a0818,#0e0b1e 58%,#151026)}
+  #homeStars{position:absolute;inset:0;z-index:0;opacity:.75;background-repeat:no-repeat;
+    background-image:radial-gradient(1.4px 1.4px at 18% 22%,#fff,transparent),radial-gradient(1px 1px at 62% 14%,#cfe,transparent),radial-gradient(1.4px 1.4px at 84% 26%,#fff,transparent),radial-gradient(1px 1px at 40% 30%,#dde,transparent),radial-gradient(1px 1px at 72% 34%,#fff,transparent),radial-gradient(1.4px 1.4px at 12% 40%,#fff,transparent),radial-gradient(1px 1px at 92% 44%,#fff,transparent),radial-gradient(1px 1px at 30% 10%,#fff,transparent)}
+  #homeGround{position:absolute;left:-6%;right:-6%;bottom:64px;height:36%;z-index:0;border-radius:50% 50% 0 0;
+    background:radial-gradient(120% 120% at 50% 100%,#231b45,#120e26 62%,transparent);border-top:1px solid rgba(123,92,255,.22)}
+  #homeTop{position:absolute;top:0;left:0;right:0;z-index:3;padding:14px 16px 8px}
+  .hometitle .eyebrow{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--umbra)}
+  .hometitle h1{font-family:var(--font-title);font-size:26px;margin:1px 0 0}
+  #homeRes{display:flex;gap:14px;margin-top:8px;flex-wrap:wrap}
+  #homeRes .res{font-size:12px;color:var(--muted)} #homeRes .res .num{color:var(--ink);font-weight:600}
+  #hubScene{position:absolute;top:78px;left:0;right:0;bottom:64px;z-index:2}
+  .bld{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:7px;
+    background:none;border:none;cursor:pointer;padding:4px;transition:transform .16s cubic-bezier(.2,1.2,.3,1)}
+  .bld:hover,.bld:focus-visible{transform:translate(-50%,-50%) scale(1.08);outline:none}
+  .bsvg{filter:drop-shadow(0 7px 11px rgba(0,0,0,.6));animation:bldFloat 4.5s ease-in-out infinite;transition:filter .2s}
+  .bld[data-go=gacha] .bsvg{width:58px}.bld[data-go=heroes] .bsvg{width:98px}
+  .bld[data-go=raid] .bsvg{width:86px}.bld[data-go=map] .bsvg{width:104px}.bld[data-go=arena] .bsvg{width:96px}
+  .bld:nth-child(2) .bsvg{animation-delay:-1s}.bld:nth-child(3) .bsvg{animation-delay:-2s}
+  .bld:nth-child(4) .bsvg{animation-delay:-1.6s}.bld:nth-child(5) .bsvg{animation-delay:-2.6s}
+  @keyframes bldFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+  .bld[data-go=gacha]:hover .bsvg{filter:drop-shadow(0 0 16px #7b5cff)}
+  .bld[data-go=raid]:hover .bsvg{filter:drop-shadow(0 0 16px #ff3b5c)}
+  .bld[data-go=heroes]:hover .bsvg{filter:drop-shadow(0 0 16px #ffcf6b)}
+  .bld[data-go=map]:hover .bsvg{filter:drop-shadow(0 0 16px #5b8fd6)}
+  .bld[data-go=arena]:hover .bsvg{filter:drop-shadow(0 0 16px #e8394f)}
+  .bldlbl{font-family:var(--font-title);font-size:12px;color:var(--ink);background:rgba(12,10,26,.82);border:1px solid var(--line);
+    padding:3px 11px;border-radius:20px;white-space:nowrap;box-shadow:0 3px 9px rgba(0,0,0,.5);backdrop-filter:blur(3px)}
+  .bld:hover .bldlbl{border-color:var(--umbra);color:#fff}
+  #hubFeat{position:absolute;left:0;right:0;bottom:8px;text-align:center;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint)}
+  #homeNav{position:absolute;left:0;right:0;bottom:0;height:64px;z-index:5;display:flex;
+    background:linear-gradient(0deg,rgba(9,7,18,.99),rgba(9,7,18,.9));border-top:1px solid var(--line);backdrop-filter:blur(10px)}
+  .navb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;
+    color:var(--muted);font-size:9px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;padding:6px 0;transition:color .15s}
+  .navb .navi{font-size:20px;line-height:1;filter:grayscale(.35);transition:transform .15s,filter .15s}
+  .navb.on{color:var(--ink)} .navb.on .navi{filter:none;transform:scale(1.15)}
+  .navb:hover{color:var(--ink)} .navb:hover .navi{filter:none}
+
   @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.05ms!important}
     #ambient,.resfx{display:none}
     .hero .p,.ecard .p,#battleBg.on,#titleBg.on,#mapBg.on,.track,.node.current .dot,
@@ -938,13 +981,49 @@
   </section>
 
   <!-- MAP -->
+  <!-- HOME HUB (city) -->
+  <section class="screen" id="screen-home">
+    <div id="homeSky"></div><div id="homeStars"></div><div id="homeGround"></div>
+    <div id="homeTop">
+      <div class="hometitle"><div class="eyebrow">The Vow Gate</div><h1>Ashgate</h1></div>
+      <div id="homeRes">
+        <span class="res"><i class="cur crystal"></i> <b class="num crysN">0</b></span>
+        <span class="res"><i class="cur gold"></i> <b class="num goldN">0</b></span>
+        <span class="res"><i class="cur shard"></i> <b class="num shardN">0</b></span>
+        <span class="res"><i class="cur relic"></i> <b class="num relicN">0</b></span>
+      </div>
+    </div>
+    <div id="hubScene">
+      <button class="bld" data-go="gacha" style="left:50%;top:20%">
+        <svg class="bsvg" viewBox="0 0 64 104"><polygon points="32,4 46,32 18,32" fill="#241a4d" stroke="#7b5cff" stroke-width="1"/><circle cx="32" cy="16" r="10" fill="#7b5cff" opacity=".35"/><circle cx="32" cy="16" r="5" fill="#cbb8ff"/><rect x="21" y="32" width="22" height="66" rx="2" fill="#171233" stroke="#4a3a8f" stroke-width="1"/><rect x="28" y="44" width="8" height="12" rx="2" fill="#8f6bff"/><rect x="28" y="64" width="8" height="12" rx="2" fill="#8f6bff"/><rect x="16" y="96" width="32" height="8" rx="2" fill="#0e0b1e"/></svg>
+        <span class="bldlbl">Summon Tower</span></button>
+      <button class="bld" data-go="heroes" style="left:19%;top:44%">
+        <svg class="bsvg" viewBox="0 0 84 74"><polygon points="42,4 80,30 4,30" fill="#3a2f14" stroke="#ffcf6b" stroke-width="1"/><rect x="8" y="30" width="68" height="6" fill="#2a2410"/><rect x="14" y="36" width="8" height="30" fill="#221d10"/><rect x="28" y="36" width="8" height="30" fill="#221d10"/><rect x="48" y="36" width="8" height="30" fill="#221d10"/><rect x="62" y="36" width="8" height="30" fill="#221d10"/><rect x="6" y="66" width="72" height="7" rx="2" fill="#0e0b1e"/></svg>
+        <span class="bldlbl">Heroes' Hall</span></button>
+      <button class="bld" data-go="raid" style="left:81%;top:41%">
+        <svg class="bsvg" viewBox="0 0 90 96"><path d="M13,94 V50 a32,40 0 0 1 64,0 V94" fill="none" stroke="#3a1520" stroke-width="9"/><ellipse cx="45" cy="56" rx="27" ry="35" fill="#7a1a2c"/><ellipse cx="45" cy="56" rx="18" ry="24" fill="#ff3b5c" opacity=".55"/><ellipse cx="45" cy="56" rx="8" ry="12" fill="#ffd0d8" opacity=".6"/></svg>
+        <span class="bldlbl">Raid Portal</span></button>
+      <button class="bld" data-go="map" style="left:35%;top:66%">
+        <svg class="bsvg" viewBox="0 0 96 74"><rect x="8" y="18" width="18" height="52" fill="#1b2233" stroke="#5b8fd6" stroke-width="1"/><rect x="70" y="18" width="18" height="52" fill="#1b2233" stroke="#5b8fd6" stroke-width="1"/><rect x="26" y="34" width="44" height="36" fill="#141a28"/><path d="M48,38 a10,12 0 0 1 10,12 V70 H38 V50 a10,12 0 0 1 10,-12z" fill="#0c1018"/><rect x="8" y="12" width="18" height="6" fill="#5b8fd6" opacity=".5"/><rect x="70" y="12" width="18" height="6" fill="#5b8fd6" opacity=".5"/></svg>
+        <span class="bldlbl">Campaign Gate</span></button>
+      <button class="bld" data-go="arena" style="left:72%;top:68%">
+        <svg class="bsvg" viewBox="0 0 90 62"><ellipse cx="45" cy="34" rx="40" ry="24" fill="none" stroke="#e8394f" stroke-width="6"/><ellipse cx="45" cy="34" rx="40" ry="24" fill="#2a1218" opacity=".6"/><path d="M18,28 v10 M30,24 v14 M45,22 v16 M60,24 v14 M72,28 v10" stroke="#e8394f" stroke-width="3" opacity=".7"/></svg>
+        <span class="bldlbl">Arena</span></button>
+      <div id="hubFeat"></div>
+    </div>
+    <nav id="homeNav">
+      <button class="navb on" data-nav="home"><span class="navi">🏠</span><span>Home</span></button>
+      <button class="navb" data-nav="heroes"><span class="navi">🛡️</span><span>Heroes</span></button>
+      <button class="navb" data-nav="summon"><span class="navi">🔮</span><span>Summon</span></button>
+      <button class="navb" data-nav="raid"><span class="navi">🌀</span><span>Raid</span></button>
+      <button class="navb" data-nav="pass"><span class="navi">✦</span><span>Pass</span></button>
+    </nav>
+  </section>
+
   <section class="screen" id="screen-map">
     <div id="mapBg"></div>
     <div class="scrhead"><div><div class="eyebrow">Campaign</div><h1>Ashgate</h1></div>
-      <button class="ghost" id="toPass">Pass</button>
-      <button class="ghost" id="toArena">Arena</button>
-      <button class="ghost" id="toHeroes">Heroes</button>
-      <button class="ghost" id="toGacha">Summon</button></div>
+      <button class="ghost back" id="mapHome">◄ Home</button></div>
     <div id="mapRes">
       <span class="res"><i class="cur crystal"></i> <b class="num crysN">0</b></span>
       <span class="res"><i class="cur gold"></i> <b class="num goldN">0</b></span>
@@ -2704,7 +2783,22 @@ function endGame(win){
 }
 
 /* ---------- controls ---------- */
-$('#toMap').addEventListener('click',()=>{buildMap();renderCrys();show('screen-map');});
+$('#toMap').addEventListener('click',()=>{openHome();});
+/* ---------- Home hub navigation ---------- */
+function updateHomeNav(active){$$('#homeNav .navb').forEach(b=>b.classList.toggle('on',b.dataset.nav===active));}
+function openHome(){renderCrys();updateHomeNav('home');const f=$('#hubFeat');if(f)f.textContent='Tap a building to enter';show('screen-home');}
+function navGo(dest){
+  if(dest==='home'){openHome();return;}
+  updateHomeNav(dest==='summon'?'summon':dest==='raid'?'raid':dest==='pass'?'pass':dest==='heroes'?'heroes':'');
+  if(dest==='heroes'){buildHeroGrid();renderCrys();show('screen-heroes');}
+  else if(dest==='summon'||dest==='gacha'){openGacha();}
+  else if(dest==='raid'){openRaidTeam();}
+  else if(dest==='arena'){openArena();}
+  else if(dest==='map'){buildMap();renderCrys();show('screen-map');}
+  else if(dest==='pass'){openPass();}
+}
+$$('#hubScene .bld').forEach(b=>b.addEventListener('click',()=>{SFX.tap();navGo(b.dataset.go);}));
+$$('#homeNav .navb').forEach(b=>b.addEventListener('click',()=>{SFX.tap();navGo(b.dataset.nav);}));
 $$('#mapModes .modebtn').forEach(btn=>btn.addEventListener('click',()=>{
   const wantHard=btn.dataset.mode==='hard'; if(wantHard&&!campaignHasBoss())return;
   hardMode=wantHard;SFX.tap();buildMap();}));
@@ -2735,15 +2829,15 @@ renderCrys();
 })();
 { const tb=$('#titleBg'), u=(typeof BG!=='undefined')?BG['1']:null;
   if(tb&&u){ tb.style.backgroundImage=`url(${u})`; tb.classList.add('on'); } }
-$('#toGacha').addEventListener('click',()=>{openGacha();});
-$('#toHeroes').addEventListener('click',()=>{buildHeroGrid();renderCrys();show('screen-heroes');});
-$('#toArena').addEventListener('click',()=>{SFX.tap();openArena();});
-$('#arBack').addEventListener('click',()=>{buildMap();show('screen-map');});
-$('#heroesBack').addEventListener('click',()=>{buildMap();renderCrys();show('screen-map');});
+$('#toGacha')?.addEventListener('click',()=>{openGacha();}); $('#mapHome')?.addEventListener('click',()=>{openHome();});
+$('#toHeroes')?.addEventListener('click',()=>{buildHeroGrid();renderCrys();show('screen-heroes');});
+$('#toArena')?.addEventListener('click',()=>{SFX.tap();openArena();});
+$('#arBack').addEventListener('click',()=>{openHome();});
+$('#heroesBack').addEventListener('click',()=>{openHome();});
 $('#toCodex').addEventListener('click',()=>{SFX.tap();openCodex();});
 $('#codexBack').addEventListener('click',()=>{buildHeroGrid();renderCrys();show('screen-heroes');});
-$('#toPass').addEventListener('click',()=>{SFX.tap();openPass();});
-$('#passBack').addEventListener('click',()=>{buildMap();renderCrys();show('screen-map');});
+$('#toPass')?.addEventListener('click',()=>{SFX.tap();openPass();});
+$('#passBack').addEventListener('click',()=>{openHome();});
 $('#bpClaimAll').addEventListener('click',bpClaimAll);
 $('#hdBack').addEventListener('click',()=>{buildHeroGrid();show('screen-heroes');});
 $('#btnLevel').addEventListener('click',doLevel);
@@ -2753,7 +2847,7 @@ $('#geBack').addEventListener('click',()=>{renderHero();show('screen-hero');});
 $('#geAuto').addEventListener('click',autoEquip);
 $('#geForge').addEventListener('click',forge);
 $('#geScrap').addEventListener('click',scrapCommons);
-$('#gachaBack').addEventListener('click',()=>{buildMap();renderCrys();show('screen-map');});
+$('#gachaBack').addEventListener('click',()=>{openHome();});
 $('#pull1').addEventListener('click',()=>pull(1));
 $('#pull10').addEventListener('click',()=>pull(10));
 $('#pullResults').addEventListener('click',()=>{
