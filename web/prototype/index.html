@@ -870,6 +870,45 @@
   #result.res-lose #resMvp .mvpport{animation:resRise .6s ease both}
   #result.res-lose #resEyebrow,#result.res-lose #resSub,#result.res-lose .rowbtn{animation:resRise .5s ease .2s both}
 
+  /* ============ Battle Pass ============ */
+  #screen-pass{background:radial-gradient(circle at 50% 0%,rgba(28,20,52,.5),transparent 55%)}
+  #bpTop{padding:12px 16px 8px;border-bottom:1px solid var(--line)}
+  #bpHead{display:flex;align-items:center;justify-content:space-between}
+  .bpsea{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--umbra)}
+  .bpname{font-family:var(--font-title);font-size:17px;line-height:1.1}
+  .bplvl{font-family:var(--font-title);text-align:right} .bplvl b{font-size:24px;color:var(--warn)} .bplvl span{color:var(--muted);font-size:12px}
+  .bpxp{position:relative;height:16px;border-radius:9px;background:#221c34;border:1px solid var(--line);overflow:hidden;margin:8px 0}
+  .bpxpfill{position:absolute;top:0;left:0;bottom:0;background:linear-gradient(90deg,#4a3a8f,#7b5cff 70%,#b9a5ff);transition:width .4s;box-shadow:0 0 14px rgba(123,92,255,.5)}
+  .bpxptx{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.85)}
+  .bppremrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:6px 0 2px}
+  .bppremrow .cta{padding:8px 16px;font-size:12px} .bppremrow .cta small{opacity:.7;letter-spacing:.04em}
+  .bppremnote{font-size:9.5px;color:var(--faint);flex:1;min-width:120px;line-height:1.3}
+  .bppremon{font-size:12px;color:var(--warn);letter-spacing:.04em}
+  .bpactions{margin-top:8px} #bpClaimAll{width:100%;font-size:12px;padding:10px}
+  #bpClaimAll:disabled{opacity:.4}
+  #bpLegend{display:flex;gap:18px;padding:8px 16px 2px;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+  #bpRail{flex:1;display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;padding:14px 16px 26px;align-items:flex-start}
+  .bpcol{flex:none;width:76px;display:flex;flex-direction:column;align-items:center;gap:6px}
+  .bpcol.mile{width:90px}
+  .bpbadge{width:26px;height:26px;flex:none;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-title);font-size:13px;
+    background:var(--panel2);border:2px solid var(--faint);color:var(--muted);position:relative}
+  .bpcol.reached .bpbadge{border-color:var(--umbra);color:var(--ink);box-shadow:0 0 12px rgba(123,92,255,.4)}
+  .bpcol.mile .bpbadge{border-radius:7px}
+  .bpstar{position:absolute;top:-9px;font-size:9px;color:var(--warn)}
+  .bpcell{width:100%;min-height:64px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;position:relative;padding:6px 4px}
+  .bpcol.mile .bpcell{min-height:76px}
+  .bpcell.free{border-top:2px solid var(--hlr)} .bpcell.paid{border-top:2px solid var(--warn)}
+  .bpcell.lock{opacity:.4}
+  .bpcell.ready{cursor:pointer;box-shadow:0 0 0 1px var(--warn),0 0 12px color-mix(in srgb,var(--warn) 40%,transparent);animation:bpReady 1.7s ease-in-out infinite}
+  @keyframes bpReady{0%,100%{box-shadow:0 0 0 1px var(--warn),0 0 8px color-mix(in srgb,var(--warn) 30%,transparent)}50%{box-shadow:0 0 0 1px var(--warn),0 0 20px color-mix(in srgb,var(--warn) 60%,transparent)}}
+  .bpcell.claimed{opacity:.5}
+  .bprw{display:flex;flex-direction:column;align-items:center;gap:1px}
+  .bpi{font-size:17px;line-height:1} .bpi .cur{width:1.2em;height:1.2em}
+  .bpq{font-size:9px;color:var(--muted);text-align:center;line-height:1.05}
+  .bpck{position:absolute;top:3px;right:5px;font-size:11px;color:var(--good)}
+  .bplocki{position:absolute;top:3px;right:5px;font-size:9px;opacity:.7}
+
   @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.05ms!important}
     #ambient,.resfx{display:none}
     .hero .p,.ecard .p,#battleBg.on,#titleBg.on,#mapBg.on,.track,.node.current .dot,
@@ -902,6 +941,7 @@
   <section class="screen" id="screen-map">
     <div id="mapBg"></div>
     <div class="scrhead"><div><div class="eyebrow">Campaign</div><h1>Ashgate</h1></div>
+      <button class="ghost" id="toPass">Pass</button>
       <button class="ghost" id="toArena">Arena</button>
       <button class="ghost" id="toHeroes">Heroes</button>
       <button class="ghost" id="toGacha">Summon</button></div>
@@ -960,6 +1000,20 @@
     <div class="scrhead"><div><div class="eyebrow">Collection</div><h1>Codex</h1></div>
       <button class="ghost back" id="codexBack">Back</button></div>
     <div id="codexBody"></div>
+  </section>
+
+  <!-- BATTLE PASS -->
+  <section class="screen" id="screen-pass">
+    <div class="scrhead"><div><div class="eyebrow">Season</div><h1>Vow</h1></div>
+      <button class="ghost back" id="passBack">Back</button></div>
+    <div id="bpTop">
+      <div id="bpHead"></div>
+      <div id="bpXpBar" class="bpxp"></div>
+      <div id="bpPrem" class="bppremrow"></div>
+      <div class="bpactions"><button class="cta" id="bpClaimAll">Claim All</button></div>
+    </div>
+    <div id="bpLegend"><span>▲ Free track</span><span>▼ Premium track</span></div>
+    <div id="bpRail"></div>
   </section>
 
   <!-- SETTINGS -->
@@ -1165,6 +1219,7 @@ const SFX=(()=>{
   };
 })();
 let owned=new Set(STARTER), crystals=4500, gold=20000, starShards=120, relics=0, sigils=0, pity=0;
+let bpXP=0, bpClaimF=[], bpClaimP=[], bpPrem=false;   // Battle Pass "Gatewarden's Vow" (doc 10 s4)
 let progress={};
 const RATES={L:0.03,E:0.14,R:0.38,C:0.45};
 function prog(id){if(!progress[id]){const h=hero(id);progress[id]={level:20,stars:h?h.startStars:1,skills:{S1:1,S2:1,S3:1},asc:0};}
@@ -1256,13 +1311,14 @@ function renderCrys(){
 const SAVE_KEY='ashgate_save_v1';
 let hasSave=false;
 function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(
-  {v:2,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,raidBest,crystals,gold,starShards,relics,sigils,pity,inventory,gearOn,gearUID,loadouts,daily,muted:ui.muted,pref:{speed:ui.speed,auto:ui.auto}}));}catch(e){}}
+  {v:2,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,raidBest,crystals,gold,starShards,relics,sigils,pity,inventory,gearOn,gearUID,loadouts,daily,bpXP,bpClaimF,bpClaimP,bpPrem,muted:ui.muted,pref:{speed:ui.speed,auto:ui.auto}}));}catch(e){}}
 function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s||(s.v!==1&&s.v!==2))return false;
   owned=new Set(s.owned);progress=s.progress||{};cleared=new Set(s.cleared);
   crystals=s.crystals??crystals;gold=s.gold??gold;starShards=s.starShards??starShards;relics=s.relics??0;sigils=s.sigils??0;pity=s.pity??0;
   inventory=s.inventory||[];gearOn=s.gearOn||{};gearUID=s.gearUID||inventory.reduce((m,p)=>Math.max(m,p.uid),0);
   loadouts=s.loadouts||{};clearedHard=new Set(s.clearedHard||[]);arenaRank=s.arenaRank||0;raidBest=s.raidBest||0;
   daily=s.daily||{date:'',win:0,summon:0,enhance:0,claimed:[]};dailyCheck();ui.muted=s.muted??false;
+  bpXP=s.bpXP||0;bpClaimF=s.bpClaimF||[];bpClaimP=s.bpClaimP||[];bpPrem=!!s.bpPrem;
   if(s.pref){ui.speed=s.pref.speed||1;ui.auto=!!s.pref.auto;}
   return true;}catch(e){return false;}}
 function resetSave(){try{localStorage.removeItem(SAVE_KEY);}catch(e){}location.reload();}
@@ -1366,7 +1422,72 @@ function renderHome(){
 function claimDaily(id){const t=DAILY_TASKS.find(x=>x.id===id);
   if(!t||daily.claimed.includes(id)||(daily[id]||0)<t.goal)return;
   if(t.reward.crystals)crystals+=t.reward.crystals; if(t.reward.gold)gold+=t.reward.gold;
-  daily.claimed.push(id);SFX.rare('E');renderHome();saveGame();}
+  daily.claimed.push(id);bpGain(120);SFX.rare('E');renderHome();saveGame();}
+
+/* ---------- Battle Pass: Gatewarden's Vow (doc 10 s4) ---------- */
+const BP={ name:"Gatewarden's Vow · Season 1", levels:50, xpPer:1000,
+  per:{ free:[{t:'gold',n:15000}], paid:[{t:'crystal',n:40},{t:'ore',n:2}] },
+  mile:{ 5:{free:[{t:'ticket',n:2}], paid:[{t:'crate',n:4}]},
+        10:{free:[{t:'relic',n:2}], paid:[{t:'ticket',n:2},{t:'gleam',n:400}]},
+        20:{free:[{t:'crystal',n:200}], paid:[{t:'cos'}]},
+        30:{free:[{t:'ticket',n:1}], paid:[{t:'crystal',n:500}]},
+        40:{free:[{t:'relic',n:2}], paid:[{t:'frag',n:2}]},
+        50:{free:[{t:'crystal',n:400}], paid:[{t:'cos'},{t:'crystal',n:600}]} } };
+const BPRWD={
+  gold:{ic:'<i class="cur gold"></i>',g:n=>gold+=n,lbl:n=>n.toLocaleString()},
+  crystal:{ic:'<i class="cur crystal"></i>',g:n=>crystals+=n,lbl:n=>n},
+  relic:{ic:'<i class="cur relic"></i>',g:n=>relics+=n,lbl:n=>'×'+n},
+  shard:{ic:'<i class="cur shard"></i>',g:n=>starShards+=n,lbl:n=>'×'+n},
+  ticket:{ic:'🎟️',g:n=>crystals+=n*150,lbl:n=>'Vow ×'+n},
+  crate:{ic:'<i class="cur shard"></i>',g:n=>starShards+=n*20,lbl:n=>'Crate ×'+n},
+  ore:{ic:'<i class="cur gold"></i>',g:n=>gold+=n*2000,lbl:n=>'Ore ×'+n},
+  gleam:{ic:'✧',g:n=>crystals+=Math.round(n/4),lbl:n=>'Gleam '+n},
+  frag:{ic:'❂',g:n=>sigils+=n*40,lbl:n=>'Frag ×'+n},
+  cos:{ic:'🎭',g:()=>{},lbl:()=>'Cosmetic'} };
+function bpLevel(){return Math.min(BP.levels, Math.floor(bpXP/BP.xpPer));}
+function bpRewards(L){return BP.mile[L] || {free:BP.per.free, paid:BP.per.paid};}
+function bpGain(n){bpXP=Math.min(BP.xpPer*BP.levels, bpXP+n); const s=$('#screen-pass'); if(s&&s.classList.contains('on'))renderPass();}
+function bpRewardHTML(r){const m=BPRWD[r.t]||BPRWD.cos; const lbl=r.n?m.lbl(r.n):m.lbl(); return `<div class="bprw"><span class="bpi">${m.ic}</span><span class="bpq">${lbl}</span></div>`;}
+function grantReward(r){const m=BPRWD[r.t]; if(m)m.g(r.n||0);}
+function openPass(){renderPass();renderCrys();show('screen-pass');}
+function renderPass(){
+  const lvl=bpLevel(), prog=bpXP%BP.xpPer, pctv=Math.round(100*prog/BP.xpPer), maxed=lvl>=BP.levels;
+  $('#bpHead').innerHTML=`<div><div class="bpsea">Battle Pass</div><div class="bpname">${BP.name}</div></div>
+    <div class="bplvl"><b>Lv ${lvl}</b> <span>/ ${BP.levels}</span></div>`;
+  $('#bpXpBar').innerHTML=`<div class="bpxpfill" style="width:${maxed?100:pctv}%"></div><span class="bpxptx">${maxed?'MAX SEASON':prog+' / '+BP.xpPer+' XP'}</span>`;
+  const pw=$('#bpPrem');
+  pw.innerHTML = bpPrem ? `<span class="bppremon">★ Premium track unlocked</span>`
+    : `<button class="cta" id="bpUnlock">Unlock Premium <small>(demo)</small></button><span class="bppremnote">cosmetics & acceleration only — no exclusive units or stats (doc 10)</span>`;
+  const ub=$('#bpUnlock'); if(ub)ub.addEventListener('click',()=>{bpPrem=true;SFX.rare('L');renderPass();saveGame();});
+  let rail='';
+  for(let L=1;L<=BP.levels;L++){
+    const rw=bpRewards(L), reached=L<=lvl, mile=!!BP.mile[L];
+    const fState=bpClaimF.includes(L)?'claimed':(reached?'ready':'lock');
+    const pState=bpClaimP.includes(L)?'claimed':((reached&&bpPrem)?'ready':'lock');
+    rail+=`<div class="bpcol${mile?' mile':''}${reached?' reached':''}">
+      <div class="bpcell free ${fState}" data-l="${L}" data-tr="f">${rw.free.map(bpRewardHTML).join('')}${fState==='claimed'?'<span class="bpck">✓</span>':''}</div>
+      <div class="bpbadge">${L}${mile?'<span class="bpstar">★</span>':''}</div>
+      <div class="bpcell paid ${pState}" data-l="${L}" data-tr="p">${rw.paid.map(bpRewardHTML).join('')}${pState==='claimed'?'<span class="bpck">✓</span>':''}${(!bpPrem&&reached)?'<span class="bplocki">🔒</span>':''}</div>
+    </div>`;
+  }
+  const rail_el=$('#bpRail'); rail_el.innerHTML=rail;
+  rail_el.querySelectorAll('.bpcell.ready').forEach(c=>c.addEventListener('click',()=>bpClaim(+c.dataset.l, c.dataset.tr)));
+  let pending=0; for(let L=1;L<=lvl;L++){ if(!bpClaimF.includes(L))pending++; if(bpPrem&&!bpClaimP.includes(L))pending++; }
+  const ca=$('#bpClaimAll'); ca.disabled=pending===0; ca.textContent=pending?`Claim All (${pending})`:'Nothing to claim';
+  const cur=rail_el.children[Math.max(0,Math.min(BP.levels,lvl)-1)]; if(cur)cur.scrollIntoView({inline:'center',block:'nearest'});
+}
+function bpClaim(L,tr){
+  if(L>bpLevel())return; const rw=bpRewards(L);
+  if(tr==='f'){ if(bpClaimF.includes(L))return; rw.free.forEach(grantReward); bpClaimF.push(L); }
+  else { if(!bpPrem||bpClaimP.includes(L))return; rw.paid.forEach(grantReward); bpClaimP.push(L); }
+  SFX.rare('E'); renderCrys(); renderPass(); saveGame();
+}
+function bpClaimAll(){
+  const lvl=bpLevel(); let got=0;
+  for(let L=1;L<=lvl;L++){ if(!bpClaimF.includes(L)){bpRewards(L).free.forEach(grantReward);bpClaimF.push(L);got++;}
+    if(bpPrem&&!bpClaimP.includes(L)){bpRewards(L).paid.forEach(grantReward);bpClaimP.push(L);got++;} }
+  if(got){SFX.rare('L');renderCrys();renderPass();saveGame();}
+}
 
 /* ---------- PvP ARENA ---------- */
 let arenaRank=0, arenaTarget=null;
@@ -2543,6 +2664,7 @@ function resultCinematic(win){
 }
 function endGame(win){
   G.over=true;renderTelegraph();SFX[win?'win':'lose']();
+  if(win)bpGain(60);   // Battle Pass XP from any victory (campaign/arena/raid/trial)
   if(G.pvp)return endArena(win);
   if(G.raid)return endRaid(win);
   if(G.trial)return endTrial(win);
@@ -2620,6 +2742,9 @@ $('#arBack').addEventListener('click',()=>{buildMap();show('screen-map');});
 $('#heroesBack').addEventListener('click',()=>{buildMap();renderCrys();show('screen-map');});
 $('#toCodex').addEventListener('click',()=>{SFX.tap();openCodex();});
 $('#codexBack').addEventListener('click',()=>{buildHeroGrid();renderCrys();show('screen-heroes');});
+$('#toPass').addEventListener('click',()=>{SFX.tap();openPass();});
+$('#passBack').addEventListener('click',()=>{buildMap();renderCrys();show('screen-map');});
+$('#bpClaimAll').addEventListener('click',bpClaimAll);
 $('#hdBack').addEventListener('click',()=>{buildHeroGrid();show('screen-heroes');});
 $('#btnLevel').addEventListener('click',doLevel);
 $('#btnStar').addEventListener('click',doStar);

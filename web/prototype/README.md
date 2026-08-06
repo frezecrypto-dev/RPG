@@ -109,6 +109,18 @@ Shards / Ash Relics), a **Featured Summon** card for the rotating banner unit
 reward or roster change — and **Daily Objectives** (win 3 battles, summon once,
 enhance gear once) that track your play and pay out on claim, resetting each day.
 
+## Battle Pass (doc 10 s5)
+
+A **Gatewarden's Vow** season pass (Heroes ▸ *Pass* from the map) — 50 levels,
+1000 XP each, earned by winning battles and claiming daily objectives. A
+two-track reward rail (free + premium) mirrors the doc's economy: every level
+pays Gold on the free track and Crystals + gear ore on premium, with milestone
+levels (5/10/20/30/40/50) dropping summon **Vow tickets**, Ash Relics, star
+crates, and cosmetics. Rewards claim per-node or **Claim All**, and state
+persists. A clearly-labelled **Unlock Premium (demo)** button opens the paid
+track — faithful to doc 10's rule that the pass sells **cosmetics and
+acceleration only, never exclusive units or stats**.
+
 ## Hard mode (endgame farm)
 
 Clearing a chapter's boss on Normal unlocks a **Normal / Hard** toggle on the
