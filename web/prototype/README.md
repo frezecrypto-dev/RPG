@@ -121,6 +121,29 @@ persists. A clearly-labelled **Unlock Premium (demo)** button opens the paid
 track — faithful to doc 10's rule that the pass sells **cosmetics and
 acceleration only, never exclusive units or stats**.
 
+## Events / Live-Ops (doc 10 s3)
+
+A **Live-Ops** hub (bottom-bar *Events*) runs the retention cadence from the
+design's `data/events.json`:
+
+- **Faction Week** — a 5-week rotation (Emberguard → Hollowed → Choir →
+  Freeblades → Gravebound, keyed off the real calendar) grants **+15% ATK / DEF /
+  HP** to every unit of the featured faction. It's not a banner — it fires at
+  battle start in every campaign, raid, and arena fight, stacking on top of the
+  faction-synergy bonus, so the rotating spotlight actually changes which of your
+  heroes are worth fielding this week.
+- **Point-farm event** ("Ember Reclamation") — clearing any PvE stage banks
+  **Ember Cinders** (bosses and Hard runs pay more). A **milestone rail**
+  (500 / 2,000 / 5,000) drops Crystals, a Featured Vow ticket, and a cut-in
+  cosmetic, while an **event shop** spends the same Cinders on Featured Vow
+  tickets, Ash Relics, Star Crates, Gleam, and Gold — each with a purchase cap,
+  exactly as the config specifies. A live countdown shows the 2-week window.
+- **28-day login track** — one claim per calendar day, in order; miss a day and
+  it *pauses, never resets* (doc 10). Milestone days (7 / 14 / 21 / 28) carry
+  Featured Vow tickets and Crystal drops — the F2P retention anchor.
+
+All of it persists in the save (schema v3) alongside your progress.
+
 ## Hard mode (endgame farm)
 
 Clearing a chapter's boss on Normal unlocks a **Normal / Hard** toggle on the

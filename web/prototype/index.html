@@ -909,6 +909,71 @@
   .bpck{position:absolute;top:3px;right:5px;font-size:11px;color:var(--good)}
   .bplocki{position:absolute;top:3px;right:5px;font-size:9px;opacity:.7}
 
+  /* ============ Events (live ops · doc 10 s3) ============ */
+  #screen-events{background:radial-gradient(circle at 50% 0%,rgba(52,24,20,.42),transparent 55%)}
+  #evtRes{display:flex;flex-wrap:wrap;gap:6px 14px;padding:6px 16px 4px;font-size:12px}
+  #evtScroll{flex:1;overflow-y:auto;padding:10px 16px 26px;display:flex;flex-direction:column;gap:14px}
+  .evtcard{border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,rgba(24,18,36,.7),rgba(14,11,24,.7));overflow:hidden}
+  .evtcard .ehead{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:11px 13px;border-bottom:1px solid var(--line);
+    background:linear-gradient(90deg,rgba(255,120,60,.12),transparent)}
+  .evtcard .etag{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--umbra)}
+  .evtcard .etitle{font-family:var(--font-title);font-size:16px;line-height:1.1}
+  .evtcard .etimer{font-size:10px;color:var(--warn);white-space:nowrap;text-align:right}
+  .evtcard .etimer b{font-size:12px}
+  /* faction week banner */
+  #evtFaction{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;
+    border:1px solid var(--line);background:linear-gradient(90deg,color-mix(in srgb,var(--fw) 22%,transparent),rgba(14,11,24,.5))}
+  #evtFaction .fwring{width:44px;height:44px;flex:none;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-size:22px;background:radial-gradient(circle,color-mix(in srgb,var(--fw) 45%,transparent),transparent 72%);border:2px solid var(--fw)}
+  #evtFaction .fwtx{flex:1;min-width:0}
+  #evtFaction .fwlbl{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+  #evtFaction .fwname{font-family:var(--font-title);font-size:15px} #evtFaction .fwname b{color:var(--fw)}
+  #evtFaction .fwsub{font-size:10px;color:var(--muted);line-height:1.35;margin-top:2px}
+  /* event currency + milestones */
+  .ecur{display:flex;align-items:center;gap:8px;padding:10px 13px;border-bottom:1px solid var(--line)}
+  .ecur .eci{font-size:20px}
+  .ecur .ecn{font-family:var(--font-title);font-size:20px;color:#ffcf6b}
+  .ecur .ecu{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .emile{padding:12px 13px 4px}
+  .emile .emlabel{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:9px}
+  .emtrack{position:relative;display:flex;justify-content:space-between;margin:0 6px 6px}
+  .emtrack::before{content:"";position:absolute;left:0;right:0;top:13px;height:3px;background:var(--panel2);border-radius:2px}
+  .emtrack .emfill{position:absolute;left:0;top:13px;height:3px;background:linear-gradient(90deg,#ff7a3d,#ffcf6b);border-radius:2px;box-shadow:0 0 8px rgba(255,140,60,.6);transition:width .5s}
+  .emnode{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:5px;width:33%}
+  .emdot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;
+    background:var(--panel2);border:2px solid var(--faint);color:var(--muted)}
+  .emnode.reached .emdot{border-color:#ff9a4d;color:var(--ink);box-shadow:0 0 12px rgba(255,140,60,.45)}
+  .emnode.ready .emdot{cursor:pointer;border-color:var(--warn);animation:bpReady 1.7s ease-in-out infinite}
+  .emnode.claimed .emdot{opacity:.5}
+  .empts{font-size:9px;color:var(--muted)} .emnode.reached .empts{color:#ffcf6b}
+  .emrw{font-size:8.5px;color:var(--muted);text-align:center;line-height:1.15;min-height:20px;max-width:78px}
+  .emclaim{font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:var(--warn);cursor:pointer}
+  /* event shop */
+  .eshop{padding:6px 11px 12px}
+  .eshead{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);padding:6px 2px 9px}
+  .eshgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .eitem{border:1px solid var(--line);border-radius:11px;background:var(--panel2);padding:10px 9px;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;position:relative}
+  .eitem .eii{font-size:24px;line-height:1} .eitem .eii .cur{width:1.15em;height:1.15em}
+  .eitem .ein{font-size:10px;color:var(--ink);line-height:1.1;min-height:24px;display:flex;align-items:center}
+  .eitem .eibuy{margin-top:2px;width:100%;padding:6px 4px;border-radius:8px;border:1px solid var(--umbra);background:rgba(255,120,60,.1);
+    color:#ffcf6b;font-size:10px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px}
+  .eitem .eibuy:disabled{opacity:.4;cursor:default}
+  .eitem .eibuy .cur{width:1em;height:1em}
+  .eitem .eistock{position:absolute;top:6px;right:8px;font-size:8px;color:var(--faint);letter-spacing:.05em}
+  .eitem.sold{opacity:.55} .eitem.sold .eibuy{background:none;border-color:var(--line);color:var(--muted)}
+  /* login track */
+  #evtLogin .elgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;padding:11px 13px 13px}
+  .elday{border:1px solid var(--line);border-radius:9px;background:var(--panel2);padding:6px 2px 5px;display:flex;flex-direction:column;align-items:center;gap:2px;position:relative;min-height:52px;justify-content:center}
+  .elday .eldn{font-size:8px;color:var(--faint);letter-spacing:.04em}
+  .elday .eldi{font-size:15px;line-height:1} .elday .eldi .cur{width:1.1em;height:1.1em}
+  .elday .eldq{font-size:8px;color:var(--muted);line-height:1}
+  .elday.notable{border-color:var(--umbra);background:linear-gradient(180deg,rgba(123,92,255,.14),var(--panel2))}
+  .elday.claimed{opacity:.45} .elday.claimed::after{content:"✓";position:absolute;top:2px;right:4px;font-size:9px;color:var(--good)}
+  .elday.today{border-color:var(--warn);box-shadow:0 0 0 1px var(--warn),0 0 12px color-mix(in srgb,var(--warn) 40%,transparent);cursor:pointer;animation:bpReady 1.7s ease-in-out infinite}
+  #evtLogin .elclaim{margin:0 13px 13px;width:calc(100% - 26px);padding:9px;font-size:12px}
+  #evtLogin .elclaim:disabled{opacity:.4}
+  #evtLogin .elnote{font-size:9px;color:var(--faint);padding:0 14px 12px;line-height:1.35}
+
   /* ============ Home hub (city) ============ */
   #screen-home{overflow:hidden}
   #homeSky{position:absolute;inset:0;z-index:0;background:
@@ -1035,6 +1100,7 @@
       <button class="navb on" data-nav="home"><span class="navi">🏠</span><span>Home</span></button>
       <button class="navb" data-nav="heroes"><span class="navi">🛡️</span><span>Heroes</span></button>
       <button class="navb" data-nav="summon"><span class="navi">🔮</span><span>Summon</span></button>
+      <button class="navb" data-nav="events"><span class="navi">🎉</span><span>Events</span></button>
       <button class="navb" data-nav="raid"><span class="navi">🌀</span><span>Raid</span></button>
       <button class="navb" data-nav="pass"><span class="navi">✦</span><span>Pass</span></button>
     </nav>
@@ -1113,6 +1179,22 @@
     </div>
     <div id="bpLegend"><span>▲ Free track</span><span>▼ Premium track</span></div>
     <div id="bpRail"></div>
+  </section>
+
+  <section class="screen" id="screen-events">
+    <div class="scrhead"><div><div class="eyebrow">Live Ops</div><h1>Events</h1></div>
+      <button class="ghost back" id="evtBack">Back</button></div>
+    <div id="evtRes">
+      <span class="res"><i class="cur crystal"></i> <b class="num crysN">0</b></span>
+      <span class="res"><i class="cur gold"></i> <b class="num goldN">0</b></span>
+      <span class="res"><i class="cur shard"></i> <b class="num shardN">0</b></span>
+      <span class="res"><i class="cur relic"></i> <b class="num relicN">0</b></span>
+    </div>
+    <div id="evtScroll">
+      <div id="evtFaction"></div>
+      <div id="evtEvent"></div>
+      <div id="evtLogin"></div>
+    </div>
   </section>
 
   <!-- SETTINGS -->
@@ -1321,6 +1403,8 @@ const SFX=(()=>{
 })();
 let owned=new Set(STARTER), crystals=4500, gold=20000, starShards=120, relics=0, sigils=0, pity=0;
 let bpXP=0, bpClaimF=[], bpClaimP=[], bpPrem=false;   // Battle Pass "Gatewarden's Vow" (doc 10 s4)
+let evtEarned=0, evtBal=0, evtMile=[], evtShop={};    // Events point-farm (doc 10 s3): earned=lifetime(milestones), bal=spendable(shop)
+let login={n:0, date:''};                             // 28-day login track (pauses on miss, never resets)
 let progress={};
 const RATES={L:0.03,E:0.14,R:0.38,C:0.45};
 function prog(id){if(!progress[id]){const h=hero(id);progress[id]={level:20,stars:h?h.startStars:1,skills:{S1:1,S2:1,S3:1},asc:0};}
@@ -1412,21 +1496,22 @@ function renderCrys(){
 const SAVE_KEY='ashgate_save_v1';
 let hasSave=false;
 function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(
-  {v:2,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,raidBest,crystals,gold,starShards,relics,sigils,pity,inventory,gearOn,gearUID,loadouts,daily,bpXP,bpClaimF,bpClaimP,bpPrem,muted:ui.muted,pref:{speed:ui.speed,auto:ui.auto}}));}catch(e){}}
-function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s||(s.v!==1&&s.v!==2))return false;
+  {v:3,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,raidBest,crystals,gold,starShards,relics,sigils,pity,inventory,gearOn,gearUID,loadouts,daily,bpXP,bpClaimF,bpClaimP,bpPrem,evtEarned,evtBal,evtMile,evtShop,login,muted:ui.muted,pref:{speed:ui.speed,auto:ui.auto}}));}catch(e){}}
+function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s||(s.v!==1&&s.v!==2&&s.v!==3))return false;
   owned=new Set(s.owned);progress=s.progress||{};cleared=new Set(s.cleared);
   crystals=s.crystals??crystals;gold=s.gold??gold;starShards=s.starShards??starShards;relics=s.relics??0;sigils=s.sigils??0;pity=s.pity??0;
   inventory=s.inventory||[];gearOn=s.gearOn||{};gearUID=s.gearUID||inventory.reduce((m,p)=>Math.max(m,p.uid),0);
   loadouts=s.loadouts||{};clearedHard=new Set(s.clearedHard||[]);arenaRank=s.arenaRank||0;raidBest=s.raidBest||0;
   daily=s.daily||{date:'',win:0,summon:0,enhance:0,claimed:[]};dailyCheck();ui.muted=s.muted??false;
   bpXP=s.bpXP||0;bpClaimF=s.bpClaimF||[];bpClaimP=s.bpClaimP||[];bpPrem=!!s.bpPrem;
+  evtEarned=s.evtEarned||0;evtBal=s.evtBal||0;evtMile=s.evtMile||[];evtShop=s.evtShop||{};login=s.login||{n:0,date:''};
   if(s.pref){ui.speed=s.pref.speed||1;ui.auto=!!s.pref.auto;}
   return true;}catch(e){return false;}}
 function resetSave(){try{localStorage.removeItem(SAVE_KEY);}catch(e){}location.reload();}
 /* ---------- settings + save export/import ---------- */
 function exportSave(){saveGame();try{return btoa(unescape(encodeURIComponent(localStorage.getItem(SAVE_KEY)||'')));}catch(e){return '';}}
 function importSave(str){try{const json=decodeURIComponent(escape(atob((str||'').trim())));const o=JSON.parse(json);
-  if(!o||(o.v!==1&&o.v!==2))return false;localStorage.setItem(SAVE_KEY,json);return true;}catch(e){return false;}}
+  if(!o||(o.v!==1&&o.v!==2&&o.v!==3))return false;localStorage.setItem(SAVE_KEY,json);return true;}catch(e){return false;}}
 function setMsg(t,ok){const el=$('#setMsg');if(!el)return;el.textContent=t;el.style.color=ok?'var(--good)':'var(--crit)';}
 function renderSettings(){
   $('#setSnd').textContent=ui.muted?'Off':'On';$('#setSnd').classList.toggle('on',!ui.muted);
@@ -1590,6 +1675,109 @@ function bpClaimAll(){
   if(got){SFX.rare('L');renderCrys();renderPass();saveGame();}
 }
 
+/* ---------- EVENTS (live ops · doc 10 s3 / data/events.json) ---------- */
+const EVT={
+  id:'EVT-POINTFARM', name:'Ember Reclamation', tag:'Point-farm · 2-week cycle',
+  cur:'Ember Cinders', curIc:'✦', durationDays:14,
+  earn:{normal:150, boss:400, hardMul:1.5, raid:200, arena:60}, // cinders per clear (points == spendable)
+  milestones:[
+    {p:500,  rw:[{t:'crystal',n:150}]},
+    {p:2000, rw:[{t:'ticket',n:1}]},
+    {p:5000, rw:[{t:'crystal',n:400},{t:'cos'}]},
+  ],
+  shop:[
+    {id:'TKT-FEAT',  ic:'🎟️', name:'Featured Vow ×2',   rw:{t:'ticket',n:2}, cost:1200, limit:2},
+    {id:'ASC-RELIC', ic:'<i class="cur relic"></i>', name:'Ash Relic ×3', rw:{t:'relic',n:3},  cost:800,  limit:3},
+    {id:'STAR-CRATE',ic:'<i class="cur shard"></i>', name:'Star Crate ×5',rw:{t:'crate',n:5},  cost:500,  limit:6},
+    {id:'GLEAM',     ic:'✧', name:'Gleam ×300',       rw:{t:'gleam',n:300},cost:400,  limit:2},
+    {id:'GOLD',      ic:'<i class="cur gold"></i>', name:'Gold ×100k',    rw:{t:'gold',n:100000},cost:200,limit:10},
+  ],
+};
+const EVT_FACTION_ROT=['EMBERGUARD','HOLLOWED','CHOIR','FREEBLADES','GRAVEBOUND']; // 5-week cycle (doc 04 s2 / doc 10 s3)
+const EVT_FACTION_PCT=0.15;
+const LOGIN=[ // 28-day track; notable days (7/14/21/28) carry Featured Tickets / Crystals (doc 10 s3)
+  {t:'gold',n:20000},{t:'crystal',n:60},{t:'shard',n:20},{t:'gold',n:20000},{t:'crystal',n:60},{t:'relic',n:1},{t:'ticket',n:1},
+  {t:'gold',n:30000},{t:'crystal',n:80},{t:'shard',n:30},{t:'gold',n:30000},{t:'crystal',n:80},{t:'relic',n:1},{t:'crystal',n:300},
+  {t:'gold',n:40000},{t:'crystal',n:100},{t:'shard',n:40},{t:'gold',n:40000},{t:'crystal',n:100},{t:'relic',n:2},{t:'ticket',n:1},
+  {t:'gold',n:50000},{t:'crystal',n:120},{t:'shard',n:50},{t:'gold',n:50000},{t:'crystal',n:120},{t:'relic',n:2},{t:'crystal',n:500},
+];
+const LOGIN_NOTABLE=new Set([6,13,20,27]); // 0-indexed days 7/14/21/28
+function evtFactionWeek(){const w=Math.floor(Date.now()/(7*864e5));return EVT_FACTION_ROT[((w%5)+5)%5];}
+function evtEndsMs(){const cyc=EVT.durationDays*864e5;return Math.ceil((Date.now()+1)/cyc)*cyc-Date.now();}
+function fmtDur(ms){const d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5);return d>0?`${d}d ${h}h`:`${h}h ${Math.floor(ms%36e5/6e4)}m`;}
+function evtEarn(n){if(n<=0)return;evtEarned+=n;evtBal+=n;const s=$('#screen-events');if(s&&s.classList.contains('on'))renderEvents();}
+function applyEventFactionWeek(units){ // +15% stats to featured-faction units at battle start (all PvE)
+  const fw=evtFactionWeek(), f=FACTION[fw]; if(!f)return;
+  units.forEach(u=>{ if(u.faction!==fw)return; const st=u.stats, t=EVT_FACTION_PCT;
+    st.atk=Math.round(st.atk*(1+t)); st.def=Math.round(st.def*(1+t)); st.hp=Math.round(st.hp*(1+t*.7));
+    u.max=st.hp; u.hp=Math.min(u.hp||st.hp, st.hp); u.hp=st.hp; u._evtfw=f.name; });
+}
+function evtClaimMile(i){const m=EVT.milestones[i];if(!m||evtEarned<m.p||evtMile.includes(i))return;
+  m.rw.forEach(grantReward);evtMile.push(i);SFX.rare('E');renderCrys();renderEvents();saveGame();}
+function evtBuy(i){const it=EVT.shop[i],bought=evtShop[it.id]||0;
+  if(bought>=it.limit||evtBal<it.cost)return;evtBal-=it.cost;evtShop[it.id]=bought+1;grantReward(it.rw);SFX.rare('R');renderCrys();renderEvents();saveGame();}
+function loginCanClaim(){return login.n<LOGIN.length && login.date!==new Date().toDateString();}
+function loginClaim(){if(!loginCanClaim())return;grantReward(LOGIN[login.n]);login.n++;login.date=new Date().toDateString();
+  SFX.rare('E');renderCrys();renderEvents();saveGame();}
+function openEvents(){renderEvents();renderCrys();updateHomeNav('events');show('screen-events');}
+function renderEvents(){
+  // --- faction week ---
+  const fw=evtFactionWeek(), f=FACTION[fw];
+  const fwEl=$('#evtFaction');
+  fwEl.style.setProperty('--fw',`var(${f.color})`);
+  fwEl.innerHTML=`<div class="fwring">${{EMBERGUARD:'🛡️',FREEBLADES:'⚔️',HOLLOWED:'🗡️',CHOIR:'✚',GRAVEBOUND:'💀'}[fw]||'✦'}</div>
+    <div class="fwtx"><div class="fwlbl">This Week · Faction Bonus</div>
+      <div class="fwname"><b>${f.name}</b> heroes empowered</div>
+      <div class="fwsub">+${Math.round(EVT_FACTION_PCT*100)}% ATK / DEF / HP to every ${f.name} unit in all campaign, raid & arena fights this week. Field them to cash in.</div></div>`;
+  // --- point-farm event ---
+  const pct=Math.min(100, Math.round(100*evtEarned/EVT.milestones[EVT.milestones.length-1].p));
+  const mnodes=EVT.milestones.map((m,i)=>{
+    const reached=evtEarned>=m.p, claimed=evtMile.includes(i), ready=reached&&!claimed;
+    const rw=m.rw.map(r=>{const b=BPRWD[r.t]||BPRWD.cos;return `${b.ic} ${r.n?b.lbl(r.n):b.lbl()}`;}).join('<br>');
+    return `<div class="emnode ${claimed?'claimed':reached?'reached':''} ${ready?'ready':''}" data-mi="${i}">
+      <div class="emdot">${claimed?'✓':reached?'★':'◆'}</div>
+      <div class="empts">${m.p.toLocaleString()}</div>
+      <div class="emrw">${rw}</div>
+      ${ready?'<div class="emclaim">Claim</div>':''}</div>`;
+  }).join('');
+  const shop=EVT.shop.map((it,i)=>{
+    const bought=evtShop[it.id]||0, sold=bought>=it.limit, afford=evtBal>=it.cost;
+    return `<div class="eitem ${sold?'sold':''}">
+      <span class="eistock">${it.limit-bought}/${it.limit}</span>
+      <div class="eii">${it.ic}</div>
+      <div class="ein">${it.name}</div>
+      <button class="eibuy" data-si="${i}" ${sold||!afford?'disabled':''}>${sold?'Sold out':`${EVT.curIc} ${it.cost}`}</button></div>`;
+  }).join('');
+  $('#evtEvent').innerHTML=`<div class="evtcard">
+    <div class="ehead"><div><div class="etag">${EVT.tag}</div><div class="etitle">${EVT.name}</div></div>
+      <div class="etimer">Ends in<br><b>${fmtDur(evtEndsMs())}</b></div></div>
+    <div class="ecur"><span class="eci">${EVT.curIc}</span><span class="ecn">${evtBal.toLocaleString()}</span>
+      <span class="ecu">${EVT.cur}</span><span style="flex:1"></span>
+      <span class="ecu" style="text-transform:none">earned ${evtEarned.toLocaleString()}</span></div>
+    <div class="emile"><div class="emlabel">Milestone Rewards</div>
+      <div class="emtrack"><div class="emfill" style="width:${pct}%"></div>${mnodes}</div></div>
+    <div class="eshop"><div class="eshead">Event Shop · spend ${EVT.cur} · resets at event end</div>
+      <div class="eshgrid">${shop}</div></div></div>`;
+  $('#evtEvent').querySelectorAll('.emnode.ready').forEach(n=>n.addEventListener('click',()=>evtClaimMile(+n.dataset.mi)));
+  $('#evtEvent').querySelectorAll('.eibuy').forEach(b=>b.addEventListener('click',()=>evtBuy(+b.dataset.si)));
+  // --- login track ---
+  const today=new Date().toDateString(), canL=loginCanClaim();
+  const grid=LOGIN.map((r,i)=>{
+    const b=BPRWD[r.t]||BPRWD.cos, claimed=i<login.n, isToday=canL&&i===login.n, notable=LOGIN_NOTABLE.has(i);
+    return `<div class="elday ${claimed?'claimed':''} ${isToday?'today':''} ${notable?'notable':''}" ${isToday?'data-login="1"':''}>
+      <span class="eldn">Day ${i+1}</span><span class="eldi">${b.ic}</span>
+      <span class="eldq">${r.n?b.lbl(r.n):b.lbl()}</span></div>`;
+  }).join('');
+  $('#evtLogin').innerHTML=`<div class="evtcard">
+    <div class="ehead"><div><div class="etag">28-day · pauses on miss, never resets</div><div class="etitle">Daily Login</div></div>
+      <div class="etimer">Day<br><b>${Math.min(login.n+1,LOGIN.length)}/${LOGIN.length}</b></div></div>
+    <div class="elgrid">${grid}</div>
+    <button class="cta elclaim" id="elClaim" ${canL?'':'disabled'}>${login.n>=LOGIN.length?'Track complete':canL?'Claim today’s reward':'Come back tomorrow'}</button>
+    <div class="elnote">Milestone days (7 / 14 / 21 / 28) carry Featured Vow tickets and Crystal drops — the F2P retention anchor from doc 10.</div></div>`;
+  const el=$('#elClaim'); if(el)el.addEventListener('click',loginClaim);
+  const td=$('#evtLogin .elday.today'); if(td)td.addEventListener('click',loginClaim);
+}
+
 /* ---------- PvP ARENA ---------- */
 let arenaRank=0, arenaTarget=null;
 function buildArena(){
@@ -1642,6 +1830,7 @@ function deployArena(sq){
   const foes=sq.team.map((id,idx)=>mkFoe(id,sq.lvl,sq.stars,idx===3));
   G={heroes:team.map(mkHero),waves:[foes],wi:0,enemies:foes,surge:0,round:1,over:false,busy:false,auto:ui.auto,speed:ui.speed,telegraph:null,hard:false,pvp:true,arena:sq};
   applySynergy(G.heroes);
+  applyEventFactionWeek(G.heroes);   // event faction-week +15% (doc 10 s3)
   $('#speedBtn').textContent=ui.speed+'×';$('#autoBtn').classList.toggle('active',ui.auto);
   $('#btlChapter').textContent='⚔ ARENA · '+sq.tier;
   $('#btlName').textContent=sq.name;
@@ -1697,6 +1886,7 @@ function deployRaid(){
   curHard=false; const boss=mkRaidBoss();
   G={heroes:team.map(mkHero),waves:[[boss]],wi:0,enemies:[boss],surge:0,round:1,over:false,busy:false,auto:ui.auto,speed:ui.speed,telegraph:null,hard:false,raid:true,raidPhase:1,raidBoss:boss};
   applySynergy(G.heroes);
+  applyEventFactionWeek(G.heroes);   // event faction-week +15% (doc 10 s3)
   $('#speedBtn').textContent=ui.speed+'×';$('#autoBtn').classList.toggle('active',ui.auto);
   $('#btlChapter').textContent='☠ WEEKLY RAID';
   $('#btlName').textContent='Krul Ascended, the Drowned Crown';
@@ -1741,6 +1931,7 @@ function deployTrial(){
   const allies=TRIAL_ALLIES.map(mkTrialHero), foes=TRIAL_FOES.map(mkEnemy);
   G={heroes:allies,waves:[foes],wi:0,enemies:foes,surge:50,round:1,over:false,busy:false,auto:ui.auto,speed:ui.speed,telegraph:null,hard:false,trial:true};
   applySynergy(G.heroes);
+  applyEventFactionWeek(G.heroes);   // event faction-week +15% (doc 10 s3)
   $('#speedBtn').textContent=ui.speed+'×';$('#autoBtn').classList.toggle('active',ui.auto);
   $('#btlChapter').textContent='★ FEATURED TRIAL';
   $('#btlName').textContent=hero(FEATURED_ID).name;
@@ -2367,6 +2558,7 @@ function deploy(){
   const waves=curStage.waves.map(w=>w.map(mkEnemy));
   G={heroes:team.map(mkHero),waves,wi:0,enemies:waves[0],surge:0,round:1,over:false,busy:false,auto:ui.auto,speed:ui.speed,telegraph:null,hard:curHard};
   applySynergy(G.heroes);
+  applyEventFactionWeek(G.heroes);   // event faction-week +15% (doc 10 s3)
   $('#speedBtn').textContent=ui.speed+'×';
   $('#autoBtn').classList.toggle('active',ui.auto);
   const _ch=DATA.chapters.find(c=>c.stages.some(s=>s.id===curStage.id));
@@ -2766,6 +2958,9 @@ function resultCinematic(win){
 function endGame(win){
   G.over=true;renderTelegraph();SFX[win?'win':'lose']();
   if(win)bpGain(60);   // Battle Pass XP from any victory (campaign/arena/raid/trial)
+  if(win){ let ec=G.raid?EVT.earn.raid : (G.pvp||G.trial)?EVT.earn.arena
+    : Math.round((curStage&&curStage.boss?EVT.earn.boss:EVT.earn.normal)*(curHard?EVT.earn.hardMul:1));
+    evtEarn(ec); }   // Ember Cinders from any PvE clear (event point-farm, doc 10 s3)
   if(G.pvp)return endArena(win);
   if(G.raid)return endRaid(win);
   if(G.trial)return endTrial(win);
@@ -2811,12 +3006,13 @@ function updateHomeNav(active){$$('#homeNav .navb').forEach(b=>b.classList.toggl
 function openHome(){renderCrys();updateHomeNav('home');const f=$('#hubFeat');if(f)f.textContent='Tap a building to enter';show('screen-home');}
 function navGo(dest){
   if(dest==='home'){openHome();return;}
-  updateHomeNav(dest==='summon'?'summon':dest==='raid'?'raid':dest==='pass'?'pass':dest==='heroes'?'heroes':'');
+  updateHomeNav(dest==='summon'?'summon':dest==='raid'?'raid':dest==='pass'?'pass':dest==='events'?'events':dest==='heroes'?'heroes':'');
   if(dest==='heroes'){buildHeroGrid();renderCrys();show('screen-heroes');}
   else if(dest==='summon'||dest==='gacha'){openGacha();}
   else if(dest==='raid'){openRaidTeam();}
   else if(dest==='arena'){openArena();}
   else if(dest==='map'){buildMap();renderCrys();show('screen-map');}
+  else if(dest==='events'){openEvents();}
   else if(dest==='pass'){openPass();}
 }
 $$('#hubScene .bld').forEach(b=>b.addEventListener('click',()=>{SFX.tap();navGo(b.dataset.go);}));
@@ -2877,6 +3073,7 @@ $('#toCodex').addEventListener('click',()=>{SFX.tap();openCodex();});
 $('#codexBack').addEventListener('click',()=>{buildHeroGrid();renderCrys();show('screen-heroes');});
 $('#toPass')?.addEventListener('click',()=>{SFX.tap();openPass();});
 $('#passBack').addEventListener('click',()=>{openHome();});
+$('#evtBack')?.addEventListener('click',()=>{openHome();});
 $('#bpClaimAll').addEventListener('click',bpClaimAll);
 $('#hdBack').addEventListener('click',()=>{buildHeroGrid();show('screen-heroes');});
 $('#btnLevel').addEventListener('click',doLevel);
