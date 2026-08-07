@@ -21,11 +21,17 @@ something you can actually tap and play.
 - **Tactical turns** (doc 02 s11) — the manual-play layer the spec calls for:
   on each of your heroes' turns the fight **pauses** and a command bar offers the
   unit's **Basic / Core (cooldown) / Ultimate (Surge)** skills; you pick the
-  skill *and* tap the target. Enemies you're strong into flash a **WEAK** badge,
-  and landing a weakness hit pops a "WEAK!" break for bonus damage + Surge — so
-  the damage-type system (doc 02 s6) is a live decision, not luck. One tap of
-  **Auto** hands the whole fight to the same data-driven AI for farming, and you
-  can flip between Manual and Auto mid-battle.
+  skill *and* tap the target. One tap of **Auto** hands the whole fight to the
+  same data-driven AI for farming, and you can flip Manual/Auto mid-battle.
+- **Break / Toughness** (the weakness core, à la Honkai: Star Rail). Every enemy
+  shows its **weakness types** (⚔ physical / ✦ magical / ☀ holy) and a cyan
+  **toughness bar**. Hitting a weakness drains toughness; empty it and the enemy
+  **BREAKS** — stunned for a turn, hit by a burst, and left **+25% vulnerable**.
+  This turns the damage-type triangle into the central tactical loop and the real
+  reason to build a broad, varied roster instead of one team.
+- **Cinematic focus** — the unit taking its turn is spotlit in **full vision**
+  (enlarged, lit, the rest of the field dimmed), with a **turn-order timeline**
+  across the top so you can read who acts next and plan your breaks.
 - **Shared Surge** (doc 02 s3) — the team fills one bar; ultimates cost 50/60 and
   are chosen from the command bar (or, in Auto, tap a lit hero to fire early).
 - The **doc 03 class-VFX identity** — each hero card wears its class hue

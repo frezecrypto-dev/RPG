@@ -381,6 +381,33 @@
   .unit.dead .sprite,.unit.dying .sprite{animation:dieFall .5s ease forwards}
   @keyframes dieFall{0%{opacity:1}100%{opacity:0;transform:translateY(14px) rotate(8deg) scale(.9);filter:grayscale(1) brightness(.4)}}
   .unit.dead{pointer-events:none}
+  /* toughness / break bar + weakness icons */
+  .unit .toughwrap{width:100%;height:3px;margin-top:1px;border-radius:2px;background:rgba(6,5,14,.7);overflow:hidden}
+  .unit .toughfill{height:100%;width:100%;transform-origin:left;border-radius:2px;background:linear-gradient(90deg,#3fd6ff,#9be9ff);box-shadow:0 0 5px rgba(90,210,255,.7)}
+  .unit.broken .toughwrap{background:rgba(255,120,60,.25)}
+  .unit.broken .toughfill{background:#ff8a3d;box-shadow:0 0 6px rgba(255,120,60,.8)}
+  .unit.broken .sprite{filter:drop-shadow(0 8px 7px rgba(0,0,0,.5)) saturate(.5) brightness(.8);animation:brokenwob .5s ease-in-out infinite!important}
+  @keyframes brokenwob{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
+  .unit.breaking .sprite{animation:breakhit .6s ease!important}
+  @keyframes breakhit{0%{filter:brightness(3) saturate(0)}25%{transform:scale(1.12)}100%{transform:scale(1)}}
+  .wkrow{white-space:nowrap} .unit .wk{font-size:8px;opacity:.9;filter:drop-shadow(0 0 3px currentColor)}
+  .unit.enemy .wk{color:#ffd27f}
+  .breakpop{position:absolute;font-family:var(--font-title);font-weight:800;font-size:26px;color:#7fe9ff;letter-spacing:.04em;
+    text-shadow:0 0 14px rgba(90,220,255,.9),0 2px 5px rgba(0,0,0,.9);animation:breakpop 1s ease-out forwards;z-index:10}
+  @keyframes breakpop{0%{transform:scale(.3) rotate(-10deg);opacity:0}20%{transform:scale(1.35) rotate(-3deg);opacity:1}55%{transform:scale(1) rotate(0)}100%{transform:translateY(-34px) scale(1);opacity:0}}
+  /* cinematic spotlight — the active unit in full vision */
+  #stage.focusing .unit:not(.spot){opacity:.62;filter:brightness(.6) saturate(.72);transition:opacity .2s,filter .2s}
+  #stage.focusing::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+    background:radial-gradient(120% 70% at 50% 96%,transparent 30%,rgba(4,3,10,.5) 100%);transition:opacity .2s}
+  .unit.spot{transform:scale(1.16) translateY(-4px);z-index:16}
+  .unit.spot .sprite{filter:drop-shadow(0 0 16px color-mix(in srgb,var(--hue,#7b5cff) 55%,transparent)) drop-shadow(0 10px 10px rgba(0,0,0,.6))}
+  .unit.enemy.spot .sprite{filter:drop-shadow(0 0 16px color-mix(in srgb,var(--efx,#ff5a7a) 60%,transparent)) drop-shadow(0 10px 10px rgba(0,0,0,.6))}
+  /* turn-order timeline */
+  #turnline{position:absolute;top:8px;left:8px;z-index:7;display:flex;gap:4px;align-items:center}
+  .tchip{width:22px;height:22px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;
+    color:#fff;background:color-mix(in srgb,var(--c) 34%,#0a0910);border:1.5px solid var(--c);opacity:.75;text-shadow:0 1px 2px #000;transition:.15s}
+  .tchip.foe{border-radius:50%}
+  .tchip.now{opacity:1;transform:scale(1.18);box-shadow:0 0 10px var(--c)}
   #fx{position:absolute;inset:0;pointer-events:none;z-index:8;overflow:hidden}
   .dmg{position:absolute;font-family:var(--font-title);font-weight:700;font-size:20px;animation:floatup 1s ease-out forwards;text-shadow:0 2px 6px rgba(0,0,0,.8)}
   .dmg.crit{font-size:28px}
@@ -1442,6 +1469,7 @@
       <div id="round"><div class="lbl">Round</div><div class="r num" id="roundNum">1</div></div>
     </div>
     <div id="stage">
+      <div id="turnline"></div>
       <div id="telegraph"><span class="tgname"></span><span class="pips"></span></div>
       <div id="wavepip"></div>
       <div id="enemyStage"></div>
@@ -2815,9 +2843,21 @@ function logSynergies(ids){const s=synergies(ids);if(!s.length)return;
 
 /* ---------- BATTLE ENGINE ---------- */
 function mkHero(id){const s=hero(id),st=effStats(s); return {...s,stats:st,skl:{...prog(id).skills},side:'ally',hp:st.hp,max:st.hp,barrier:st.aegis?Math.round(st.hp*.15):0,rage:0,cd:{},status:{},alive:true,el:null};}
+/* ---------- Break / Toughness (weakness core, HSR-style) ---------- */
+const TIER_TOUGH={X:170,B:120,E:80,M:48};
+function deriveWeak(s){const w=[];
+  if((s.physRes||0)<=-0.2)w.push('physical'); if((s.magRes||0)<=-0.2)w.push('magical');
+  if((s.traits||[]).includes('undead'))w.push('holy');
+  if(!w.length)w.push((s.physRes||0)<=(s.magRes||0)?'physical':'magical');   // guarantee one break-weakness
+  return w;}
+function matchesWeak(e,root,sub){const W=e.weakTypes||[];
+  if(sub==='holy')return W.includes('holy')||W.includes('magical'); return W.includes(root);}
+const WEAKICON={physical:'⚔',magical:'✦',holy:'☀'};
 function mkEnemy(key){const s=DATA.enemies[key]||Object.values(DATA.enemies).find(e=>key.startsWith(e.id))||Object.values(DATA.enemies)[0];
   const st=curHard?{hp:Math.round(s.stats.hp*HARD.hp),atk:Math.round(s.stats.atk*HARD.atk),def:Math.round(s.stats.def*HARD.def),spd:s.stats.spd}:s.stats;
-  return {...s,stats:st,key,side:'enemy',hp:st.hp,max:st.hp,barrier:0,status:{},alive:true,el:null,isBoss:s.tier==='X',isMini:s.tier==='B'};}
+  const tough=TIER_TOUGH[s.tier]||48;
+  return {...s,stats:st,key,side:'enemy',hp:st.hp,max:st.hp,barrier:0,status:{},alive:true,el:null,isBoss:s.tier==='X',isMini:s.tier==='B',
+    weakTypes:deriveWeak(s),toughMax:tough,tough:tough,broken:0,vuln:0};}
 function deploy(){
   curHard=hardMode;
   const waves=curStage.waves.map(w=>w.map(mkEnemy));
@@ -2849,16 +2889,37 @@ function dealDamage(src,tgt,power,root,sub){
   const mit=1000/(1000+def), res=root==='physical'?(tgt.physRes||0):(tgt.magRes||0);
   let elem=res<=-.2?1.25:res>=.2?.85:1; if(sub==='holy'&&(tgt.traits||[]).includes('undead'))elem*=1.25;
   const isCrit=Math.random()<((src.stats.crit_rate||.05)+(src.status['STS-CRIT-UP']?.2:0)),crit=isCrit?(1+(src.stats.crit_dmg||.5)):1;
-  let d=power*atk*mit*elem*crit*rand(.95,1.05); if(tgt.status['STS-DR-25'])d*=.75; d=Math.round(d);
+  let d=power*atk*mit*elem*crit*rand(.95,1.05); if(tgt.status['STS-DR-25'])d*=.75; if(tgt.vuln>0)d*=1.25; d=Math.round(d);
   if(tgt.barrier>0&&sub!=='bleed'){const ab=Math.min(tgt.barrier,d);tgt.barrier-=ab;d-=ab;}
   tgt.hp=Math.max(0,tgt.hp-d); if(src.side==='ally'){gainSurge(4);src._dmg=(src._dmg||0)+d;}
   if(src.side==='ally'&&(src.stats.lifesteal||0)>0&&d>0)heal(src,Math.round(d*src.stats.lifesteal));
   floatNum(tgt,d,isCrit?'crit':'',root,sub); shake(tgt); if(d>0)SFX[isCrit?'crit':'hit']();
   if(d>0){const kind=sub==='bleed'?'bleed':sub==='holy'?'holy':root==='magical'?'mag':'phys';impactFx(tgt,{kind,crit:isCrit});}
-  if(d>0&&elem>1&&src.side==='ally'){weakPop(tgt);gainSurge(6);battleShake(false);SFX.crit&&SFX.crit();}  // weakness break — reward smart targeting
+  // Break / Toughness: hitting a weakness drains the toughness bar; at 0 the enemy BREAKS (stun + burst + vulnerable)
+  if(d>0&&src.side==='ally'&&tgt.side==='enemy'&&matchesWeak(tgt,root,sub)){
+    weakPop(tgt);gainSurge(6);SFX.crit&&SFX.crit();
+    if(!tgt.broken&&tgt.toughMax>0){tgt.tough=Math.max(0,tgt.tough-Math.round(8+power*7));renderToughness(tgt);
+      if(tgt.tough<=0)triggerBreak(tgt,src);}
+  }
   if(d>0&&isCrit)battleShake(false);
   if(tgt.hp<=0)onKill(src,tgt); return d;
 }
+function triggerBreak(e,src){
+  if(!e.alive)return;
+  e.broken=1; e.vuln=2; e.status['STS-STUN']=1;   // skips its next turn, +25% damage taken for 2 rounds
+  const bd=Math.round(e.max*0.05 + statOf(src,'atk')*1.6);
+  e.hp=Math.max(0,e.hp-bd); if(src.side==='ally'){src._dmg=(src._dmg||0)+bd;gainSurge(10);}
+  breakPop(e); floatNum(e,bd,'crit','magical'); impactFx(e,{kind:'mag',crit:true}); battleShake(true); SFX.crit&&SFX.crit();
+  if(e.el){e.el.classList.add('breaking');setTimeout(()=>e.el&&e.el.classList.remove('breaking'),640);}
+  logMsg(`<b style="color:#7fe9ff">BREAK!</b> <b>${e.name}</b> — stunned & vulnerable`);
+}
+function breakPop(u){const host=u.el;if(!host)return;const r=host.getBoundingClientRect(),a=$('#app').getBoundingClientRect();
+  const s=document.createElement('div');s.className='breakpop';s.textContent='BREAK!';
+  s.style.left=(r.left-a.left+r.width/2-46)+'px';s.style.top=(r.top-a.top+r.height*.1)+'px';
+  $('#fx').appendChild(s);setTimeout(()=>s.remove(),1000);}
+function renderToughness(e){if(!e.el)return;const tf=e.el.querySelector('.toughfill');
+  if(tf&&e.toughMax)tf.style.transform=`scaleX(${Math.max(0,e.tough/e.toughMax)})`;
+  e.el.classList.toggle('broken',e.broken>0);}
 function heal(t,a){if(!t.alive)return;t.hp=Math.min(t.max,t.hp+a);floatNum(t,a,'heal');impactFx(t,{kind:'heal'});}
 function onKill(src,t){
   // Mortmain (Ch.4 finale) reknits once at the Gate — burst it down again after
@@ -2994,6 +3055,7 @@ function enemyUltFx(u,single){
 function roundStart(){
   [...G.heroes,...G.enemies].filter(u=>u.alive).forEach(u=>{if(u._bleed){const d=Math.round((u._ba||120)*.08*u._bleed);u.hp=Math.max(0,u.hp-d);floatNum(u,d,'','physical','bleed');if(u.hp<=0)u.alive=false;}});
   [...G.heroes,...G.enemies].forEach(u=>{for(const s in u.status){u.status[s]--;if(u.status[s]<=0)delete u.status[s];}});
+  G.enemies.forEach(e=>{ if(e.broken>0){e.broken--; if(e.broken<=0){e.tough=e.toughMax;renderToughness(e);}} if(e.vuln>0)e.vuln--; });
   if(G.raid)raidCheck();
 }
 function order(){return [...G.heroes,...G.enemies].filter(u=>u.alive).sort((a,b)=>statOf(b,'spd')-statOf(a,'spd')||(a.side==='ally'?-1:1));}
@@ -3015,7 +3077,7 @@ function advanceRound(){
 }
 // returns true if the unit is now awaiting player input (tactical mode)
 function actUnit(u){
-  markActing(u);
+  markActing(u); G._acting=u; setSpotlight(u); renderTurnline();
   if(u.side==='enemy'){enemyTurn(u);return false;}
   if(u.status['STS-STUN']){logMsg(`<b>${u.name}</b> is stunned — turn skipped`);return false;}
   if(u.cd.S2>0)u.cd.S2--;                 // tick this unit's cooldown at its turn start (both modes)
@@ -3050,13 +3112,13 @@ function chooseSkill(u,slot){
   else execCommand(u,slot,null);
 }
 function beginTargetSelect(u,slot){
-  G.pendingSkill={u,slot};
+  G.pendingSkill={u,slot}; clearSpotlight();   // brighten the field so every enemy is visible to target
   const sk=u.kit[slot], root=rootFor(u,sk);
   const h=$('#cmdBar').querySelector('.cmdhint'); if(h)h.textContent='Tap an enemy to strike';
   livingE().forEach(e=>{ if(!e.el)return;
     e.el.classList.add('targetable');
-    const weak=(root==='physical'?(e.physRes||0):(e.magRes||0))<=-.2||(sk.subtag==='holy'&&(e.traits||[]).includes('undead'));
-    if(weak){e.el.classList.add('weaktgt'); if(!e.el.querySelector('.weakbadge')){const wb=document.createElement('div');wb.className='weakbadge';wb.textContent='WEAK';e.el.appendChild(wb);}}
+    const weak=matchesWeak(e,root,sk.subtag);
+    if(weak){e.el.classList.add('weaktgt'); if(!e.el.querySelector('.weakbadge')){const wb=document.createElement('div');wb.className='weakbadge';wb.textContent=e.tough>0?'WEAK':'BREAK';e.el.appendChild(wb);}}
     e._tapH=()=>{SFX.tap();const ps=G.pendingSkill;if(ps){clearTargetSelect();execCommand(ps.u,ps.slot,e);}};
     e.el.addEventListener('click',e._tapH);
   });
@@ -3128,6 +3190,8 @@ function render(){
   $('#surgeval').innerHTML=`<b>${Math.floor(G.surge)}</b> / 100`;
   G.enemies.forEach(e=>{if(!e.el)return;const f=e.el.querySelector('.hpfill');if(f){f.style.transform=`scaleX(${pct(e)})`;f.style.background=hpColor(pct(e));}
     const t=e.el.querySelector('.hptext');if(t&&(e.isBoss||e.isMini))t.textContent=`${e.hp.toLocaleString()} / ${e.max.toLocaleString()}`;
+    const tf=e.el.querySelector('.toughfill');if(tf&&e.toughMax)tf.style.transform=`scaleX(${Math.max(0,(e.tough||0)/e.toughMax)})`;
+    e.el.classList.toggle('broken',e.broken>0);
     updateStatus(e);
     e.el.style.opacity=e.alive?'1':'.25';});
   G.heroes.forEach(h=>{const f=h.el.querySelector('.hpfill');f.style.transform=`scaleX(${pct(h)})`;f.style.background=hpColor(pct(h));
@@ -3149,8 +3213,10 @@ function renderEnemies(){
     const src=ec||((typeof EART!=='undefined')&&EART[e.id])||ART[e.id]||'';
     const spr=src?`<div class="sprite${ec?'':' noecut'}" style="background-image:url('${src}')"></div>`
                  :`<div class="sprite glyph">${e._glyph||EGLYPH[e.id]||'🟢'}</div>`;
-    el.innerHTML=`<div class="ubars"><div class="uname enm">${e.name}</div>
-        <div class="hpwrap"><div class="hpfill" style="background:${efx}"></div>${(e.isBoss||e.isMini)?'<div class="hptext"></div>':''}</div></div>
+    const wk=(e.weakTypes||[]).map(t=>`<span class="wk" title="Weak: ${t}">${WEAKICON[t]||'?'}</span>`).join('');
+    el.innerHTML=`<div class="ubars"><div class="uname enm">${e.name} <span class="wkrow">${wk}</span></div>
+        <div class="hpwrap"><div class="hpfill" style="background:${efx}"></div>${(e.isBoss||e.isMini)?'<div class="hptext"></div>':''}</div>
+        <div class="toughwrap"><div class="toughfill"></div></div></div>
       <div class="statusrow"></div>${spr}<div class="ground"></div>`;
     e.el=el;row.appendChild(el);
   });
@@ -3176,6 +3242,17 @@ function buildParty(){const box=$('#heroStage');box.innerHTML='';G.heroes.forEac
   el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();fire();}});
   h.el=el;box.appendChild(el);});}
 function markActing(u){if(u.el){u.el.classList.add('acting');setTimeout(()=>u.el&&u.el.classList.remove('acting'),340/G.speed);}}
+/* cinematic: the acting unit is featured in full vision, the rest recede */
+function setSpotlight(u){const st=$('#stage');if(!st)return;st.classList.add('focusing');
+  [...G.heroes,...G.enemies].forEach(x=>{if(x.el)x.el.classList.toggle('spot',x===u);});}
+function clearSpotlight(){const st=$('#stage');if(st)st.classList.remove('focusing');
+  [...((G&&G.heroes)||[]),...((G&&G.enemies)||[])].forEach(x=>{if(x.el)x.el.classList.remove('spot');});}
+function renderTurnline(){const el=$('#turnline');if(!el||!G)return;
+  const seq=(G._acting&&G._acting.alive?[G._acting]:[]).concat(turnQueue.filter(u=>u.alive));
+  el.innerHTML=seq.slice(0,7).map((u,i)=>{const ally=u.side==='ally';
+    const hue=ally?`var(${CLASS[u.class].hue})`:(u._efx||efxOf(u.id));
+    const face=ally?CLASS[u.class].l[0]:(WEAKICON[(u.weakTypes||[])[0]]||'✦');
+    return `<div class="tchip ${i===0?'now':''} ${ally?'ally':'foe'}" style="--c:${hue}" title="${u.name}">${face}</div>`;}).join('');}
 function lunge(u){if(!u.el)return;u.el.classList.remove('attacking');void u.el.offsetWidth;u.el.classList.add('attacking');
   setTimeout(()=>u.el&&u.el.classList.remove('attacking'),400/(G?G.speed:1));}
 function shake(u){if(u.el){u.el.classList.add('hit');setTimeout(()=>u.el&&u.el.classList.remove('hit'),320);}}
@@ -3305,7 +3382,7 @@ function resultCinematic(win){
     fx.appendChild(s);}
 }
 function endGame(win){
-  G.over=true;renderTelegraph();SFX[win?'win':'lose']();
+  G.over=true;clearSpotlight();renderTelegraph();SFX[win?'win':'lose']();
   if(win)bpGain(60);   // Battle Pass XP from any victory (campaign/arena/raid/trial)
   if(win){ let ec=G.raid?EVT.earn.raid : (G.pvp||G.trial)?EVT.earn.arena
     : Math.round((curStage&&curStage.boss?EVT.earn.boss:EVT.earn.normal)*(curHard?EVT.earn.hardMul:1));
