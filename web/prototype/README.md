@@ -10,6 +10,14 @@ something you can actually tap and play.
 - The **doc 02 combat model** running live: SPD-ordered turn engine, the s5
   damage formula (DEF mitigation, damage-type resistance, Holy-vs-Undead, crit,
   variance, DR, barriers), status effects, DoT ticks.
+- **A real battlefield, not cards** — combat is staged with **full-body
+  character standees**: your five stand in formation on the painted chapter
+  key-art, facing a line of enemies, each on the background-removed cutout art
+  (70 hero cutouts + generated enemy cutouts). Everyone **idle-breathes**,
+  **lunges** when they strike, **recoils** on a hit, and **falls** on death,
+  with floating name + HP bars and a ground shadow — so a fight reads like a
+  scene, not a spreadsheet of tiles. (Arena stages both squads as hero standees;
+  a handful of Undead foes awaiting cutouts fall back to a soft-masked portrait.)
 - **Tactical turns** (doc 02 s11) — the manual-play layer the spec calls for:
   on each of your heroes' turns the fight **pauses** and a command bar offers the
   unit's **Basic / Core (cooldown) / Ultimate (Surge)** skills; you pick the
@@ -229,9 +237,10 @@ background-removed cut-out of the character floats in front of a blurred,
 dimmed backdrop of the same art, and a `requestAnimationFrame` loop drifts the
 two layers by different amounts (idle sway, or pointer tilt) for a real sense of
 depth — plus a breathing class-hue aura and rising ember motes. **Enemies use their real generated art too** — the
-36 monster/boss portraits (Slimes, Giants, Guardians, Undead) are embedded the
-same way and fill the enemy cards in combat; arena opponents show the real hero
-portraits since they're heroes fighting back. Fights also play over the chapter's **key-art
+36 monster/boss portraits (Slimes, Giants, Guardians, Undead) are embedded, and
+most are **background-removed into battlefield standees** (the rest use a
+soft-masked portrait until their cutout is generated); arena opponents stand as
+the real hero cutouts since they're heroes fighting back. Fights also play over the chapter's **key-art
 background** (the four environment paintings from the manifest, embedded and
 dimmed for readability); arena, raid, and trial pick a themed one. The **title
 screen and the map/lobby** wear the key-art too — the map's backdrop follows how
