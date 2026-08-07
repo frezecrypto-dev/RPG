@@ -684,7 +684,16 @@
     background:linear-gradient(158deg,rgba(255,255,255,.22),rgba(255,255,255,.04) 24%,transparent 48%)}
 
   /* legendary/epic cards get a slow animated rim shimmer */
-  .rcard.rar-L,.hcard.rar-L{box-shadow:0 0 0 1px color-mix(in srgb,var(--rL) 40%,transparent),0 4px 20px rgba(0,0,0,.4)}
+  /* rarity frames — champions recognizable at a glance across every rarity */
+  .rcard,.hcard{border-color:color-mix(in srgb,var(--rc,var(--line)) 55%,var(--line))}
+  .rcard.rar-R,.hcard.rar-R{border-color:color-mix(in srgb,var(--rR) 72%,transparent)}
+  .rcard.rar-E,.hcard.rar-E{border-color:var(--rE);box-shadow:0 0 0 1px color-mix(in srgb,var(--rE) 45%,transparent),0 4px 16px color-mix(in srgb,var(--rE) 20%,transparent)}
+  .rcard.rar-L,.hcard.rar-L{border-color:var(--rL);box-shadow:0 0 0 1px var(--rL),0 4px 22px color-mix(in srgb,var(--rL) 30%,transparent)}
+  .rcard .g,.hcard .g{border-top:2px solid var(--rc,transparent)}
+  .rgem{position:absolute;top:5px;left:5px;z-index:4;width:15px;height:15px;border-radius:4px;display:flex;align-items:center;justify-content:center;
+    font-size:9px;font-weight:800;color:#0a0910;background:var(--rc,var(--rC));box-shadow:0 1px 4px rgba(0,0,0,.6);letter-spacing:0}
+  .rar-L .rgem{box-shadow:0 0 8px var(--rL),0 1px 4px rgba(0,0,0,.6)}
+  .rar-E .rgem{box-shadow:0 0 7px color-mix(in srgb,var(--rE) 70%,transparent),0 1px 4px rgba(0,0,0,.6)}
   .rcard.rar-L .g,.hcard.rar-L .g,.rcard.rar-E .g,.hcard.rar-E .g{position:relative}
   .rcard.rar-L .g::before,.hcard.rar-L .g::before{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;border-radius:inherit;
     background:linear-gradient(115deg,transparent 38%,rgba(255,231,150,.5) 50%,transparent 62%);
@@ -2286,9 +2295,9 @@ function buildRoster(){
   const box=$('#roster'); box.innerHTML='';
   DATA.heroes.filter(h=>owned.has(h.id)).sort((a,b)=>RORDER[a.rarity]-RORDER[b.rarity]).forEach(h=>{
     const c=CLASS[h.class];
-    const el=document.createElement('div'); el.className='rcard'+(team.includes(h.id)?' picked':'')+(h.rarity==='L'?' rar-L':h.rarity==='E'?' rar-E':'');
-    el.style.setProperty('--hue',`var(${c.hue})`);
-    el.innerHTML=`<div class="rar" style="background:var(${RAR[h.rarity]})"></div><div class="chk">✓</div>
+    const el=document.createElement('div'); el.className='rcard rar-'+h.rarity+(team.includes(h.id)?' picked':'');
+    el.style.setProperty('--hue',`var(${c.hue})`);el.style.setProperty('--rc',`var(${RAR[h.rarity]})`);
+    el.innerHTML=`<div class="rgem">${h.rarity}</div><div class="chk">✓</div>
       <div class="g">${classArt(h.class,34)}${artImg(h.id,h.name)}</div><div class="rn">${h.name}</div><div class="rl">${h.role}</div>`;
     el.addEventListener('click',()=>toggle(h.id));
     box.appendChild(el);
@@ -2535,8 +2544,8 @@ function buildHeroGrid(){
   const box=$('#heroGrid');box.innerHTML='';
   DATA.heroes.filter(h=>owned.has(h.id)).sort((a,b)=>RORDER[a.rarity]-RORDER[b.rarity]).forEach(h=>{
     const c=CLASS[h.class],pr=prog(h.id),el=document.createElement('div');
-    el.className='hcard'+(h.rarity==='L'?' rar-L':h.rarity==='E'?' rar-E':'');el.style.setProperty('--hue',`var(${c.hue})`);
-    el.innerHTML=`<div class="rar" style="background:var(${RAR[h.rarity]})"></div><div class="g">${classArt(h.class,40)}${artImg(h.id,h.name)}</div>
+    el.className='hcard rar-'+h.rarity;el.style.setProperty('--hue',`var(${c.hue})`);el.style.setProperty('--rc',`var(${RAR[h.rarity]})`);
+    el.innerHTML=`<div class="rgem">${h.rarity}</div><div class="g">${classArt(h.class,40)}${artImg(h.id,h.name)}</div>
       <div class="rn">${h.name}</div><div class="lv">Lv ${pr.level} · ${'★'.repeat(pr.stars)}</div>`;
     el.addEventListener('click',()=>openHero(h.id));box.appendChild(el);
   });
