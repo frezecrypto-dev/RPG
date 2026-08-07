@@ -144,6 +144,29 @@ design's `data/events.json`:
 
 All of it persists in the save (schema v3) alongside your progress.
 
+## Shop / Store (doc 10 s4)
+
+A **Gate Market** (🛒 on the home screen) implements the launch monetization
+surface from `data/shops.json`, faithful to the doc's "money makes you *faster
+and prettier*, never *unbeatable*" policy:
+
+- **Monthly Vow Card** — the best-value anchor: **300 Crystals now + 90/day for
+  30 days** (3,000 total). Buying it activates a daily claim that pays out once
+  per calendar day and expires after 30, with a progress bar and a home-screen
+  notify dot when today's 90 is waiting.
+- **Crystal packs** with the standard **first-purchase double** (badged, and the
+  bonus is consumed after the first buy of each pack), plus **daily crystal-spend
+  deals** (Gold, Star Crates) that reset each day.
+- **Value packs** — the Gatewarden's Bundle, Chapter Clear, and Ascension packs:
+  fixed contents, clearly priced, **no randomized boxes**.
+- **Cosmetics** bought with **Gleam only** — a clean cosmetic-only currency
+  (skins, cut-in frames, home themes) that never touches power. Gleam is now a
+  real balance earned from the Battle Pass premium track and the event shop, so
+  the cross-system loop closes.
+
+Real-money SKUs are clearly marked **demo** and grant their contents free with a
+spend-confirm (no payment), so the whole store is explorable. All of it persists.
+
 ## Hard mode (endgame farm)
 
 Clearing a chapter's boss on Normal unlocks a **Normal / Hard** toggle on the

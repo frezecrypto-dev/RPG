@@ -974,6 +974,57 @@
   #evtLogin .elclaim:disabled{opacity:.4}
   #evtLogin .elnote{font-size:9px;color:var(--faint);padding:0 14px 12px;line-height:1.35}
 
+  /* ============ Shop / Store (doc 10 s4) ============ */
+  #screen-shop{background:radial-gradient(circle at 50% 0%,rgba(40,30,64,.5),transparent 55%)}
+  #shopTabs{display:flex;gap:6px;padding:8px 16px 4px}
+  .shtab{flex:1;padding:9px 4px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);
+    color:var(--muted);font-size:11px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:.15s}
+  .shtab.on{color:var(--ink);border-color:var(--umbra);background:linear-gradient(180deg,rgba(123,92,255,.2),var(--panel2));box-shadow:0 0 12px rgba(123,92,255,.3)}
+  #shopBal{display:flex;flex-wrap:wrap;gap:6px 14px;padding:4px 16px;font-size:12px}
+  #shopScroll{flex:1;overflow-y:auto;padding:8px 16px 26px;display:flex;flex-direction:column;gap:12px}
+  .shpolicy{font-size:9px;color:var(--faint);text-align:center;line-height:1.4;padding:2px 8px 4px}
+  .shpolicy b{color:var(--umbra)}
+  /* monthly vow card (hero SKU) */
+  .vowcard{border:1px solid var(--umbra);border-radius:16px;overflow:hidden;position:relative;
+    background:linear-gradient(135deg,rgba(60,44,110,.55),rgba(20,15,34,.7))}
+  .vowcard::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 40% at 82% 12%,rgba(63,214,196,.16),transparent 60%);pointer-events:none}
+  .vowcard .vhead{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:13px 14px 6px}
+  .vowcard .vname{font-family:var(--font-title);font-size:18px;line-height:1.05}
+  .vowcard .vtag{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--umbra)}
+  .vowcard .vprice{font-family:var(--font-title);font-size:20px;color:var(--warn);white-space:nowrap}
+  .vowcard .vbody{padding:2px 14px 12px;font-size:11.5px;color:var(--muted);line-height:1.5}
+  .vowcard .vbody b{color:#cbb8ff}
+  .vowcard .vprog{display:flex;align-items:center;gap:8px;padding:0 14px 8px;font-size:10px;color:var(--muted)}
+  .vowcard .vbar{flex:1;height:8px;border-radius:5px;background:#221c34;overflow:hidden}
+  .vowcard .vbarf{height:100%;background:linear-gradient(90deg,#4a3a8f,#7b5cff,#b9a5ff);box-shadow:0 0 10px rgba(123,92,255,.5)}
+  .vowcard .vcta{margin:0 14px 14px;width:calc(100% - 28px);padding:11px;font-size:13px}
+  .vowcard .vcta.claim{background:linear-gradient(90deg,#2a7d54,#3fd67e);border-color:#3fd67e}
+  .vowcard .vcta:disabled{opacity:.5}
+  /* pack grid */
+  .shsec .shsechd{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);padding:2px 2px 8px}
+  .packgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .pack{border:1px solid var(--line);border-radius:12px;background:var(--panel2);padding:12px 9px 10px;
+    display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center;position:relative;overflow:hidden}
+  .pack.big{grid-column:1 / -1}
+  .pack .pki{font-size:30px;line-height:1}.pack .pki .cur{width:1.1em;height:1.1em}
+  .pack .pkn{font-family:var(--font-title);font-size:15px;color:var(--ink)}
+  .pack .pksub{font-size:10px;color:var(--muted);line-height:1.25;min-height:14px}
+  .pack .pkbuy{margin-top:3px;width:100%;padding:8px 4px;border-radius:9px;border:1px solid var(--umbra);
+    background:linear-gradient(180deg,rgba(123,92,255,.16),rgba(123,92,255,.06));color:#cbb8ff;font-size:12px;font-weight:600;cursor:pointer}
+  .pack .pkbuy.gleam{border-color:#3fd6c4;color:#8ff0e4;background:linear-gradient(180deg,rgba(63,214,196,.16),rgba(63,214,196,.05))}
+  .pack .pkbuy:disabled{opacity:.4;cursor:default}
+  .pack .pkbadge{position:absolute;top:0;left:0;background:linear-gradient(90deg,#ff7a3d,#ffcf6b);color:#1a0f06;
+    font-size:8px;font-weight:700;letter-spacing:.06em;padding:3px 8px;border-bottom-right-radius:9px;text-transform:uppercase}
+  .pack.owned .pkbuy{background:none;border-color:var(--line);color:var(--good)}
+  .pack .pkrw{font-size:9.5px;color:var(--muted);line-height:1.3}
+  .shopbtn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:20px;
+    border:1px solid var(--umbra);background:linear-gradient(180deg,rgba(123,92,255,.22),rgba(123,92,255,.06));
+    color:#cbb8ff;font-size:11px;font-weight:600;letter-spacing:.04em;cursor:pointer}
+  .shopbtn:hover{box-shadow:0 0 12px rgba(123,92,255,.4)}
+  #homeShop{position:absolute;top:52px;right:16px;z-index:4}
+  #homeShop.notify::after{content:"";position:absolute;top:-3px;right:-3px;width:9px;height:9px;border-radius:50%;
+    background:var(--good);box-shadow:0 0 8px var(--good);animation:bpReady 1.5s ease-in-out infinite}
+
   /* ============ Home hub (city) ============ */
   #screen-home{overflow:hidden}
   #homeSky{position:absolute;inset:0;z-index:0;background:
@@ -1078,6 +1129,7 @@
         <span class="res"><i class="cur relic"></i> <b class="num relicN">0</b></span>
       </div>
     </div>
+    <button id="homeShop" class="shopbtn">🛒 Shop</button>
     <div id="hubScene">
       <button class="bld" data-go="gacha" style="left:50%;top:20%">
         <svg class="bsvg" viewBox="0 0 64 104"><polygon points="32,4 46,32 18,32" fill="#241a4d" stroke="#7b5cff" stroke-width="1"/><circle cx="32" cy="16" r="10" fill="#7b5cff" opacity=".35"/><circle cx="32" cy="16" r="5" fill="#cbb8ff"/><rect x="21" y="32" width="22" height="66" rx="2" fill="#171233" stroke="#4a3a8f" stroke-width="1"/><rect x="28" y="44" width="8" height="12" rx="2" fill="#8f6bff"/><rect x="28" y="64" width="8" height="12" rx="2" fill="#8f6bff"/><rect x="16" y="96" width="32" height="8" rx="2" fill="#0e0b1e"/></svg>
@@ -1195,6 +1247,22 @@
       <div id="evtEvent"></div>
       <div id="evtLogin"></div>
     </div>
+  </section>
+
+  <section class="screen" id="screen-shop">
+    <div class="scrhead"><div><div class="eyebrow">Gate Market</div><h1>Shop</h1></div>
+      <button class="ghost back" id="shopBack">Back</button></div>
+    <div id="shopBal">
+      <span class="res"><i class="cur crystal"></i> <b class="num crysN">0</b></span>
+      <span class="res"><i class="cur gold"></i> <b class="num goldN">0</b></span>
+      <span class="res">✧ <b class="num gleamN">0</b> Gleam</span>
+    </div>
+    <div id="shopTabs">
+      <button class="shtab on" data-tab="value">Value</button>
+      <button class="shtab" data-tab="crystals">Crystals</button>
+      <button class="shtab" data-tab="cosmetics">Cosmetics</button>
+    </div>
+    <div id="shopScroll"></div>
   </section>
 
   <!-- SETTINGS -->
@@ -1405,6 +1473,9 @@ let owned=new Set(STARTER), crystals=4500, gold=20000, starShards=120, relics=0,
 let bpXP=0, bpClaimF=[], bpClaimP=[], bpPrem=false;   // Battle Pass "Gatewarden's Vow" (doc 10 s4)
 let evtEarned=0, evtBal=0, evtMile=[], evtShop={};    // Events point-farm (doc 10 s3): earned=lifetime(milestones), bal=spendable(shop)
 let login={n:0, date:''};                             // 28-day login track (pauses on miss, never resets)
+let gleam=0;                                          // Gleam — cosmetic-only soft currency (doc 10 s4/s5)
+let vowCard={active:false, day:0, date:''};           // Monthly Vow Card: 300 now + 90/day×30 (doc 10 s4)
+let shopFirst=[], cosmetics=[], shopDaily={date:'', bought:{}}; // first-buy doubles, owned cosmetics, daily deal limits
 let progress={};
 const RATES={L:0.03,E:0.14,R:0.38,C:0.45};
 function prog(id){if(!progress[id]){const h=hero(id);progress[id]={level:20,stars:h?h.startStars:1,skills:{S1:1,S2:1,S3:1},asc:0};}
@@ -1474,7 +1545,7 @@ function computeStats(h,level,stars){
     lifesteal:a.lifesteal||0, heal_pct:a.heal_pct||0, aegis:a.aegis?1:0 };
 }
 function effStats(h){const pr=prog(h.id);return computeStats(h,pr.level,pr.stars);}
-let _prevCur={crystals:null,gold:null,starShards:null,relics:null};
+let _prevCur={crystals:null,gold:null,starShards:null,relics:null,gleam:null};
 function _setCur(cls,val,prevKey){
   const changed=_prevCur[prevKey]!==null&&_prevCur[prevKey]!==val;
   document.querySelectorAll('.'+cls).forEach(e=>{
@@ -1490,13 +1561,14 @@ function renderCrys(){
   _setCur('goldN',gold,'gold');
   _setCur('shardN',starShards,'starShards');
   _setCur('relicN',relics,'relics');
+  _setCur('gleamN',gleam,'gleam');
   const pl=$('#pityLeft');if(pl)pl.textContent=Math.max(0,70-pity);}
 
 /* ---------- save / load (localStorage, graceful fallback) ---------- */
 const SAVE_KEY='ashgate_save_v1';
 let hasSave=false;
 function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(
-  {v:3,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,raidBest,crystals,gold,starShards,relics,sigils,pity,inventory,gearOn,gearUID,loadouts,daily,bpXP,bpClaimF,bpClaimP,bpPrem,evtEarned,evtBal,evtMile,evtShop,login,muted:ui.muted,pref:{speed:ui.speed,auto:ui.auto}}));}catch(e){}}
+  {v:3,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,raidBest,crystals,gold,starShards,relics,sigils,pity,inventory,gearOn,gearUID,loadouts,daily,bpXP,bpClaimF,bpClaimP,bpPrem,evtEarned,evtBal,evtMile,evtShop,login,gleam,vowCard,shopFirst,cosmetics,shopDaily,muted:ui.muted,pref:{speed:ui.speed,auto:ui.auto}}));}catch(e){}}
 function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s||(s.v!==1&&s.v!==2&&s.v!==3))return false;
   owned=new Set(s.owned);progress=s.progress||{};cleared=new Set(s.cleared);
   crystals=s.crystals??crystals;gold=s.gold??gold;starShards=s.starShards??starShards;relics=s.relics??0;sigils=s.sigils??0;pity=s.pity??0;
@@ -1505,6 +1577,7 @@ function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s
   daily=s.daily||{date:'',win:0,summon:0,enhance:0,claimed:[]};dailyCheck();ui.muted=s.muted??false;
   bpXP=s.bpXP||0;bpClaimF=s.bpClaimF||[];bpClaimP=s.bpClaimP||[];bpPrem=!!s.bpPrem;
   evtEarned=s.evtEarned||0;evtBal=s.evtBal||0;evtMile=s.evtMile||[];evtShop=s.evtShop||{};login=s.login||{n:0,date:''};
+  gleam=s.gleam||0;vowCard=s.vowCard||{active:false,day:0,date:''};shopFirst=s.shopFirst||[];cosmetics=s.cosmetics||[];shopDaily=s.shopDaily||{date:'',bought:{}};
   if(s.pref){ui.speed=s.pref.speed||1;ui.auto=!!s.pref.auto;}
   return true;}catch(e){return false;}}
 function resetSave(){try{localStorage.removeItem(SAVE_KEY);}catch(e){}location.reload();}
@@ -1627,7 +1700,7 @@ const BPRWD={
   ticket:{ic:'🎟️',g:n=>crystals+=n*150,lbl:n=>'Vow ×'+n},
   crate:{ic:'<i class="cur shard"></i>',g:n=>starShards+=n*20,lbl:n=>'Crate ×'+n},
   ore:{ic:'<i class="cur gold"></i>',g:n=>gold+=n*2000,lbl:n=>'Ore ×'+n},
-  gleam:{ic:'✧',g:n=>crystals+=Math.round(n/4),lbl:n=>'Gleam '+n},
+  gleam:{ic:'✧',g:n=>gleam+=n,lbl:n=>'Gleam '+n},
   frag:{ic:'❂',g:n=>sigils+=n*40,lbl:n=>'Frag ×'+n},
   cos:{ic:'🎭',g:()=>{},lbl:()=>'Cosmetic'} };
 function bpLevel(){return Math.min(BP.levels, Math.floor(bpXP/BP.xpPer));}
@@ -1776,6 +1849,105 @@ function renderEvents(){
     <div class="elnote">Milestone days (7 / 14 / 21 / 28) carry Featured Vow tickets and Crystal drops — the F2P retention anchor from doc 10.</div></div>`;
   const el=$('#elClaim'); if(el)el.addEventListener('click',loginClaim);
   const td=$('#evtLogin .elday.today'); if(td)td.addEventListener('click',loginClaim);
+}
+
+/* ---------- SHOP / STORE (doc 10 s4 / data/shops.json) ---------- */
+const SHOP={
+  vow:{ now:300, perDay:90, days:30, price:'$4.99' },
+  packs:[ // real-money crystal packs; first purchase doubles (doc 10 s4)
+    {id:'CR80',   n:80,   price:'$0.99'},
+    {id:'CR500',  n:500,  price:'$4.99'},
+    {id:'CR1100', n:1100, price:'$9.99'},
+    {id:'CR2400', n:2400, price:'$19.99'},
+    {id:'CR6500', n:6500, price:'$49.99'},
+  ],
+  value:[ // targeted value packs, fixed contents — no randomized IAP (doc 10 s4)
+    {id:'VP-WARDEN', ic:'🎁', name:"Gatewarden's Bundle", price:'$9.99', rw:[{t:'crystal',n:800},{t:'gold',n:150000},{t:'relic',n:5},{t:'ore',n:6}]},
+    {id:'VP-CHAPTER',ic:'📜', name:'Chapter Clear Pack',  price:'$2.99', rw:[{t:'ticket',n:3},{t:'crate',n:5}]},
+    {id:'VP-ASC',    ic:'⭐', name:'Ascension Pack',       price:'$4.99', rw:[{t:'relic',n:8},{t:'gold',n:80000}]},
+  ],
+  deals:[ // daily crystal-spend deals (resets daily)
+    {id:'D-GOLD', ic:'<i class="cur gold"></i>',  name:'Gold ×60,000',  rw:{t:'gold',n:60000}, cost:60, limit:2},
+    {id:'D-CRATE',ic:'<i class="cur shard"></i>', name:'Star Crate ×3', rw:{t:'crate',n:3},     cost:80, limit:2},
+  ],
+  cosmetics:[ // Gleam only — never power (doc 10 s4)
+    {id:'COS-SKIN-ASN',      ic:'🎭', name:'The Hollow Smile — Crimson Court', kind:'Character Skin', cost:1200},
+    {id:'COS-FRAME-GOLD',    ic:'🖼️', name:'Gilded Ultimate Frame',           kind:'Cut-in Frame',   cost:400},
+    {id:'COS-THEME-DROWNED', ic:'🌊', name:'Home Theme — The Drowned Quarter', kind:'Home Theme',     cost:600},
+  ],
+};
+let shopTab='value';
+function fmtItems(rw){return rw.map(r=>{const b=BPRWD[r.t]||BPRWD.cos;return `${b.ic} ${r.n?b.lbl(r.n):b.lbl()}`;}).join(' · ');}
+function shopDealCheck(){const t=new Date().toDateString();if(shopDaily.date!==t)shopDaily={date:t,bought:{}};}
+function vowActive(){return vowCard.active && vowCard.day<SHOP.vow.days;}
+function vowCanClaim(){return vowActive() && vowCard.date!==new Date().toDateString();}
+function buyVow(){ if(vowActive()){renderShop();return;}
+  if(!confirm('Monthly Vow Card — demo purchase, no real payment. Grant 300 Crystals now, then 90/day for 30 days?'))return;
+  vowCard={active:true,day:0,date:''}; crystals+=SHOP.vow.now; SFX.rare('L'); renderCrys(); renderShop(); saveGame(); }
+function claimVow(){ if(!vowCanClaim())return; crystals+=SHOP.vow.perDay; vowCard.day++; vowCard.date=new Date().toDateString();
+  if(vowCard.day>=SHOP.vow.days)vowCard.active=false; SFX.rare('E'); renderCrys(); renderShop(); saveGame(); }
+function buyPack(i){ const p=SHOP.packs[i], first=!shopFirst.includes(p.id);
+  if(!confirm(`Crystal pack — demo purchase, no real payment. Grant ${first?p.n*2+' Crystals (first-purchase 2×)':p.n+' Crystals'}?`))return;
+  crystals+=p.n*(first?2:1); if(first)shopFirst.push(p.id); SFX.rare('E'); renderCrys(); renderShop(); saveGame(); }
+function buyValue(i){ const v=SHOP.value[i];
+  if(!confirm(`${v.name} — demo purchase, no real payment. Grant ${fmtItems(v.rw)}?`))return;
+  v.rw.forEach(grantReward); SFX.rare('L'); renderCrys(); renderShop(); saveGame(); }
+function buyDeal(i){ shopDealCheck(); const d=SHOP.deals[i], b=shopDaily.bought[d.id]||0;
+  if(b>=d.limit||crystals<d.cost)return; crystals-=d.cost; shopDaily.bought[d.id]=b+1; grantReward(d.rw); SFX.rare('R'); renderCrys(); renderShop(); saveGame(); }
+function buyCosmetic(i){ const c=SHOP.cosmetics[i]; if(cosmetics.includes(c.id)||gleam<c.cost)return;
+  gleam-=c.cost; cosmetics.push(c.id); SFX.rare('E'); renderCrys(); renderShop(); saveGame(); }
+function openShop(tab){ shopTab=tab||'value'; renderShop(); renderCrys(); show('screen-shop'); }
+function renderShop(){
+  shopDealCheck();
+  $$('#shopTabs .shtab').forEach(b=>b.classList.toggle('on',b.dataset.tab===shopTab));
+  const sc=$('#shopScroll'); let html='';
+  if(shopTab==='value'){
+    const active=vowActive(), canL=vowCanClaim(), left=SHOP.vow.days-vowCard.day;
+    html+=`<div class="vowcard">
+      <div class="vhead"><div><div class="vtag">Best Value · Monthly</div><div class="vname">Monthly Vow Card</div></div>
+        <div class="vprice">${active?'ACTIVE':SHOP.vow.price}</div></div>
+      <div class="vbody"><b>300 Crystals</b> instantly, then <b>90 Crystals / day</b> for 30 days — <b>${(300+90*30).toLocaleString()}</b> total. The F2P-adjacent best-value anchor, doc 10.</div>
+      ${active?`<div class="vprog"><span>Day ${vowCard.day} / 30</span><div class="vbar"><div class="vbarf" style="width:${Math.round(100*vowCard.day/30)}%"></div></div><span>${left} left</span></div>
+        <button class="cta vcta claim" id="vowClaim" ${canL?'':'disabled'}>${canL?'Claim today’s 90 Crystals':'Claimed — back tomorrow'}</button>`
+      :`<button class="cta vcta" id="vowBuy">Get — ${SHOP.vow.price} <small style="opacity:.65">demo</small></button>`}
+    </div>`;
+    html+=`<div class="shsec"><div class="shsechd">Value Packs · fixed contents, no randomized boxes</div><div class="packgrid">`;
+    SHOP.value.forEach((v,i)=>{ html+=`<div class="pack big"><div class="pki">${v.ic}</div><div class="pkn">${v.name}</div>
+      <div class="pkrw">${fmtItems(v.rw)}</div>
+      <button class="pkbuy" data-vp="${i}">${v.price} <small style="opacity:.6">demo</small></button></div>`; });
+    html+=`</div></div>`;
+    html+=`<div class="shpolicy"><b>Money makes you faster and prettier, never unbeatable.</b> Gear, stats, and units are never sold for money (doc 10).</div>`;
+  }
+  else if(shopTab==='crystals'){
+    html+=`<div class="shsec"><div class="shsechd">Crystal Packs · first purchase doubles</div><div class="packgrid">`;
+    SHOP.packs.forEach((p,i)=>{ const first=!shopFirst.includes(p.id);
+      html+=`<div class="pack">${first?'<span class="pkbadge">2× first buy</span>':''}<div class="pki"><i class="cur crystal"></i></div>
+        <div class="pkn">${(first?p.n*2:p.n).toLocaleString()}</div><div class="pksub">${first?`<span style="color:var(--warn)">${p.n} +${p.n} bonus</span>`:'Crystals'}</div>
+        <button class="pkbuy" data-pk="${i}">${p.price}</button></div>`; });
+    html+=`</div></div>`;
+    html+=`<div class="shsec"><div class="shsechd">Daily Deals · spend Crystals · resets daily</div><div class="packgrid">`;
+    SHOP.deals.forEach((d,i)=>{ const b=shopDaily.bought[d.id]||0, sold=b>=d.limit, afford=crystals>=d.cost;
+      html+=`<div class="pack ${sold?'owned':''}"><div class="pki">${d.ic}</div><div class="pkn" style="font-size:13px">${d.name}</div>
+        <div class="pksub">${b}/${d.limit} today</div>
+        <button class="pkbuy" data-deal="${i}" ${sold||!afford?'disabled':''}>${sold?'Sold out':`<i class="cur crystal"></i> ${d.cost}`}</button></div>`; });
+    html+=`</div></div>`;
+  }
+  else {
+    html+=`<div class="shsec"><div class="shsechd">Cosmetics · Gleam only · never power</div><div class="packgrid">`;
+    SHOP.cosmetics.forEach((c,i)=>{ const owned=cosmetics.includes(c.id), afford=gleam>=c.cost;
+      html+=`<div class="pack big ${owned?'owned':''}"><div class="pki">${c.ic}</div><div class="pkn">${c.name}</div>
+        <div class="pkrw">${c.kind}</div>
+        <button class="pkbuy gleam" data-cos="${i}" ${owned||!afford?'disabled':''}>${owned?'✓ Owned':`✧ ${c.cost} Gleam`}</button></div>`; });
+    html+=`</div></div>`;
+    html+=`<div class="shpolicy">Gleam is earned from the Battle Pass premium track and the event shop — a clean cosmetic-only currency that never touches power (doc 10 s4).</div>`;
+  }
+  sc.innerHTML=html;
+  const vb=$('#vowBuy'); if(vb)vb.addEventListener('click',buyVow);
+  const vc=$('#vowClaim'); if(vc)vc.addEventListener('click',claimVow);
+  sc.querySelectorAll('[data-vp]').forEach(b=>b.addEventListener('click',()=>buyValue(+b.dataset.vp)));
+  sc.querySelectorAll('[data-pk]').forEach(b=>b.addEventListener('click',()=>buyPack(+b.dataset.pk)));
+  sc.querySelectorAll('[data-deal]').forEach(b=>b.addEventListener('click',()=>buyDeal(+b.dataset.deal)));
+  sc.querySelectorAll('[data-cos]').forEach(b=>b.addEventListener('click',()=>buyCosmetic(+b.dataset.cos)));
 }
 
 /* ---------- PvP ARENA ---------- */
@@ -3003,7 +3175,8 @@ function endGame(win){
 $('#toMap').addEventListener('click',()=>{openHome();});
 /* ---------- Home hub navigation ---------- */
 function updateHomeNav(active){$$('#homeNav .navb').forEach(b=>b.classList.toggle('on',b.dataset.nav===active));}
-function openHome(){renderCrys();updateHomeNav('home');const f=$('#hubFeat');if(f)f.textContent='Tap a building to enter';show('screen-home');}
+function openHome(){renderCrys();updateHomeNav('home');const f=$('#hubFeat');if(f)f.textContent='Tap a building to enter';
+  const hs=$('#homeShop');if(hs)hs.classList.toggle('notify',vowCanClaim());show('screen-home');}
 function navGo(dest){
   if(dest==='home'){openHome();return;}
   updateHomeNav(dest==='summon'?'summon':dest==='raid'?'raid':dest==='pass'?'pass':dest==='events'?'events':dest==='heroes'?'heroes':'');
@@ -3074,6 +3247,9 @@ $('#codexBack').addEventListener('click',()=>{buildHeroGrid();renderCrys();show(
 $('#toPass')?.addEventListener('click',()=>{SFX.tap();openPass();});
 $('#passBack').addEventListener('click',()=>{openHome();});
 $('#evtBack')?.addEventListener('click',()=>{openHome();});
+$('#homeShop')?.addEventListener('click',()=>{SFX.tap();openShop('value');});
+$('#shopBack')?.addEventListener('click',()=>{openHome();});
+$$('#shopTabs .shtab').forEach(b=>b.addEventListener('click',()=>{SFX.tap();shopTab=b.dataset.tab;renderShop();}));
 $('#bpClaimAll').addEventListener('click',bpClaimAll);
 $('#hdBack').addEventListener('click',()=>{buildHeroGrid();show('screen-heroes');});
 $('#btnLevel').addEventListener('click',doLevel);
