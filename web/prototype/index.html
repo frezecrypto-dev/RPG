@@ -525,10 +525,24 @@
   .hcard .lv{font-size:8px;color:var(--muted);margin-top:1px}
   .hcard .rar{position:absolute;top:5px;left:6px;width:7px;height:7px;border-radius:2px}
   #hdBody{flex:1;overflow-y:auto;padding:16px 18px 24px;display:flex;flex-direction:column;gap:16px}
-  #hdTop{display:flex;gap:16px;align-items:center}
-  .hdportrait{width:128px;height:128px;flex:none;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:52px;--hue:var(--umbra);
-    background:radial-gradient(70% 80% at 50% 30%,color-mix(in srgb,var(--hue) 45%,transparent),transparent),linear-gradient(180deg,#171326,#0e0b18);
+  #hdTop{display:flex;gap:13px;align-items:stretch}
+  .hdportrait{width:158px;height:248px;flex:none;border-radius:16px;display:flex;align-items:flex-end;justify-content:center;font-size:52px;--hue:var(--umbra);overflow:hidden;
+    background:radial-gradient(70% 55% at 50% 26%,color-mix(in srgb,var(--hue) 45%,transparent),transparent),linear-gradient(180deg,#171326,#0e0b18);
     border:1px solid color-mix(in srgb,var(--hue) 55%,var(--line));animation:auraBreathe 4s ease-in-out infinite}
+  .hdportrait.rar-R{border-color:color-mix(in srgb,var(--rR) 70%,transparent)}
+  .hdportrait.rar-E{border-color:var(--rE);box-shadow:0 0 0 1px color-mix(in srgb,var(--rE) 45%,transparent)}
+  .hdportrait.rar-L{border-color:var(--rL);box-shadow:0 0 0 1px var(--rL),0 0 26px color-mix(in srgb,var(--rL) 28%,transparent)}
+  #hdSide{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
+  #hdSlots{display:flex;flex-direction:column;gap:6px}
+  .hdslot{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:10px;cursor:pointer;text-align:left;width:100%;
+    border:1px solid color-mix(in srgb,var(--sc,var(--line)) 60%,var(--line));background:var(--panel2);transition:.14s}
+  .hdslot:hover{border-color:var(--sc,var(--umbra));transform:translateX(2px)}
+  .hdslot.empty{opacity:.72;border-style:dashed}
+  .hdslot .hsi{font-size:18px;width:22px;text-align:center;filter:drop-shadow(0 0 4px var(--sc,transparent))}
+  .hdslot .hstx{display:flex;flex-direction:column;line-height:1.15;min-width:0}
+  .hdslot .hsn{font-size:11px;font-weight:600;color:var(--ink)}
+  .hdslot .hsv{font-size:9px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hdslot.filled .hsv{color:var(--sc)}
   @keyframes auraBreathe{0%,100%{box-shadow:0 0 22px color-mix(in srgb,var(--hue) 30%,transparent)}50%{box-shadow:0 0 40px color-mix(in srgb,var(--hue) 55%,transparent),0 0 0 1px color-mix(in srgb,var(--hue) 40%,transparent)}}
   /* living portrait — slow drift/zoom inside the frame */
   .hdportrait .artimg,#cutin .cutportrait .artimg,#resMvp .mvpport .artimg{animation:livingPortrait 9s ease-in-out infinite alternate}
@@ -921,8 +935,8 @@
   /* two-layer parallax: blurred backdrop + sharp cut-out character move apart */
   .hdportrait .ppbg{position:absolute;inset:0;z-index:0;border-radius:inherit;background-size:cover;background-position:50% 8%;
     filter:blur(7px) brightness(.5) saturate(1.15);transform:scale(1.25);will-change:transform}
-  .hdportrait .ppfg{position:absolute;inset:0;z-index:1;width:100%;height:100%;object-fit:cover;object-position:50% 1%;
-    transform:scale(1.12);filter:drop-shadow(0 5px 10px rgba(0,0,0,.55));will-change:transform}
+  .hdportrait .ppfg{position:absolute;inset:0;z-index:1;width:100%;height:100%;object-fit:contain;object-position:50% 100%;
+    transform:scale(1.02);filter:drop-shadow(0 6px 12px rgba(0,0,0,.6));will-change:transform}
   .hdmote{position:absolute;bottom:6px;border-radius:50%;z-index:3;pointer-events:none;box-shadow:0 0 6px currentColor;
     opacity:0;animation:hdRise 2.6s ease-out forwards}
   @keyframes hdRise{0%{opacity:0;transform:translateY(0) translateX(0) scale(.6)}
@@ -1416,7 +1430,10 @@
     <div id="hdBody">
       <div id="hdTop">
         <div class="hdportrait" id="hdPortrait">✦</div>
-        <div id="hdMeta"><div id="hdRarity" class="lbl">—</div><div class="hdlvl" id="hdLevel">Lv 20</div><div class="hdstars" id="hdStars">★★★</div></div>
+        <div id="hdSide">
+          <div id="hdMeta"><div id="hdRarity" class="lbl">—</div><div class="hdlvl" id="hdLevel">Lv 20</div><div class="hdstars" id="hdStars">★★★</div></div>
+          <div id="hdSlots"></div>
+        </div>
       </div>
       <div id="hdStats"></div>
       <div id="hdGear"></div>
@@ -1619,11 +1636,11 @@ const skillMult=lv=>1+0.06*((lv||1)-1);
 /* ---------- gear system (doc 09 s5): 5 slots · 6 sets · T1–T4 · C/R/E/L ---------- */
 let inventory=[], gearOn={}, gearUID=0, loadouts={};
 const GSLOTS=['WPN','ARM','HLM','CHM','SGL'];
-const GSLOT={WPN:{n:'Weapon',i:'⚔',main:['atk_flat','atk_pct']},
-             ARM:{n:'Armor', i:'❖',main:['def_flat','hp_pct']},
-             HLM:{n:'Helm',  i:'△',main:['hp_flat','def_pct']},
-             CHM:{n:'Charm',  i:'◈',main:['spd_flat','crit_rate','crit_dmg']},
-             SGL:{n:'Sigil',  i:'✦',main:['lifesteal','crit_dmg']}};
+const GSLOT={WPN:{n:'Weapon',  i:'⚔',main:['atk_flat','atk_pct']},
+             ARM:{n:'Necklace',i:'📿',main:['def_flat','hp_pct']},
+             HLM:{n:'Bracelet',i:'⟡',main:['hp_flat','def_pct']},
+             CHM:{n:'Ring I',  i:'💍',main:['spd_flat','crit_rate','crit_dmg']},
+             SGL:{n:'Ring II', i:'💍',main:['lifesteal','crit_dmg']}};
 /* set 4pc effects that are pure numbers are wired live; the two "special" effects
    (Vanguard/Gravebind in doc 09) are approximated with a stat proxy for the slice. */
 const GSETS={VANGUARD:{n:'Vanguard',b2:{def_pct:.12},b4:{def_pct:.12}},
@@ -2648,6 +2665,7 @@ function renderHero(){
   if(cut){port.innerHTML=`<div class="ppbg" style="background-image:url(${ART[h.id]})"></div><img class="ppfg" src="${cut}" alt="${h.name}">`;}
   else{port.innerHTML=classArt(h.class,66)+artImg(h.id,h.name);}
   port.style.setProperty('--hue',`var(${c.hue})`);wireArt(port);
+  port.classList.remove('rar-C','rar-R','rar-E','rar-L');port.classList.add('rar-'+h.rarity);
   enlivenPortrait(port,c.hue);
   $('#hdRarity').textContent=RARNAME[h.rarity];$('#hdRarity').style.color=`var(${RAR[h.rarity]})`;
   $('#hdLevel').textContent='Lv '+pr.level+'  /  '+cap;
@@ -2665,9 +2683,20 @@ function renderHero(){
   const sc=starCost(h,pr),bS=$('#btnStar');
   if(pr.stars>=h.starCap){bS.disabled=true;bS.querySelector('small').textContent='max ★';}
   else{bS.disabled=(starShards<sc.shards||gold<sc.gold);bS.querySelector('small').innerHTML='<i class="cur shard"></i> '+sc.shards+' · <i class="cur gold"></i> '+(sc.gold/1000)+'k';}
+  renderHdSlots();
   renderHdGear();
   renderHdAsc();
   renderCrys();
+}
+function renderHdSlots(){
+  const box=$('#hdSlots'); if(!box)return; const lo=gearOn[curHero]||{};
+  box.innerHTML=GSLOTS.map(sl=>{const uid=lo[sl],p=uid&&pieceById(uid);
+    const col=p?`var(${GRAR[p.rar].c})`:'var(--line)';
+    const sub=p?`+${p.lvl} · ${GRAR[p.rar].n} ${GSETS[p.set].n}`:'Empty — tap to equip';
+    return `<button class="hdslot${p?' filled':' empty'}" data-sl="${sl}" style="--sc:${col}">
+      <span class="hsi">${GSLOT[sl].i}</span>
+      <span class="hstx"><span class="hsn">${GSLOT[sl].n}</span><span class="hsv">${sub}</span></span></button>`;}).join('');
+  box.querySelectorAll('.hdslot').forEach(b=>b.addEventListener('click',()=>openGear(b.dataset.sl)));
 }
 function ascBonusText(rank){const parts=[`+${rank*4}% core stats`];if(rank>=3)parts.push('+5% crit rate');if(rank>=6)parts.push('+15% crit dmg');return parts.join(' · ');}
 function renderHdAsc(){
@@ -2736,7 +2765,7 @@ function renderHdGear(){
   $('#hdGear').innerHTML=`<div><div class="gpwr">⚔ Gear Power ${heroGearPower(curHero)}</div>
     <div class="gsub">${n}/5 slots${sets.length?' · '+sets.join(', '):' · tap to equip'}</div></div><div class="arr">▸</div>`;
 }
-function openGear(){geSlotSel=null;renderGear();show('screen-gear');}
+function openGear(slot){geSlotSel=(typeof slot==='string')?slot:null;renderGear();show('screen-gear');}
 /* ---- loadout presets (doc 09: 3 per unit) ---- */
 function heroLoadouts(id){if(!loadouts[id])loadouts[id]=[null,null,null];return loadouts[id];}
 function presetSlotCount(pr){return pr?GSLOTS.filter(sl=>pr.slots[sl]&&pieceById(pr.slots[sl])).length:0;}
@@ -2788,7 +2817,7 @@ function renderGear(){
   $('#geSlots').innerHTML=GSLOTS.map(sl=>{const p=lo[sl]&&pieceById(lo[sl]);
     const dot=p?`<span class="grdot" style="background:var(${GRAR[p.rar].c})"></span>`:'';
     return `<div class="gslot${geSlotSel===sl?' sel':''}${p?'':' empty'}" data-sl="${sl}">${dot}<div class="gi">${GSLOT[sl].i}</div>
-      <div class="gsn">${sl}</div><div class="glv">${p?('+'+p.lvl):'—'}</div></div>`;}).join('');
+      <div class="gsn">${GSLOT[sl].n}</div><div class="glv">${p?('+'+p.lvl):'—'}</div></div>`;}).join('');
   $('#geSlots').querySelectorAll('.gslot').forEach(el=>el.addEventListener('click',()=>{
     geSlotSel=geSlotSel===el.dataset.sl?null:el.dataset.sl;renderGear();}));
   const {setCount}=gearBonus(curHero);

@@ -68,6 +68,15 @@ on guaranteed units — a Rare Vow (40), an Epic Vow (120), or a **Legendary Vow
 under the RNG: pull enough and you choose exactly who you want. Claims prefer new
 units and turn dupes into Soul Shards, just like a pull.
 
+## Hero view & accessory slots
+
+Tapping a hero in the Heroes' Hall opens a **full-size character sheet**: the
+whole background-removed cut-out stands full-body in a rarity-framed panel next
+to its **five equipment slots — Weapon, Necklace, Bracelet, Ring I, Ring II** —
+each showing the equipped piece's rarity and set (or an empty slot), and tapping
+one jumps straight into the gear screen filtered to that slot. Level, stars,
+core stats, Gear Power, Ascension, and the skill kit sit below.
+
 ## Equipment (doc 09 s5)
 
 The 5-slot gear system is live, not a placeholder multiplier. Each hero has
