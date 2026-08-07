@@ -532,6 +532,8 @@
   .hdportrait.rar-R{border-color:color-mix(in srgb,var(--rR) 70%,transparent)}
   .hdportrait.rar-E{border-color:var(--rE);box-shadow:0 0 0 1px color-mix(in srgb,var(--rE) 45%,transparent)}
   .hdportrait.rar-L{border-color:var(--rL);box-shadow:0 0 0 1px var(--rL),0 0 26px color-mix(in srgb,var(--rL) 28%,transparent)}
+  .hdheadbtns{display:flex;gap:7px}
+  .hdsell{border-color:color-mix(in srgb,var(--crit) 40%,var(--line));color:#ff9aa8}
   #hdSide{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
   #hdSlots{display:flex;flex-direction:column;gap:6px}
   .hdslot{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:10px;cursor:pointer;text-align:left;width:100%;
@@ -613,8 +615,16 @@
   #geSets{display:flex;flex-wrap:wrap;gap:6px;padding:8px 0 2px;min-height:14px}
   .setchip{font-size:9px;letter-spacing:.05em;padding:3px 8px;border-radius:20px;border:1px solid var(--line);color:var(--muted)}
   .setchip.on{color:var(--umbra);border-color:var(--umbra-dim);background:rgba(123,92,255,.08)}
-  #geActions{display:flex;gap:8px;align-items:center;padding:8px 0}
+  #geActions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 0}
   #geActions .gefilter{margin-left:auto;font-size:10px;color:var(--muted);letter-spacing:.08em}
+  #geSellBox{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .qslabel{font-size:10px;color:var(--muted)}
+  .qsrars{display:inline-flex;gap:3px}
+  .qsrar{width:22px;height:22px;border-radius:6px;border:1px solid var(--line);background:var(--panel2);color:var(--muted);font-size:10px;font-weight:700;cursor:pointer}
+  .qsrar[data-r=C].sel{border-color:var(--rC);color:var(--rC)} .qsrar[data-r=R].sel{border-color:var(--rR);color:var(--rR)}
+  .qsrar[data-r=E].sel{border-color:var(--rE);color:var(--rE);box-shadow:0 0 6px color-mix(in srgb,var(--rE) 40%,transparent)}
+  .qsrar[data-r=L].sel{border-color:var(--rL);color:var(--rL);box-shadow:0 0 6px color-mix(in srgb,var(--rL) 40%,transparent)}
+  #geQuicksell:disabled{opacity:.45}
   #geInv{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:7px;padding:2px 1px 8px}
   #geInv .empty{color:var(--faint);font-size:12px;text-align:center;padding:26px 10px}
   .gcard{border:1px solid var(--line);border-radius:11px;padding:9px 11px;background:var(--panel2);display:flex;gap:10px;align-items:center}
@@ -1199,6 +1209,11 @@
   .raidbarf{height:100%;background:linear-gradient(90deg,#7a1a2c,#ff3b5c,#ffcf6b);box-shadow:0 0 10px rgba(255,80,100,.5);transition:width .5s}
   .raidenter{width:100%;padding:12px;font-size:14px}
   .raidnote{font-size:9.5px;color:var(--faint);line-height:1.5;text-align:center}
+  .portalgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}
+  .portalcard{display:flex;align-items:center;gap:9px;padding:11px;border-radius:12px;border:1px solid var(--line);background:var(--panel2);cursor:pointer;text-align:left;transition:.14s}
+  .portalcard:hover{border-color:var(--umbra);transform:translateY(-2px)}
+  .portalcard .pcico{font-size:22px} .portalcard .pctx{display:flex;flex-direction:column;line-height:1.2}
+  .portalcard .pctx b{font-size:12px} .portalcard .pctx small{font-size:9px;color:var(--muted)}
   /* guild */
   #homeGuild{position:absolute;top:124px;right:16px;z-index:4}
   #screen-guild.on{display:flex;flex-direction:column}
@@ -1245,6 +1260,10 @@
   .glmine{font-size:10px;color:var(--muted);margin-top:6px;text-align:center} .glmine b{color:var(--warn)}
   .glcrest{padding:0;background:none;border:none} .glcrest .crestsvg{display:block}
   .gltag{font-size:11px;color:var(--umbra);font-weight:700;letter-spacing:.04em}
+  .glbanner{position:relative}
+  .glleave{position:absolute;top:8px;right:10px;padding:4px 10px;font-size:10px;border-radius:8px;
+    border:1px solid color-mix(in srgb,var(--crit) 40%,var(--line));background:rgba(232,57,79,.1);color:#ff8a9a;cursor:pointer}
+  .glleave:hover{background:rgba(232,57,79,.22)}
   /* create / join */
   .gjhead{padding:12px 2px 6px} .gjtitle{font-family:var(--font-title);font-size:19px} .gjsub{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4}
   .gjsearch{display:flex;align-items:center;gap:7px;background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:7px 11px;margin:4px 0 12px;font-size:13px}
@@ -1397,7 +1416,6 @@
       </div>
     </div>
     <button id="homeShop" class="shopbtn">🛒 Shop</button>
-    <button id="homeDungeon" class="shopbtn">🗝️ Dungeons</button>
     <div id="hubScene">
       <button class="bld" data-go="gacha" style="left:50%;top:20%">
         <svg class="bsvg" viewBox="0 0 64 104"><polygon points="32,4 46,32 18,32" fill="#241a4d" stroke="#7b5cff" stroke-width="1"/><circle cx="32" cy="16" r="10" fill="#7b5cff" opacity=".35"/><circle cx="32" cy="16" r="5" fill="#cbb8ff"/><rect x="21" y="32" width="22" height="66" rx="2" fill="#171233" stroke="#4a3a8f" stroke-width="1"/><rect x="28" y="44" width="8" height="12" rx="2" fill="#8f6bff"/><rect x="28" y="64" width="8" height="12" rx="2" fill="#8f6bff"/><rect x="16" y="96" width="32" height="8" rx="2" fill="#0e0b1e"/></svg>
@@ -1589,7 +1607,7 @@
   <!-- HERO DETAIL / UPGRADE -->
   <section class="screen" id="screen-hero">
     <div class="scrhead"><div><div class="eyebrow" id="hdRole">—</div><h1 id="hdName">Hero</h1></div>
-      <button class="ghost back" id="hdBack">Back</button></div>
+      <div class="hdheadbtns"><button class="ghost hdsell" id="hdSell">Sell</button><button class="ghost back" id="hdBack">Back</button></div></div>
     <div id="hdBody">
       <div id="hdTop">
         <div class="hdportrait" id="hdPortrait">✦</div>
@@ -1620,8 +1638,14 @@
     <div id="geSets"></div>
     <div id="geActions">
       <button class="ghost" id="geAuto">Auto-Equip</button>
-      <button class="ghost costbtn" id="geForge"><span>Forge Gear</span><small><i class="cur gold"></i> 12,000</small></button>
-      <button class="ghost" id="geScrap">Scrap Commons</button>
+      <div id="geSellBox">
+        <span class="qslabel">Quick-sell unequipped:</span>
+        <span class="qsrars">
+          <button class="qsrar sel" data-r="C">C</button><button class="qsrar" data-r="R">R</button>
+          <button class="qsrar" data-r="E">E</button><button class="qsrar" data-r="L">L</button>
+        </span>
+        <button class="ghost costbtn" id="geQuicksell"><span>Quick-sell</span><small>—</small></button>
+      </div>
       <div class="gefilter" id="geFilter">Showing: all</div>
     </div>
     <div id="geInv"></div>
@@ -2033,7 +2057,7 @@ function renderPass(){
   $('#bpXpBar').innerHTML=`<div class="bpxpfill" style="width:${maxed?100:pctv}%"></div><span class="bpxptx">${maxed?'MAX SEASON':prog+' / '+BP.xpPer+' XP'}</span>`;
   const pw=$('#bpPrem');
   pw.innerHTML = bpPrem ? `<span class="bppremon">★ Premium track unlocked</span>`
-    : `<button class="cta" id="bpUnlock">Unlock Premium <small>(demo)</small></button><span class="bppremnote">cosmetics & acceleration only — no exclusive units or stats (doc 10)</span>`;
+    : `<button class="cta" id="bpUnlock">Unlock Premium — <b>$9.99</b></button><span class="bppremnote">cosmetics & acceleration only — no exclusive units or stats (doc 10)</span>`;
   const ub=$('#bpUnlock'); if(ub)ub.addEventListener('click',()=>{bpPrem=true;SFX.rare('L');renderPass();saveGame();});
   let rail='';
   for(let L=1;L<=BP.levels;L++){
@@ -2295,6 +2319,15 @@ const DUN_TIERS=[
   {t:2,name:'II', rec:24000,mul:2.6, gtier:'T3', odds:{L:.06,E:.34,R:.50,C:.10}},
   {t:3,name:'III',rec:52000,mul:4.6, gtier:'T4', odds:{L:.16,E:.44,R:.40}},
 ];
+// Gold & EXP raids — farm gold / a little hero XP (levels) per clear
+const RESRAIDS=[
+  {id:'gold', name:'Gold Vault', icon:'💰', label:'Gold', bg:'2', kind:'gold',
+    foes:[['ENM-GNT-M01','ENM-GNT-M02'],['ENM-GNT-M03','ENM-GNT-E02'],['ENM-GNT-E02','ENM-GNT-B01']],
+    tierAmt:[45000,110000,220000]},
+  {id:'exp',  name:'Trial of Growth', icon:'📈', label:'EXP', bg:'3', kind:'exp',
+    foes:[['ENM-GRD-M01','ENM-GRD-M02'],['ENM-GRD-M03','ENM-GRD-E02'],['ENM-GRD-E02','ENM-GRD-B01']],
+    tierAmt:[1,2,3]},
+];
 function openDungeons(){renderDungeons();renderCrys();show('screen-dungeons');}
 function renderDungeons(){
   const box=$('#dunScroll'); const ids=autoTeam(); const pw=teamPowerOf(ids);
@@ -2319,7 +2352,16 @@ function renderDungeons(){
       <div class="dunblurb">${SKILLDUN.blurb}</div>${skillTiers}
       <div class="dunteam">Your five: <b>${ids.map(id=>hero(id)?hero(id).name.split(' ')[0]:'?').join(' · ')}</b> · power ${pw.toLocaleString()}<br>Deploy any campaign stage to change your team.</div>
     </div>
-    <div class="dunsect">⚒ Equipment Dungeons</div>${equipCards}`;
+    <div class="dunsect">⚒ Equipment Dungeons</div>${equipCards}
+    <div class="dunsect">💰 Gold & EXP Raids</div>${RESRAIDS.map((d,di)=>{
+      const tiers=DUN_TIERS.map(ti=>{const under=pw<ti.rec*0.8, amt=d.tierAmt[ti.t-1];
+        const rewTxt=d.kind==='gold'?`<b>+${amt.toLocaleString()}</b> Gold`:`each hero <b>+${amt} level${amt>1?'s':''}</b>`;
+        return `<div class="duntier${under?' under':''}"><div class="dtinfo"><div class="dtname"><b>Tier ${ti.name}</b></div>
+          <div class="dtsub">Rec. power ${ti.rec.toLocaleString()} · ${rewTxt}${under?' · <span class="warnx">under-powered</span>':''}</div></div>
+          <button class="cta dtgo" data-dun="res${di}" data-t="${ti.t}">Enter</button></div>`;}).join('');
+      return `<div class="duncard"><div class="dunhead"><div class="dunname">${d.icon} ${d.name}</div><div class="duncur">${d.label} raid</div></div>
+        <div class="dunblurb">${d.kind==='gold'?'A quick payday — clear it for a lump of Gold. Great for funding level-ups and enhancements.':'Your five gain a little XP and level up right in the fight — a slow but steady way to raise your bench.'}</div>${tiers}</div>`;
+    }).join('')}`;
   box.querySelectorAll('.dtgo').forEach(b=>b.addEventListener('click',()=>startDungeon(b.dataset.dun,+b.dataset.t)));
 }
 function startDungeon(which,t){
@@ -2327,6 +2369,10 @@ function startDungeon(which,t){
   if(which==='skill'){const ti=SKILLDUN.tiers.find(x=>x.t===t);if(!ti)return;
     runDungeon({name:SKILLDUN.name+' · '+ti.name,bg:SKILLDUN.bg,foes:ti.foes,mul:ti.mul,tag:'📖 SKILL DUNGEON',
       reward:{kind:'skill',insight:ti.reward,name:SKILLDUN.name+' · '+ti.name}});
+  } else if(which.startsWith('res')){
+    const di=+which.slice(3), d=RESRAIDS[di], ti=DUN_TIERS.find(x=>x.t===t); if(!d||!ti)return;
+    runDungeon({name:d.name+' · Tier '+ti.name,bg:d.bg,foes:d.foes[ti.t-1],mul:ti.mul,tag:d.icon+' '+d.label.toUpperCase()+' RAID',
+      reward:{kind:d.kind,name:d.name+' · Tier '+ti.name,amt:d.tierAmt[ti.t-1]}});
   } else {
     const di=+which.slice(2), d=EQUIPDUN[di], ti=DUN_TIERS.find(x=>x.t===t); if(!d||!ti)return;
     runDungeon({name:d.name+' · Tier '+ti.name,bg:d.bg,foes:ti.foes||d.foes[ti.t-1],mul:ti.mul,tag:d.icon+' '+d.label.toUpperCase()+' DUNGEON',
@@ -2353,6 +2399,10 @@ function endDungeon(win){
   let sub='';
   if(win){
     if(d.kind==='skill'){insight+=d.insight;sub=`<b style="color:#cbb8ff">+${d.insight} 📖 Insight</b> — spend it on skill levels in a hero's Kit.`;}
+    else if(d.kind==='gold'){gold+=d.amt;sub=`<b style="color:var(--warn)"><i class="cur gold"></i> +${d.amt.toLocaleString()} Gold</b> — fund your level-ups and enhancements.`;}
+    else if(d.kind==='exp'){const gained=[];G.heroes.forEach(h=>{const pr=prog(h.id),cap=DATA.levelCapByStar[pr.stars]||60;
+        const nl=Math.min(cap,pr.level+d.amt);if(nl>pr.level){gained.push(h.name.split(' ')[0]+' → Lv'+nl);pr.level=nl;}});
+      sub=gained.length?`📈 <b>${gained.join(', ')}</b> — your five gained a little XP.`:`Your five are already at their level cap for their stars — raise stars to grow further.`;}
     else{const slot=d.slots[rand0(d.slots.length)],r=rollRar(d.odds),p=makePiece(d.gtier,r,slot);inventory.push(p);
       sub=`✦ Dropped <b style="color:var(${GRAR[p.rar].c})">${GRAR[p.rar].n} ${GSETS[p.set].n} ${GSLOT[p.slot].n}</b> (${p.tier}) — equip it from a hero's slots.`;}
     renderCrys();saveGame();
@@ -2430,6 +2480,18 @@ function guildDefaultRoster(){return [{n:'You',r:'Leader',c:0},
 function guildRoster(){return guild.roster && guild.roster.length ? guild.roster : [{n:'You',r:guild.isLeader?'Leader':'Member',c:guild.boss.myDmg},...GUILD_MEMBERS];}
 const GUILD_CREATE_COST=20000;
 let guildView='list', guildForm=null, guildSearch='', guildPending=null;
+let qsRars=new Set(['C']);   // rarities selected for quick-sell
+function qsCandidates(){return inventory.filter(p=>qsRars.has(p.rar)&&!whoHas(p.uid));}
+function renderQuicksell(){const box=$('#geSellBox');if(!box)return;
+  box.querySelectorAll('.qsrar').forEach(b=>b.classList.toggle('sel',qsRars.has(b.dataset.r)));
+  const cand=qsCandidates(),total=cand.reduce((s,p)=>s+scrapValue(p),0),btn=$('#geQuicksell');
+  btn.disabled=!cand.length; btn.querySelector('small').innerHTML=cand.length?`${cand.length} · <i class="cur gold"></i> ${total.toLocaleString()}`:'none';}
+function quicksellGear(){const cand=qsCandidates();if(!cand.length)return;
+  const total=cand.reduce((s,p)=>s+scrapValue(p),0), rr=[...qsRars].join('/');
+  const hasHi=cand.some(p=>p.rar==='E'||p.rar==='L');
+  if(hasHi&&!confirm(`Quick-sell ${cand.length} unequipped ${rr} piece${cand.length>1?'s':''} for ${total.toLocaleString()} Gold? This is permanent.`))return;
+  gold+=total; const ids=new Set(cand.map(p=>p.uid)); inventory=inventory.filter(p=>!ids.has(p.uid));
+  renderGear();saveGame();}
 const GUILD_LVL_XP=1000;
 function guildWeekIdx(){return Math.floor(Date.now()/(7*864e5));}
 function guildDayCheck(){const t=new Date().toDateString();if(guild.donateDate!==t){guild.donateDate=t;guild.donatedToday=0;}}
@@ -2465,7 +2527,9 @@ function renderGuild(){
     <div class="glcrest">${crestSVG(guild.banner,46)}</div>
     <div class="glinfo"><div class="glname">${guild.name} <span class="gltag">[${guild.tag}]</span> <span class="gllv">Lv ${guild.level}</span></div>
       <div class="glsub">${guildBoardMembers().length} / 40 members · <b>💠 ${guild.marks}</b> Marks${guild.isLeader?' · <span style="color:var(--warn)">Leader</span>':''}</div>
-      <div class="glxp"><div class="glxpf" style="width:${lvlPct}%"></div></div></div></div>`;
+      <div class="glxp"><div class="glxpf" style="width:${lvlPct}%"></div></div></div>
+    <button class="glleave" id="glLeave" title="Leave guild">Leave</button></div>`;
+  $('#glLeave')?.addEventListener('click',guildLeave);
   body.className=guild.tab==='chat'?'chatmode':'scrollmode';
   if(guild.tab==='manage'){ renderGuildManage(body); return; }
   if(guild.tab==='chat'){
@@ -2645,6 +2709,9 @@ function guildInvite(){guild.roster=guild.roster||guildDefaultRoster();
 function guildKick(i){if(!guild.roster||!guild.roster[i])return;const m=guild.roster[i];
   if(m.n==='You'||m.r==='Leader')return; if(!confirm('Kick '+m.n+' from the guild?'))return;
   guild.roster.splice(i,1);SFX.tap();renderGuild();saveGame();}
+function guildLeave(){if(!confirm('Leave '+guild.name+'? You can join or create another guild afterwards.'))return;
+  guild.joined=false;guild.isLeader=false;guild.name='';guild.tag='';guild.desc='';guild.roster=null;guild.chat=[];
+  guild.boss={week:-1,myDmg:0,claimed:false};guildView='list';guild.tab='chat';SFX.tap();renderGuild();saveGame();}
 
 /* ---------- PvP ARENA ---------- */
 let arenaRank=0, arenaTarget=null;
@@ -2792,9 +2859,15 @@ function renderRaid(){
     <div class="emile"><div class="emlabel">Weekly Milestone Rewards · claim by best damage %</div>
       <div class="emtrack"><div class="emfill" style="width:${best}%"></div>${mnodes}</div></div>
     <button class="cta raidenter" id="raidEnter">Enter Raid ▸</button>
-    <div class="raidnote">Rewards are by damage %, and the milestone track resets with the boss each week. All-time best: <b>${raidBest}%</b>.</div>`;
+    <div class="raidnote">Rewards are by damage %, and the milestone track resets with the boss each week. All-time best: <b>${raidBest}%</b>.</div>
+    <div class="portalgrid">
+      <button class="portalcard" id="raidToDungeons"><span class="pcico">🗝️</span><span class="pctx"><b>Dungeons</b><small>Skill · Equipment farms</small></span></button>
+      <button class="portalcard" id="raidToGold"><span class="pcico">💰</span><span class="pctx"><b>Gold & EXP Raids</b><small>Farm gold + hero XP</small></span></button>
+    </div>`;
   $('#raidScroll').querySelectorAll('.emnode.ready').forEach(n=>n.addEventListener('click',()=>raidClaimMile(+n.dataset.mi)));
   $('#raidEnter').addEventListener('click',()=>{SFX.tap();openRaidTeam();});
+  $('#raidToDungeons').addEventListener('click',()=>{SFX.tap();openDungeons();});
+  $('#raidToGold').addEventListener('click',()=>{SFX.tap();openDungeons();});
 }
 function openRaidTeam(){raidPending=true;arenaTarget=null;curStage=null;
   $('#teamStage').textContent='Weekly Raid · '+raidBossOfWeek().name.split(',')[0];
@@ -3170,6 +3243,16 @@ function buildHeroGrid(){
   wireArt(box);
 }
 function openHero(id){curHero=id;renderHero();show('screen-hero');}
+const HERO_SELL={C:{shards:20,gold:6000,crys:0,relics:0},R:{shards:60,gold:18000,crys:20,relics:0},
+  E:{shards:120,gold:45000,crys:70,relics:2},L:{shards:400,gold:120000,crys:300,relics:12}};
+function sellHero(){const h=hero(curHero);if(!h||!owned.has(h.id))return;
+  if(owned.size<=5){alert('You need at least 5 heroes to field a team — you can’t sell this one yet.');return;}
+  const v=HERO_SELL[h.rarity]||HERO_SELL.C;
+  const parts=[`${v.shards} Shards`]; if(v.crys)parts.push(`${v.crys} Crystals`); parts.push(`${v.gold.toLocaleString()} Gold`); if(v.relics)parts.push(`${v.relics} Relics`);
+  if(!confirm(`Sell ${h.name} (${RARNAME[h.rarity]})?\nYou'll get: ${parts.join(', ')}.\nThis is permanent.`))return;
+  starShards+=v.shards; gold+=v.gold; crystals+=v.crys; relics+=v.relics;
+  owned.delete(h.id); delete progress[h.id]; team=team.filter(x=>x!==h.id); if(gearOn[h.id])delete gearOn[h.id];
+  SFX.rare('R'); buildHeroGrid(); renderCrys(); saveGame(); show('screen-heroes');}
 /* ---------- CODEX / collection ---------- */
 function openCodex(){renderCodex();renderCrys();show('screen-codex');}
 function renderCodex(){
@@ -3433,9 +3516,7 @@ function renderGear(){
     c.querySelector('[data-act=eq]').addEventListener('click',()=>toggleEquip(uid));
     c.querySelector('[data-act=enh]').addEventListener('click',()=>enhancePiece(uid));
     const sc=c.querySelector('[data-act=scrap]');if(sc)sc.addEventListener('click',()=>scrapPiece(uid));});
-  const nJunk=inventory.filter(p=>p.rar==='C'&&!whoHas(p.uid)).length;
-  const bScrap=$('#geScrap');bScrap.textContent='Scrap Commons'+(nJunk?' ('+nJunk+')':'');bScrap.disabled=!nJunk;
-  $('#geForge').disabled=gold<12000;
+  renderQuicksell();
   renderCrys();
 }
 function toggleEquip(uid){const p=pieceById(uid);if(!p)return;gearOn[curHero]=gearOn[curHero]||{};
@@ -4049,8 +4130,11 @@ function endGame(win){
       if(firstHard){reward=curStage.boss?200:80;crystals+=reward;} }
     else if(firstNormal){ reward=curStage.boss?300:150;crystals+=reward;
       goldR=curStage.boss?8000:4000;gold+=goldR; shardR=curStage.boss?30:12;starShards+=shardR; }
+    else { // replaying an already-cleared Normal stage: Gold + gear, no Crystals
+      goldR=curStage.boss?6000:3000;gold+=goldR; shardR=curStage.boss?18:8;starShards+=shardR; }
   }
-  if(win&&(H||firstNormal||curStage.boss||Math.random()<.45))gp=dropGear(!!curStage.boss,H);
+  const replay = win && !H && !firstNormal;
+  if(win&&(H||firstNormal||curStage.boss||replay||Math.random()<.45))gp=dropGear(!!curStage.boss,H);
   const dropTxt=gp?`<div style="color:var(${GRAR[gp.rar].c});margin-bottom:6px">✦ Gear drop — ${GRAR[gp.rar].n} ${GSETS[gp.set].n} ${GSLOT[gp.slot].n} (${gp.tier}) · equip it in Heroes ▸ Equipment</div>`:'';
   if(win){cleared.add(curStage.id);if(H)clearedHard.add(curStage.id);}
   if(win)dailyBump('win');
@@ -4066,6 +4150,7 @@ function endGame(win){
     : H ? `⚔ Hard clear${firstHard?' — first time!':''}. Replay any cleared stage on Hard to farm gold, shards, and higher-tier gear (T3/T4).`
     : (firstNormal&&last) ? `All four campaign chapters cleared — the Gate is sealed. <b style="color:var(--warn)">Hard mode is now open</b>: replay any stage for tougher fights and better loot.`
     : chapDone ? `Chapter complete. The next chapter is open on the map — its enemies hit harder, so summon and upgrade before you push in.`
+    : replay ? `Replay clear — <b style="color:var(--warn)">Gold and gear</b> only (Crystals are a first-clear reward). Farm cleared stages for Gold and equipment.`
     : `On to the next gate. Summon and level between fights to stay ahead of the curve.`;
   $('#resSub').innerHTML=(win?rewTxt+dropTxt:'')+msg;
   const nx=$('#resNext');
@@ -4152,7 +4237,6 @@ $('#toPass')?.addEventListener('click',()=>{SFX.tap();openPass();});
 $('#passBack').addEventListener('click',()=>{openHome();});
 $('#evtBack')?.addEventListener('click',()=>{openHome();});
 $('#homeShop')?.addEventListener('click',()=>{SFX.tap();openShop('value');});
-$('#homeDungeon')?.addEventListener('click',()=>{SFX.tap();openDungeons();});
 $('#dunBack')?.addEventListener('click',()=>{openHome();});
 $('#raidBack')?.addEventListener('click',()=>{openHome();});
 $('#guildBack')?.addEventListener('click',()=>{openHome();});
@@ -4161,13 +4245,15 @@ $('#shopBack')?.addEventListener('click',()=>{openHome();});
 $$('#shopTabs .shtab').forEach(b=>b.addEventListener('click',()=>{SFX.tap();shopTab=b.dataset.tab;renderShop();}));
 $('#bpClaimAll').addEventListener('click',bpClaimAll);
 $('#hdBack').addEventListener('click',()=>{buildHeroGrid();show('screen-heroes');});
+$('#hdSell')?.addEventListener('click',sellHero);
 $('#btnLevel').addEventListener('click',doLevel);
 $('#btnStar').addEventListener('click',doStar);
 $('#hdGear').addEventListener('click',openGear);
 $('#geBack').addEventListener('click',()=>{renderHero();show('screen-hero');});
 $('#geAuto').addEventListener('click',autoEquip);
-$('#geForge').addEventListener('click',forge);
-$('#geScrap').addEventListener('click',scrapCommons);
+$('#geQuicksell').addEventListener('click',quicksellGear);
+$('#geSellBox').addEventListener('click',e=>{const b=e.target.closest('.qsrar');if(!b)return;
+  const r=b.dataset.r; if(qsRars.has(r))qsRars.delete(r); else qsRars.add(r); if(!qsRars.size)qsRars.add(r); renderQuicksell();});
 $('#gachaBack').addEventListener('click',()=>{openHome();});
 $('#pull1').addEventListener('click',()=>pull(1));
 $('#pull10').addEventListener('click',()=>pull(10));
