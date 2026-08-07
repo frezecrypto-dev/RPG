@@ -112,6 +112,23 @@ tap; applying a preset pulls its pieces back even if another hero borrowed them.
 Two set 4-pc effects that aren't pure numbers in the doc (Vanguard/Gravebind)
 use a stat proxy here.
 
+## Guild (doc 07)
+
+A **Guild** hub (home-screen 🛡️) simulates the co-op social layer with an
+NPC Lodge (leader, officers, members) and four tabs:
+- **Chat** — member bubbles seeded and drip-fed for liveliness; you can type and
+  send, and a guildmate replies. Persists.
+- **Donate** — give Gold or Crystals (daily cap) for **Guild Marks** and guild
+  XP that levels the guild, with a **roster leaderboard** ranked by weekly boss
+  contribution.
+- **Shop** — spend Guild Marks on Star Crates, Ash Relics, gear ore, and an Epic
+  Vow ticket (weekly-limited, per doc 07 §3.2's "discount channel, not a power
+  gate").
+- **Guild Boss** — a weekly co-op boss (The Sunken Colossus) where **every
+  member's damage stacks** toward a shared guild goal; you run it on the full
+  combat engine (your damage adds to your weekly contribution), members
+  contribute in parallel, and hitting the goal unlocks a **weekly Guild Chest**.
+
 ## Weekly Boss Raid
 
 The raid is now a **weekly** loop. A **rotating boss** cycles every 7 days through

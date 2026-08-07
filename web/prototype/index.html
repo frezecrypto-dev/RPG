@@ -1199,6 +1199,50 @@
   .raidbarf{height:100%;background:linear-gradient(90deg,#7a1a2c,#ff3b5c,#ffcf6b);box-shadow:0 0 10px rgba(255,80,100,.5);transition:width .5s}
   .raidenter{width:100%;padding:12px;font-size:14px}
   .raidnote{font-size:9.5px;color:var(--faint);line-height:1.5;text-align:center}
+  /* guild */
+  #homeGuild{position:absolute;top:124px;right:16px;z-index:4}
+  #screen-guild{display:flex;flex-direction:column}
+  #guildTop{padding:6px 16px 2px}
+  .glbanner{display:flex;gap:12px;align-items:center;border:1px solid var(--umbra);border-radius:14px;padding:11px 13px;
+    background:linear-gradient(100deg,rgba(123,92,255,.18),var(--panel2) 62%)}
+  .glcrest{width:48px;height:48px;flex:none;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:26px;
+    background:#0e0b18;border:1px solid var(--umbra)}
+  .glinfo{flex:1;min-width:0}
+  .glname{font-family:var(--font-title);font-size:16px} .gllv{font-size:11px;color:var(--warn);margin-left:6px}
+  .glsub{font-size:10px;color:var(--muted);margin:2px 0 5px} .glsub b{color:#c9b8ff}
+  .glxp{height:6px;border-radius:4px;background:#221c34;overflow:hidden}
+  .glxpf{height:100%;background:linear-gradient(90deg,#4a3a8f,#7b5cff,#b9a5ff)}
+  #guildTabs{display:flex;gap:6px;padding:8px 16px 6px}
+  .gtab{flex:1;padding:8px 4px;border-radius:9px;border:1px solid var(--line);background:var(--panel2);color:var(--muted);
+    font-size:11px;cursor:pointer;transition:.14s}
+  .gtab.on{color:var(--ink);border-color:var(--umbra);background:linear-gradient(180deg,rgba(123,92,255,.2),var(--panel2))}
+  #guildBody{flex:1;min-height:0;padding:0 16px 12px}
+  #guildBody.chatmode{display:flex;flex-direction:column;overflow:hidden}
+  #guildBody.scrollmode{overflow-y:auto;display:block}
+  /* chat */
+  #gchat{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:7px;padding:8px 2px}
+  .gcempty{color:var(--faint);text-align:center;padding:24px;font-size:12px}
+  .gcmsg{max-width:82%;align-self:flex-start;background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:6px 10px}
+  .gcmsg.me{align-self:flex-end;background:linear-gradient(180deg,rgba(123,92,255,.24),rgba(123,92,255,.1));border-color:var(--umbra)}
+  .gcn{display:block;font-size:9px;color:var(--umbra);letter-spacing:.03em;margin-bottom:1px} .gcmsg.me .gcn{color:#cbb8ff}
+  .gcm{font-size:12px;color:var(--ink);line-height:1.35;word-break:break-word}
+  #gcbar{display:flex;gap:7px;padding:8px 0 2px}
+  #gcInput{flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:9px 11px;color:var(--ink);font-size:13px}
+  #gcInput:focus{outline:none;border-color:var(--umbra)}
+  #gcbar .cta{padding:9px 16px;font-size:12px}
+  /* donate + roster */
+  .gsect{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);padding:10px 2px 8px}
+  .gdonrow{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .gdon{border:1px solid var(--line);border-radius:12px;background:var(--panel2);padding:11px 8px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;transition:.14s}
+  .gdon:not([disabled]):hover{border-color:var(--umbra);transform:translateY(-2px)} .gdon[disabled]{opacity:.4;cursor:default}
+  .gdi{font-size:22px}.gdi .cur{width:1.1em;height:1.1em} .gdn{font-size:11px;font-weight:600} .gdc{font-size:11px;color:var(--ink)}
+  .gdr{font-size:9.5px;color:#c9b8ff}
+  .groster{display:flex;flex-direction:column;gap:4px}
+  .grow{display:flex;align-items:center;gap:9px;padding:6px 9px;border-radius:9px;background:var(--panel2);border:1px solid var(--line);font-size:11px}
+  .grow.me{border-color:var(--umbra);background:linear-gradient(90deg,rgba(123,92,255,.16),var(--panel2))}
+  .grk{width:16px;color:var(--faint);text-align:center;font-weight:700} .grn{flex:1;color:var(--ink)}
+  .grr{font-size:9px;color:var(--umbra);text-transform:uppercase;letter-spacing:.06em} .grc{color:var(--warn);font-variant-numeric:tabular-nums}
+  .glmine{font-size:10px;color:var(--muted);margin-top:6px;text-align:center} .glmine b{color:var(--warn)}
   #homeShop.notify::after{content:"";position:absolute;top:-3px;right:-3px;width:9px;height:9px;border-radius:50%;
     background:var(--good);box-shadow:0 0 8px var(--good);animation:bpReady 1.5s ease-in-out infinite}
 
@@ -1308,6 +1352,7 @@
     </div>
     <button id="homeShop" class="shopbtn">🛒 Shop</button>
     <button id="homeDungeon" class="shopbtn">🗝️ Dungeons</button>
+    <button id="homeGuild" class="shopbtn">🛡️ Guild</button>
     <div id="hubScene">
       <button class="bld" data-go="gacha" style="left:50%;top:20%">
         <svg class="bsvg" viewBox="0 0 64 104"><polygon points="32,4 46,32 18,32" fill="#241a4d" stroke="#7b5cff" stroke-width="1"/><circle cx="32" cy="16" r="10" fill="#7b5cff" opacity=".35"/><circle cx="32" cy="16" r="5" fill="#cbb8ff"/><rect x="21" y="32" width="22" height="66" rx="2" fill="#171233" stroke="#4a3a8f" stroke-width="1"/><rect x="28" y="44" width="8" height="12" rx="2" fill="#8f6bff"/><rect x="28" y="64" width="8" height="12" rx="2" fill="#8f6bff"/><rect x="16" y="96" width="32" height="8" rx="2" fill="#0e0b1e"/></svg>
@@ -1463,6 +1508,19 @@
       <span class="res"><i class="cur relic"></i> <b class="num relicN">0</b></span>
     </div>
     <div id="raidScroll"></div>
+  </section>
+
+  <section class="screen" id="screen-guild">
+    <div class="scrhead"><div><div class="eyebrow">Lodge</div><h1>Guild</h1></div>
+      <button class="ghost back" id="guildBack">Back</button></div>
+    <div id="guildTop"></div>
+    <div id="guildTabs">
+      <button class="gtab" data-gt="chat">💬 Chat</button>
+      <button class="gtab" data-gt="donate">🎁 Donate</button>
+      <button class="gtab" data-gt="shop">⚒ Shop</button>
+      <button class="gtab" data-gt="boss">☠ Boss</button>
+    </div>
+    <div id="guildBody"></div>
   </section>
 
   <!-- SETTINGS -->
@@ -1682,6 +1740,8 @@ let login={n:0, date:''};                             // 28-day login track (pau
 let gleam=0;                                          // Gleam — cosmetic-only soft currency (doc 10 s4/s5)
 let vowCard={active:false, day:0, date:''};           // Monthly Vow Card: 300 now + 90/day×30 (doc 10 s4)
 let shopFirst=[], cosmetics=[], shopDaily={date:'', bought:{}}; // first-buy doubles, owned cosmetics, daily deal limits
+let guild={joined:false, name:'The Vowbound', level:4, xp:520, marks:120, donateDate:'', donatedToday:0,
+  chat:[], shopWeek:-1, shopBought:{}, boss:{week:-1, myDmg:0, claimed:false}, tab:'chat'}; // guild (doc 07): sim co-op
 let progress={};
 const RATES={L:0.03,E:0.14,R:0.38,C:0.45};
 function prog(id){if(!progress[id]){const h=hero(id);progress[id]={level:20,stars:h?h.startStars:1,skills:{S1:1,S2:1,S3:1},asc:0};}
@@ -1775,7 +1835,7 @@ function renderCrys(){
 const SAVE_KEY='ashgate_save_v1';
 let hasSave=false;
 function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(
-  {v:3,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,raidBest,crystals,gold,starShards,relics,sigils,pity,insight,inventory,gearOn,gearUID,loadouts,daily,bpXP,bpClaimF,bpClaimP,bpPrem,evtEarned,evtBal,evtMile,evtShop,login,gleam,vowCard,shopFirst,cosmetics,shopDaily,raidWeek,muted:ui.muted,pref:{speed:ui.speed,auto:ui.auto}}));}catch(e){}}
+  {v:3,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,raidBest,crystals,gold,starShards,relics,sigils,pity,insight,inventory,gearOn,gearUID,loadouts,daily,bpXP,bpClaimF,bpClaimP,bpPrem,evtEarned,evtBal,evtMile,evtShop,login,gleam,vowCard,shopFirst,cosmetics,shopDaily,raidWeek,guild,muted:ui.muted,pref:{speed:ui.speed,auto:ui.auto}}));}catch(e){}}
 function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s||(s.v!==1&&s.v!==2&&s.v!==3))return false;
   owned=new Set(s.owned);progress=s.progress||{};cleared=new Set(s.cleared);
   crystals=s.crystals??crystals;gold=s.gold??gold;starShards=s.starShards??starShards;relics=s.relics??0;sigils=s.sigils??0;pity=s.pity??0;insight=s.insight??40;
@@ -1785,6 +1845,7 @@ function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s
   bpXP=s.bpXP||0;bpClaimF=s.bpClaimF||[];bpClaimP=s.bpClaimP||[];bpPrem=!!s.bpPrem;
   evtEarned=s.evtEarned||0;evtBal=s.evtBal||0;evtMile=s.evtMile||[];evtShop=s.evtShop||{};login=s.login||{n:0,date:''};
   gleam=s.gleam||0;vowCard=s.vowCard||{active:false,day:0,date:''};shopFirst=s.shopFirst||[];cosmetics=s.cosmetics||[];shopDaily=s.shopDaily||{date:'',bought:{}};
+  if(s.guild)guild={...guild,...s.guild};
   if(s.pref){ui.speed=s.pref.speed||1;ui.auto=!!s.pref.auto;}
   return true;}catch(e){return false;}}
 function resetSave(){try{localStorage.removeItem(SAVE_KEY);}catch(e){}location.reload();}
@@ -2255,6 +2316,149 @@ function endDungeon(win){
   $('#resSub').innerHTML=sub;
   const nx=$('#resNext');nx.textContent='Dungeons';nx.onclick=()=>{openDungeons();};
 }
+
+/* ---------- GUILD (doc 07): sim co-op — chat, donations, shop, guild boss ---------- */
+const GUILD_MEMBERS=[
+  {n:'Ashwarden Vael',r:'Leader',c:920000},{n:'Kessa Brightvow',r:'Officer',c:815000},{n:'Doran Vex',r:'Officer',c:788000},
+  {n:'Sable Marrow',r:'Member',c:604000},{n:'Ivo Kell',r:'Member',c:571000},{n:'Marn Oakes',r:'Member',c:498000},
+  {n:'Lysa Thorn',r:'Member',c:452000},{n:'Corin Ash',r:'Member',c:389000},{n:'Wren Doss',r:'Member',c:340000},
+  {n:'Pell Grave',r:'Member',c:281000},{n:'Tamsin Rue',r:'Member',c:233000},
+];
+const GUILD_CHAT_POOL=[
+  {n:'Kessa Brightvow',m:'anyone up for the weekly boss? need a couple more hits 💪'},
+  {n:'Doran Vex',m:'just pulled a Legendary off the Vow Gate 🎉'},
+  {n:'Sable Marrow',m:'Mortmain week is brutal, bring your magic DPS'},
+  {n:'Ivo Kell',m:'donated my gold, marks going to the Epic selector'},
+  {n:'Marn Oakes',m:'break the boss before it phases, saves so much time'},
+  {n:'Lysa Thorn',m:'gm everyone ☀️ good luck on pulls'},
+  {n:'Ashwarden Vael',m:'nice push on the boss board this week, keep it up'},
+  {n:'Corin Ash',m:'anyone got a spare Aegis 4pc? happy to trade'},
+  {n:'Wren Doss',m:'that new tactical break system is so satisfying'},
+  {n:'Pell Grave',m:'farmed the ring dungeon all night, finally T4 crit ring'},
+];
+const GUILD_DONATE=[
+  {id:'gold', label:'Donate Gold',     ic:'<i class="cur gold"></i>',    amt:'50,000', cost:{gold:50000},    marks:20, xp:12},
+  {id:'crys', label:'Donate Crystals', ic:'<i class="cur crystal"></i>', amt:'50',     cost:{crystals:50},  marks:35, xp:20},
+];
+const GUILD_SHOP=[
+  {id:'g-crate', ic:'<i class="cur shard"></i>', name:'Star Crate ×3', rw:{t:'crate',n:3}, cost:200, limit:4},
+  {id:'g-relic', ic:'<i class="cur relic"></i>', name:'Ash Relic ×2',  rw:{t:'relic',n:2}, cost:300, limit:3},
+  {id:'g-ore',   ic:'<i class="cur gold"></i>',  name:'Gear Ore ×5',   rw:{t:'ore',n:5},   cost:150, limit:5},
+  {id:'g-sel',   ic:'🎟️', name:'Epic Vow Ticket', rw:{t:'ticket',n:1}, cost:500, limit:1},
+];
+const GUILDBOSS={name:'The Sunken Colossus', id:'ENM-GNT-X01', bg:'2', root:'physical', weak:['magical'], glyph:'⛰️', efx:'var(--granite)',
+  hp:260000, atk:480, def:250, goal:8000000, tg:'Seismic Toll'};
+const GUILD_LVL_XP=1000;
+function guildWeekIdx(){return Math.floor(Date.now()/(7*864e5));}
+function guildDayCheck(){const t=new Date().toDateString();if(guild.donateDate!==t){guild.donateDate=t;guild.donatedToday=0;}}
+function guildWeekCheck(){const w=guildWeekIdx();
+  if(guild.shopWeek!==w){guild.shopWeek=w;guild.shopBought={};}
+  if(guild.boss.week!==w){guild.boss={week:w,myDmg:0,claimed:false};}}
+function guildNpcContrib(){const w=guildWeekIdx();return GUILD_MEMBERS.map((m,i)=>({...m,c:Math.round(m.c*(0.8+((w*7+i*13)%40)/100))}));}
+function guildTotal(){return guild.boss.myDmg + guildNpcContrib().reduce((s,m)=>s+m.c,0);}
+function guildChatPush(n,m,me){guild.chat.push({n,m,me:!!me,t:Date.now()});if(guild.chat.length>50)guild.chat=guild.chat.slice(-50);}
+function guildSeedChat(){ if(!guild.chat.length){GUILD_CHAT_POOL.slice(0,6).forEach(x=>guildChatPush(x.n,x.m));} }
+function guildChatTick(){ // simulate 1-2 new member messages when you open chat
+  const n=1+(guildWeekIdx()%2); for(let i=0;i<n;i++){const x=GUILD_CHAT_POOL[Math.floor(Math.random()*GUILD_CHAT_POOL.length)];
+    if(!guild.chat.length||guild.chat[guild.chat.length-1].m!==x.m)guildChatPush(x.n,x.m);} }
+function openGuild(){ if(!guild.joined){guild.joined=true;} guildSeedChat();guildChatTick();guildDayCheck();guildWeekCheck();
+  updateHomeNav('');renderGuild();renderCrys();show('screen-guild');}
+function guildSetTab(t){guild.tab=t;renderGuild();}
+function renderGuild(){
+  guildDayCheck();guildWeekCheck();
+  const nextXP=GUILD_LVL_XP, lvlPct=Math.round(100*(guild.xp%nextXP)/nextXP);
+  $('#guildTop').innerHTML=`<div class="glbanner">
+    <div class="glcrest">🛡️</div>
+    <div class="glinfo"><div class="glname">${guild.name} <span class="gllv">Lv ${guild.level}</span></div>
+      <div class="glsub">${GUILD_MEMBERS.length+1} / 20 members · <b>💠 ${guild.marks}</b> Guild Marks</div>
+      <div class="glxp"><div class="glxpf" style="width:${lvlPct}%"></div></div></div></div>`;
+  $$('#guildTabs .gtab').forEach(b=>b.classList.toggle('on',b.dataset.gt===guild.tab));
+  const body=$('#guildBody'); body.className=guild.tab==='chat'?'chatmode':'scrollmode';
+  if(guild.tab==='chat'){
+    const rows=guild.chat.slice(-40).map(x=>`<div class="gcmsg ${x.me?'me':''}"><span class="gcn">${x.me?'You':x.n}</span><span class="gcm">${(x.m||'').replace(/</g,'&lt;')}</span></div>`).join('');
+    body.innerHTML=`<div id="gchat">${rows||'<div class="gcempty">Say hello to your Lodge 👋</div>'}</div>
+      <div id="gcbar"><input id="gcInput" type="text" maxlength="140" placeholder="Message the guild…" autocomplete="off"><button class="cta" id="gcSend">Send</button></div>`;
+    const send=()=>{const v=$('#gcInput').value.trim();if(!v)return;guildChatPush('You',v,true);$('#gcInput').value='';SFX.tap();
+      setTimeout(()=>{const x=GUILD_CHAT_POOL[Math.floor(Math.random()*GUILD_CHAT_POOL.length)];guildChatPush(x.n,x.m);if(guild.tab==='chat')renderGuild();saveGame();},1400+Math.random()*1600);
+      renderGuild();saveGame();};
+    $('#gcSend').addEventListener('click',send);
+    $('#gcInput').addEventListener('keydown',e=>{if(e.key==='Enter')send();});
+    const ch=$('#gchat');if(ch)ch.scrollTop=ch.scrollHeight;
+  }
+  else if(guild.tab==='donate'){
+    const left=Math.max(0,3-guild.donatedToday);
+    body.innerHTML=`<div class="gsect">Daily Donation · ${left} left today · earns Guild Marks + guild XP</div>
+      <div class="gdonrow">${GUILD_DONATE.map((d,i)=>{const afford=(d.cost.gold?gold>=d.cost.gold:crystals>=d.cost.crystals)&&left>0;
+        return `<button class="gdon" data-di="${i}" ${afford?'':'disabled'}><div class="gdi">${d.ic}</div><div class="gdn">${d.label}</div>
+          <div class="gdc">${d.amt}</div><div class="gdr">→ 💠 ${d.marks} · +${d.xp} XP</div></button>`;}).join('')}</div>
+      <div class="gsect">Roster · by weekly boss contribution</div>
+      <div class="groster">${[{n:'You',r:'Member',c:guild.boss.myDmg},...guildNpcContrib()].sort((a,b)=>b.c-a.c).map((m,i)=>
+        `<div class="grow ${m.n==='You'?'me':''}"><span class="grk">${i+1}</span><span class="grn">${m.n}</span><span class="grr">${m.r}</span><span class="grc">${m.c.toLocaleString()}</span></div>`).join('')}</div>`;
+    body.querySelectorAll('.gdon').forEach(b=>b.addEventListener('click',()=>guildDonate(+b.dataset.di)));
+  }
+  else if(guild.tab==='shop'){
+    body.innerHTML=`<div class="gsect">Guild Shop · spend 💠 Guild Marks · resets weekly · balance <b>💠 ${guild.marks}</b></div>
+      <div class="eshgrid">${GUILD_SHOP.map((it,i)=>{const bought=guild.shopBought[it.id]||0,sold=bought>=it.limit,afford=guild.marks>=it.cost;
+        return `<div class="eitem ${sold?'sold':''}"><span class="eistock">${it.limit-bought}/${it.limit}</span>
+          <div class="eii">${it.ic}</div><div class="ein">${it.name}</div>
+          <button class="eibuy" data-gi="${i}" ${sold||!afford?'disabled':''}>${sold?'Sold out':`💠 ${it.cost}`}</button></div>`;}).join('')}</div>`;
+    body.querySelectorAll('.eibuy').forEach(b=>b.addEventListener('click',()=>guildBuy(+b.dataset.gi)));
+  }
+  else { // boss
+    const total=guildTotal(), pct=Math.min(100,Math.round(100*total/GUILDBOSS.goal)), done=total>=GUILDBOSS.goal;
+    const art=(typeof ECUT!=='undefined'&&ECUT[GUILDBOSS.id])||(typeof EART!=='undefined'&&EART[GUILDBOSS.id])||'';
+    body.innerHTML=`<div class="raidhero" style="--efx:${GUILDBOSS.efx}">
+        <div class="rhart">${art?`<img src="${art}" alt="${GUILDBOSS.name}">`:`<span class="rhglyph">${GUILDBOSS.glyph}</span>`}</div>
+        <div class="rhinfo"><div class="rhtag">Guild Boss · this week</div><div class="rhname">${GUILDBOSS.name}</div>
+          <div class="rhsub">Weakness <span class="wk">${WEAKICON[GUILDBOSS.weak[0]]}</span> · every member's damage counts</div>
+          <div class="rhtimer">Resets in <b>${fmtDur(((guildWeekIdx()+1)*7*864e5)-Date.now())}</b></div></div></div>
+      <div class="raidbestwrap"><div class="raidbestlbl"><span>Guild progress</span><b style="color:var(--warn)">${total.toLocaleString()} / ${GUILDBOSS.goal.toLocaleString()}</b></div>
+        <div class="raidbar"><div class="raidbarf" style="width:${pct}%"></div></div>
+        <div class="glmine">Your contribution this week: <b>${guild.boss.myDmg.toLocaleString()}</b></div></div>
+      <button class="cta raidenter" id="gbEnter">Fight the Guild Boss ▸</button>
+      ${done?`<button class="cta" id="gbClaim" style="width:100%;margin-top:8px" ${guild.boss.claimed?'disabled':''}>${guild.boss.claimed?'Guild Chest claimed':'Claim Guild Chest 🎁'}</button>`
+        :`<div class="raidnote">Reach the guild goal together to unlock the weekly Guild Chest.</div>`}`;
+    $('#gbEnter').addEventListener('click',()=>{SFX.tap();guildBossEnter();});
+    const gc=$('#gbClaim');if(gc)gc.addEventListener('click',guildBossClaim);
+  }
+}
+function guildDonate(i){guildDayCheck();const d=GUILD_DONATE[i];if(!d||guild.donatedToday>=3)return;
+  if(d.cost.gold&&gold<d.cost.gold)return; if(d.cost.crystals&&crystals<d.cost.crystals)return;
+  if(d.cost.gold)gold-=d.cost.gold; if(d.cost.crystals)crystals-=d.cost.crystals;
+  guild.marks+=d.marks; guild.xp+=d.xp; guild.donatedToday++;
+  while(guild.xp>=GUILD_LVL_XP*guild.level){/* passive level-ups */ if(guild.level>=30)break; guild.level++;}
+  SFX.rare('R');renderCrys();renderGuild();saveGame();}
+function guildBuy(i){guildWeekCheck();const it=GUILD_SHOP[i],bought=guild.shopBought[it.id]||0;
+  if(bought>=it.limit||guild.marks<it.cost)return; guild.marks-=it.cost; guild.shopBought[it.id]=bought+1;
+  grantReward(it.rw); SFX.rare('E');renderCrys();renderGuild();saveGame();}
+function guildBossEnter(){ const ids=autoTeam(); if(!ids.length){alert('Summon some heroes first.');return;} team=ids;
+  curHard=false; const b=GUILDBOSS;
+  const boss={id:'ENM-GBOSS', _artId:b.id, name:b.name, stats:{hp:b.hp,atk:b.atk,def:b.def,spd:116},
+    side:'enemy',hp:b.hp,max:b.hp,barrier:0,status:{},alive:true,el:null,cd:{},
+    damageRoot:b.root,skillPower:1.3,traits:[],physRes:b.weak.includes('physical')?-0.25:0,magRes:b.weak.includes('magical')?-0.25:0,
+    immunities:['STS-STUN','STS-ATK-DOWN'],tier:'X',isBoss:true,isMini:false,tgName:b.tg,_glyph:b.glyph,_efx:b.efx,
+    weakTypes:b.weak,toughMax:240,tough:240,broken:0,vuln:0};
+  G={heroes:team.map(mkHero),waves:[[boss]],wi:0,enemies:[boss],surge:0,round:1,over:false,busy:false,auto:ui.auto,speed:ui.speed,telegraph:null,hard:false,guildBoss:boss,raidPhase:1,awaiting:null,pendingSkill:null};
+  applySynergy(G.heroes);applyEventFactionWeek(G.heroes);
+  $('#speedBtn').textContent=ui.speed+'×';$('#autoBtn').classList.toggle('active',ui.auto);$('#autoBtn').textContent=ui.auto?'Auto ▶':'Manual';
+  $('#btlChapter').textContent='🛡️ GUILD BOSS';$('#btlName').textContent=b.name;
+  setBattleBg(b.bg);buildParty();renderEnemies();render();renderTelegraph();
+  $('#roundNum').textContent='1';$('#result').style.display='none';$('#wavepip').textContent='Damage adds to your guild total';
+  logMsg('The guild boss looms…');logSynergies(G.heroes.map(u=>u.id));
+  show('screen-battle');turnQueue=[];setTimeout(step,450);
+}
+function endGuildBoss(win){
+  const boss=G.guildBoss; const dealt=Math.max(0,Math.round(boss.max-boss.hp));
+  guild.boss.myDmg+=dealt; saveGame(); setMvp(win); renderCrys();
+  const r=$('#result');r.style.display='flex';resultCinematic(win);
+  $('#resEyebrow').textContent=win?'Guild boss felled':'Run complete';
+  const v=$('#resVerdict');v.textContent=win?'VICTORY':'CONTRIBUTED';v.className='verdict '+(win?'win':'lose');
+  $('#resSub').innerHTML=`You dealt <b style="color:var(--warn)">${dealt.toLocaleString()}</b> to the guild boss. Your weekly contribution is now <b>${guild.boss.myDmg.toLocaleString()}</b> — every member's damage stacks toward the guild goal.`;
+  const nx=$('#resNext');nx.textContent='Guild';nx.onclick=()=>{guild.tab='boss';openGuild();};
+}
+function guildBossClaim(){guildWeekCheck();if(guildTotal()<GUILDBOSS.goal||guild.boss.claimed)return;
+  guild.boss.claimed=true; crystals+=600; gold+=300000; relics+=8; guild.marks+=200;
+  SFX.rare('L');renderCrys();renderGuild();saveGame();}
 
 /* ---------- PvP ARENA ---------- */
 let arenaRank=0, arenaTarget=null;
@@ -3641,13 +3845,14 @@ function resultCinematic(win){
 function endGame(win){
   G.over=true;clearSpotlight();renderTelegraph();SFX[win?'win':'lose']();
   if(win)bpGain(60);   // Battle Pass XP from any victory (campaign/arena/raid/trial)
-  if(win){ let ec=G.raid?EVT.earn.raid : (G.pvp||G.trial||G.dungeon)?EVT.earn.arena
+  if(win){ let ec=G.raid?EVT.earn.raid : (G.pvp||G.trial||G.dungeon||G.guildBoss)?EVT.earn.arena
     : Math.round((curStage&&curStage.boss?EVT.earn.boss:EVT.earn.normal)*(curHard?EVT.earn.hardMul:1));
     evtEarn(ec); }   // Ember Cinders from any PvE clear (event point-farm, doc 10 s3)
   if(G.pvp)return endArena(win);
   if(G.raid)return endRaid(win);
   if(G.trial)return endTrial(win);
   if(G.dungeon)return endDungeon(win);
+  if(G.guildBoss)return endGuildBoss(win);
   const H=curHard;
   const firstNormal = win && !cleared.has(curStage.id);
   const firstHard = win && H && !clearedHard.has(curStage.id);
@@ -3763,6 +3968,9 @@ $('#homeShop')?.addEventListener('click',()=>{SFX.tap();openShop('value');});
 $('#homeDungeon')?.addEventListener('click',()=>{SFX.tap();openDungeons();});
 $('#dunBack')?.addEventListener('click',()=>{openHome();});
 $('#raidBack')?.addEventListener('click',()=>{openHome();});
+$('#homeGuild')?.addEventListener('click',()=>{SFX.tap();openGuild();});
+$('#guildBack')?.addEventListener('click',()=>{openHome();});
+$$('#guildTabs .gtab').forEach(b=>b.addEventListener('click',()=>{SFX.tap();guildSetTab(b.dataset.gt);}));
 $('#shopBack')?.addEventListener('click',()=>{openHome();});
 $$('#shopTabs .shtab').forEach(b=>b.addEventListener('click',()=>{SFX.tap();shopTab=b.dataset.tab;renderShop();}));
 $('#bpClaimAll').addEventListener('click',bpClaimAll);
