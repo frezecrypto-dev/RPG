@@ -3019,10 +3019,16 @@ function deriveWeak(s){const w=[];
 function matchesWeak(e,root,sub){const W=e.weakTypes||[];
   if(sub==='holy')return W.includes('holy')||W.includes('magical'); return W.includes(root);}
 const WEAKICON={physical:'⚔',magical:'✦',holy:'☀'};
-function mkEnemy(key){const s=DATA.enemies[key]||Object.values(DATA.enemies).find(e=>key.startsWith(e.id))||Object.values(DATA.enemies)[0];
-  const st=curHard?{hp:Math.round(s.stats.hp*HARD.hp),atk:Math.round(s.stats.atk*HARD.atk),def:Math.round(s.stats.def*HARD.def),spd:s.stats.spd}:s.stats;
+let ENEMY_PERLEVEL=0.04;    // enemies scale with their stage @level so progression stays a real ramp
+function mkEnemy(key){const baseKey=key.split('@')[0], lvl=key.includes('@')?(+key.split('@')[1]||1):1;
+  const s=DATA.enemies[baseKey]||Object.values(DATA.enemies).find(e=>key.startsWith(e.id))||Object.values(DATA.enemies)[0];
+  const g=1+ENEMY_PERLEVEL*(lvl-1);                       // full growth on ATK/DEF (the threat)
+  const boss=s.tier==='X'||s.tier==='B';
+  const hpG=boss?1:g;         // bosses already carry escalating base HP per chapter — only their ATK/DEF scale, so they hit harder without becoming HP sponges
+  let st={hp:Math.round(s.stats.hp*hpG),atk:Math.round(s.stats.atk*g),def:Math.round(s.stats.def*g),spd:s.stats.spd};
+  if(curHard)st={hp:Math.round(st.hp*HARD.hp),atk:Math.round(st.atk*HARD.atk),def:Math.round(st.def*HARD.def),spd:st.spd};
   const tough=TIER_TOUGH[s.tier]||48;
-  return {...s,stats:st,key,side:'enemy',hp:st.hp,max:st.hp,barrier:0,status:{},alive:true,el:null,isBoss:s.tier==='X',isMini:s.tier==='B',
+  return {...s,stats:st,key,lvl,side:'enemy',hp:st.hp,max:st.hp,barrier:0,status:{},alive:true,el:null,isBoss:s.tier==='X',isMini:s.tier==='B',
     weakTypes:deriveWeak(s),toughMax:tough,tough:tough,broken:0,vuln:0};}
 function deploy(){
   curHard=hardMode;
@@ -3238,7 +3244,8 @@ function step(){
 function advanceRound(){
   if(!turnQueue.length){
     G.round++;$('#roundNum').textContent=G.round;
-    if(G.round>(G.raid?30:20)){G.timeout=true;endGame(false);}  // doc 02 round cap (raids run longer)
+    const cap=G.raid?30:(G.dungeon||(curStage&&curStage.boss))?25:20;   // bosses & dungeons get a longer damage race
+    if(G.round>cap){G.timeout=true;endGame(false);}
   }
 }
 // returns true if the unit is now awaiting player input (tactical mode)

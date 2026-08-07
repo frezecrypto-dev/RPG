@@ -215,6 +215,20 @@ and prettier*, never *unbeatable*" policy:
 Real-money SKUs are clearly marked **demo** and grant their contents free with a
 spend-confirm (no payment), so the whole store is explorable. All of it persists.
 
+## Difficulty & scaling (balance pass)
+
+Enemies now **scale with their stage level**. Every campaign wave already encodes
+an enemy level (`ENM-SLM-M02@8`), but the engine had been ignoring it — so a
+maxed team steam-rolled everything. Enemy ATK/DEF/HP now grow ~4%/level (bosses
+keep their hand-tuned base HP and scale only ATK/DEF, so they stay a *damage
+race* rather than an HP sponge), and boss/dungeon fights get a longer round cap
+(25) for that race. The result, verified by headless auto-battles: a geared,
+ascended team clears the **Chapter-4 finale on Normal on the last round**, its
+**Hard version resists even that team** (you need manual weakness-breaking or
+more investment), an **under-geared team fails the finale outright**, while a
+starter five still clears Chapter 1. Progression finally *demands* the gear and
+skill farms — you can't march through the back half.
+
 ## Hard mode (endgame farm)
 
 Clearing a chapter's boss on Normal unlocks a **Normal / Hard** toggle on the
