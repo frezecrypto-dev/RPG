@@ -68,6 +68,18 @@ on guaranteed units — a Rare Vow (40), an Epic Vow (120), or a **Legendary Vow
 under the RNG: pull enough and you choose exactly who you want. Claims prefer new
 units and turn dupes into Soul Shards, just like a pull.
 
+## Skill Dungeon & Insight (doc 09)
+
+Skill levels no longer cost Gold — they cost **Insight** (📖), a dedicated
+skill-essence currency you farm in the **Skill Dungeon** ("Rite of Insight",
+reached from the 🗝️ Dungeons button on the home screen). Three difficulty tiers
+(Apprentice / Adept / Master) scale the Warden foes up and pay out more Insight,
+each flagged with a **recommended-power** check so you can see when you're
+under-geared. Clears run on the full combat engine (Break, spotlight, tactical),
+and the Insight you win is spent on S1/S2/S3 skill-ups in a hero's Kit. (An
+Equipment-Dungeons slot for ring / necklace / bracelet / weapon gear is stubbed
+in the same hub, next up.)
+
 ## Hero view & accessory slots
 
 Tapping a hero in the Heroes' Hall opens a **full-size character sheet**: the

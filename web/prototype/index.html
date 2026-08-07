@@ -1163,6 +1163,23 @@
     color:#cbb8ff;font-size:11px;font-weight:600;letter-spacing:.04em;cursor:pointer}
   .shopbtn:hover{box-shadow:0 0 12px rgba(123,92,255,.4)}
   #homeShop{position:absolute;top:52px;right:16px;z-index:4}
+  #homeDungeon{position:absolute;top:88px;right:16px;z-index:4}
+  /* dungeons screen */
+  #dunRes{display:flex;flex-wrap:wrap;gap:6px 14px;padding:6px 16px 4px;font-size:12px}
+  #dunScroll{flex:1;overflow-y:auto;padding:10px 16px 26px;display:flex;flex-direction:column;gap:12px}
+  .duncard{border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,rgba(24,18,36,.7),rgba(14,11,24,.7));padding:13px}
+  .duncard.soon{opacity:.7}
+  .dunhead{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:5px}
+  .dunname{font-family:var(--font-title);font-size:16px}
+  .duncur{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--umbra)}
+  .dunblurb{font-size:11px;color:var(--muted);line-height:1.45;margin-bottom:10px}
+  .duntier{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:11px;border:1px solid var(--line);background:var(--panel2);margin-top:7px}
+  .duntier.under{border-color:color-mix(in srgb,var(--crit) 40%,var(--line))}
+  .dtinfo{flex:1;min-width:0} .dtname{font-size:12px} .dtsub{font-size:9.5px;color:var(--muted)}
+  .dtsub .warnx{color:var(--crit)}
+  .dtgo{padding:8px 16px;font-size:12px;white-space:nowrap}
+  .dunteam{font-size:9.5px;color:var(--faint);line-height:1.5;margin-top:11px;border-top:1px solid var(--line);padding-top:9px}
+  .khsub{float:right;font-size:10px;color:#cbb8ff;font-weight:400;letter-spacing:0}
   #homeShop.notify::after{content:"";position:absolute;top:-3px;right:-3px;width:9px;height:9px;border-radius:50%;
     background:var(--good);box-shadow:0 0 8px var(--good);animation:bpReady 1.5s ease-in-out infinite}
 
@@ -1271,6 +1288,7 @@
       </div>
     </div>
     <button id="homeShop" class="shopbtn">🛒 Shop</button>
+    <button id="homeDungeon" class="shopbtn">🗝️ Dungeons</button>
     <div id="hubScene">
       <button class="bld" data-go="gacha" style="left:50%;top:20%">
         <svg class="bsvg" viewBox="0 0 64 104"><polygon points="32,4 46,32 18,32" fill="#241a4d" stroke="#7b5cff" stroke-width="1"/><circle cx="32" cy="16" r="10" fill="#7b5cff" opacity=".35"/><circle cx="32" cy="16" r="5" fill="#cbb8ff"/><rect x="21" y="32" width="22" height="66" rx="2" fill="#171233" stroke="#4a3a8f" stroke-width="1"/><rect x="28" y="44" width="8" height="12" rx="2" fill="#8f6bff"/><rect x="28" y="64" width="8" height="12" rx="2" fill="#8f6bff"/><rect x="16" y="96" width="32" height="8" rx="2" fill="#0e0b1e"/></svg>
@@ -1404,6 +1422,17 @@
       <button class="shtab" data-tab="cosmetics">Cosmetics</button>
     </div>
     <div id="shopScroll"></div>
+  </section>
+
+  <section class="screen" id="screen-dungeons">
+    <div class="scrhead"><div><div class="eyebrow">Trials</div><h1>Dungeons</h1></div>
+      <button class="ghost back" id="dunBack">Back</button></div>
+    <div id="dunRes">
+      <span class="res">📖 <b class="num insN">0</b> Insight</span>
+      <span class="res"><i class="cur gold"></i> <b class="num goldN">0</b></span>
+      <span class="res"><i class="cur relic"></i> <b class="num relicN">0</b></span>
+    </div>
+    <div id="dunScroll"></div>
   </section>
 
   <!-- SETTINGS -->
@@ -1616,7 +1645,7 @@ const SFX=(()=>{
       else tone({freq:440,type:'sine',dur:.16,vol:.09}); }
   };
 })();
-let owned=new Set(STARTER), crystals=4500, gold=20000, starShards=120, relics=0, sigils=0, pity=0;
+let owned=new Set(STARTER), crystals=4500, gold=20000, starShards=120, relics=0, sigils=0, pity=0, insight=40;
 let bpXP=0, bpClaimF=[], bpClaimP=[], bpPrem=false;   // Battle Pass "Gatewarden's Vow" (doc 10 s4)
 let evtEarned=0, evtBal=0, evtMile=[], evtShop={};    // Events point-farm (doc 10 s3): earned=lifetime(milestones), bal=spendable(shop)
 let login={n:0, date:''};                             // 28-day login track (pauses on miss, never resets)
@@ -1630,7 +1659,7 @@ function prog(id){if(!progress[id]){const h=hero(id);progress[id]={level:20,star
 const ASC_CAP=6;
 const ascCost=rank=>({relics:2+rank, gold:20000*(rank+1)});
 const SKILL_CAP=5;
-const skillCost=(slot,lv)=>Math.round(3500*lv*(slot==='S3'?1.6:1));
+const skillCost=(slot,lv)=>Math.round(8*lv*(slot==='S3'?1.5:1));   // in Insight (skill essence, farmed from the Skill Dungeon)
 const skillMult=lv=>1+0.06*((lv||1)-1);
 
 /* ---------- gear system (doc 09 s5): 5 slots · 6 sets · T1–T4 · C/R/E/L ---------- */
@@ -1692,7 +1721,7 @@ function computeStats(h,level,stars){
     lifesteal:a.lifesteal||0, heal_pct:a.heal_pct||0, aegis:a.aegis?1:0 };
 }
 function effStats(h){const pr=prog(h.id);return computeStats(h,pr.level,pr.stars);}
-let _prevCur={crystals:null,gold:null,starShards:null,relics:null,gleam:null};
+let _prevCur={crystals:null,gold:null,starShards:null,relics:null,gleam:null,insight:null};
 function _setCur(cls,val,prevKey){
   const changed=_prevCur[prevKey]!==null&&_prevCur[prevKey]!==val;
   document.querySelectorAll('.'+cls).forEach(e=>{
@@ -1709,16 +1738,17 @@ function renderCrys(){
   _setCur('shardN',starShards,'starShards');
   _setCur('relicN',relics,'relics');
   _setCur('gleamN',gleam,'gleam');
+  _setCur('insN',insight,'insight');
   const pl=$('#pityLeft');if(pl)pl.textContent=Math.max(0,70-pity);}
 
 /* ---------- save / load (localStorage, graceful fallback) ---------- */
 const SAVE_KEY='ashgate_save_v1';
 let hasSave=false;
 function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(
-  {v:3,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,raidBest,crystals,gold,starShards,relics,sigils,pity,inventory,gearOn,gearUID,loadouts,daily,bpXP,bpClaimF,bpClaimP,bpPrem,evtEarned,evtBal,evtMile,evtShop,login,gleam,vowCard,shopFirst,cosmetics,shopDaily,muted:ui.muted,pref:{speed:ui.speed,auto:ui.auto}}));}catch(e){}}
+  {v:3,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,raidBest,crystals,gold,starShards,relics,sigils,pity,insight,inventory,gearOn,gearUID,loadouts,daily,bpXP,bpClaimF,bpClaimP,bpPrem,evtEarned,evtBal,evtMile,evtShop,login,gleam,vowCard,shopFirst,cosmetics,shopDaily,muted:ui.muted,pref:{speed:ui.speed,auto:ui.auto}}));}catch(e){}}
 function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s||(s.v!==1&&s.v!==2&&s.v!==3))return false;
   owned=new Set(s.owned);progress=s.progress||{};cleared=new Set(s.cleared);
-  crystals=s.crystals??crystals;gold=s.gold??gold;starShards=s.starShards??starShards;relics=s.relics??0;sigils=s.sigils??0;pity=s.pity??0;
+  crystals=s.crystals??crystals;gold=s.gold??gold;starShards=s.starShards??starShards;relics=s.relics??0;sigils=s.sigils??0;pity=s.pity??0;insight=s.insight??40;
   inventory=s.inventory||[];gearOn=s.gearOn||{};gearUID=s.gearUID||inventory.reduce((m,p)=>Math.max(m,p.uid),0);
   loadouts=s.loadouts||{};clearedHard=new Set(s.clearedHard||[]);arenaRank=s.arenaRank||0;raidBest=s.raidBest||0;
   daily=s.daily||{date:'',win:0,summon:0,enhance:0,claimed:[]};dailyCheck();ui.muted=s.muted??false;
@@ -2095,6 +2125,64 @@ function renderShop(){
   sc.querySelectorAll('[data-pk]').forEach(b=>b.addEventListener('click',()=>buyPack(+b.dataset.pk)));
   sc.querySelectorAll('[data-deal]').forEach(b=>b.addEventListener('click',()=>buyDeal(+b.dataset.deal)));
   sc.querySelectorAll('[data-cos]').forEach(b=>b.addEventListener('click',()=>buyCosmetic(+b.dataset.cos)));
+}
+
+/* ---------- DUNGEONS (Skill Dungeon; Equipment Dungeons to follow) ---------- */
+const SKILLDUN={ id:'skill', name:'Rite of Insight', icon:'📖', cur:'Insight', bg:'3',
+  blurb:'Best the Warden echoes to earn Insight — the essence that levels your heroes’ skills.',
+  tiers:[
+    {t:1,name:'Apprentice',rec:9000,  mul:1.0,reward:60, foes:['ENM-GRD-M01','ENM-GRD-M02','ENM-GRD-E01']},
+    {t:2,name:'Adept',     rec:24000, mul:2.6,reward:150,foes:['ENM-GRD-M03','ENM-GRD-E02','ENM-GRD-B01']},
+    {t:3,name:'Master',    rec:52000, mul:4.6,reward:340,foes:['ENM-GRD-E02','ENM-GRD-B01','ENM-GRD-X01']},
+  ]};
+function teamPowerOf(ids){return Math.round(ids.reduce((s,id)=>{const h=hero(id);if(!h)return s;const pr=prog(id),st=statsAt(h,pr.level,pr.stars);return s+st.hp*0.12+st.atk+st.def+heroGearPower(id)*0.15;},0));}
+function autoTeam(){ if(team&&team.length>=1)return team.slice(0,5);
+  const own=DATA.heroes.filter(h=>owned.has(h.id));
+  return own.slice().sort((a,b)=>{const pa=prog(a.id),pb=prog(b.id);return (pb.level*10-RORDER[b.rarity])-(pa.level*10-RORDER[a.rarity]);}).slice(0,5).map(h=>h.id);}
+function openDungeons(){renderDungeons();renderCrys();show('screen-dungeons');}
+function renderDungeons(){
+  const box=$('#dunScroll'); const ids=autoTeam(); const pw=teamPowerOf(ids);
+  const tiers=SKILLDUN.tiers.map(ti=>{const under=pw<ti.rec*0.8;
+    return `<div class="duntier${under?' under':''}">
+      <div class="dtinfo"><div class="dtname"><b>${ti.name}</b></div>
+        <div class="dtsub">Rec. power ${ti.rec.toLocaleString()} · <b>📖 ${ti.reward}</b> Insight${under?' · <span class="warnx">under-powered</span>':''}</div></div>
+      <button class="cta dtgo" data-t="${ti.t}">Enter</button></div>`;}).join('');
+  box.innerHTML=`<div class="duncard">
+      <div class="dunhead"><div class="dunname">${SKILLDUN.icon} ${SKILLDUN.name}</div><div class="duncur">Insight → skill levels</div></div>
+      <div class="dunblurb">${SKILLDUN.blurb}</div>${tiers}
+      <div class="dunteam">Your five: <b>${ids.map(id=>hero(id)?hero(id).name.split(' ')[0]:'?').join(' · ')}</b> · power ${pw.toLocaleString()}<br>Deploy any campaign stage to change your team.</div>
+    </div>
+    <div class="duncard soon"><div class="dunhead"><div class="dunname">⚒ Equipment Dungeons</div><div class="duncur">soon</div></div>
+      <div class="dunblurb">Ring, Necklace, Bracelet & Weapon dungeons — tiered difficulties that drop gear for each accessory slot. Coming next.</div></div>`;
+  box.querySelectorAll('.dtgo').forEach(b=>b.addEventListener('click',()=>startDungeon(+b.dataset.t)));
+}
+function startDungeon(t){const ti=SKILLDUN.tiers.find(x=>x.t===t);if(!ti)return;
+  const ids=autoTeam(); if(!ids.length){alert('Summon some heroes first.');return;}
+  team=ids; deployDungeon(SKILLDUN,ti);}
+function deployDungeon(cfg,ti){
+  curHard=false;
+  const foes=ti.foes.map(k=>{const e=mkEnemy(k);
+    e.stats={hp:Math.round(e.stats.hp*ti.mul),atk:Math.round(e.stats.atk*ti.mul),def:Math.round(e.stats.def*ti.mul),spd:e.stats.spd};
+    e.hp=e.stats.hp;e.max=e.stats.hp;return e;});
+  G={heroes:team.map(mkHero),waves:[foes],wi:0,enemies:foes,surge:0,round:1,over:false,busy:false,auto:ui.auto,speed:ui.speed,telegraph:null,hard:false,dungeon:{name:cfg.name+' · '+ti.name,reward:ti.reward},awaiting:null,pendingSkill:null};
+  applySynergy(G.heroes);applyEventFactionWeek(G.heroes);
+  $('#speedBtn').textContent=ui.speed+'×';$('#autoBtn').classList.toggle('active',ui.auto);$('#autoBtn').textContent=ui.auto?'Auto ▶':'Manual';
+  $('#btlChapter').textContent='📖 SKILL DUNGEON';$('#btlName').textContent=cfg.name+' · '+ti.name;
+  setBattleBg(cfg.bg||'3');
+  buildParty();renderEnemies();render();renderTelegraph();
+  $('#roundNum').textContent='1';$('#result').style.display='none';$('#wavepip').textContent='';
+  logMsg('The Warden echoes stir…');logSynergies(G.heroes.map(u=>u.id));
+  show('screen-battle');turnQueue=[];setTimeout(step,450);
+}
+function endDungeon(win){
+  const d=G.dungeon;setMvp(win);
+  if(win){insight+=d.reward;renderCrys();saveGame();}
+  const r=$('#result');r.style.display='flex';resultCinematic(win);
+  $('#resEyebrow').textContent=win?d.name+' cleared':'Dungeon failed';
+  const v=$('#resVerdict');v.textContent=win?'VICTORY':'DEFEAT';v.className='verdict '+(win?'win':'lose');
+  $('#resSub').innerHTML=win?`<b style="color:#cbb8ff">+${d.reward} 📖 Insight</b> — spend it on skill levels in a hero's Kit.`
+    :`The wardens hold. Strengthen your five or try a lower tier, then return.`;
+  const nx=$('#resNext');nx.textContent='Dungeons';nx.onclick=()=>{openDungeons();};
 }
 
 /* ---------- PvP ARENA ---------- */
@@ -2673,8 +2761,8 @@ function renderHero(){
   const nxt = pr.level<cap ? statsAt(h,pr.level+1,pr.stars) : null;
   const rows=[['HP',st.hp,nxt&&nxt.hp],['ATK',st.atk,nxt&&nxt.atk],['DEF',st.def,nxt&&nxt.def],['SPD',st.spd,nxt&&nxt.spd]];
   $('#hdStats').innerHTML=rows.map(([k,v,n])=>`<div class="statrow"><span class="k">${k}</span><span class="v">${v.toLocaleString()}${(n&&n>v)?`<span class="up">▲${(n-v).toLocaleString()}</span>`:''}</span></div>`).join('');
-  $('#hdKit').innerHTML=`<div class="kh">Kit · Skill Levels</div>`+['S1','S2','S3'].map(s=>{const sk=h.kit[s],lv=pr.skills[s],max=lv>=SKILL_CAP,cost=skillCost(s,lv);
-    const btn=max?`<button class="skbtn" disabled>Max</button>`:`<button class="skbtn" data-s="${s}" ${gold<cost?'disabled':''}>▸ <i class="cur gold"></i> ${cost>=1000?(Math.round(cost/100)/10)+'k':cost}</button>`;
+  $('#hdKit').innerHTML=`<div class="kh">Kit · Skill Levels <span class="khsub">📖 ${insight} Insight</span></div>`+['S1','S2','S3'].map(s=>{const sk=h.kit[s],lv=pr.skills[s],max=lv>=SKILL_CAP,cost=skillCost(s,lv);
+    const btn=max?`<button class="skbtn" disabled>Max</button>`:`<button class="skbtn" data-s="${s}" ${insight<cost?'disabled':''}>▸ 📖 ${cost}</button>`;
     return `<div class="krow"><span class="slot">${s}</span><span class="kn">${sk.name} <span class="kt">${s==='S3'?'Ult':s==='S2'?'CD'+(sk.cooldown||3):'Basic'}</span></span><span class="sklv">Lv${lv}</span>${btn}</div>`;}).join('');
   $('#hdKit').querySelectorAll('.skbtn[data-s]').forEach(b=>b.addEventListener('click',()=>doSkill(b.dataset.s)));
   const lc=levelCost(pr),bL=$('#btnLevel');
@@ -2717,8 +2805,8 @@ function doLevel(){const pr=prog(curHero),cap=DATA.levelCapByStar[pr.stars],lc=l
   if(pr.level>=cap||gold<lc)return;gold-=lc;pr.level++;renderHero();saveGame();}
 function doStar(){const h=hero(curHero),pr=prog(curHero),sc=starCost(h,pr);
   if(pr.stars>=h.starCap||starShards<sc.shards||gold<sc.gold)return;starShards-=sc.shards;gold-=sc.gold;pr.stars++;renderHero();saveGame();}
-function doSkill(slot){const pr=prog(curHero),lv=pr.skills[slot];if(lv>=SKILL_CAP)return;const c=skillCost(slot,lv);if(gold<c)return;
-  gold-=c;pr.skills[slot]++;SFX.tap();renderHero();saveGame();}
+function doSkill(slot){const pr=prog(curHero),lv=pr.skills[slot];if(lv>=SKILL_CAP)return;const c=skillCost(slot,lv);if(insight<c)return;
+  insight-=c;pr.skills[slot]++;SFX.tap();renderHero();saveGame();}
 
 /* ---------- EQUIPMENT screen ---------- */
 let geSlotSel=null;
@@ -3422,12 +3510,13 @@ function resultCinematic(win){
 function endGame(win){
   G.over=true;clearSpotlight();renderTelegraph();SFX[win?'win':'lose']();
   if(win)bpGain(60);   // Battle Pass XP from any victory (campaign/arena/raid/trial)
-  if(win){ let ec=G.raid?EVT.earn.raid : (G.pvp||G.trial)?EVT.earn.arena
+  if(win){ let ec=G.raid?EVT.earn.raid : (G.pvp||G.trial||G.dungeon)?EVT.earn.arena
     : Math.round((curStage&&curStage.boss?EVT.earn.boss:EVT.earn.normal)*(curHard?EVT.earn.hardMul:1));
     evtEarn(ec); }   // Ember Cinders from any PvE clear (event point-farm, doc 10 s3)
   if(G.pvp)return endArena(win);
   if(G.raid)return endRaid(win);
   if(G.trial)return endTrial(win);
+  if(G.dungeon)return endDungeon(win);
   const H=curHard;
   const firstNormal = win && !cleared.has(curStage.id);
   const firstHard = win && H && !clearedHard.has(curStage.id);
@@ -3540,6 +3629,8 @@ $('#toPass')?.addEventListener('click',()=>{SFX.tap();openPass();});
 $('#passBack').addEventListener('click',()=>{openHome();});
 $('#evtBack')?.addEventListener('click',()=>{openHome();});
 $('#homeShop')?.addEventListener('click',()=>{SFX.tap();openShop('value');});
+$('#homeDungeon')?.addEventListener('click',()=>{SFX.tap();openDungeons();});
+$('#dunBack')?.addEventListener('click',()=>{openHome();});
 $('#shopBack')?.addEventListener('click',()=>{openHome();});
 $$('#shopTabs .shtab').forEach(b=>b.addEventListener('click',()=>{SFX.tap();shopTab=b.dataset.tab;renderShop();}));
 $('#bpClaimAll').addEventListener('click',bpClaimAll);
