@@ -1201,7 +1201,7 @@
   .raidnote{font-size:9.5px;color:var(--faint);line-height:1.5;text-align:center}
   /* guild */
   #homeGuild{position:absolute;top:124px;right:16px;z-index:4}
-  #screen-guild{display:flex;flex-direction:column}
+  #screen-guild.on{display:flex;flex-direction:column}
   #guildTop{padding:6px 16px 2px}
   .glbanner{display:flex;gap:12px;align-items:center;border:1px solid var(--umbra);border-radius:14px;padding:11px 13px;
     background:linear-gradient(100deg,rgba(123,92,255,.18),var(--panel2) 62%)}
@@ -1243,6 +1243,43 @@
   .grk{width:16px;color:var(--faint);text-align:center;font-weight:700} .grn{flex:1;color:var(--ink)}
   .grr{font-size:9px;color:var(--umbra);text-transform:uppercase;letter-spacing:.06em} .grc{color:var(--warn);font-variant-numeric:tabular-nums}
   .glmine{font-size:10px;color:var(--muted);margin-top:6px;text-align:center} .glmine b{color:var(--warn)}
+  .glcrest{padding:0;background:none;border:none} .glcrest .crestsvg{display:block}
+  .gltag{font-size:11px;color:var(--umbra);font-weight:700;letter-spacing:.04em}
+  /* create / join */
+  .gjhead{padding:12px 2px 6px} .gjtitle{font-family:var(--font-title);font-size:19px} .gjsub{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4}
+  .gjsearch{display:flex;align-items:center;gap:7px;background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:7px 11px;margin:4px 0 12px;font-size:13px}
+  .gjsearch input{flex:1;background:none;border:none;color:var(--ink);font-size:13px;outline:none}
+  .gjlist{display:flex;flex-direction:column;gap:9px}
+  .gjcard{display:flex;align-items:center;gap:11px;border:1px solid var(--line);border-radius:13px;background:var(--panel2);padding:10px 11px}
+  .gjcrest{flex:none} .gjinfo{flex:1;min-width:0}
+  .gjn{font-family:var(--font-title);font-size:14px;line-height:1.1}
+  .gjmeta{font-size:9.5px;color:var(--muted);margin:2px 0} .gopen{color:var(--good)}
+  .gjdesc{font-size:10px;color:var(--faint);line-height:1.35}
+  .gjbtn{align-self:center;padding:8px 15px;font-size:12px;white-space:nowrap} .gjbtn[disabled]{opacity:.45}
+  .gjor{text-align:center;color:var(--faint);font-size:11px;letter-spacing:.1em;margin:16px 0 8px}
+  .gjcreatebtn{width:100%;padding:13px;font-size:14px} .gjcreatebtn small{opacity:.75;font-weight:400}
+  .gjcreatebtn .cur{width:1em;height:1em}
+  .gcpreview{display:flex;align-items:center;gap:13px;border:1px solid var(--umbra);border-radius:14px;padding:12px;margin-bottom:10px;
+    background:linear-gradient(100deg,rgba(123,92,255,.14),var(--panel2) 62%)}
+  .gcpn{font-family:var(--font-title);font-size:16px} .gcpd{font-size:10.5px;color:var(--muted);margin-top:3px;line-height:1.4}
+  .gclabel{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin:11px 0 5px}
+  .gcinput{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:9px 11px;color:var(--ink);font-size:13px;font-family:inherit;resize:none}
+  .gcinput:focus{outline:none;border-color:var(--umbra)}
+  .gcpick{display:flex;flex-wrap:wrap;gap:7px}
+  .gcopt{width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;font-size:20px;transition:.14s;padding:0}
+  .gcopt.gccolor{border:1px solid rgba(255,255,255,.2)} .gcopt.gcshape{background:none}
+  .gcopt:hover{transform:translateY(-2px)} .gcopt.sel{border-color:var(--umbra);box-shadow:0 0 0 2px var(--umbra),0 0 12px rgba(123,92,255,.5)}
+  .gcactions{display:flex;gap:9px;margin-top:14px} .gcactions .ghost{flex:none;padding:11px 16px} .gcactions .cta{flex:1;padding:11px}
+  .gcactions .cur{width:1em;height:1em}
+  .gcwarn{font-size:10px;color:var(--crit);text-align:center;margin-top:8px;min-height:12px}
+  /* manage */
+  .gmbcast{display:flex;gap:7px;margin-bottom:4px}
+  .gmbcast input{flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:9px 11px;color:var(--ink);font-size:13px;outline:none}
+  .gmbcast .cta{padding:9px 16px;font-size:12px}
+  .gmbanner{display:flex;align-items:center;gap:12px;margin-bottom:4px} .gmbnote{font-size:12px;color:var(--ink)} .gmbnote span{font-size:10px;color:var(--faint)}
+  .gminvite{float:right;padding:3px 11px;font-size:10px}
+  .gkick{margin-left:auto;padding:3px 10px;font-size:10px;border-radius:7px;border:1px solid color-mix(in srgb,var(--crit) 45%,var(--line));background:rgba(232,57,79,.12);color:#ff8a9a;cursor:pointer}
   #homeShop.notify::after{content:"";position:absolute;top:-3px;right:-3px;width:9px;height:9px;border-radius:50%;
     background:var(--good);box-shadow:0 0 8px var(--good);animation:bpReady 1.5s ease-in-out infinite}
 
@@ -1301,13 +1338,22 @@
   .bld[data-go=gacha].hotspot{--hg:#8f6bff}.bld[data-go=raid].hotspot{--hg:#ff3b5c}.bld[data-go=heroes].hotspot{--hg:#ffcf6b}
   .bld[data-go=map].hotspot{--hg:#5b8fd6}.bld[data-go=arena].hotspot{--hg:#ff7a3d}
   #hubFeat{position:absolute;left:0;right:0;bottom:8px;text-align:center;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint)}
-  #homeNav{position:absolute;left:0;right:0;bottom:0;height:64px;z-index:5;display:flex;
-    background:linear-gradient(0deg,rgba(9,7,18,.99),rgba(9,7,18,.9));border-top:1px solid var(--line);backdrop-filter:blur(10px)}
-  .navb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;
-    color:var(--muted);font-size:9px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;padding:6px 0;transition:color .15s}
-  .navb .navi{font-size:20px;line-height:1;filter:grayscale(.35);transition:transform .15s,filter .15s}
-  .navb.on{color:var(--ink)} .navb.on .navi{filter:none;transform:scale(1.15)}
-  .navb:hover{color:var(--ink)} .navb:hover .navi{filter:none}
+  /* carved fantasy nav bar, tuned to the hub art */
+  #homeNav{position:absolute;left:0;right:0;bottom:0;height:66px;z-index:5;display:flex;padding:0 4px 3px;
+    background:linear-gradient(180deg,rgba(26,20,44,.72),rgba(10,8,20,.97) 62%);
+    border-top:1px solid color-mix(in srgb,var(--umbra) 55%,transparent);
+    box-shadow:0 -8px 22px rgba(0,0,0,.5),inset 0 1px 0 rgba(196,168,255,.14);backdrop-filter:blur(12px)}
+  #homeNav::before{content:"";position:absolute;top:-1px;left:8%;right:8%;height:1px;
+    background:linear-gradient(90deg,transparent,rgba(224,165,58,.6),transparent)}
+  .navb{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:none;border:none;
+    color:var(--muted);font-size:8.5px;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;padding:8px 0 5px;transition:color .15s}
+  .navb .navi{font-size:20px;line-height:1;filter:grayscale(.4) brightness(.92);transition:transform .18s,filter .18s;
+    text-shadow:0 1px 3px rgba(0,0,0,.6)}
+  .navb.on{color:#fff}
+  .navb.on::before{content:"";position:absolute;top:2px;width:42px;height:42px;border-radius:12px;z-index:-1;
+    background:radial-gradient(circle,rgba(143,107,255,.42),transparent 70%);box-shadow:inset 0 0 0 1px rgba(196,168,255,.4)}
+  .navb.on .navi{filter:none;transform:translateY(-2px) scale(1.18);text-shadow:0 0 12px rgba(160,120,255,.9)}
+  .navb:hover{color:var(--ink)} .navb:hover .navi{filter:none;transform:translateY(-1px)}
 
   @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.05ms!important}
     #ambient,.resfx{display:none}
@@ -1352,7 +1398,6 @@
     </div>
     <button id="homeShop" class="shopbtn">🛒 Shop</button>
     <button id="homeDungeon" class="shopbtn">🗝️ Dungeons</button>
-    <button id="homeGuild" class="shopbtn">🛡️ Guild</button>
     <div id="hubScene">
       <button class="bld" data-go="gacha" style="left:50%;top:20%">
         <svg class="bsvg" viewBox="0 0 64 104"><polygon points="32,4 46,32 18,32" fill="#241a4d" stroke="#7b5cff" stroke-width="1"/><circle cx="32" cy="16" r="10" fill="#7b5cff" opacity=".35"/><circle cx="32" cy="16" r="5" fill="#cbb8ff"/><rect x="21" y="32" width="22" height="66" rx="2" fill="#171233" stroke="#4a3a8f" stroke-width="1"/><rect x="28" y="44" width="8" height="12" rx="2" fill="#8f6bff"/><rect x="28" y="64" width="8" height="12" rx="2" fill="#8f6bff"/><rect x="16" y="96" width="32" height="8" rx="2" fill="#0e0b1e"/></svg>
@@ -1372,12 +1417,13 @@
       <div id="hubFeat"></div>
     </div>
     <nav id="homeNav">
-      <button class="navb on" data-nav="home"><span class="navi">🏠</span><span>Home</span></button>
-      <button class="navb" data-nav="heroes"><span class="navi">🛡️</span><span>Heroes</span></button>
+      <button class="navb on" data-nav="home"><span class="navi">🏰</span><span>Home</span></button>
+      <button class="navb" data-nav="heroes"><span class="navi">👥</span><span>Heroes</span></button>
       <button class="navb" data-nav="summon"><span class="navi">🔮</span><span>Summon</span></button>
       <button class="navb" data-nav="events"><span class="navi">🎉</span><span>Events</span></button>
-      <button class="navb" data-nav="raid"><span class="navi">🌀</span><span>Raid</span></button>
-      <button class="navb" data-nav="pass"><span class="navi">✦</span><span>Pass</span></button>
+      <button class="navb" data-nav="raid"><span class="navi">☠️</span><span>Raid</span></button>
+      <button class="navb" data-nav="guild"><span class="navi">🛡️</span><span>Guild</span></button>
+      <button class="navb" data-nav="pass"><span class="navi">📜</span><span>Pass</span></button>
     </nav>
   </section>
 
@@ -1740,7 +1786,8 @@ let login={n:0, date:''};                             // 28-day login track (pau
 let gleam=0;                                          // Gleam — cosmetic-only soft currency (doc 10 s4/s5)
 let vowCard={active:false, day:0, date:''};           // Monthly Vow Card: 300 now + 90/day×30 (doc 10 s4)
 let shopFirst=[], cosmetics=[], shopDaily={date:'', bought:{}}; // first-buy doubles, owned cosmetics, daily deal limits
-let guild={joined:false, name:'The Vowbound', level:4, xp:520, marks:120, donateDate:'', donatedToday:0,
+let guild={joined:false, isLeader:false, name:'', tag:'', desc:'', banner:{emblem:'🐺',color:'crimson',shape:'shield'},
+  level:1, xp:0, marks:0, donateDate:'', donatedToday:0, roster:null,
   chat:[], shopWeek:-1, shopBought:{}, boss:{week:-1, myDmg:0, claimed:false}, tab:'chat'}; // guild (doc 07): sim co-op
 let progress={};
 const RATES={L:0.03,E:0.14,R:0.38,C:0.45};
@@ -2348,32 +2395,79 @@ const GUILD_SHOP=[
 ];
 const GUILDBOSS={name:'The Sunken Colossus', id:'ENM-GNT-X01', bg:'2', root:'physical', weak:['magical'], glyph:'⛰️', efx:'var(--granite)',
   hp:260000, atk:480, def:250, goal:8000000, tg:'Seismic Toll'};
+/* ----- guild banner / crest builder (self-contained SVG + emoji emblems) ----- */
+const GUILD_EMBLEMS=['🐺','🐉','💀','⚔️','🛡️','🦅','🦁','👑','🪓','🔥','🐻','🌙','⭐','🗡️','🏰','⚜️'];
+const GUILD_COLORS=[
+  {id:'crimson',n:'Crimson',a:'#c0263a',b:'#5e0f1c'},{id:'azure',n:'Azure',a:'#2f6fd6',b:'#12335f'},
+  {id:'gold',n:'Gold',a:'#e0a53a',b:'#7a5410'},{id:'emerald',n:'Emerald',a:'#2fae6b',b:'#0f4a2c'},
+  {id:'violet',n:'Violet',a:'#8f5cff',b:'#3a2280'},{id:'obsidian',n:'Obsidian',a:'#5a5f78',b:'#161821'},
+  {id:'teal',n:'Teal',a:'#2fb6ae',b:'#0f4a47'},{id:'ember',n:'Ember',a:'#e0672f',b:'#7a2e10'},
+  {id:'rose',n:'Rose',a:'#e05a8f',b:'#7a1f45'},{id:'silver',n:'Silver',a:'#9aa4bd',b:'#3a4056'},
+];
+const GUILD_SHAPES=['shield','round','kite'];
+const CREST_PATH={shield:'M32 3 L59 12 V31 C59 48 47 59 32 63 C17 59 5 48 5 31 V12 Z',
+  round:'M32 4 A28 28 0 1 1 31.99 4 Z', kite:'M32 2 L60 24 L32 63 L4 24 Z'};
+function crestSVG(b,size){b=b||{};const c=GUILD_COLORS.find(x=>x.id===b.color)||GUILD_COLORS[0];
+  const em=b.emblem||GUILD_EMBLEMS[0], shape=b.shape||'shield', gid='gc'+Math.random().toString(36).slice(2,8);
+  return `<svg viewBox="0 0 64 66" width="${size}" height="${Math.round(size*66/64)}" class="crestsvg" aria-hidden="true">
+    <defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c.a}"/><stop offset="1" stop-color="${c.b}"/></linearGradient></defs>
+    <path d="${CREST_PATH[shape]}" fill="url(#${gid})" stroke="rgba(255,255,255,.55)" stroke-width="2.2"/>
+    <path d="${CREST_PATH[shape]}" fill="none" stroke="rgba(0,0,0,.28)" stroke-width="1" transform="scale(.9) translate(3.5,3.6)"/>
+    <text x="32" y="33" text-anchor="middle" dominant-baseline="central" font-size="${Math.round(size*0.42)}">${em}</text></svg>`;}
+const GUILD_DIRECTORY=[
+  {name:'Ashen Vanguard', tag:'ASH',  members:38, cap:40, req:'open',    banner:{emblem:'🛡️',color:'gold',shape:'shield'},   desc:'Top-tier raiders — weekly boss cleared every week. Active daily.'},
+  {name:'Nightwolves',    tag:'WOLF', members:31, cap:40, req:'request', banner:{emblem:'🐺',color:'obsidian',shape:'shield'},desc:'Chill guild, friendly chat, all skill levels welcome.'},
+  {name:'Embercrown',     tag:'EMBR', members:40, cap:40, req:'request', banner:{emblem:'🔥',color:'ember',shape:'kite'},    desc:'Competitive arena + raid. Full, but requests reviewed.'},
+  {name:'The Gravebound', tag:'GRV',  members:26, cap:40, req:'open',    banner:{emblem:'💀',color:'violet',shape:'round'},  desc:'Necromancer mains. Undead raid weeks are our jam.'},
+  {name:'Choir of Dawn',  tag:'DAWN', members:19, cap:30, req:'open',    banner:{emblem:'⚜️',color:'azure',shape:'shield'},  desc:'Supportive newbie-friendly guild. We teach the ropes.'},
+  {name:'Ironvow',        tag:'IRON', members:35, cap:40, req:'request', banner:{emblem:'⚔️',color:'silver',shape:'kite'},   desc:'Disciplined, donation-active, no drama.'},
+  {name:'Dragonrest',     tag:'DRGN', members:22, cap:40, req:'open',    banner:{emblem:'🐉',color:'emerald',shape:'shield'},desc:'Casual collectors. Codex completionists welcome.'},
+  {name:'Lions of Vael',  tag:'LION', members:29, cap:40, req:'request', banner:{emblem:'🦁',color:'crimson',shape:'shield'},desc:'Roleplay-friendly, weekly events, warm community.'},
+];
+const NPC_NAMES=['Vane Ashcroft','Reya Duskholm','Tomas Vell','Isolde Kern','Bram Osk','Nadia Vex','Corvin Wex','Elspeth Roan','Garrek Moss','Suri Vale','Onric Pell','Mira Tao'];
+function guildDefaultRoster(){return [{n:'You',r:'Leader',c:0},
+  {n:NPC_NAMES[0],r:'Officer',c:120000},{n:NPC_NAMES[1],r:'Member',c:88000},{n:NPC_NAMES[2],r:'Member',c:61000}];}
+function guildRoster(){return guild.roster && guild.roster.length ? guild.roster : [{n:'You',r:guild.isLeader?'Leader':'Member',c:guild.boss.myDmg},...GUILD_MEMBERS];}
+const GUILD_CREATE_COST=20000;
+let guildView='list', guildForm=null, guildSearch='', guildPending=null;
 const GUILD_LVL_XP=1000;
 function guildWeekIdx(){return Math.floor(Date.now()/(7*864e5));}
 function guildDayCheck(){const t=new Date().toDateString();if(guild.donateDate!==t){guild.donateDate=t;guild.donatedToday=0;}}
 function guildWeekCheck(){const w=guildWeekIdx();
   if(guild.shopWeek!==w){guild.shopWeek=w;guild.shopBought={};}
   if(guild.boss.week!==w){guild.boss={week:w,myDmg:0,claimed:false};}}
-function guildNpcContrib(){const w=guildWeekIdx();return GUILD_MEMBERS.map((m,i)=>({...m,c:Math.round(m.c*(0.8+((w*7+i*13)%40)/100))}));}
-function guildTotal(){return guild.boss.myDmg + guildNpcContrib().reduce((s,m)=>s+m.c,0);}
+function guildBoardMembers(){const w=guildWeekIdx();
+  const base=(guild.roster&&guild.roster.length)?guild.roster:[{n:'You',r:guild.isLeader?'Leader':'Member',c:0},...GUILD_MEMBERS];
+  return base.map((m,i)=> m.n==='You' ? {...m,r:guild.isLeader?'Leader':'Member',c:guild.boss.myDmg}
+    : {...m, c:Math.round(m.c*(0.8+((w*7+i*13)%40)/100))});}
+function guildTotal(){return guildBoardMembers().reduce((s,m)=>s+m.c,0);}
+function guildGoal(){return Math.max(2,guildBoardMembers().length)*250000;}
 function guildChatPush(n,m,me){guild.chat.push({n,m,me:!!me,t:Date.now()});if(guild.chat.length>50)guild.chat=guild.chat.slice(-50);}
 function guildSeedChat(){ if(!guild.chat.length){GUILD_CHAT_POOL.slice(0,6).forEach(x=>guildChatPush(x.n,x.m));} }
 function guildChatTick(){ // simulate 1-2 new member messages when you open chat
   const n=1+(guildWeekIdx()%2); for(let i=0;i<n;i++){const x=GUILD_CHAT_POOL[Math.floor(Math.random()*GUILD_CHAT_POOL.length)];
     if(!guild.chat.length||guild.chat[guild.chat.length-1].m!==x.m)guildChatPush(x.n,x.m);} }
-function openGuild(){ if(!guild.joined){guild.joined=true;} guildSeedChat();guildChatTick();guildDayCheck();guildWeekCheck();
-  updateHomeNav('');renderGuild();renderCrys();show('screen-guild');}
+function openGuild(){ guildDayCheck();guildWeekCheck(); updateHomeNav('guild');
+  if(guild.joined){guildSeedChat();guildChatTick();}
+  renderGuild();renderCrys();show('screen-guild');}
 function guildSetTab(t){guild.tab=t;renderGuild();}
 function renderGuild(){
   guildDayCheck();guildWeekCheck();
+  const tabsEl=$('#guildTabs'), top=$('#guildTop'), body=$('#guildBody');
+  if(!guild.joined){ tabsEl.style.display='none'; top.innerHTML=''; body.className='scrollmode'; renderGuildJoin(body); return; }
+  tabsEl.style.display='flex';
+  const tablist=[['chat','💬 Chat'],['donate','🎁 Donate'],['shop','⚒ Shop'],['boss','☠ Boss']];
+  if(guild.isLeader)tablist.push(['manage','⚙ Manage']);
+  if(!tablist.some(t=>t[0]===guild.tab))guild.tab='chat';
+  tabsEl.innerHTML=tablist.map(([k,l])=>`<button class="gtab ${k===guild.tab?'on':''}" data-gt="${k}">${l}</button>`).join('');
   const nextXP=GUILD_LVL_XP, lvlPct=Math.round(100*(guild.xp%nextXP)/nextXP);
-  $('#guildTop').innerHTML=`<div class="glbanner">
-    <div class="glcrest">🛡️</div>
-    <div class="glinfo"><div class="glname">${guild.name} <span class="gllv">Lv ${guild.level}</span></div>
-      <div class="glsub">${GUILD_MEMBERS.length+1} / 20 members · <b>💠 ${guild.marks}</b> Guild Marks</div>
+  top.innerHTML=`<div class="glbanner">
+    <div class="glcrest">${crestSVG(guild.banner,46)}</div>
+    <div class="glinfo"><div class="glname">${guild.name} <span class="gltag">[${guild.tag}]</span> <span class="gllv">Lv ${guild.level}</span></div>
+      <div class="glsub">${guildBoardMembers().length} / 40 members · <b>💠 ${guild.marks}</b> Marks${guild.isLeader?' · <span style="color:var(--warn)">Leader</span>':''}</div>
       <div class="glxp"><div class="glxpf" style="width:${lvlPct}%"></div></div></div></div>`;
-  $$('#guildTabs .gtab').forEach(b=>b.classList.toggle('on',b.dataset.gt===guild.tab));
-  const body=$('#guildBody'); body.className=guild.tab==='chat'?'chatmode':'scrollmode';
+  body.className=guild.tab==='chat'?'chatmode':'scrollmode';
+  if(guild.tab==='manage'){ renderGuildManage(body); return; }
   if(guild.tab==='chat'){
     const rows=guild.chat.slice(-40).map(x=>`<div class="gcmsg ${x.me?'me':''}"><span class="gcn">${x.me?'You':x.n}</span><span class="gcm">${(x.m||'').replace(/</g,'&lt;')}</span></div>`).join('');
     body.innerHTML=`<div id="gchat">${rows||'<div class="gcempty">Say hello to your Lodge 👋</div>'}</div>
@@ -2392,7 +2486,7 @@ function renderGuild(){
         return `<button class="gdon" data-di="${i}" ${afford?'':'disabled'}><div class="gdi">${d.ic}</div><div class="gdn">${d.label}</div>
           <div class="gdc">${d.amt}</div><div class="gdr">→ 💠 ${d.marks} · +${d.xp} XP</div></button>`;}).join('')}</div>
       <div class="gsect">Roster · by weekly boss contribution</div>
-      <div class="groster">${[{n:'You',r:'Member',c:guild.boss.myDmg},...guildNpcContrib()].sort((a,b)=>b.c-a.c).map((m,i)=>
+      <div class="groster">${guildBoardMembers().sort((a,b)=>b.c-a.c).map((m,i)=>
         `<div class="grow ${m.n==='You'?'me':''}"><span class="grk">${i+1}</span><span class="grn">${m.n}</span><span class="grr">${m.r}</span><span class="grc">${m.c.toLocaleString()}</span></div>`).join('')}</div>`;
     body.querySelectorAll('.gdon').forEach(b=>b.addEventListener('click',()=>guildDonate(+b.dataset.di)));
   }
@@ -2405,14 +2499,14 @@ function renderGuild(){
     body.querySelectorAll('.eibuy').forEach(b=>b.addEventListener('click',()=>guildBuy(+b.dataset.gi)));
   }
   else { // boss
-    const total=guildTotal(), pct=Math.min(100,Math.round(100*total/GUILDBOSS.goal)), done=total>=GUILDBOSS.goal;
+    const goal=guildGoal(), total=guildTotal(), pct=Math.min(100,Math.round(100*total/goal)), done=total>=goal;
     const art=(typeof ECUT!=='undefined'&&ECUT[GUILDBOSS.id])||(typeof EART!=='undefined'&&EART[GUILDBOSS.id])||'';
     body.innerHTML=`<div class="raidhero" style="--efx:${GUILDBOSS.efx}">
         <div class="rhart">${art?`<img src="${art}" alt="${GUILDBOSS.name}">`:`<span class="rhglyph">${GUILDBOSS.glyph}</span>`}</div>
         <div class="rhinfo"><div class="rhtag">Guild Boss · this week</div><div class="rhname">${GUILDBOSS.name}</div>
           <div class="rhsub">Weakness <span class="wk">${WEAKICON[GUILDBOSS.weak[0]]}</span> · every member's damage counts</div>
           <div class="rhtimer">Resets in <b>${fmtDur(((guildWeekIdx()+1)*7*864e5)-Date.now())}</b></div></div></div>
-      <div class="raidbestwrap"><div class="raidbestlbl"><span>Guild progress</span><b style="color:var(--warn)">${total.toLocaleString()} / ${GUILDBOSS.goal.toLocaleString()}</b></div>
+      <div class="raidbestwrap"><div class="raidbestlbl"><span>Guild progress</span><b style="color:var(--warn)">${total.toLocaleString()} / ${goal.toLocaleString()}</b></div>
         <div class="raidbar"><div class="raidbarf" style="width:${pct}%"></div></div>
         <div class="glmine">Your contribution this week: <b>${guild.boss.myDmg.toLocaleString()}</b></div></div>
       <button class="cta raidenter" id="gbEnter">Fight the Guild Boss ▸</button>
@@ -2456,9 +2550,101 @@ function endGuildBoss(win){
   $('#resSub').innerHTML=`You dealt <b style="color:var(--warn)">${dealt.toLocaleString()}</b> to the guild boss. Your weekly contribution is now <b>${guild.boss.myDmg.toLocaleString()}</b> — every member's damage stacks toward the guild goal.`;
   const nx=$('#resNext');nx.textContent='Guild';nx.onclick=()=>{guild.tab='boss';openGuild();};
 }
-function guildBossClaim(){guildWeekCheck();if(guildTotal()<GUILDBOSS.goal||guild.boss.claimed)return;
+function guildBossClaim(){guildWeekCheck();if(guildTotal()<guildGoal()||guild.boss.claimed)return;
   guild.boss.claimed=true; crystals+=600; gold+=300000; relics+=8; guild.marks+=200;
   SFX.rare('L');renderCrys();renderGuild();saveGame();}
+/* ----- create / join a guild ----- */
+function renderGuildJoin(body){
+  if(guildView==='create'){renderGuildCreate(body);return;}
+  const q=(guildSearch||'').toLowerCase();
+  const list=GUILD_DIRECTORY.map((g,i)=>({g,i})).filter(({g})=>!q||g.name.toLowerCase().includes(q)||g.tag.toLowerCase().includes(q));
+  body.innerHTML=`<div class="gjhead"><div class="gjtitle">Join a Guild</div>
+      <div class="gjsub">Team up for the weekly guild boss, donations and a shared shop.</div></div>
+    <div class="gjsearch">🔎 <input id="gjSearch" type="text" placeholder="Search by name or tag…" value="${(guildSearch||'').replace(/"/g,'&quot;')}"></div>
+    <div class="gjlist">${list.map(({g,i})=>{const full=g.members>=g.cap, pending=guildPending===g.tag;
+      const btn=pending?'Pending…':(g.req==='open'?(full?'Full':'Join'):'Request');
+      return `<div class="gjcard"><div class="gjcrest">${crestSVG(g.banner,44)}</div>
+        <div class="gjinfo"><div class="gjn">${g.name} <span class="gltag">[${g.tag}]</span></div>
+          <div class="gjmeta">${g.members}/${g.cap} · ${g.req==='open'?'<span class="gopen">Open</span>':'Request only'}</div>
+          <div class="gjdesc">${g.desc}</div></div>
+        <button class="cta gjbtn" data-ji="${i}" ${(full&&g.req==='open')||pending?'disabled':''}>${btn}</button></div>`;}).join('')||'<div class="gcempty">No guilds match your search.</div>'}</div>
+    <div class="gjor">— or —</div>
+    <button class="cta gjcreatebtn" id="gjCreate">✦ Create your own Guild <small>· <i class="cur gold"></i> ${GUILD_CREATE_COST.toLocaleString()}</small></button>`;
+  const s=$('#gjSearch'); if(s)s.addEventListener('input',()=>{guildSearch=s.value;renderGuild();const s2=$('#gjSearch');if(s2){s2.focus();s2.setSelectionRange(s2.value.length,s2.value.length);}});
+  body.querySelectorAll('.gjbtn').forEach(b=>b.addEventListener('click',()=>guildJoinDir(+b.dataset.ji)));
+  $('#gjCreate').addEventListener('click',()=>{guildView='create';guildForm={name:'',tag:'',desc:'',banner:{emblem:'🐺',color:'crimson',shape:'shield'}};renderGuild();});
+}
+function guildJoinDir(i){const g=GUILD_DIRECTORY[i];if(!g)return;
+  if(g.members>=g.cap&&g.req==='open')return;
+  if(g.req==='request'&&guildPending!==g.tag){guildPending=g.tag;SFX.tap();renderGuild();
+    setTimeout(()=>{if(guildPending===g.tag){guildPending=null;guildEnterDir(g);}},1700);return;}
+  guildEnterDir(g);
+}
+function guildEnterDir(g){guild.joined=true;guild.isLeader=false;guild.name=g.name;guild.tag=g.tag;guild.desc=g.desc;
+  guild.banner={...g.banner};guild.roster=null;guild.chat=[];guild.tab='chat';guildView='list';guildPending=null;
+  guildSeedChat();guildChatPush(GUILD_MEMBERS[0].n,'welcome to '+g.name+'! 🎉');
+  SFX.rare('E');renderCrys();renderGuild();saveGame();}
+function renderGuildCreate(body){
+  const f=guildForm, valid=f.name.trim().length>=3&&f.tag.trim().length>=3, afford=gold>=GUILD_CREATE_COST;
+  body.innerHTML=`<div class="gjhead"><div class="gjtitle">Create a Guild</div></div>
+    <div class="gcpreview"><div class="gccrest">${crestSVG(f.banner,74)}</div>
+      <div><div class="gcpn">${f.name||'Guild Name'} <span class="gltag">[${f.tag||'TAG'}]</span></div>
+        <div class="gcpd">${(f.desc||'Your guild description…').replace(/</g,'&lt;')}</div></div></div>
+    <div class="gclabel">Name</div><input id="gcName" class="gcinput" maxlength="22" placeholder="e.g. Ashen Vanguard" value="${f.name.replace(/"/g,'&quot;')}">
+    <div class="gclabel">Tag · 3–4 letters</div><input id="gcTag" class="gcinput" maxlength="4" placeholder="ASH" value="${f.tag.replace(/"/g,'&quot;')}">
+    <div class="gclabel">Description</div><textarea id="gcDesc" class="gcinput" rows="2" maxlength="120" placeholder="What's your guild about?">${f.desc.replace(/</g,'&lt;')}</textarea>
+    <div class="gclabel">Emblem</div><div class="gcpick">${GUILD_EMBLEMS.map(e=>`<button class="gcopt ${f.banner.emblem===e?'sel':''}" data-em="${e}">${e}</button>`).join('')}</div>
+    <div class="gclabel">Colour</div><div class="gcpick">${GUILD_COLORS.map(c=>`<button class="gcopt gccolor ${f.banner.color===c.id?'sel':''}" data-col="${c.id}" style="background:linear-gradient(180deg,${c.a},${c.b})" title="${c.n}"></button>`).join('')}</div>
+    <div class="gclabel">Shape</div><div class="gcpick">${GUILD_SHAPES.map(sh=>`<button class="gcopt gcshape ${f.banner.shape===sh?'sel':''}" data-sh="${sh}">${crestSVG({...f.banner,shape:sh},30)}</button>`).join('')}</div>
+    <div class="gcactions"><button class="ghost" id="gcCancel">Cancel</button>
+      <button class="cta" id="gcMake" ${valid&&afford?'':'disabled'}>Create · <i class="cur gold"></i> ${GUILD_CREATE_COST.toLocaleString()}</button></div>
+    <div class="gcwarn">${!afford?'Not enough gold (need '+GUILD_CREATE_COST.toLocaleString()+').':(!valid?'Enter a name (3+ chars) and a tag (3–4 letters).':'')}</div>`;
+  const nameEl=$('#gcName'),tagEl=$('#gcTag'),descEl=$('#gcDesc');
+  const sync=()=>{f.name=nameEl.value;f.tag=tagEl.value.toUpperCase().replace(/[^A-Z]/g,'').slice(0,4);if(tagEl.value!==f.tag)tagEl.value=f.tag;f.desc=descEl.value;
+    $('.gcpn').innerHTML=`${f.name||'Guild Name'} <span class="gltag">[${f.tag||'TAG'}]</span>`;$('.gcpd').textContent=f.desc||'Your guild description…';
+    const mk=$('#gcMake'),ok=f.name.trim().length>=3&&f.tag.trim().length>=3&&gold>=GUILD_CREATE_COST;mk.disabled=!ok;};
+  [nameEl,tagEl,descEl].forEach(el=>el.addEventListener('input',sync));
+  body.querySelectorAll('[data-em]').forEach(b=>b.addEventListener('click',()=>{f.banner.emblem=b.dataset.em;renderGuild();}));
+  body.querySelectorAll('[data-col]').forEach(b=>b.addEventListener('click',()=>{f.banner.color=b.dataset.col;renderGuild();}));
+  body.querySelectorAll('[data-sh]').forEach(b=>b.addEventListener('click',()=>{f.banner.shape=b.dataset.sh;renderGuild();}));
+  $('#gcCancel').addEventListener('click',()=>{guildView='list';renderGuild();});
+  $('#gcMake').addEventListener('click',guildDoCreate);
+}
+function guildDoCreate(){const f=guildForm;
+  if(f.name.trim().length<3||f.tag.trim().length<3||gold<GUILD_CREATE_COST)return;
+  gold-=GUILD_CREATE_COST;
+  guild.joined=true;guild.isLeader=true;guild.name=f.name.trim();guild.tag=f.tag.trim();guild.desc=f.desc.trim();
+  guild.banner={...f.banner};guild.level=1;guild.xp=0;guild.roster=guildDefaultRoster();guild.chat=[];guild.tab='chat';guildView='list';
+  guildChatPush(guildDefaultRoster()[1].n,'Guild founded — welcome to '+guild.name+'! 🎉');
+  SFX.rare('L');renderCrys();renderGuild();saveGame();}
+/* ----- leader admin: broadcast, banner, invite/kick ----- */
+function renderGuildManage(body){
+  const r=guild.roster||guildDefaultRoster(); guild.roster=r;
+  body.innerHTML=`<div class="gsect">Broadcast · private message to all members</div>
+    <div class="gmbcast"><input id="gbInput" type="text" maxlength="160" placeholder="Announcement to the whole guild…"><button class="cta" id="gbSend">Send</button></div>
+    <div class="gsect">Guild Banner</div>
+    <div class="gmbanner"><div>${crestSVG(guild.banner,60)}</div><div class="gmbnote">${guild.name} [${guild.tag}]<br><span>Tap below to change your crest.</span></div></div>
+    <div class="gcpick">${GUILD_EMBLEMS.map(e=>`<button class="gcopt ${guild.banner.emblem===e?'sel':''}" data-mem="${e}">${e}</button>`).join('')}</div>
+    <div class="gcpick">${GUILD_COLORS.map(c=>`<button class="gcopt gccolor ${guild.banner.color===c.id?'sel':''}" data-mcol="${c.id}" style="background:linear-gradient(180deg,${c.a},${c.b})"></button>`).join('')}</div>
+    <div class="gcpick">${GUILD_SHAPES.map(sh=>`<button class="gcopt gcshape ${guild.banner.shape===sh?'sel':''}" data-msh="${sh}">${crestSVG({...guild.banner,shape:sh},28)}</button>`).join('')}</div>
+    <div class="gsect">Members · ${r.length} <button class="ghost gminvite" id="gInvite">+ Invite</button></div>
+    <div class="groster">${r.map((m,i)=>`<div class="grow ${m.n==='You'?'me':''}"><span class="grn">${m.n}</span><span class="grr">${m.r}</span>${(m.n!=='You'&&m.r!=='Leader')?`<button class="gkick" data-kick="${i}">Kick</button>`:''}</div>`).join('')}</div>`;
+  $('#gbSend').addEventListener('click',()=>{const v=$('#gbInput').value.trim();if(!v)return;guildChatPush('📣 '+guild.tag,v);$('#gbInput').value='';SFX.rare('R');saveGame();alert('Broadcast sent to all members.');});
+  body.querySelectorAll('[data-mem]').forEach(b=>b.addEventListener('click',()=>{guild.banner.emblem=b.dataset.mem;renderGuild();saveGame();}));
+  body.querySelectorAll('[data-mcol]').forEach(b=>b.addEventListener('click',()=>{guild.banner.color=b.dataset.mcol;renderGuild();saveGame();}));
+  body.querySelectorAll('[data-msh]').forEach(b=>b.addEventListener('click',()=>{guild.banner.shape=b.dataset.msh;renderGuild();saveGame();}));
+  $('#gInvite').addEventListener('click',guildInvite);
+  body.querySelectorAll('[data-kick]').forEach(b=>b.addEventListener('click',()=>guildKick(+b.dataset.kick)));
+}
+function guildInvite(){guild.roster=guild.roster||guildDefaultRoster();
+  const used=new Set(guild.roster.map(m=>m.n)), avail=NPC_NAMES.filter(n=>!used.has(n));
+  if(!avail.length){alert('No more recruits available right now.');return;}
+  const n=avail[Math.floor(Math.random()*avail.length)];
+  guild.roster.push({n,r:'Member',c:Math.round(20000+Math.random()*80000)});
+  guildChatPush(n,'thanks for the invite! glad to join 🙌');SFX.rare('R');renderGuild();saveGame();}
+function guildKick(i){if(!guild.roster||!guild.roster[i])return;const m=guild.roster[i];
+  if(m.n==='You'||m.r==='Leader')return; if(!confirm('Kick '+m.n+' from the guild?'))return;
+  guild.roster.splice(i,1);SFX.tap();renderGuild();saveGame();}
 
 /* ---------- PvP ARENA ---------- */
 let arenaRank=0, arenaTarget=null;
@@ -3896,13 +4082,14 @@ function openHome(){renderCrys();updateHomeNav('home');const f=$('#hubFeat');if(
   const hs=$('#homeShop');if(hs)hs.classList.toggle('notify',vowCanClaim());show('screen-home');}
 function navGo(dest){
   if(dest==='home'){openHome();return;}
-  updateHomeNav(dest==='summon'?'summon':dest==='raid'?'raid':dest==='pass'?'pass':dest==='events'?'events':dest==='heroes'?'heroes':'');
+  updateHomeNav(['summon','raid','pass','events','heroes','guild'].includes(dest)?dest:'');
   if(dest==='heroes'){buildHeroGrid();renderCrys();show('screen-heroes');}
   else if(dest==='summon'||dest==='gacha'){openGacha();}
   else if(dest==='raid'){openRaid();}
   else if(dest==='arena'){openArena();}
   else if(dest==='map'){buildMap();renderCrys();show('screen-map');}
   else if(dest==='events'){openEvents();}
+  else if(dest==='guild'){openGuild();}
   else if(dest==='pass'){openPass();}
 }
 $$('#hubScene .bld').forEach(b=>b.addEventListener('click',()=>{SFX.tap();navGo(b.dataset.go);}));
@@ -3968,9 +4155,8 @@ $('#homeShop')?.addEventListener('click',()=>{SFX.tap();openShop('value');});
 $('#homeDungeon')?.addEventListener('click',()=>{SFX.tap();openDungeons();});
 $('#dunBack')?.addEventListener('click',()=>{openHome();});
 $('#raidBack')?.addEventListener('click',()=>{openHome();});
-$('#homeGuild')?.addEventListener('click',()=>{SFX.tap();openGuild();});
 $('#guildBack')?.addEventListener('click',()=>{openHome();});
-$$('#guildTabs .gtab').forEach(b=>b.addEventListener('click',()=>{SFX.tap();guildSetTab(b.dataset.gt);}));
+$('#guildTabs')?.addEventListener('click',e=>{const b=e.target.closest('.gtab');if(b){SFX.tap();guildSetTab(b.dataset.gt);}});
 $('#shopBack')?.addEventListener('click',()=>{openHome();});
 $$('#shopTabs .shtab').forEach(b=>b.addEventListener('click',()=>{SFX.tap();shopTab=b.dataset.tab;renderShop();}));
 $('#bpClaimAll').addEventListener('click',bpClaimAll);

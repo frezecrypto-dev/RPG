@@ -114,8 +114,17 @@ use a stat proxy here.
 
 ## Guild (doc 07)
 
-A **Guild** hub (home-screen 🛡️) simulates the co-op social layer with an
-NPC Lodge (leader, officers, members) and four tabs:
+A **Guild** system (bottom-bar 🛡️) simulates the co-op social layer. First you
+**Create or Join**: a searchable **directory** of guilds (each with its own
+crest, tag, member count, and Open/Request status) to join or request, or
+**create your own** for a little Gold — pick a **name, a 3–4-letter tag, a
+description, and a banner** (choose an emblem — wolf, dragon, skull, lion… — a
+colour, and a shield/round/kite shape, rendered as a self-contained SVG crest
+with a live preview). Create it and you're the **Leader**, with a **Manage** tab
+to **broadcast** a message to all members, **re-style the banner**, and
+**invite / kick** members.
+
+Once in a guild, the hub has these tabs:
 - **Chat** — member bubbles seeded and drip-fed for liveliness; you can type and
   send, and a guildmate replies. Persists.
 - **Donate** — give Gold or Crystals (daily cap) for **Guild Marks** and guild
