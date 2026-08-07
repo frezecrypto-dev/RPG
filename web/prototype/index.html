@@ -290,6 +290,36 @@
     color:#0a0910;background:var(--hue);padding:1px 6px;border-radius:4px;font-weight:700}
   .hero.ready:hover{transform:translateY(-4px)}.hero.dead{opacity:.32;filter:grayscale(1)}
   .hero.acting .p{transform:scale(1.08);transition:transform .15s}
+  /* tactical: acting hero awaiting a command */
+  .hero.turn{border-color:var(--hue);box-shadow:0 0 0 2px var(--hue),0 0 26px color-mix(in srgb,var(--hue) 55%,transparent);transform:translateY(-5px)}
+  .hero.turn::before{content:"▶ YOUR TURN";position:absolute;top:-16px;left:50%;transform:translateX(-50%);white-space:nowrap;
+    font-size:8px;letter-spacing:.1em;font-weight:700;color:#0a0910;background:var(--hue);padding:2px 7px;border-radius:5px;box-shadow:0 2px 8px rgba(0,0,0,.5)}
+  /* command bar */
+  #cmdBar{--hue:var(--umbra);max-height:0;overflow:hidden;opacity:0;transition:max-height .22s ease,opacity .2s;padding:0 12px}
+  #cmdBar.show{max-height:200px;opacity:1;padding:6px 12px 4px}
+  .cmdwho{display:flex;align-items:center;gap:7px;font-size:12px;margin-bottom:6px}
+  .cmdwho .cmdcls{font-size:15px} .cmdwho b{color:var(--ink)}
+  .cmdwho .cmdhint{margin-left:auto;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--hue)}
+  .cmdrow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}
+  .cmdbtn{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 6px 7px;border-radius:11px;cursor:pointer;
+    background:linear-gradient(180deg,rgba(24,20,38,.9),rgba(14,11,24,.9));border:1px solid var(--line);color:var(--ink);transition:.14s}
+  .cmdbtn .ci{font-size:19px;line-height:1}
+  .cmdbtn .cn{font-size:10.5px;font-weight:600;line-height:1.1;text-align:center}
+  .cmdbtn .cmeta{font-size:8.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+  .cmdbtn:not([disabled]):hover,.cmdbtn.sel{border-color:var(--hue);box-shadow:0 0 0 1px var(--hue),0 0 16px color-mix(in srgb,var(--hue) 40%,transparent);transform:translateY(-2px)}
+  .cmdbtn.ult:not([disabled]){border-color:color-mix(in srgb,var(--warn) 55%,var(--line));background:linear-gradient(180deg,rgba(60,44,20,.7),rgba(20,14,8,.85))}
+  .cmdbtn.ult:not([disabled]) .ci{color:var(--warn)}
+  .cmdbtn[disabled]{opacity:.4;cursor:default}
+  /* enemy target selection */
+  .ecard.targetable{cursor:pointer}
+  .ecard.targetable .p{outline:2px solid var(--warn);outline-offset:2px;box-shadow:0 0 18px color-mix(in srgb,var(--warn) 55%,transparent);animation:tgtpulse 1s ease-in-out infinite}
+  @keyframes tgtpulse{0%,100%{outline-color:var(--warn);box-shadow:0 0 14px color-mix(in srgb,var(--warn) 45%,transparent)}50%{outline-color:#fff;box-shadow:0 0 24px color-mix(in srgb,var(--warn) 75%,transparent)}}
+  .ecard.weaktgt .p{outline-color:#ff5a7a}
+  .ecard .weakbadge{position:absolute;top:2px;left:50%;transform:translateX(-50%);z-index:4;font-size:8px;font-weight:700;letter-spacing:.08em;
+    color:#fff;background:#e8394f;padding:2px 6px;border-radius:4px;box-shadow:0 2px 6px rgba(0,0,0,.5)}
+  .weakpop{position:absolute;font-family:var(--font-title);font-weight:700;font-size:22px;color:#ff5a7a;
+    text-shadow:0 0 10px rgba(255,60,100,.8),0 2px 4px rgba(0,0,0,.9);animation:weakpop .9s ease-out forwards;z-index:9}
+  @keyframes weakpop{0%{transform:scale(.4) rotate(-8deg);opacity:0}25%{transform:scale(1.25) rotate(-4deg);opacity:1}60%{transform:scale(1) rotate(-2deg)}100%{transform:translateY(-30px) scale(1);opacity:0}}
   #fx{position:absolute;inset:0;pointer-events:none;z-index:8;overflow:hidden}
   .dmg{position:absolute;font-family:var(--font-title);font-weight:700;font-size:20px;animation:floatup 1s ease-out forwards;text-shadow:0 2px 6px rgba(0,0,0,.8)}
   .dmg.crit{font-size:28px}
@@ -1347,7 +1377,7 @@
     <div id="top">
       <div class="world"><div class="chapter" id="btlChapter">Ch.1 · The Drowned Quarter</div>
         <div class="stagename" id="btlName">Stage</div></div>
-      <div class="btnrow"><button class="ui-btn" id="speedBtn">1×</button><button class="ui-btn" id="autoBtn">Auto-Ult</button></div>
+      <div class="btnrow"><button class="ui-btn" id="speedBtn">1×</button><button class="ui-btn" id="autoBtn">Manual</button></div>
       <div id="round"><div class="lbl">Round</div><div class="r num" id="roundNum">1</div></div>
     </div>
     <div id="enemies">
@@ -1358,6 +1388,7 @@
     <div id="log" role="status" aria-live="polite" aria-atomic="true"></div>
     <div id="surgebar"><div id="surgelabel"><span class="lbl">Team Surge</span><span id="surgeval" class="num"><b>0</b> / 100</span></div>
       <div id="surge"><div id="surgefill"></div></div></div>
+    <div id="cmdBar"></div>
     <div id="party"></div>
     <div id="fx"></div>
     <div id="cutin"><div class="band"><div class="cutportrait" id="cutPortrait"></div><div class="cuttext"><div class="who"></div><div class="skill"></div></div></div></div>
@@ -1596,7 +1627,7 @@ function openSettings(){setMsg('');$('#setSave').value='';renderSettings();show(
 const ONBOARD=[
   {g:'⚔', tag:'Welcome, Gatewarden', title:'ASHGATE', body:'A dark-fantasy squad RPG. Summon a roster of Vowbound, forge a party of five, and fight through four chapters to close the Gate on the Mother-Mass.'},
   {g:'🛡️', tag:'Build your five', title:'Roles & Synergy', body:'A strong party wants a frontline to hold, damage to kill, and sustain to survive. Field 2+ heroes of the same faction (Emberguard, Freeblades, Hollowed, Choir, Gravebound) for a team synergy bonus — the team-select screen previews it live.'},
-  {g:'✦', tag:'Combat', title:'Shared Surge & Ultimates', body:'Heroes act in SPD order and auto-attack. The team fills one Surge bar — when a hero lights up, tap them to fire their Ultimate. Manual ults at the right moment are the skill hook over auto-battling.'},
+  {g:'✦', tag:'Combat', title:'Tactical Turns', body:'Heroes act in SPD order. On each of your heroes’ turns the fight pauses — choose their skill (Basic, Core, or the Surge-fuelled Ultimate) and tap a target. Aim into an enemy’s WEAK spot for bonus damage and Surge. Prefer to watch? Tap Auto to hand the fight to the AI.'},
   {g:'⚠️', tag:'Combat', title:'Read the telegraphs', body:'Bosses wind up big hits behind a red telegraph with warning pips. Bank Surge for a tank’s team-immunity, or answer with a healer, before it lands. Damage-type matters too — some enemies resist physical or magic.'},
   {g:'👑', tag:'Grow stronger', title:'Progress & Endgame', body:'Level, star, gear, skill-up, and ascend your heroes. Then farm Hard mode, climb the PvP Arena, and race the weekly Raid boss. Your whole save lives in this browser — back it up under ⚙ Settings.'},
 ];
@@ -2728,11 +2759,11 @@ function mkEnemy(key){const s=DATA.enemies[key]||Object.values(DATA.enemies).fin
 function deploy(){
   curHard=hardMode;
   const waves=curStage.waves.map(w=>w.map(mkEnemy));
-  G={heroes:team.map(mkHero),waves,wi:0,enemies:waves[0],surge:0,round:1,over:false,busy:false,auto:ui.auto,speed:ui.speed,telegraph:null,hard:curHard};
+  G={heroes:team.map(mkHero),waves,wi:0,enemies:waves[0],surge:0,round:1,over:false,busy:false,auto:ui.auto,speed:ui.speed,telegraph:null,hard:curHard,awaiting:null,pendingSkill:null};
   applySynergy(G.heroes);
   applyEventFactionWeek(G.heroes);   // event faction-week +15% (doc 10 s3)
   $('#speedBtn').textContent=ui.speed+'×';
-  $('#autoBtn').classList.toggle('active',ui.auto);
+  $('#autoBtn').classList.toggle('active',ui.auto);$('#autoBtn').textContent=ui.auto?'Auto ▶':'Manual';
   const _ch=DATA.chapters.find(c=>c.stages.some(s=>s.id===curStage.id));
   if(_ch)$('#btlChapter').textContent=(curHard?'⚔ HARD · ':'')+'Ch.'+_ch.id+' · '+_ch.name;
   setBattleBg(_ch?_ch.id:'1');
@@ -2761,6 +2792,7 @@ function dealDamage(src,tgt,power,root,sub){
   if(src.side==='ally'&&(src.stats.lifesteal||0)>0&&d>0)heal(src,Math.round(d*src.stats.lifesteal));
   floatNum(tgt,d,isCrit?'crit':'',root,sub); shake(tgt); if(d>0)SFX[isCrit?'crit':'hit']();
   if(d>0){const kind=sub==='bleed'?'bleed':sub==='holy'?'holy':root==='magical'?'mag':'phys';impactFx(tgt,{kind,crit:isCrit});}
+  if(d>0&&elem>1&&src.side==='ally'){weakPop(tgt);gainSurge(6);battleShake(false);SFX.crit&&SFX.crit();}  // weakness break — reward smart targeting
   if(d>0&&isCrit)battleShake(false);
   if(tgt.hp<=0)onKill(src,tgt); return d;
 }
@@ -2781,12 +2813,13 @@ function pickTarget(src){
   const F=livingE();return F.sort((a,b)=>(b.isBoss?2:b.isMini?1:0)-(a.isBoss?2:a.isMini?1:0)||a.hp-b.hp)[0];
 }
 function rootFor(u,sk){return sk.subtag?({bleed:'physical',pierce:'physical',arcane:'magical',shadow:'magical',holy:'magical',decay:'magical'}[sk.subtag]||u.damageRoot):u.damageRoot;}
-function runSkill(u,slot){
+function runSkill(u,slot,forced){
   const sk=u.kit[slot],root=rootFor(u,sk),sub=sk.subtag,tgt=sk.target,F=livingE(),Fr=livingH();
+  const aim=(forced&&forced.alive)?forced:null;   // player-chosen enemy target (tactical mode)
   const m=skillMult(u.skl&&u.skl[slot]), P=sk.power*m;
   if(sk.power>0){
-    if(tgt==='single_enemy'){const t=pickTarget(u);if(t)dealDamage(u,t,P,root,sub);}
-    else if(tgt==='splash2'){const t=pickTarget(u);if(t){dealDamage(u,t,P,root,sub);const o=F.filter(f=>f!==t)[0];if(o)dealDamage(u,o,P*.6,root,sub);}}
+    if(tgt==='single_enemy'){const t=aim||pickTarget(u);if(t)dealDamage(u,t,P,root,sub);}
+    else if(tgt==='splash2'){const t=aim||pickTarget(u);if(t){dealDamage(u,t,P,root,sub);const o=F.filter(f=>f!==t)[0];if(o)dealDamage(u,o,P*.6,root,sub);}}
     else if(tgt==='all_enemies')F.forEach(f=>dealDamage(u,f,P,root,sub));
   }
   for(const e of (sk.effects||[])){
@@ -2794,15 +2827,15 @@ function runSkill(u,slot){
     if(e.verb==='applyStatus'){
       if(st==='STS-TAUNT-ME'||st==='STS-ATK-UP'||st==='STS-STEALTH')u.status[st]=dur;
       else if(st==='STS-SPD-DOWN')F.forEach(f=>{if(!(f.immunities||[]).includes(st))f.status[st]=dur;});
-      else if(st==='STS-BLEED'){const t=pickTarget(u);if(t){t.status['STS-BLEED']=dur;t._bleed=(t._bleed||0)+(e.stacks||1);t._ba=statOf(u,'atk');}}
+      else if(st==='STS-BLEED'){const t=aim||pickTarget(u);if(t){t.status['STS-BLEED']=dur;t._bleed=(t._bleed||0)+(e.stacks||1);t._ba=statOf(u,'atk');}}
       else Fr.forEach(f=>f.status[st]=dur);
     }
     else if(e.verb==='heal'){const a=Math.round(statOf(u,'atk')*(e.power||1)*m*(1+(u.stats.heal_pct||0)));Fr.forEach(f=>heal(f,a));SFX.heal();}
     else if(e.verb==='shield'){const a=Math.round(statOf(u,'def')*(e.power||1)*m);Fr.forEach(f=>f.barrier=Math.max(f.barrier,a));}
     else if(e.verb==='cleanse')Fr.forEach(f=>{for(const s in f.status)if(s.includes('DOWN')||s==='STS-BLEED'||s==='STS-DECAY')delete f.status[s];});
     else if(e.verb==='strip')F.forEach(f=>{for(const s in f.status)if(s.includes('UP')){delete f.status[s];break;}});
-    else if(e.verb==='consumeStatus'){const t=pickTarget(u);if(t&&t._bleed){dealDamage(u,t,.6*t._bleed,'physical','bleed');t._bleed=0;delete t.status['STS-BLEED'];}}
-    else if(e.verb==='execute'){const t=pickTarget(u);if(t&&!t.isBoss&&t.hp/t.max<=(e.threshold||.25))onKill(u,t);else if(t&&t.isBoss)dealDamage(u,t,1,root,sub);}
+    else if(e.verb==='consumeStatus'){const t=aim||pickTarget(u);if(t&&t._bleed){dealDamage(u,t,.6*t._bleed,'physical','bleed');t._bleed=0;delete t.status['STS-BLEED'];}}
+    else if(e.verb==='execute'){const t=aim||pickTarget(u);if(t&&!t.isBoss&&t.hp/t.max<=(e.threshold||.25))onKill(u,t);else if(t&&t.isBoss)dealDamage(u,t,1,root,sub);}
     else if(e.verb==='teamInstantAttack')Fr.filter(f=>f!==u).forEach(f=>{const t=pickTarget(f);if(t)dealDamage(f,t,f.kit.S1.power,rootFor(f,f.kit.S1),f.kit.S1.subtag);});
     else if(e.verb==='rageMod')u.rage=Math.min(10,u.rage+1);
     else if(e.verb==='summon'){/* simplified: small self-heal placeholder for necro summon economy */u.barrier=Math.max(u.barrier,Math.round(statOf(u,'def')*.5));}
@@ -2902,24 +2935,88 @@ function roundStart(){
 function order(){return [...G.heroes,...G.enemies].filter(u=>u.alive).sort((a,b)=>statOf(b,'spd')-statOf(a,'spd')||(a.side==='ally'?-1:1));}
 let turnQueue=[];
 function step(){
-  if(G.over||G.busy)return; if(checkEnd())return;
+  if(G.over||G.busy||G.awaiting)return; if(checkEnd())return;   // awaiting a manual command → hold the timer
   if(!turnQueue.length){roundStart();render();if(checkEnd())return;turnQueue=order();}
   const u=turnQueue.shift(); if(!u||!u.alive)return scheduleNext(0);
-  actUnit(u); render(); if(checkEnd())return;
-  if(!turnQueue.length){
-    G.round++;$('#roundNum').textContent=G.round;
-    if(G.round>(G.raid?30:20)){G.timeout=true;endGame(false);return;}  // doc 02 round cap (raids run longer)
-  }
+  const waiting=actUnit(u); render(); if(checkEnd())return;
+  if(waiting)return;   // tactical command pending — resumed by the player, not the timer
+  advanceRound(); if(G.over)return;
   scheduleNext();
 }
+function advanceRound(){
+  if(!turnQueue.length){
+    G.round++;$('#roundNum').textContent=G.round;
+    if(G.round>(G.raid?30:20)){G.timeout=true;endGame(false);}  // doc 02 round cap (raids run longer)
+  }
+}
+// returns true if the unit is now awaiting player input (tactical mode)
 function actUnit(u){
   markActing(u);
-  if(u.side==='enemy')return enemyTurn(u);
-  if(u.status['STS-STUN'])return;
-  if(G.auto&&G.surge>=(u.kit.S3.surgeCost||60)&&ultWorth(u))return fireUlt(u);
-  if(u.cd.S2>0)u.cd.S2--;
+  if(u.side==='enemy'){enemyTurn(u);return false;}
+  if(u.status['STS-STUN']){logMsg(`<b>${u.name}</b> is stunned — turn skipped`);return false;}
+  if(u.cd.S2>0)u.cd.S2--;                 // tick this unit's cooldown at its turn start (both modes)
+  if(!G.auto){enterCommand(u);return true;}   // TACTICAL: pause and let the player choose skill + target
+  autoActAlly(u);return false;
+}
+function autoActAlly(u){
+  if(G.surge>=(u.kit.S3.surgeCost||60)&&ultWorth(u))return fireUlt(u);
   if((u.cd.S2||0)===0&&shouldS2(u)){runSkill(u,'S2');u.cd.S2=u.kit.S2.cooldown||3;logAct(u,'S2');}
   else{runSkill(u,'S1');logAct(u,'S1');}
+}
+/* ---------- tactical command layer (doc 02 s11 manual play) ---------- */
+function needsEnemyTarget(sk){return sk.target==='single_enemy'||sk.target==='splash2';}
+function enterCommand(u){
+  G.awaiting=u; G.pendingSkill=null;
+  if(u.el)u.el.classList.add('turn');
+  const c=$('#cmdBar'); c.style.setProperty('--hue',`var(${CLASS[u.class].hue})`);
+  const s2cd=(u.cd.S2||0), s2ok=s2cd<=0, cost=u.kit.S3.surgeCost||60, s3ok=G.surge>=cost;
+  c.innerHTML=`<div class="cmdwho"><span class="cmdcls">${CLASS[u.class].g}</span><b>${u.name}</b><span class="cmdhint">Choose an action</span></div>
+    <div class="cmdrow">
+      <button class="cmdbtn" data-slot="S1"><span class="ci">⚔</span><span class="cn">${u.kit.S1.name}</span><span class="cmeta">Basic</span></button>
+      <button class="cmdbtn" data-slot="S2" ${s2ok?'':'disabled'}><span class="ci">✦</span><span class="cn">${u.kit.S2.name}</span><span class="cmeta">${s2ok?'Core skill':'Cooldown '+s2cd}</span></button>
+      <button class="cmdbtn ult" data-slot="S3" ${s3ok?'':'disabled'}><span class="ci">★</span><span class="cn">${u.kit.S3.name}</span><span class="cmeta">${s3ok?'Ultimate · ✧'+cost:'Needs ✧'+cost}</span></button>
+    </div>`;
+  c.classList.add('show');
+  c.querySelectorAll('.cmdbtn').forEach(b=>b.addEventListener('click',()=>{if(b.hasAttribute('disabled'))return;SFX.tap();chooseSkill(u,b.dataset.slot);}));
+}
+function chooseSkill(u,slot){
+  clearTargetSelect();
+  const c=$('#cmdBar');c.querySelectorAll('.cmdbtn').forEach(b=>b.classList.toggle('sel',b.dataset.slot===slot));
+  if(needsEnemyTarget(u.kit[slot]))beginTargetSelect(u,slot);
+  else execCommand(u,slot,null);
+}
+function beginTargetSelect(u,slot){
+  G.pendingSkill={u,slot};
+  const sk=u.kit[slot], root=rootFor(u,sk);
+  const h=$('#cmdBar').querySelector('.cmdhint'); if(h)h.textContent='Tap an enemy to strike';
+  livingE().forEach(e=>{ if(!e.el)return;
+    e.el.classList.add('targetable');
+    const weak=(root==='physical'?(e.physRes||0):(e.magRes||0))<=-.2||(sk.subtag==='holy'&&(e.traits||[]).includes('undead'));
+    if(weak){e.el.classList.add('weaktgt'); if(!e.el.querySelector('.weakbadge')){const wb=document.createElement('div');wb.className='weakbadge';wb.textContent='WEAK';e.el.appendChild(wb);}}
+    e._tapH=()=>{SFX.tap();const ps=G.pendingSkill;if(ps){clearTargetSelect();execCommand(ps.u,ps.slot,e);}};
+    e.el.addEventListener('click',e._tapH);
+  });
+}
+function clearTargetSelect(){
+  (G.enemies||[]).forEach(e=>{ if(!e.el)return;
+    e.el.classList.remove('targetable','weaktgt');
+    const wb=e.el.querySelector('.weakbadge'); if(wb)wb.remove();
+    if(e._tapH){e.el.removeEventListener('click',e._tapH);e._tapH=null;} });
+}
+function closeCommand(u){
+  const c=$('#cmdBar');c.classList.remove('show');c.innerHTML='';
+  if(u&&u.el)u.el.classList.remove('turn');
+  clearTargetSelect();G.pendingSkill=null;
+}
+function execCommand(u,slot,target){
+  closeCommand(u);
+  if(slot==='S3'){const cost=u.kit.S3.surgeCost||60;G.surge-=cost;cutIn(u);classUltFx(u);}
+  else if(slot==='S2')u.cd.S2=u.kit.S2.cooldown||3;
+  runSkill(u,slot,target||undefined); logAct(u,slot);
+  G.awaiting=null; render();
+  if(checkEnd())return;
+  advanceRound(); if(G.over)return;
+  scheduleNext();
 }
 function shouldS2(u){if(u.class==='HLR'||u.class==='TNK')return livingH().some(h=>h.hp/h.max<.7);return true;}
 function ultWorth(u){if(u.class==='HLR')return livingH().some(h=>h.hp/h.max<.6);if(u.class==='TNK')return !!G.telegraph;return true;}
@@ -3000,7 +3097,7 @@ function buildParty(){const box=$('#party');box.innerHTML='';G.heroes.forEach(h=
   el.setAttribute('role','button');el.tabIndex=0;el.setAttribute('aria-label',`${h.name}, ${c.l} — tap to fire ultimate ${h.kit.S3.name} when ready`);
   el.innerHTML=`<div class="cls">${c.l}</div><div class="cd num"></div><div class="p">${classArt(h.class,40)}${artImg(h.id,h.name)}</div><div class="statusrow"></div><div class="nm">${h.name}</div>
     <div class="hpwrap"><div class="hpfill" style="background:var(--good)"></div></div>`;
-  const fire=()=>{if(el.classList.contains('ready')&&!G.over)fireUlt(h);};
+  const fire=()=>{if(G.over||G.awaiting||!G.auto)return;if(el.classList.contains('ready'))fireUlt(h);};   // tap-to-ult only in Auto mode; tactical uses the command bar
   el.addEventListener('click',fire);
   el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();fire();}});
   h.el=el;box.appendChild(el);});wireArt(box);}
@@ -3016,6 +3113,10 @@ function floatNum(u,val,cls,root,sub){const host=u.el;if(!host)return;const r=ho
   s.textContent=(cls==='heal'?'+':'')+Math.round(val).toLocaleString();
   s.style.left=(r.left-a.left+r.width/2-14+rand(-12,12))+'px';s.style.top=(r.top-a.top+r.height/2-10)+'px';
   $('#fx').appendChild(s);setTimeout(()=>s.remove(),1000);}
+function weakPop(u){const host=u.el;if(!host)return;const r=host.getBoundingClientRect(),a=$('#app').getBoundingClientRect();
+  const s=document.createElement('div');s.className='weakpop';s.textContent='WEAK!';
+  s.style.left=(r.left-a.left+r.width/2-30)+'px';s.style.top=(r.top-a.top+r.height*.2)+'px';
+  $('#fx').appendChild(s);setTimeout(()=>s.remove(),900);}
 const FXCOL={phys:'#ffd9a0',mag:'#c6a8ff',bleed:'#ff6b8a',heal:'#7dffb0',holy:'#fff2b0'};
 function impactFx(u,opt){opt=opt||{};const host=u.el;if(!host)return;
   const r=host.getBoundingClientRect(),a=$('#app').getBoundingClientRect();
@@ -3294,6 +3395,8 @@ $('#obNext').addEventListener('click',()=>{SFX.tap();if(obStep>=ONBOARD.length-1
 $('#obSkip').addEventListener('click',()=>{closeOnboard();});
 $('#setBody').insertAdjacentHTML('afterbegin','<button id="setHowto" class="settgl" style="width:100%;margin-bottom:6px">How to play ▸</button>');
 $('#setHowto').addEventListener('click',()=>{show('screen-title');showOnboard();});
-$('#autoBtn').addEventListener('click',e=>{ui.auto=!ui.auto;if(G)G.auto=ui.auto;e.target.classList.toggle('active',ui.auto);});
+$('#autoBtn').addEventListener('click',e=>{ui.auto=!ui.auto;if(G)G.auto=ui.auto;
+  const b=e.currentTarget;b.classList.toggle('active',ui.auto);b.textContent=ui.auto?'Auto ▶':'Manual';
+  if(G&&G.auto&&G.awaiting){const u=G.awaiting;closeCommand(u);G.awaiting=null;autoActAlly(u);render();if(checkEnd())return;advanceRound();if(G.over)return;scheduleNext();}});
 $('#speedBtn').addEventListener('click',e=>{ui.speed=ui.speed>=3?1:ui.speed+1;if(G)G.speed=ui.speed;e.target.textContent=ui.speed+'×';});
 </script>

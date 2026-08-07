@@ -10,8 +10,16 @@ something you can actually tap and play.
 - The **doc 02 combat model** running live: SPD-ordered turn engine, the s5
   damage formula (DEF mitigation, damage-type resistance, Holy-vs-Undead, crit,
   variance, DR, barriers), status effects, DoT ticks.
-- **Shared Surge** (doc 02 s3) — the team fills one bar; when a hero lights up,
-  tap them to fire their ultimate. Manual ults over auto basics = the skill hook.
+- **Tactical turns** (doc 02 s11) — the manual-play layer the spec calls for:
+  on each of your heroes' turns the fight **pauses** and a command bar offers the
+  unit's **Basic / Core (cooldown) / Ultimate (Surge)** skills; you pick the
+  skill *and* tap the target. Enemies you're strong into flash a **WEAK** badge,
+  and landing a weakness hit pops a "WEAK!" break for bonus damage + Surge — so
+  the damage-type system (doc 02 s6) is a live decision, not luck. One tap of
+  **Auto** hands the whole fight to the same data-driven AI for farming, and you
+  can flip between Manual and Auto mid-battle.
+- **Shared Surge** (doc 02 s3) — the team fills one bar; ultimates cost 50/60 and
+  are chosen from the command bar (or, in Auto, tap a lit hero to fire early).
 - The **doc 03 class-VFX identity** — each hero card wears its class hue
   (Roland steel-blue tank, Branwen blood-orange berserker, The Hollow Smile
   crimson assassin, Ordan violet mage, Aurelia gold healer).
