@@ -76,9 +76,14 @@ reached from the 🗝️ Dungeons button on the home screen). Three difficulty t
 (Apprentice / Adept / Master) scale the Warden foes up and pay out more Insight,
 each flagged with a **recommended-power** check so you can see when you're
 under-geared. Clears run on the full combat engine (Break, spotlight, tactical),
-and the Insight you win is spent on S1/S2/S3 skill-ups in a hero's Kit. (An
-Equipment-Dungeons slot for ring / necklace / bracelet / weapon gear is stubbed
-in the same hub, next up.)
+and the Insight you win is spent on S1/S2/S3 skill-ups in a hero's Kit.
+
+The same hub holds four **Equipment Dungeons** — Forge of Edges (Weapon),
+Drowned Reliquary (Necklace), Ossuary Vault (Bracelet), and Warden Signet
+(Ring) — each with three tiers that scale the foes and drop **slot-specific
+gear**: harder tiers drop higher gear tiers (T2 → T3 → T4) and better rarities,
+and the piece rolls its main-stat and set just like a campaign drop. So each
+accessory slot has a dedicated farm.
 
 ## Hero view & accessory slots
 

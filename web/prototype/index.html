@@ -1180,6 +1180,7 @@
   .dtgo{padding:8px 16px;font-size:12px;white-space:nowrap}
   .dunteam{font-size:9.5px;color:var(--faint);line-height:1.5;margin-top:11px;border-top:1px solid var(--line);padding-top:9px}
   .khsub{float:right;font-size:10px;color:#cbb8ff;font-weight:400;letter-spacing:0}
+  .dunsect{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--umbra);padding:4px 2px 0;margin-top:2px}
   #homeShop.notify::after{content:"";position:absolute;top:-3px;right:-3px;width:9px;height:9px;border-radius:50%;
     background:var(--good);box-shadow:0 0 8px var(--good);animation:bpReady 1.5s ease-in-out infinite}
 
@@ -2139,49 +2140,88 @@ function teamPowerOf(ids){return Math.round(ids.reduce((s,id)=>{const h=hero(id)
 function autoTeam(){ if(team&&team.length>=1)return team.slice(0,5);
   const own=DATA.heroes.filter(h=>owned.has(h.id));
   return own.slice().sort((a,b)=>{const pa=prog(a.id),pb=prog(b.id);return (pb.level*10-RORDER[b.rarity])-(pa.level*10-RORDER[a.rarity]);}).slice(0,5).map(h=>h.id);}
+// Equipment Dungeons — each drops gear biased to its accessory slot (doc 09)
+const EQUIPDUN=[
+  {id:'WPN', name:'Forge of Edges', icon:'⚔', slots:['WPN'], label:'Weapon', bg:'2',
+    foes:[['ENM-GNT-M01','ENM-GNT-M02'],['ENM-GNT-M03','ENM-GNT-E02'],['ENM-GNT-E02','ENM-GNT-B01']]},
+  {id:'NECK', name:'Drowned Reliquary', icon:'📿', slots:['ARM'], label:'Necklace', bg:'1',
+    foes:[['ENM-SLM-M01','ENM-SLM-M02'],['ENM-SLM-M04','ENM-SLM-E01'],['ENM-SLM-E01','ENM-SLM-B01']]},
+  {id:'BRAC', name:'Ossuary Vault', icon:'⟡', slots:['HLM'], label:'Bracelet', bg:'4',
+    foes:[['ENM-UND-M01','ENM-UND-E01'],['ENM-UND-M01','ENM-UND-E01'],['ENM-UND-E01','ENM-UND-M01']]},
+  {id:'RING', name:'Warden Signet', icon:'💍', slots:['CHM','SGL'], label:'Ring', bg:'3',
+    foes:[['ENM-GRD-M01','ENM-GRD-M02'],['ENM-GRD-M03','ENM-GRD-E02'],['ENM-GRD-E02','ENM-GRD-B01']]},
+];
+const DUN_TIERS=[
+  {t:1,name:'I',  rec:9000, mul:1.0, gtier:'T2', odds:{E:.14,R:.56,C:.30}},
+  {t:2,name:'II', rec:24000,mul:2.6, gtier:'T3', odds:{L:.06,E:.34,R:.50,C:.10}},
+  {t:3,name:'III',rec:52000,mul:4.6, gtier:'T4', odds:{L:.16,E:.44,R:.40}},
+];
 function openDungeons(){renderDungeons();renderCrys();show('screen-dungeons');}
 function renderDungeons(){
   const box=$('#dunScroll'); const ids=autoTeam(); const pw=teamPowerOf(ids);
-  const tiers=SKILLDUN.tiers.map(ti=>{const under=pw<ti.rec*0.8;
+  const tierRow=(pref,mk)=>SKILLDUN.tiers.map(mk).join('');
+  const skillTiers=SKILLDUN.tiers.map(ti=>{const under=pw<ti.rec*0.8;
     return `<div class="duntier${under?' under':''}">
       <div class="dtinfo"><div class="dtname"><b>${ti.name}</b></div>
         <div class="dtsub">Rec. power ${ti.rec.toLocaleString()} · <b>📖 ${ti.reward}</b> Insight${under?' · <span class="warnx">under-powered</span>':''}</div></div>
-      <button class="cta dtgo" data-t="${ti.t}">Enter</button></div>`;}).join('');
+      <button class="cta dtgo" data-dun="skill" data-t="${ti.t}">Enter</button></div>`;}).join('');
+  const equipCards=EQUIPDUN.map((d,di)=>{
+    const tiers=DUN_TIERS.map(ti=>{const under=pw<ti.rec*0.8;
+      return `<div class="duntier${under?' under':''}">
+        <div class="dtinfo"><div class="dtname"><b>Tier ${ti.name}</b></div>
+          <div class="dtsub">Rec. power ${ti.rec.toLocaleString()} · drops <b>${ti.gtier}</b> ${d.label} gear${under?' · <span class="warnx">under-powered</span>':''}</div></div>
+        <button class="cta dtgo" data-dun="eq${di}" data-t="${ti.t}">Enter</button></div>`;}).join('');
+    return `<div class="duncard">
+      <div class="dunhead"><div class="dunname">${d.icon} ${d.name}</div><div class="duncur">${d.label} gear</div></div>
+      <div class="dunblurb">Farm ${d.label} pieces — main-stat and set roll by tier; harder tiers drop higher gear tiers and rarities.</div>${tiers}</div>`;
+  }).join('');
   box.innerHTML=`<div class="duncard">
       <div class="dunhead"><div class="dunname">${SKILLDUN.icon} ${SKILLDUN.name}</div><div class="duncur">Insight → skill levels</div></div>
-      <div class="dunblurb">${SKILLDUN.blurb}</div>${tiers}
+      <div class="dunblurb">${SKILLDUN.blurb}</div>${skillTiers}
       <div class="dunteam">Your five: <b>${ids.map(id=>hero(id)?hero(id).name.split(' ')[0]:'?').join(' · ')}</b> · power ${pw.toLocaleString()}<br>Deploy any campaign stage to change your team.</div>
     </div>
-    <div class="duncard soon"><div class="dunhead"><div class="dunname">⚒ Equipment Dungeons</div><div class="duncur">soon</div></div>
-      <div class="dunblurb">Ring, Necklace, Bracelet & Weapon dungeons — tiered difficulties that drop gear for each accessory slot. Coming next.</div></div>`;
-  box.querySelectorAll('.dtgo').forEach(b=>b.addEventListener('click',()=>startDungeon(+b.dataset.t)));
+    <div class="dunsect">⚒ Equipment Dungeons</div>${equipCards}`;
+  box.querySelectorAll('.dtgo').forEach(b=>b.addEventListener('click',()=>startDungeon(b.dataset.dun,+b.dataset.t)));
 }
-function startDungeon(t){const ti=SKILLDUN.tiers.find(x=>x.t===t);if(!ti)return;
-  const ids=autoTeam(); if(!ids.length){alert('Summon some heroes first.');return;}
-  team=ids; deployDungeon(SKILLDUN,ti);}
-function deployDungeon(cfg,ti){
+function startDungeon(which,t){
+  const ids=autoTeam(); if(!ids.length){alert('Summon some heroes first.');return;} team=ids;
+  if(which==='skill'){const ti=SKILLDUN.tiers.find(x=>x.t===t);if(!ti)return;
+    runDungeon({name:SKILLDUN.name+' · '+ti.name,bg:SKILLDUN.bg,foes:ti.foes,mul:ti.mul,tag:'📖 SKILL DUNGEON',
+      reward:{kind:'skill',insight:ti.reward,name:SKILLDUN.name+' · '+ti.name}});
+  } else {
+    const di=+which.slice(2), d=EQUIPDUN[di], ti=DUN_TIERS.find(x=>x.t===t); if(!d||!ti)return;
+    runDungeon({name:d.name+' · Tier '+ti.name,bg:d.bg,foes:ti.foes||d.foes[ti.t-1],mul:ti.mul,tag:d.icon+' '+d.label.toUpperCase()+' DUNGEON',
+      reward:{kind:'equip',name:d.name+' · Tier '+ti.name,slots:d.slots,gtier:ti.gtier,odds:ti.odds,label:d.label}});
+  }
+}
+function runDungeon(o){
   curHard=false;
-  const foes=ti.foes.map(k=>{const e=mkEnemy(k);
-    e.stats={hp:Math.round(e.stats.hp*ti.mul),atk:Math.round(e.stats.atk*ti.mul),def:Math.round(e.stats.def*ti.mul),spd:e.stats.spd};
+  const foes=o.foes.map(k=>{const e=mkEnemy(k);
+    e.stats={hp:Math.round(e.stats.hp*o.mul),atk:Math.round(e.stats.atk*o.mul),def:Math.round(e.stats.def*o.mul),spd:e.stats.spd};
     e.hp=e.stats.hp;e.max=e.stats.hp;return e;});
-  G={heroes:team.map(mkHero),waves:[foes],wi:0,enemies:foes,surge:0,round:1,over:false,busy:false,auto:ui.auto,speed:ui.speed,telegraph:null,hard:false,dungeon:{name:cfg.name+' · '+ti.name,reward:ti.reward},awaiting:null,pendingSkill:null};
+  G={heroes:team.map(mkHero),waves:[foes],wi:0,enemies:foes,surge:0,round:1,over:false,busy:false,auto:ui.auto,speed:ui.speed,telegraph:null,hard:false,dungeon:o.reward,awaiting:null,pendingSkill:null};
   applySynergy(G.heroes);applyEventFactionWeek(G.heroes);
   $('#speedBtn').textContent=ui.speed+'×';$('#autoBtn').classList.toggle('active',ui.auto);$('#autoBtn').textContent=ui.auto?'Auto ▶':'Manual';
-  $('#btlChapter').textContent='📖 SKILL DUNGEON';$('#btlName').textContent=cfg.name+' · '+ti.name;
-  setBattleBg(cfg.bg||'3');
+  $('#btlChapter').textContent=o.tag;$('#btlName').textContent=o.name;
+  setBattleBg(o.bg||'3');
   buildParty();renderEnemies();render();renderTelegraph();
   $('#roundNum').textContent='1';$('#result').style.display='none';$('#wavepip').textContent='';
-  logMsg('The Warden echoes stir…');logSynergies(G.heroes.map(u=>u.id));
+  logMsg('The dungeon stirs…');logSynergies(G.heroes.map(u=>u.id));
   show('screen-battle');turnQueue=[];setTimeout(step,450);
 }
 function endDungeon(win){
   const d=G.dungeon;setMvp(win);
-  if(win){insight+=d.reward;renderCrys();saveGame();}
-  const r=$('#result');r.style.display='flex';resultCinematic(win);
+  let sub='';
+  if(win){
+    if(d.kind==='skill'){insight+=d.insight;sub=`<b style="color:#cbb8ff">+${d.insight} 📖 Insight</b> — spend it on skill levels in a hero's Kit.`;}
+    else{const slot=d.slots[rand0(d.slots.length)],r=rollRar(d.odds),p=makePiece(d.gtier,r,slot);inventory.push(p);
+      sub=`✦ Dropped <b style="color:var(${GRAR[p.rar].c})">${GRAR[p.rar].n} ${GSETS[p.set].n} ${GSLOT[p.slot].n}</b> (${p.tier}) — equip it from a hero's slots.`;}
+    renderCrys();saveGame();
+  } else sub=`The dungeon holds. Strengthen your five or try a lower tier, then return.`;
+  const r2=$('#result');r2.style.display='flex';resultCinematic(win);
   $('#resEyebrow').textContent=win?d.name+' cleared':'Dungeon failed';
   const v=$('#resVerdict');v.textContent=win?'VICTORY':'DEFEAT';v.className='verdict '+(win?'win':'lose');
-  $('#resSub').innerHTML=win?`<b style="color:#cbb8ff">+${d.reward} 📖 Insight</b> — spend it on skill levels in a hero's Kit.`
-    :`The wardens hold. Strengthen your five or try a lower tier, then return.`;
+  $('#resSub').innerHTML=sub;
   const nx=$('#resNext');nx.textContent='Dungeons';nx.onclick=()=>{openDungeons();};
 }
 
