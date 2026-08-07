@@ -1181,6 +1181,24 @@
   .dunteam{font-size:9.5px;color:var(--faint);line-height:1.5;margin-top:11px;border-top:1px solid var(--line);padding-top:9px}
   .khsub{float:right;font-size:10px;color:#cbb8ff;font-weight:400;letter-spacing:0}
   .dunsect{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--umbra);padding:4px 2px 0;margin-top:2px}
+  /* weekly raid hub */
+  #raidRes{display:flex;flex-wrap:wrap;gap:6px 14px;padding:6px 16px 4px;font-size:12px}
+  #raidScroll{flex:1;overflow-y:auto;padding:10px 16px 26px;display:flex;flex-direction:column;gap:13px}
+  .raidhero{display:flex;gap:12px;align-items:center;border:1px solid var(--danger);border-radius:15px;padding:12px;
+    background:linear-gradient(100deg,color-mix(in srgb,var(--efx,var(--danger)) 20%,transparent),rgba(14,11,24,.6) 65%)}
+  .rhart{width:78px;height:78px;flex:none;border-radius:12px;overflow:hidden;border:1px solid var(--danger);background:#0e0b18;display:flex;align-items:flex-end;justify-content:center;font-size:38px}
+  .rhart img{width:100%;height:100%;object-fit:cover;object-position:50% 20%}
+  .rhinfo{flex:1;min-width:0}
+  .rhtag{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--danger)}
+  .rhname{font-family:var(--font-title);font-size:16px;line-height:1.12;margin:2px 0}
+  .rhsub{font-size:10px;color:var(--muted)} .rhsub .wk{color:#ffd27f;filter:drop-shadow(0 0 3px currentColor)}
+  .rhtimer{font-size:10px;color:var(--warn);margin-top:3px}
+  .raidbestwrap{padding:2px}
+  .raidbestlbl{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:4px}
+  .raidbar{height:10px;border-radius:6px;background:#221c34;overflow:hidden;border:1px solid var(--line)}
+  .raidbarf{height:100%;background:linear-gradient(90deg,#7a1a2c,#ff3b5c,#ffcf6b);box-shadow:0 0 10px rgba(255,80,100,.5);transition:width .5s}
+  .raidenter{width:100%;padding:12px;font-size:14px}
+  .raidnote{font-size:9.5px;color:var(--faint);line-height:1.5;text-align:center}
   #homeShop.notify::after{content:"";position:absolute;top:-3px;right:-3px;width:9px;height:9px;border-radius:50%;
     background:var(--good);box-shadow:0 0 8px var(--good);animation:bpReady 1.5s ease-in-out infinite}
 
@@ -1434,6 +1452,17 @@
       <span class="res"><i class="cur relic"></i> <b class="num relicN">0</b></span>
     </div>
     <div id="dunScroll"></div>
+  </section>
+
+  <section class="screen" id="screen-raid">
+    <div class="scrhead"><div><div class="eyebrow">Co-op</div><h1>Weekly Raid</h1></div>
+      <button class="ghost back" id="raidBack">Back</button></div>
+    <div id="raidRes">
+      <span class="res"><i class="cur crystal"></i> <b class="num crysN">0</b></span>
+      <span class="res"><i class="cur gold"></i> <b class="num goldN">0</b></span>
+      <span class="res"><i class="cur relic"></i> <b class="num relicN">0</b></span>
+    </div>
+    <div id="raidScroll"></div>
   </section>
 
   <!-- SETTINGS -->
@@ -1746,12 +1775,12 @@ function renderCrys(){
 const SAVE_KEY='ashgate_save_v1';
 let hasSave=false;
 function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(
-  {v:3,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,raidBest,crystals,gold,starShards,relics,sigils,pity,insight,inventory,gearOn,gearUID,loadouts,daily,bpXP,bpClaimF,bpClaimP,bpPrem,evtEarned,evtBal,evtMile,evtShop,login,gleam,vowCard,shopFirst,cosmetics,shopDaily,muted:ui.muted,pref:{speed:ui.speed,auto:ui.auto}}));}catch(e){}}
+  {v:3,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,raidBest,crystals,gold,starShards,relics,sigils,pity,insight,inventory,gearOn,gearUID,loadouts,daily,bpXP,bpClaimF,bpClaimP,bpPrem,evtEarned,evtBal,evtMile,evtShop,login,gleam,vowCard,shopFirst,cosmetics,shopDaily,raidWeek,muted:ui.muted,pref:{speed:ui.speed,auto:ui.auto}}));}catch(e){}}
 function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s||(s.v!==1&&s.v!==2&&s.v!==3))return false;
   owned=new Set(s.owned);progress=s.progress||{};cleared=new Set(s.cleared);
   crystals=s.crystals??crystals;gold=s.gold??gold;starShards=s.starShards??starShards;relics=s.relics??0;sigils=s.sigils??0;pity=s.pity??0;insight=s.insight??40;
   inventory=s.inventory||[];gearOn=s.gearOn||{};gearUID=s.gearUID||inventory.reduce((m,p)=>Math.max(m,p.uid),0);
-  loadouts=s.loadouts||{};clearedHard=new Set(s.clearedHard||[]);arenaRank=s.arenaRank||0;raidBest=s.raidBest||0;
+  loadouts=s.loadouts||{};clearedHard=new Set(s.clearedHard||[]);arenaRank=s.arenaRank||0;raidBest=s.raidBest||0;raidWeek=s.raidWeek||{id:-1,best:0,claimed:[]};
   daily=s.daily||{date:'',win:0,summon:0,enhance:0,claimed:[]};dailyCheck();ui.muted=s.muted??false;
   bpXP=s.bpXP||0;bpClaimF=s.bpClaimF||[];bpClaimP=s.bpClaimP||[];bpPrem=!!s.bpPrem;
   evtEarned=s.evtEarned||0;evtBal=s.evtBal||0;evtMile=s.evtMile||[];evtShop=s.evtShop||{};login=s.login||{n:0,date:''};
@@ -1839,14 +1868,16 @@ function renderHome(){
   $('#fbCta').addEventListener('click',()=>{SFX.tap();openGacha();});
   $('#fbTry').addEventListener('click',()=>{SFX.tap();deployTrial();});
   // weekly raid card
+  const _wb=raidBossOfWeek(); const _wart=(typeof ECUT!=='undefined'&&ECUT[_wb.id])||(typeof EART!=='undefined'&&EART[_wb.id]);
+  raidWeekCheck();
   $('#raidCard').innerHTML=`<div class="rcwrap">
-      <div class="rcglyph">👑${(typeof EART!=='undefined'&&EART['ENM-SLM-X01'])?`<img class="artimg" src="${EART['ENM-SLM-X01']}" alt="Krul Ascended" loading="lazy">`:''}</div>
-      <div class="rcmeta"><div class="rctag">Weekly Raid</div>
-        <div class="rcname">Krul Ascended, the Drowned Crown</div>
-        <div class="rcsub">Multi-phase boss · 30-round damage race${raidBest>0?` · best <b style="color:var(--warn)">${raidBest}%</b>`:''}</div></div>
+      <div class="rcglyph">${_wb.glyph}${_wart?`<img class="artimg" src="${_wart}" alt="${_wb.name}" loading="lazy">`:''}</div>
+      <div class="rcmeta"><div class="rctag">Weekly Raid · resets ${fmtDur(raidWeekEndsMs())}</div>
+        <div class="rcname">${_wb.name}</div>
+        <div class="rcsub">Multi-phase · 30-round race${raidWeek.best>0?` · this week <b style="color:var(--warn)">${raidWeek.best}%</b>`:''}</div></div>
       <button class="rccta" id="rcCta">Raid ▸</button></div>`;
   wireArt($('#raidCard'));
-  $('#rcCta').addEventListener('click',()=>{SFX.tap();openRaidTeam();});
+  $('#rcCta').addEventListener('click',()=>{SFX.tap();openRaid();});
   const allClaimed=DAILY_TASKS.every(t=>daily.claimed.includes(t.id));
   $('#daily').innerHTML=`<div class="dhead">Daily Objectives${allClaimed?' <span class="ddone">all done ✓</span>':''}</div>`+
     `<div class="drow">`+DAILY_TASKS.map(t=>{const cur=Math.min(daily[t.id]||0,t.goal),done=cur>=t.goal,claimed=daily.claimed.includes(t.id);
@@ -2306,15 +2337,37 @@ function endArena(win){
   const nx=$('#resNext');nx.textContent='Arena';nx.onclick=()=>{openArena();};
 }
 
-/* ---------- CO-OP RAID (doc 07): multi-phase boss, damage-% scoreboard ---------- */
+/* ---------- WEEKLY BOSS RAID (doc 07): rotating boss, weekly reward track ---------- */
 let raidBest=0, raidPending=false;
+let raidWeek={id:-1, best:0, claimed:[]};   // weekly best damage % + claimed milestones (resets weekly)
 const RAID={hp:120000, atk:360, def:180, spd:118};
-function mkRaidBoss(){
-  return {id:'ENM-RAID-X01',name:'Krul Ascended, the Drowned Crown',
-    stats:{hp:RAID.hp,atk:RAID.atk,def:RAID.def,spd:RAID.spd},
-    side:'enemy',hp:RAID.hp,max:RAID.hp,barrier:0,status:{},alive:true,el:null,cd:{},
-    damageRoot:'physical',skillPower:1.3,traits:[],physRes:0,magRes:0,immunities:['STS-STUN','STS-ATK-DOWN'],
-    tier:'X',isBoss:true,isMini:false,tgName:'Tidal Cataclysm',_glyph:'👑',_efx:'var(--slime)'};
+const RAIDBOSSES=[
+  {id:'ENM-SLM-X01', name:'Krul Ascended, the Drowned Crown', bg:'1', root:'physical', weak:['magical'],          tg:'Tidal Cataclysm',   glyph:'👑', efx:'var(--slime)',  hp:120000, atk:360, def:180},
+  {id:'ENM-GNT-X01', name:'Gorthaug, the Mountain That Walks', bg:'2', root:'physical', weak:['magical'],          tg:'Avalanche',         glyph:'⛰️', efx:'var(--granite)',hp:155000, atk:430, def:240},
+  {id:'ENM-GRD-X01', name:'The Vaultwarden Eternal',           bg:'3', root:'magical',  weak:['physical'],         tg:'Sealing Judgment',  glyph:'🗝️', efx:'var(--warden)', hp:180000, atk:410, def:220},
+  {id:'ENM-UND-X01', name:'Mortmain, Sovereign of the Gate',   bg:'4', root:'magical',  weak:['holy','physical'],  tg:'Grave Tide',        glyph:'💀', efx:'var(--bone)',   hp:210000, atk:500, def:270},
+];
+const RAIDMILE=[
+  {pct:20, rw:[{t:'gold',n:60000},{t:'crystal',n:80}]},
+  {pct:40, rw:[{t:'crystal',n:160},{t:'crate',n:5}]},
+  {pct:60, rw:[{t:'relic',n:4},{t:'crystal',n:220}]},
+  {pct:80, rw:[{t:'ticket',n:1},{t:'ore',n:6}]},
+  {pct:100,rw:[{t:'crystal',n:400},{t:'ticket',n:2}]},
+];
+function raidWeekIdx(){return Math.floor(Date.now()/(7*864e5));}
+function raidBossOfWeek(){return RAIDBOSSES[((raidWeekIdx()%RAIDBOSSES.length)+RAIDBOSSES.length)%RAIDBOSSES.length];}
+function raidWeekEndsMs(){return (raidWeekIdx()+1)*7*864e5 - Date.now();}
+function raidWeekCheck(){const k=raidWeekIdx(); if(raidWeek.id!==k){raidWeek={id:k,best:0,claimed:[]};}}
+function raidClaimMile(i){raidWeekCheck();const m=RAIDMILE[i];if(!m||raidWeek.best<m.pct||raidWeek.claimed.includes(i))return;
+  m.rw.forEach(grantReward);raidWeek.claimed.push(i);SFX.rare('E');renderCrys();renderRaid();saveGame();}
+function mkRaidBoss(){const b=raidBossOfWeek();
+  return {id:'ENM-RAID-'+b.id.split('-')[1], _artId:b.id, name:b.name,
+    stats:{hp:b.hp,atk:b.atk,def:b.def,spd:118},
+    side:'enemy',hp:b.hp,max:b.hp,barrier:0,status:{},alive:true,el:null,cd:{},
+    damageRoot:b.root,skillPower:1.3,traits:b.weak.includes('holy')?['undead']:[],
+    physRes:b.weak.includes('physical')?-0.25:0,magRes:b.weak.includes('magical')?-0.25:0,immunities:['STS-STUN','STS-ATK-DOWN'],
+    tier:'X',isBoss:true,isMini:false,tgName:b.tg,_glyph:b.glyph,_efx:b.efx,
+    weakTypes:b.weak,toughMax:240,tough:240,broken:0,vuln:0};
 }
 function raidCheck(){
   const boss=G.raidBoss; if(!boss||!boss.alive)return;
@@ -2326,8 +2379,35 @@ function raidCheck(){
     boss.barrier=Math.max(boss.barrier,Math.round(boss.max*.05));SFX.surge();
     logMsg('<b>Krul Ascended</b> — <b style="color:var(--danger)">Tidal Cataclysm rises</b> · Phase 3');}
 }
+function openRaid(){raidWeekCheck();renderRaid();renderCrys();updateHomeNav('raid');show('screen-raid');}
+function renderRaid(){
+  raidWeekCheck(); const wb=raidBossOfWeek(), best=raidWeek.best;
+  const art=(typeof ECUT!=='undefined'&&ECUT[wb.id])||(typeof EART!=='undefined'&&EART[wb.id])||'';
+  const wk=wb.weak.map(t=>`<span class="wk">${WEAKICON[t]||''}</span>`).join('');
+  const mnodes=RAIDMILE.map((m,i)=>{const reached=best>=m.pct,claimed=raidWeek.claimed.includes(i),ready=reached&&!claimed;
+    const rw=m.rw.map(r=>{const b=BPRWD[r.t]||BPRWD.cos;return `${b.ic} ${r.n?b.lbl(r.n):b.lbl()}`;}).join('<br>');
+    return `<div class="emnode ${claimed?'claimed':reached?'reached':''} ${ready?'ready':''}" data-mi="${i}">
+      <div class="emdot">${claimed?'✓':reached?'★':'◆'}</div><div class="empts">${m.pct}%</div>
+      <div class="emrw">${rw}</div>${ready?'<div class="emclaim">Claim</div>':''}</div>`;}).join('');
+  $('#raidScroll').innerHTML=`
+    <div class="raidhero" style="--efx:${wb.efx}">
+      <div class="rhart">${art?`<img src="${art}" alt="${wb.name}">`:`<span class="rhglyph">${wb.glyph}</span>`}</div>
+      <div class="rhinfo"><div class="rhtag">This Week · rotates every 7 days</div>
+        <div class="rhname">${wb.name}</div>
+        <div class="rhsub">Weakness ${wk} · Multi-phase · 30-round damage race</div>
+        <div class="rhtimer">Resets in <b>${fmtDur(raidWeekEndsMs())}</b></div></div>
+    </div>
+    <div class="raidbestwrap"><div class="raidbestlbl"><span>Your weekly best</span><b style="color:var(--warn)">${best}%</b></div>
+      <div class="raidbar"><div class="raidbarf" style="width:${best}%"></div></div></div>
+    <div class="emile"><div class="emlabel">Weekly Milestone Rewards · claim by best damage %</div>
+      <div class="emtrack"><div class="emfill" style="width:${best}%"></div>${mnodes}</div></div>
+    <button class="cta raidenter" id="raidEnter">Enter Raid ▸</button>
+    <div class="raidnote">Rewards are by damage %, and the milestone track resets with the boss each week. All-time best: <b>${raidBest}%</b>.</div>`;
+  $('#raidScroll').querySelectorAll('.emnode.ready').forEach(n=>n.addEventListener('click',()=>raidClaimMile(+n.dataset.mi)));
+  $('#raidEnter').addEventListener('click',()=>{SFX.tap();openRaidTeam();});
+}
 function openRaidTeam(){raidPending=true;arenaTarget=null;curStage=null;
-  $('#teamStage').textContent='Weekly Raid · Krul Ascended';
+  $('#teamStage').textContent='Weekly Raid · '+raidBossOfWeek().name.split(',')[0];
   if(!team.length)suggestTeam();buildRoster();renderSlots();show('screen-team');}
 function deployRaid(){
   curHard=false; const boss=mkRaidBoss();
@@ -2335,21 +2415,23 @@ function deployRaid(){
   applySynergy(G.heroes);
   applyEventFactionWeek(G.heroes);   // event faction-week +15% (doc 10 s3)
   $('#speedBtn').textContent=ui.speed+'×';$('#autoBtn').classList.toggle('active',ui.auto);
+  const wb=raidBossOfWeek();
   $('#btlChapter').textContent='☠ WEEKLY RAID';
-  $('#btlName').textContent='Krul Ascended, the Drowned Crown';
-  setBattleBg('1');
+  $('#btlName').textContent=wb.name;
+  setBattleBg(wb.bg);
   buildParty();renderEnemies();render();renderTelegraph();
   $('#roundNum').textContent='1';$('#result').style.display='none';
   $('#wavepip').textContent='30-round damage race';
-  logMsg('The Drowned Crown surfaces…');
+  logMsg('The weekly boss surfaces…');
   logSynergies(G.heroes.map(u=>u.id));
   show('screen-battle');turnQueue=[];
-  bossIntro('Krul Ascended, the Drowned Crown','ENM-SLM-X01',()=>setTimeout(step,300));
+  bossIntro(wb.name,wb.id,()=>setTimeout(step,300));
 }
 function endRaid(win){
   const boss=G.raidBoss; const dmg=Math.max(0,Math.min(1,1-(boss.hp/boss.max)));
   const pct=win?100:Math.round(dmg*100);
   const improved=pct>raidBest; raidBest=Math.max(raidBest,pct);
+  raidWeekCheck(); const weekImproved=pct>raidWeek.best; raidWeek.best=Math.max(raidWeek.best,pct);
   const reward=Math.round(pct*3)+(win?150:0); crystals+=reward;
   const goldR=Math.round(pct*400)+(win?8000:0); gold+=goldR;
   const relicR=Math.round(pct/20)+(win?3:0); relics+=relicR;
@@ -2362,8 +2444,9 @@ function endRaid(win){
   const rewTxt=`<div style="color:var(--umbra);margin-bottom:6px"><i class="cur crystal"></i> +${reward} Crystals · <span style="color:var(--warn)"><i class="cur gold"></i> +${goldR.toLocaleString()} Gold</span>${relicR?` · <span style="color:var(--nec)"><i class="cur relic"></i> +${relicR} Relics</span>`:''}</div>`;
   $('#resSub').innerHTML=rewTxt+dropTxt+
     `<div>Damage dealt: <b style="color:var(--warn)">${pct}%</b>${improved?' — new best!':` · best ${raidBest}%`}. `+
-    (win?'The Drowned Crown falls — the raid is fully cleared.':'Raids pay out by damage — re-gear, level up, and push for a full kill.')+`</div>`;
-  const nx=$('#resNext');nx.textContent='Raid';nx.onclick=()=>{buildMap();show('screen-map');};
+    (win?'The weekly boss falls — full clear.':'Raids pay out by damage — re-gear, level up, and push for a full kill.')+
+    (weekImproved?` <b style="color:#8ff0e4">Weekly best raised to ${raidWeek.best}%</b> — claim milestone rewards on the Raid screen.`:'')+`</div>`;
+  const nx=$('#resNext');nx.textContent='Raid';nx.onclick=()=>{openRaid();};
 }
 
 /* ---------- BANNER TRIAL (doc 08): test-drive the featured unit before pulling ---------- */
@@ -3382,8 +3465,9 @@ function renderEnemies(){
     el.setAttribute('role','img');el.setAttribute('aria-label',`${e.name}${e.isBoss?' (boss)':e.isMini?' (elite)':''}`);
     const efx=e._efx||efxOf(e.id); el.style.setProperty('--efx',efx);
     // transparent cutout: monster ECUT, or hero cutout CUT for arena foes; else a background'd portrait (masked)
-    const ec=((typeof ECUT!=='undefined')&&ECUT[e.id])||((typeof CUT!=='undefined')&&CUT[e.id]);
-    const src=ec||((typeof EART!=='undefined')&&EART[e.id])||ART[e.id]||'';
+    const artKey=e._artId||e.id;
+    const ec=((typeof ECUT!=='undefined')&&ECUT[artKey])||((typeof CUT!=='undefined')&&CUT[artKey]);
+    const src=ec||((typeof EART!=='undefined')&&EART[artKey])||ART[artKey]||'';
     const spr=src?`<div class="sprite${ec?'':' noecut'}" style="background-image:url('${src}')"></div>`
                  :`<div class="sprite glyph">${e._glyph||EGLYPH[e.id]||'🟢'}</div>`;
     const wk=(e.weakTypes||[]).map(t=>`<span class="wk" title="Weak: ${t}">${WEAKICON[t]||'?'}</span>`).join('');
@@ -3610,7 +3694,7 @@ function navGo(dest){
   updateHomeNav(dest==='summon'?'summon':dest==='raid'?'raid':dest==='pass'?'pass':dest==='events'?'events':dest==='heroes'?'heroes':'');
   if(dest==='heroes'){buildHeroGrid();renderCrys();show('screen-heroes');}
   else if(dest==='summon'||dest==='gacha'){openGacha();}
-  else if(dest==='raid'){openRaidTeam();}
+  else if(dest==='raid'){openRaid();}
   else if(dest==='arena'){openArena();}
   else if(dest==='map'){buildMap();renderCrys();show('screen-map');}
   else if(dest==='events'){openEvents();}
@@ -3678,6 +3762,7 @@ $('#evtBack')?.addEventListener('click',()=>{openHome();});
 $('#homeShop')?.addEventListener('click',()=>{SFX.tap();openShop('value');});
 $('#homeDungeon')?.addEventListener('click',()=>{SFX.tap();openDungeons();});
 $('#dunBack')?.addEventListener('click',()=>{openHome();});
+$('#raidBack')?.addEventListener('click',()=>{openHome();});
 $('#shopBack')?.addEventListener('click',()=>{openHome();});
 $$('#shopTabs .shtab').forEach(b=>b.addEventListener('click',()=>{SFX.tap();shopTab=b.dataset.tab;renderShop();}));
 $('#bpClaimAll').addEventListener('click',bpClaimAll);

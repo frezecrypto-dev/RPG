@@ -112,7 +112,18 @@ tap; applying a preset pulls its pieces back even if another hero borrowed them.
 Two set 4-pc effects that aren't pure numbers in the doc (Vanguard/Gravebind)
 use a stat proxy here.
 
-## Co-op Raid
+## Weekly Boss Raid
+
+The raid is now a **weekly** loop. A **rotating boss** cycles every 7 days through
+a four-boss pool (Krul, Gorthaug, the Vaultwarden, Mortmain — each with its own
+weakness for the Break system and its own battlefield), shown on a dedicated
+**Weekly Raid** hub (bottom-bar *Raid*) with a live reset countdown. You bank a
+**weekly best damage %**, and a **milestone reward rail** (20 / 40 / 60 / 80 /
+100%) pays out Gold, Crystals, gear ore, Ash Relics, and Featured Vow tickets —
+claimed by how far you got, and the track (and boss) **reset each week**, so
+there's a fresh chase every week on top of the all-time best.
+
+## Co-op Raid (per-run)
 
 A weekly **multi-phase raid boss** — Krul Ascended, the Drowned Crown (120k HP)
 — fought as a 30-round **damage race**. She enrages and summons Drowned Hands at
