@@ -595,11 +595,11 @@
   #tutHole{position:absolute;left:50%;top:50%;width:0;height:0;border-radius:14px;pointer-events:auto;
     box-shadow:0 0 0 9999px rgba(6,5,14,.74);transition:left .3s,top .3s,width .3s,height .3s;border:2px solid transparent}
   #tutHole.hit{border-color:#ffcf6b;box-shadow:0 0 0 9999px rgba(6,5,14,.74),0 0 18px rgba(255,207,107,.7),inset 0 0 12px rgba(255,207,107,.35)}
-  #tutGuide{position:fixed;left:6px;bottom:4px;width:132px;max-width:38vw;z-index:10001;pointer-events:none;
+  #tutGuide{position:fixed;left:8px;bottom:2px;width:120px;max-width:32vw;z-index:10001;pointer-events:none;
     filter:drop-shadow(0 6px 16px rgba(0,0,0,.55));animation:tutIn .4s cubic-bezier(.2,.9,.3,1) both}
   @keyframes tutIn{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
-  #tutArt img{width:100%;height:auto;display:block}
-  #tutBubble{position:fixed;left:12px;right:12px;bottom:150px;z-index:10001;pointer-events:auto;
+  #tutArt img{width:auto;height:230px;max-width:120px;object-fit:contain;object-position:bottom center;display:block}
+  #tutBubble{position:fixed;left:12px;right:12px;bottom:244px;z-index:10001;pointer-events:auto;
     background:linear-gradient(180deg,#1c1638,#141029);border:1px solid var(--umbra,#4a3a8f);border-radius:16px;
     padding:14px 15px 12px;box-shadow:0 14px 44px rgba(0,0,0,.55);animation:uipop .25s cubic-bezier(.2,.9,.3,1) both}
   #tutBubble::after{content:"";position:absolute;left:40px;bottom:-9px;width:16px;height:16px;background:#141029;
