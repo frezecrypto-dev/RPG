@@ -2653,8 +2653,13 @@ function endDungeon(win){
     else if(d.kind==='exp'){const gained=[];G.heroes.forEach(h=>{const pr=prog(h.id),cap=DATA.levelCapByStar[pr.stars]||60;
         const nl=Math.min(cap,pr.level+d.amt);if(nl>pr.level){gained.push(h.name.split(' ')[0]+' → Lv'+nl);pr.level=nl;}});
       sub=gained.length?`📈 <b>${gained.join(', ')}</b> — your five gained a little XP.`:`Your five are already at their level cap for their stars — raise stars to grow further.`;}
-    else{const slot=d.slots[rand0(d.slots.length)],r=rollRar(d.odds),p=makePiece(d.gtier,r,slot);inventory.push(p);
-      sub=`✦ Dropped <b style="color:var(${GRAR[p.rar].c})">${GRAR[p.rar].n} ${GSETS[p.set].n} ${GSLOT[p.slot].n}</b> (${p.tier}) — equip it from a hero's slots.`;}
+    else{const slot=d.slots[rand0(d.slots.length)],r=rollRar(d.odds);
+      // Weapon drops are class-locked, so bias the sign toward a class on the team that just cleared it.
+      let wcls=null; if(slot==='WPN'){const cls=[...new Set((team||[]).map(id=>hero(id)&&hero(id).class).filter(Boolean))];
+        wcls=cls.length?cls[rand0(cls.length)]:WCLASSES[rand0(WCLASSES.length)];}
+      const p=makePiece(d.gtier,r,slot,null,wcls);inventory.push(p);
+      const nm=slot==='WPN'&&p.wcls?`${WCLASS[p.wcls].n} · ${CLASS[p.wcls].l}`:GSLOT[p.slot].n;
+      sub=`✦ Dropped <b style="color:var(${GRAR[p.rar].c})">${GRAR[p.rar].n} ${GSETS[p.set].n} ${nm}</b> (${p.tier}) — equip it from a hero's slots.`;}
     renderCrys();saveGame();
   } else sub=`The dungeon holds. Strengthen your five or try a lower tier, then return.`;
   const r2=$('#result');r2.style.display='flex';resultCinematic(win);
