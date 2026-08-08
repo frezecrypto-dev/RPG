@@ -430,3 +430,14 @@ spec" to "something you can hold."
 Open `index.html` in any browser — no build, no server, no external requests.
 Verified end-to-end in headless Chromium (loads clean, plays to a result, no
 console errors).
+
+## Story — The World of Ash Gates
+
+A dedicated **Story** screen (home ▸ 📖 Story) presents the campaign lore with the
+uploaded key art: the Ash Gate world map, the world/faction intro (The Dark Order
+vs. **The Vow**), dossier cards for the **Triarch** (Serin Vale, Lyra Ashenquill,
+Kael Thorne) and the **Faces of the Dark Order** (Lady Vorena Ashfall, General
+Darius Cinderhelm, the Dark Sovereign) plus the Order's creatures (Ashbound Titan,
+Hollow Seraph) — each tappable for a full-art dossier with bio — and the three-act
+arc (Embers in the Ash · Fractures in the Chain · Eclipse or Dawn). Character art
+is embedded as compact WEBP; the large source PNGs are kept out of the build.
