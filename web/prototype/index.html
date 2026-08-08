@@ -552,13 +552,14 @@
     border:1px solid color-mix(in srgb,var(--hue) 40%,var(--line))}
   .hcard .rn{font-size:9px;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .hcard .lv{font-size:8px;color:var(--muted);margin-top:1px}
-  .hcard .hmeta{display:flex;align-items:center;justify-content:center;gap:4px;margin-top:4px}
-  .hcard .hcls{display:inline-flex;align-items:center;gap:2px;font-size:8px;font-weight:700;letter-spacing:.02em;
-    padding:1px 5px;border-radius:8px;background:color-mix(in srgb,var(--hue) 16%,transparent);
-    border:1px solid color-mix(in srgb,var(--hue) 38%,transparent);line-height:1.5;
+  /* vertical role stack: class name -> emblem -> nation */
+  .cmeta{display:flex;flex-direction:column;align-items:center;gap:2px;margin-top:4px}
+  .cm-cls{font-size:9px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;line-height:1.1}
+  .cm-ic{line-height:0}
+  .cm-ic .cimg{display:block}
+  .cm-ic .cemoji{line-height:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}
+  .cm-fac{font-size:8.5px;font-weight:600;letter-spacing:.06em;opacity:.9;line-height:1.1;
     max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-  .hcard .hfac{font-size:9px;line-height:1;filter:drop-shadow(0 1px 1px rgba(0,0,0,.6));flex-shrink:0}
-  .hcard .hcls .cimg{flex-shrink:0}
   img.cimg{object-fit:contain;vertical-align:middle;display:inline-block}
   img.cart{object-fit:contain;vertical-align:middle;filter:drop-shadow(0 1px 3px rgba(0,0,0,.55))}
   .hcard .rar{position:absolute;top:5px;left:6px;width:7px;height:7px;border-radius:2px}
@@ -1958,7 +1959,13 @@ function classArt(cls,px){const c=CLASS[cls];
     `<g fill="none" stroke="#f4f0fb" stroke-width="2.3" stroke-linejoin="round" stroke-linecap="round" `+
     `style="filter:drop-shadow(0 0 3.5px var(${c.hue}))">${CLASS_ICON[cls]}</g></svg>`;}
 function classChip(cls,px){const c=CLASS[cls];
-  return CLASSICON[cls] ? `<img class="cimg" src="${CLASSICON[cls]}" style="width:${px}px;height:${px}px" alt="" aria-hidden="true">` : c.g;}
+  return CLASSICON[cls] ? `<img class="cimg" src="${CLASSICON[cls]}" style="width:${px}px;height:${px}px" alt="" aria-hidden="true">`
+    : `<span class="cemoji" style="font-size:${Math.round(px*0.85)}px">${c.g}</span>`;}
+// vertical role stack: class name -> class emblem -> nation, used on hero cards and team-select cards
+function classMetaHTML(h,px){const c=CLASS[h.class],f=FACTION[h.faction];
+  return `<div class="cmeta"><div class="cm-cls" style="color:var(${c.hue})">${c.l}</div>`+
+    `<div class="cm-ic">${classChip(h.class,px||26)}</div>`+
+    (f?`<div class="cm-fac" style="color:var(${f.color})">${f.name}</div>`:'')+`</div>`;}
 const EGLYPH={'ENM-SLM-M01':'🟢','ENM-SLM-M02':'🫧','ENM-SLM-M03':'🏮','ENM-SLM-M04':'🟩','ENM-SLM-E02':'🔷','ENM-SLM-B01':'🌀','ENM-SLM-X01':'🌊',
   'ENM-GNT-M01':'🪨','ENM-GNT-M02':'🥌','ENM-GNT-M03':'⛓️','ENM-GNT-M04':'👹','ENM-GNT-E01':'🧱','ENM-GNT-E02':'🗿','ENM-GNT-B01':'🏛️','ENM-GNT-X01':'⛰️'};
 const FAMILY_FX={SLM:'--slime',GNT:'--granite',GRD:'--warden',UND:'--bone'};
@@ -3466,7 +3473,7 @@ function buildRoster(){
     const el=document.createElement('div'); el.className='rcard rar-'+h.rarity+(team.includes(h.id)?' picked':'');
     el.style.setProperty('--hue',`var(${c.hue})`);el.style.setProperty('--rc',`var(${RAR[h.rarity]})`);
     el.innerHTML=`<div class="rgem">${h.rarity}</div><div class="chk">✓</div>
-      <div class="g">${classArt(h.class,34)}${artImg(h.id,h.name)}</div><div class="rn">${h.name}</div><div class="rl">${h.role}</div>`;
+      <div class="g">${artImg(h.id,h.name)}</div><div class="rn">${h.name}</div>${classMetaHTML(h,24)}`;
     el.addEventListener('click',()=>toggle(h.id));
     box.appendChild(el);
   });
@@ -3734,10 +3741,9 @@ function buildHeroGrid(){
   DATA.heroes.filter(h=>owned.has(h.id)).sort((a,b)=>RORDER[a.rarity]-RORDER[b.rarity]).forEach(h=>{
     const c=CLASS[h.class],pr=prog(h.id),el=document.createElement('div');
     el.className='hcard rar-'+h.rarity;el.style.setProperty('--hue',`var(${c.hue})`);el.style.setProperty('--rc',`var(${RAR[h.rarity]})`);
-    const f=FACTION[h.faction];
     el.innerHTML=`<div class="rgem">${h.rarity}</div><div class="g">${artImg(h.id,h.name)}</div>
       <div class="rn">${h.name}</div><div class="lv">Lv ${pr.level} · ${'★'.repeat(pr.stars)}</div>
-      <div class="hmeta"><span class="hcls" style="color:var(${c.hue})" title="${c.l}">${classChip(h.class,13)} ${c.l}</span>${f?`<span class="hfac" title="${f.name}">${f.g}</span>`:''}</div>`;
+      ${classMetaHTML(h,26)}`;
     el.addEventListener('click',()=>openHero(h.id));box.appendChild(el);
   });
   wireArt(box);
