@@ -213,6 +213,24 @@ in one sitting: campaign fights cost 6 (8 on Hard), dungeons and Gold/EXP raids
 Crystals**; a low-Energy attempt offers that refill. It's shown in the home and
 campaign headers and persists in the save.
 
+## Commander level
+
+The player has a **Commander level** (1 → **100**) shown as a pill with an XP bar
+in the home header. **Everything you defeat grants XP** — campaign stages, raids,
+dungeons, Arena, and the guild boss all feed it through the single victory path,
+scaled by how many foes fell and whether it was a boss or Hard run. Each level-up
+**raises your maximum Energy** (+5 per level, so the cap climbs from 120 toward
+615 at Lv 100) and hands you the newly unlocked Energy for free, so pushing
+content literally expands how much you can play. Level and XP persist in the save.
+
+## In-app dialogs
+
+All confirmations and notices use a built-in modal/toast instead of the browser's
+native `confirm()`/`alert()` — those are blocked inside the sandboxed artifact
+iframe, which is why sell / quick-sell / purchase buttons appeared to "do
+nothing." Selling a hero, quick-selling gear, buying a shop pack, using a potion,
+leaving a guild, and resetting all now pop a proper in-game dialog and confirm.
+
 ## Quests (daily / weekly / monthly)
 
 A **📋 Quests** panel (home top-right, with a live claimable badge) tracks three
