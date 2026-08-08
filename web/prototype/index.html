@@ -1192,7 +1192,46 @@
     color:#cbb8ff;font-size:11px;font-weight:600;letter-spacing:.04em;cursor:pointer}
   .shopbtn:hover{box-shadow:0 0 12px rgba(123,92,255,.4)}
   #homeShop{position:absolute;top:52px;right:16px;z-index:4}
-  #homeDungeon{position:absolute;top:88px;right:16px;z-index:4}
+  #homeQuests{position:absolute;top:88px;right:16px;z-index:4}
+  #homeInv{position:absolute;top:124px;right:16px;z-index:4}
+  .hbadge{display:inline-flex;align-items:center;justify-content:center;min-width:15px;height:15px;
+    margin-left:4px;padding:0 3px;border-radius:9px;background:var(--gate,#ff3b5c);color:#fff;
+    font-size:9px;font-weight:800;box-shadow:0 0 8px rgba(255,59,92,.7)}
+  /* quests + inventory screens */
+  #qRes,#invRes{display:flex;flex-wrap:wrap;gap:6px 14px;padding:6px 16px 4px;font-size:12px}
+  #qTabs,#invTabs{display:flex;gap:8px;padding:6px 16px 4px}
+  .qtab,.ivtab{flex:1;padding:8px 0;border-radius:10px;border:1px solid var(--line);
+    background:rgba(255,255,255,.03);color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;letter-spacing:.03em}
+  .qtab.on,.ivtab.on{border-color:var(--umbra);background:linear-gradient(180deg,rgba(123,92,255,.22),rgba(123,92,255,.05));color:#cbb8ff}
+  #qScroll,#invScroll{flex:1;overflow-y:auto;padding:8px 16px 90px}
+  .qcard{display:flex;align-items:center;gap:10px;padding:11px 12px;margin-bottom:9px;border-radius:12px;
+    border:1px solid var(--line);background:rgba(255,255,255,.03)}
+  .qcard.done{border-color:var(--umbra);background:linear-gradient(180deg,rgba(123,92,255,.14),rgba(123,92,255,.03))}
+  .qcard.claimed{opacity:.5}
+  .qmid{flex:1;min-width:0}
+  .qlbl{font-size:13px;color:var(--ink);font-weight:600;margin-bottom:5px}
+  .qbar{height:7px;border-radius:5px;background:rgba(255,255,255,.08);overflow:hidden;position:relative}
+  .qbarf{height:100%;background:linear-gradient(90deg,#7b5cff,#b79bff);border-radius:5px}
+  .qprg{font-size:10px;color:var(--faint);margin-top:4px}
+  .qrw{display:flex;gap:8px;font-size:10.5px;color:var(--muted);margin-top:4px;flex-wrap:wrap}
+  .qrw span{display:inline-flex;align-items:center;gap:3px}
+  .qclaim{padding:8px 13px;border-radius:10px;border:1px solid var(--umbra);cursor:pointer;
+    background:linear-gradient(180deg,#7b5cff,#5a3fd6);color:#fff;font-size:11px;font-weight:700;white-space:nowrap}
+  .qclaim:disabled{background:none;border-color:var(--line);color:var(--faint);cursor:default}
+  .qclaim.ready{animation:qpulse 1.4s ease-in-out infinite}
+  @keyframes qpulse{0%,100%{box-shadow:0 0 0 rgba(123,92,255,0)}50%{box-shadow:0 0 12px rgba(123,92,255,.7)}}
+  .qreset{font-size:10px;color:var(--faint);text-align:center;padding:2px 0 10px}
+  .ivitem{display:flex;align-items:center;gap:12px;padding:12px;margin-bottom:9px;border-radius:12px;
+    border:1px solid var(--line);background:rgba(255,255,255,.03)}
+  .ivic{font-size:30px;width:44px;text-align:center;flex-shrink:0}
+  .ivmid{flex:1;min-width:0}
+  .ivname{font-size:13.5px;color:var(--ink);font-weight:600}
+  .ivname .ivqty{color:#cbb8ff;font-weight:700;margin-left:6px}
+  .ivdesc{font-size:10.5px;color:var(--muted);margin-top:2px}
+  .ivuse{padding:8px 15px;border-radius:10px;border:1px solid var(--umbra);cursor:pointer;
+    background:linear-gradient(180deg,#7b5cff,#5a3fd6);color:#fff;font-size:11px;font-weight:700;white-space:nowrap}
+  .ivuse:disabled{background:none;border-color:var(--line);color:var(--faint);cursor:default}
+  .ivempty{text-align:center;color:var(--faint);font-size:12px;padding:40px 20px;line-height:1.6}
   /* dungeons screen */
   #dunRes{display:flex;flex-wrap:wrap;gap:6px 14px;padding:6px 16px 4px;font-size:12px}
   #dunScroll{flex:1;overflow-y:auto;padding:10px 16px 26px;display:flex;flex-direction:column;gap:12px}
@@ -1453,6 +1492,8 @@
       </div>
     </div>
     <button id="homeShop" class="shopbtn">🛒 Shop</button>
+    <button id="homeQuests" class="shopbtn">📋 Quests<span class="hbadge" id="qBadge" style="display:none">!</span></button>
+    <button id="homeInv" class="shopbtn">🎒 Bag</button>
     <div id="hubScene">
       <button class="bld" data-go="gacha" style="left:50%;top:20%">
         <svg class="bsvg" viewBox="0 0 64 104"><polygon points="32,4 46,32 18,32" fill="#241a4d" stroke="#7b5cff" stroke-width="1"/><circle cx="32" cy="16" r="10" fill="#7b5cff" opacity=".35"/><circle cx="32" cy="16" r="5" fill="#cbb8ff"/><rect x="21" y="32" width="22" height="66" rx="2" fill="#171233" stroke="#4a3a8f" stroke-width="1"/><rect x="28" y="44" width="8" height="12" rx="2" fill="#8f6bff"/><rect x="28" y="64" width="8" height="12" rx="2" fill="#8f6bff"/><rect x="16" y="96" width="32" height="8" rx="2" fill="#0e0b1e"/></svg>
@@ -1588,6 +1629,36 @@
       <button class="shtab" data-tab="cosmetics">Cosmetics</button>
     </div>
     <div id="shopScroll"></div>
+  </section>
+
+  <section class="screen" id="screen-quests">
+    <div class="scrhead"><div><div class="eyebrow">Duties</div><h1>Quests</h1></div>
+      <button class="ghost back" id="qBack">Back</button></div>
+    <div id="qRes">
+      <span class="res"><i class="cur crystal"></i> <b class="num crysN">0</b></span>
+      <span class="res"><i class="cur gold"></i> <b class="num goldN">0</b></span>
+      <span class="res eres"><span class="enIco">⚡</span> <b class="num enN">120</b><span class="enSlash">/</span><span class="enMax">120</span></span>
+    </div>
+    <div id="qTabs">
+      <button class="qtab on" data-qt="d">Daily</button>
+      <button class="qtab" data-qt="w">Weekly</button>
+      <button class="qtab" data-qt="m">Monthly</button>
+    </div>
+    <div id="qScroll"></div>
+  </section>
+
+  <section class="screen" id="screen-inv">
+    <div class="scrhead"><div><div class="eyebrow">Satchel</div><h1>Inventory</h1></div>
+      <button class="ghost back" id="invBack">Back</button></div>
+    <div id="invRes">
+      <span class="res eres"><span class="enIco">⚡</span> <b class="num enN">120</b><span class="enSlash">/</span><span class="enMax">120</span></span>
+      <span class="res"><i class="cur gold"></i> <b class="num goldN">0</b></span>
+    </div>
+    <div id="invTabs">
+      <button class="ivtab on" data-iv="items">Items</button>
+      <button class="ivtab" data-iv="gear">Gear</button>
+    </div>
+    <div id="invScroll"></div>
   </section>
 
   <section class="screen" id="screen-dungeons">
@@ -1799,7 +1870,7 @@ const DAILY_TASKS=[
 ];
 const FEATURED_ID='ASH-BSK-L02';
 function dailyCheck(){const t=new Date().toDateString();if(daily.date!==t){daily={date:t,win:0,summon:0,enhance:0,claimed:[]};}}
-function dailyBump(k){dailyCheck();daily[k]=(daily[k]||0)+1;}
+function dailyBump(k){dailyCheck();daily[k]=(daily[k]||0)+1;questBump(k);}
 const HARD={hp:1.6, atk:1.45, def:1.3, lvl:12};  // endgame difficulty multipliers
 function campaignHasBoss(){return DATA.chapters.some(c=>c.stages.some(s=>s.boss&&cleared.has(s.id)));}
 
@@ -1848,9 +1919,9 @@ function energyTick(){ if(energy>=energyMax){energyTs=Date.now();return;} const 
   if(gained>0){ energy=Math.min(energyMax,energy+gained); energyTs+=gained*ENERGY_REGEN_MS; if(energy>=energyMax)energyTs=Date.now(); } }
 function energyGrant(n){ energyTick(); energy=Math.min(energyMax+n,energy+n); } // gifts/potions can overfill a touch
 function energyPay(cost){ energyTick();
-  if(energy>=cost){ energy-=cost; renderCrys(); saveGame(); return true; }
+  if(energy>=cost){ energy-=cost; questBump('energy',cost); renderCrys(); saveGame(); return true; }
   if(confirm(`Not enough Energy (${Math.floor(energy)}/${cost}). Refill to full for ${ENERGY_REFILL_COST} Crystals?`)){
-    if(crystals>=ENERGY_REFILL_COST){ crystals-=ENERGY_REFILL_COST; energy=energyMax; energyTs=Date.now(); energy-=cost; renderCrys(); saveGame(); return true; }
+    if(crystals>=ENERGY_REFILL_COST){ crystals-=ENERGY_REFILL_COST; energy=energyMax; energyTs=Date.now(); energy-=cost; questBump('energy',cost); renderCrys(); saveGame(); return true; }
     alert('Not enough Crystals to refill Energy.');
   }
   return false; }
@@ -1862,6 +1933,29 @@ let login={n:0, date:''};                             // 28-day login track (pau
 let gleam=0;                                          // Gleam — cosmetic-only soft currency (doc 10 s4/s5)
 let vowCard={active:false, day:0, date:''};           // Monthly Vow Card: 300 now + 90/day×30 (doc 10 s4)
 let shopFirst=[], cosmetics=[], shopDaily={date:'', bought:{}}; // first-buy doubles, owned cosmetics, daily deal limits
+let items={};   // usable-item inventory (energy potions, etc.)
+const ITEMDEF={ ENERGY_S:{ic:'⚡',name:'Energy Potion',desc:'Restore 40 Energy',energy:40},
+  ENERGY_L:{ic:'🔋',name:'Big Energy Potion',desc:'Restore 120 Energy',energy:120} };
+let quests={ d:{date:'',prog:{},claimed:[]}, w:{week:-1,prog:{},claimed:[]}, m:{month:'',prog:{},claimed:[]} };
+const QUEST_DEFS={
+  d:[ {id:'win',key:'win',label:'Win 3 battles',goal:3,rw:[{t:'crystal',n:80},{t:'energy',n:20}]},
+      {id:'summon',key:'summon',label:'Summon once',goal:1,rw:[{t:'gold',n:8000}]},
+      {id:'dungeon',key:'dungeon',label:'Clear a dungeon',goal:1,rw:[{t:'insight',n:30},{t:'energy',n:15}]},
+      {id:'spend',key:'energy',label:'Spend 24 Energy',goal:24,rw:[{t:'potionS',n:1}]} ],
+  w:[ {id:'win20',key:'win',label:'Win 20 battles',goal:20,rw:[{t:'crystal',n:300},{t:'potionL',n:1}]},
+      {id:'dun5',key:'dungeon',label:'Clear 5 dungeons',goal:5,rw:[{t:'gold',n:120000}]},
+      {id:'raid',key:'raid',label:'Fight a raid',goal:1,rw:[{t:'ticket',n:1}]},
+      {id:'donate',key:'donate',label:'Donate to your guild 3×',goal:3,rw:[{t:'crate',n:5},{t:'energy',n:60}]} ],
+  m:[ {id:'win80',key:'win',label:'Win 80 battles',goal:80,rw:[{t:'crystal',n:800},{t:'ticket',n:2}]},
+      {id:'login',key:'login',label:'Claim 15 daily logins',goal:15,rw:[{t:'crystal',n:500}]},
+      {id:'dun30',key:'dungeon',label:'Clear 30 dungeons',goal:30,rw:[{t:'relic',n:12},{t:'potionL',n:3}]} ],
+};
+const QUEST_META={d:{name:'Daily',reset:'resets at midnight'},w:{name:'Weekly',reset:'resets weekly'},m:{name:'Monthly',reset:'resets monthly'}};
+function questPeriodCheck(){const t=new Date().toDateString(),w=Math.floor(Date.now()/(7*864e5)),d=new Date(),mo=d.getFullYear()+'-'+d.getMonth();
+  if(quests.d.date!==t)quests.d={date:t,prog:{},claimed:[]};
+  if(quests.w.week!==w)quests.w={week:w,prog:{},claimed:[]};
+  if(quests.m.month!==mo)quests.m={month:mo,prog:{},claimed:[]};}
+function questBump(key,n){n=n||1;questPeriodCheck();['d','w','m'].forEach(tr=>{quests[tr].prog[key]=(quests[tr].prog[key]||0)+n;});}
 let guild={joined:false, isLeader:false, name:'', tag:'', desc:'', banner:{emblem:'🐺',color:'crimson',shape:'shield'},
   level:1, xp:0, marks:0, donateDate:'', donatedToday:0, roster:null,
   chat:[], shopWeek:-1, shopBought:{}, boss:{week:-1, myDmg:0, claimed:false}, tab:'chat'}; // guild (doc 07): sim co-op
@@ -1962,7 +2056,7 @@ function renderCrys(){
 const SAVE_KEY='ashgate_save_v1';
 let hasSave=false;
 function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(
-  {v:3,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,raidBest,crystals,gold,starShards,relics,sigils,pity,insight,energy,energyTs,inventory,gearOn,gearUID,loadouts,daily,bpXP,bpClaimF,bpClaimP,bpPrem,evtEarned,evtBal,evtMile,evtShop,login,gleam,vowCard,shopFirst,cosmetics,shopDaily,raidWeek,guild,muted:ui.muted,pref:{speed:ui.speed,auto:ui.auto}}));}catch(e){}}
+  {v:3,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,raidBest,crystals,gold,starShards,relics,sigils,pity,insight,energy,energyTs,inventory,gearOn,gearUID,loadouts,daily,bpXP,bpClaimF,bpClaimP,bpPrem,evtEarned,evtBal,evtMile,evtShop,login,gleam,vowCard,shopFirst,cosmetics,shopDaily,raidWeek,guild,quests,items,muted:ui.muted,pref:{speed:ui.speed,auto:ui.auto}}));}catch(e){}}
 function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s||(s.v!==1&&s.v!==2&&s.v!==3))return false;
   owned=new Set(s.owned);progress=s.progress||{};cleared=new Set(s.cleared);
   crystals=s.crystals??crystals;gold=s.gold??gold;starShards=s.starShards??starShards;relics=s.relics??0;sigils=s.sigils??0;pity=s.pity??0;insight=s.insight??40;
@@ -1974,6 +2068,7 @@ function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s
   evtEarned=s.evtEarned||0;evtBal=s.evtBal||0;evtMile=s.evtMile||[];evtShop=s.evtShop||{};login=s.login||{n:0,date:''};
   gleam=s.gleam||0;vowCard=s.vowCard||{active:false,day:0,date:''};shopFirst=s.shopFirst||[];cosmetics=s.cosmetics||[];shopDaily=s.shopDaily||{date:'',bought:{}};
   if(s.guild)guild={...guild,...s.guild};
+  if(s.quests)quests=s.quests; if(s.items)items=s.items; questPeriodCheck();
   if(s.pref){ui.speed=s.pref.speed||1;ui.auto=!!s.pref.auto;}
   return true;}catch(e){return false;}}
 function resetSave(){try{localStorage.removeItem(SAVE_KEY);}catch(e){}location.reload();}
@@ -2100,12 +2195,84 @@ const BPRWD={
   ore:{ic:'<i class="cur gold"></i>',g:n=>gold+=n*2000,lbl:n=>'Ore ×'+n},
   gleam:{ic:'✧',g:n=>gleam+=n,lbl:n=>'Gleam '+n},
   frag:{ic:'❂',g:n=>sigils+=n*40,lbl:n=>'Frag ×'+n},
-  cos:{ic:'🎭',g:()=>{},lbl:()=>'Cosmetic'} };
+  cos:{ic:'🎭',g:()=>{},lbl:()=>'Cosmetic'},
+  insight:{ic:'📖',g:n=>insight+=n,lbl:n=>'Insight '+n},
+  energy:{ic:'⚡',g:n=>energyGrant(n),lbl:n=>'Energy '+n},
+  potionS:{ic:'⚡',g:n=>items.ENERGY_S=(items.ENERGY_S||0)+n,lbl:n=>'Energy Potion ×'+n},
+  potionL:{ic:'⚡',g:n=>items.ENERGY_L=(items.ENERGY_L||0)+n,lbl:n=>'Big Potion ×'+n} };
 function bpLevel(){return Math.min(BP.levels, Math.floor(bpXP/BP.xpPer));}
 function bpRewards(L){return BP.mile[L] || {free:BP.per.free, paid:BP.per.paid};}
 function bpGain(n){bpXP=Math.min(BP.xpPer*BP.levels, bpXP+n); const s=$('#screen-pass'); if(s&&s.classList.contains('on'))renderPass();}
 function bpRewardHTML(r){const m=BPRWD[r.t]||BPRWD.cos; const lbl=r.n?m.lbl(r.n):m.lbl(); return `<div class="bprw"><span class="bpi">${m.ic}</span><span class="bpq">${lbl}</span></div>`;}
 function grantReward(r){const m=BPRWD[r.t]; if(m)m.g(r.n||0);}
+
+/* ---------- Quests (daily / weekly / monthly) ---------- */
+let qTab='d';
+function questList(tr){return QUEST_DEFS[tr].map(q=>{
+  const prg=Math.min(q.goal, quests[tr].prog[q.key]||0);
+  return {...q, prg, done:prg>=q.goal, claimed:quests[tr].claimed.includes(q.id)};});}
+function questClaimableCount(){questPeriodCheck();let n=0;
+  ['d','w','m'].forEach(tr=>questList(tr).forEach(q=>{if(q.done&&!q.claimed)n++;}));return n;}
+function updateQuestBadge(){const b=$('#qBadge');if(!b)return;const n=questClaimableCount();
+  b.style.display=n?'inline-flex':'none';b.textContent=n;}
+function questClaim(tr,id){questPeriodCheck();const q=QUEST_DEFS[tr].find(x=>x.id===id);if(!q)return;
+  if(quests[tr].claimed.includes(id))return;if((quests[tr].prog[q.key]||0)<q.goal)return;
+  q.rw.forEach(r=>grantReward(r));quests[tr].claimed.push(id);SFX.rare('R');
+  renderCrys();renderQuests();updateQuestBadge();saveGame();}
+function openQuests(){questPeriodCheck();renderQuests();renderCrys();show('screen-quests');}
+function renderQuests(){
+  $('#qTabs').querySelectorAll('.qtab').forEach(b=>{b.classList.toggle('on',b.dataset.qt===qTab);
+    const c=questList(b.dataset.qt).filter(q=>q.done&&!q.claimed).length;
+    b.textContent=QUEST_META[b.dataset.qt].name+(c?' ('+c+')':'');});
+  const list=questList(qTab);
+  $('#qScroll').innerHTML=`<div class="qreset">${QUEST_META[qTab].reset}</div>`+list.map(q=>{
+    const pct=Math.round(100*q.prg/q.goal);
+    const rw=q.rw.map(r=>{const m=BPRWD[r.t]||BPRWD.cos;return `<span>${m.ic} ${r.n?m.lbl(r.n):m.lbl()}</span>`;}).join('');
+    const btn=q.claimed?`<button class="qclaim" disabled>Claimed</button>`
+      :q.done?`<button class="qclaim ready" data-qc="${q.id}">Claim</button>`
+      :`<button class="qclaim" disabled>${q.prg}/${q.goal}</button>`;
+    return `<div class="qcard${q.done&&!q.claimed?' done':''}${q.claimed?' claimed':''}">
+      <div class="qmid"><div class="qlbl">${q.label}</div>
+        <div class="qbar"><div class="qbarf" style="width:${pct}%"></div></div>
+        <div class="qprg">${q.prg} / ${q.goal}</div>
+        <div class="qrw">${rw}</div></div>
+      ${btn}</div>`;}).join('');
+  $('#qScroll').querySelectorAll('.qclaim[data-qc]').forEach(b=>b.addEventListener('click',()=>questClaim(qTab,b.dataset.qc)));
+}
+
+/* ---------- Inventory (usable items + spare gear) ---------- */
+let ivTab='items';
+function useItem(id){const d=ITEMDEF[id];if(!d||!(items[id]>0))return;
+  if(d.energy){if(energy>=energyMax){alert('Energy is already full.');return;}energyGrant(d.energy);}
+  items[id]--;if(items[id]<=0)delete items[id];SFX.tap();renderCrys();renderInventory();saveGame();}
+function invSellPiece(uid){const p=pieceById(uid);if(!p||whoHas(uid))return;const v=scrapValue(p);
+  if((p.rar==='E'||p.rar==='L')&&!confirm('Sell the '+GRAR[p.rar].n+' '+GSETS[p.set].n+' '+GSLOT[p.slot].n+' for '+v.toLocaleString()+' Gold? This is permanent.'))return;
+  gold+=v;inventory=inventory.filter(x=>x.uid!==uid);SFX.tap();renderCrys();renderInventory();saveGame();}
+function openInventory(){ivTab='items';renderInventory();renderCrys();show('screen-inv');}
+function renderInventory(){
+  $('#invTabs').querySelectorAll('.ivtab').forEach(b=>b.classList.toggle('on',b.dataset.iv===ivTab));
+  const sc=$('#invScroll');
+  if(ivTab==='items'){
+    const ids=Object.keys(ITEMDEF).filter(id=>items[id]>0);
+    if(!ids.length){sc.innerHTML='<div class="ivempty">No usable items yet.<br>Earn Energy Potions from quests & login rewards.</div>';return;}
+    sc.innerHTML=ids.map(id=>{const d=ITEMDEF[id],full=d.energy&&energy>=energyMax;
+      return `<div class="ivitem"><div class="ivic">${d.ic}</div>
+        <div class="ivmid"><div class="ivname">${d.name}<span class="ivqty">×${items[id]}</span></div>
+          <div class="ivdesc">${d.desc}</div></div>
+        <button class="ivuse" data-use="${id}"${full?' disabled':''}>${full?'Full':'Use'}</button></div>`;}).join('');
+    sc.querySelectorAll('.ivuse[data-use]').forEach(b=>b.addEventListener('click',()=>useItem(b.dataset.use)));
+  } else {
+    const ord={L:0,E:1,R:2,C:3};
+    const pieces=inventory.filter(p=>!whoHas(p.uid)).sort((a,b)=>(ord[a.rar]-ord[b.rar])||pieceScore(b)-pieceScore(a));
+    if(!pieces.length){sc.innerHTML='<div class="ivempty">No spare gear.<br>Unequipped pieces you own show here — sell them for Gold.<br>Equip & enhance gear from a hero in the Heroes\' Hall.</div>';return;}
+    sc.innerHTML=pieces.map(p=>{const v=scrapValue(p);
+      return `<div class="ivitem"><div class="ivic" style="color:var(${GRAR[p.rar].c})">${GSLOT[p.slot].i}</div>
+        <div class="ivmid"><div class="ivname" style="color:var(${GRAR[p.rar].c})">${GSETS[p.set].n} ${GSLOT[p.slot].n}<span class="ivqty">+${p.lvl}</span></div>
+          <div class="ivdesc">${p.tier} · ${GRAR[p.rar].n} · ${STATLBL[p.main.k]} ${fmtStat(p.main.k,mainVal(p))}</div></div>
+        <button class="ivuse" data-sell="${p.uid}">⤵ ${v>=1000?(Math.round(v/100)/10)+'k':v}</button></div>`;}).join('');
+    sc.querySelectorAll('.ivuse[data-sell]').forEach(b=>b.addEventListener('click',()=>invSellPiece(+b.dataset.sell)));
+  }
+}
 function openPass(){renderPass();renderCrys();show('screen-pass');}
 function renderPass(){
   const lvl=bpLevel(), prog=bpXP%BP.xpPer, pctv=Math.round(100*prog/BP.xpPer), maxed=lvl>=BP.levels;
@@ -2188,7 +2355,7 @@ function evtClaimMile(i){const m=EVT.milestones[i];if(!m||evtEarned<m.p||evtMile
 function evtBuy(i){const it=EVT.shop[i],bought=evtShop[it.id]||0;
   if(bought>=it.limit||evtBal<it.cost)return;evtBal-=it.cost;evtShop[it.id]=bought+1;grantReward(it.rw);SFX.rare('R');renderCrys();renderEvents();saveGame();}
 function loginCanClaim(){return login.n<LOGIN.length && login.date!==new Date().toDateString();}
-function loginClaim(){if(!loginCanClaim())return;grantReward(LOGIN[login.n]);login.n++;login.date=new Date().toDateString();
+function loginClaim(){if(!loginCanClaim())return;grantReward(LOGIN[login.n]);login.n++;login.date=new Date().toDateString();questBump('login');
   SFX.rare('E');renderCrys();renderEvents();saveGame();}
 function openEvents(){renderEvents();renderCrys();updateHomeNav('events');show('screen-events');}
 function renderEvents(){
@@ -2456,6 +2623,7 @@ function endDungeon(win){
   const d=G.dungeon;setMvp(win);
   let sub='';
   if(win){
+    questBump('dungeon');
     if(d.kind==='skill'){insight+=d.insight;sub=`<b style="color:#cbb8ff">+${d.insight} 📖 Insight</b> — spend it on skill levels in a hero's Kit.`;}
     else if(d.kind==='gold'){gold+=d.amt;sub=`<b style="color:var(--warn)"><i class="cur gold"></i> +${d.amt.toLocaleString()} Gold</b> — fund your level-ups and enhancements.`;}
     else if(d.kind==='exp'){const gained=[];G.heroes.forEach(h=>{const pr=prog(h.id),cap=DATA.levelCapByStar[pr.stars]||60;
@@ -2641,7 +2809,7 @@ function renderGuild(){
 function guildDonate(i){guildDayCheck();const d=GUILD_DONATE[i];if(!d||guild.donatedToday>=3)return;
   if(d.cost.gold&&gold<d.cost.gold)return; if(d.cost.crystals&&crystals<d.cost.crystals)return;
   if(d.cost.gold)gold-=d.cost.gold; if(d.cost.crystals)crystals-=d.cost.crystals;
-  guild.marks+=d.marks; guild.xp+=d.xp; guild.donatedToday++;
+  guild.marks+=d.marks; guild.xp+=d.xp; guild.donatedToday++; questBump('donate');
   while(guild.xp>=GUILD_LVL_XP*guild.level){/* passive level-ups */ if(guild.level>=30)break; guild.level++;}
   SFX.rare('R');renderCrys();renderGuild();saveGame();}
 function guildBuy(i){guildWeekCheck();const it=GUILD_SHOP[i],bought=guild.shopBought[it.id]||0;
@@ -2953,7 +3121,7 @@ function endRaid(win){
   const boss=G.raidBoss; const dmg=Math.max(0,Math.min(1,1-(boss.hp/boss.max)));
   const pct=win?100:Math.round(dmg*100);
   const improved=pct>raidBest; raidBest=Math.max(raidBest,pct);
-  raidWeekCheck(); const weekImproved=pct>raidWeek.best; raidWeek.best=Math.max(raidWeek.best,pct);
+  raidWeekCheck(); const weekImproved=pct>raidWeek.best; raidWeek.best=Math.max(raidWeek.best,pct); questBump('raid');
   const reward=Math.round(pct*3)+(win?150:0); crystals+=reward;
   const goldR=Math.round(pct*400)+(win?8000:0); gold+=goldR;
   const relicR=Math.round(pct/20)+(win?3:0); relics+=relicR;
@@ -4223,7 +4391,7 @@ $('#toMap').addEventListener('click',()=>{openHome();});
 /* ---------- Home hub navigation ---------- */
 function updateHomeNav(active){$$('#homeNav .navb').forEach(b=>b.classList.toggle('on',b.dataset.nav===active));}
 function openHome(){renderCrys();updateHomeNav('home');const f=$('#hubFeat');if(f)f.textContent='Tap a building to enter';
-  const hs=$('#homeShop');if(hs)hs.classList.toggle('notify',vowCanClaim());show('screen-home');}
+  const hs=$('#homeShop');if(hs)hs.classList.toggle('notify',vowCanClaim());updateQuestBadge();show('screen-home');}
 function navGo(dest){
   if(dest==='home'){openHome();return;}
   updateHomeNav(['summon','raid','pass','events','heroes','guild'].includes(dest)?dest:'');
@@ -4238,6 +4406,12 @@ function navGo(dest){
 }
 $$('#hubScene .bld').forEach(b=>b.addEventListener('click',()=>{SFX.tap();navGo(b.dataset.go);}));
 $$('#homeNav .navb').forEach(b=>b.addEventListener('click',()=>{SFX.tap();navGo(b.dataset.nav);}));
+$('#homeQuests')?.addEventListener('click',()=>{SFX.tap();openQuests();});
+$('#homeInv')?.addEventListener('click',()=>{SFX.tap();openInventory();});
+$('#qBack')?.addEventListener('click',()=>{SFX.tap();openHome();});
+$('#invBack')?.addEventListener('click',()=>{SFX.tap();openHome();});
+$$('#qTabs .qtab').forEach(b=>b.addEventListener('click',()=>{SFX.tap();qTab=b.dataset.qt;renderQuests();}));
+$$('#invTabs .ivtab').forEach(b=>b.addEventListener('click',()=>{SFX.tap();ivTab=b.dataset.iv;renderInventory();}));
 // hotspot placement over the painted buildings in the single hub scene (percent of #hubScene)
 const HUBSPOTS={gacha:{l:50,t:27,w:118,h:210},heroes:{l:21,t:47,w:132,h:120},raid:{l:71,t:50,w:120,h:150},map:{l:20,t:73,w:142,h:120},arena:{l:71,t:82,w:180,h:128}};
 function applyHubArt(){

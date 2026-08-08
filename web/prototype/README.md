@@ -199,6 +199,27 @@ in one sitting: campaign fights cost 6 (8 on Hard), dungeons and Gold/EXP raids
 Crystals**; a low-Energy attempt offers that refill. It's shown in the home and
 campaign headers and persists in the save.
 
+## Quests (daily / weekly / monthly)
+
+A **📋 Quests** panel (home top-right, with a live claimable badge) tracks three
+tiers that auto-reset on their own clock — **Daily** (midnight), **Weekly**, and
+**Monthly** (rollovers detected on load and on every progress tick). Objectives
+count real play: win battles, summon, clear dungeons, spend Energy, fight raids,
+donate to your guild, claim daily logins. Progress bars fill live and a pulsing
+**Claim** unlocks when a goal is met; rewards span Crystals, Gold, Insight,
+Vow tickets, relics, **Energy** and **Energy Potions** — closing the Energy loop
+so active players top themselves back up. Claimed state and progress persist per
+period in the save.
+
+## Inventory (satchel)
+
+A **🎒 Bag** panel holds usable items and spare gear across two tabs. **Items**
+lists consumables — **Energy Potion** (+40) and **Big Energy Potion** (+120) —
+earned from quests and login rewards; **Use** restores Energy on the spot (and
+is disabled at full). **Gear** shows every unequipped piece, rarity-sorted, with
+a per-piece **sell for Gold** button (scrap-value, Legendary/Epic confirm) — a
+lightweight sell-only view; equipping and enhancing still live on the hero.
+
 ## Home / lobby (doc 16)
 
 The map doubles as a lobby: a persistent **resource header** (Crystals / Gold /
