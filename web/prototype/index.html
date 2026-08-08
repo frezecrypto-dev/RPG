@@ -589,6 +589,32 @@
     background:rgba(20,15,40,.96);border:1px solid var(--umbra,#4a3a8f);color:#f4f0fb;font-size:12px;font-weight:600;
     padding:10px 16px;border-radius:11px;box-shadow:0 10px 30px rgba(0,0,0,.5);opacity:0;transition:opacity .25s,transform .25s;max-width:86vw;text-align:center}
   .uitoast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+  /* guided tutorial */
+  #tutorial{position:fixed;inset:0;z-index:9990;display:none}
+  #tutorial.on{display:block}
+  #tutHole{position:absolute;left:50%;top:50%;width:0;height:0;border-radius:14px;pointer-events:auto;
+    box-shadow:0 0 0 9999px rgba(6,5,14,.74);transition:left .3s,top .3s,width .3s,height .3s;border:2px solid transparent}
+  #tutHole.hit{border-color:#ffcf6b;box-shadow:0 0 0 9999px rgba(6,5,14,.74),0 0 18px rgba(255,207,107,.7),inset 0 0 12px rgba(255,207,107,.35)}
+  #tutGuide{position:fixed;left:6px;bottom:4px;width:132px;max-width:38vw;z-index:10001;pointer-events:none;
+    filter:drop-shadow(0 6px 16px rgba(0,0,0,.55));animation:tutIn .4s cubic-bezier(.2,.9,.3,1) both}
+  @keyframes tutIn{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
+  #tutArt img{width:100%;height:auto;display:block}
+  #tutBubble{position:fixed;left:12px;right:12px;bottom:150px;z-index:10001;pointer-events:auto;
+    background:linear-gradient(180deg,#1c1638,#141029);border:1px solid var(--umbra,#4a3a8f);border-radius:16px;
+    padding:14px 15px 12px;box-shadow:0 14px 44px rgba(0,0,0,.55);animation:uipop .25s cubic-bezier(.2,.9,.3,1) both}
+  #tutBubble::after{content:"";position:absolute;left:40px;bottom:-9px;width:16px;height:16px;background:#141029;
+    border-right:1px solid var(--umbra,#4a3a8f);border-bottom:1px solid var(--umbra,#4a3a8f);transform:rotate(45deg)}
+  #tutName{font-size:11px;font-weight:800;letter-spacing:.04em;color:#cbb8ff;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+  #tutName::before{content:"◆";color:#ffcf6b}
+  #tutText{font-size:13px;line-height:1.55;color:var(--ink,#f4f0fb);margin-bottom:12px}
+  #tutText b{color:#ffe08a}
+  #tutFoot{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  #tutStepN{font-size:10px;color:var(--faint,#7a7397);letter-spacing:.1em}
+  .tutbtns{display:flex;gap:8px}
+  #tutSkip{padding:8px 12px;border-radius:10px;border:1px solid var(--line,#2c2748);background:none;color:var(--muted,#b3aad0);font-size:11px;font-weight:600;cursor:pointer}
+  #tutNext{padding:9px 16px;border-radius:10px;border:1px solid var(--umbra,#7b5cff);background:linear-gradient(180deg,#7b5cff,#5a3fd6);color:#fff;font-size:12px;font-weight:700;cursor:pointer}
+  /* built-in chibi placeholder guide */
+  .guidechibi{width:100%;height:auto;display:block}
   #hdSide{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
   #hdSlots{display:flex;flex-direction:column;gap:6px}
   .hdslot{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:10px;cursor:pointer;text-align:left;width:100%;
@@ -1498,6 +1524,22 @@
     <div class="obdots" id="obDots"></div>
     <div class="obbtns"><button class="obskip" id="obSkip">Skip</button><button class="obnext" id="obNext">Next ▸</button></div>
   </div></div>
+  <!-- GUIDED TUTORIAL (Ivory) -->
+  <div id="tutorial">
+    <div id="tutHole"></div>
+    <div id="tutGuide"><div id="tutArt"></div></div>
+    <div id="tutBubble">
+      <div id="tutName">Ivory · your Gate Guide</div>
+      <div id="tutText">—</div>
+      <div id="tutFoot">
+        <span id="tutStepN">1 / 1</span>
+        <div class="tutbtns">
+          <button id="tutSkip">Skip</button>
+          <button id="tutNext" class="cta">Next ▸</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <button id="setBtn" title="Settings" aria-label="Settings">⚙</button>
   <button id="sndBtn" title="Sound on/off" aria-label="Toggle sound">🔊</button>
   <!-- LOGIN -->
@@ -2214,6 +2256,77 @@ function renderOnboard(){
 }
 function showOnboard(){obStep=0;renderOnboard();$('#onboard').classList.add('show');}
 function closeOnboard(){$('#onboard').classList.remove('show');}
+
+/* ---------- guided tutorial (Ivory, the Gate Guide) ---------- */
+const GUIDEART=null;  // set to a data: URI to use the custom chibi art; otherwise the built-in chibi shows
+function guideArtHTML(){
+  if(GUIDEART) return `<img src="${GUIDEART}" alt="Ivory">`;
+  return `<svg class="guidechibi" viewBox="0 0 120 156" xmlns="http://www.w3.org/2000/svg" aria-label="Ivory">
+    <defs><linearGradient id="gsuit" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#241d3d"/><stop offset="1" stop-color="#140f26"/></linearGradient>
+    <linearGradient id="ghair" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6f5fb"/><stop offset="1" stop-color="#d9d7e6"/></linearGradient></defs>
+    <!-- hair back -->
+    <path d="M18 66 C6 96 12 140 18 152 L30 150 C24 120 26 96 30 82 Z" fill="url(#ghair)"/>
+    <path d="M102 66 C114 96 108 140 102 152 L90 150 C96 120 94 96 90 82 Z" fill="url(#ghair)"/>
+    <!-- body / blazer -->
+    <path d="M34 118 C34 104 44 96 60 96 C76 96 86 104 86 118 L90 156 L30 156 Z" fill="url(#gsuit)"/>
+    <path d="M55 98 L60 120 L65 98 Z" fill="#f4f0fb"/>
+    <path d="M60 98 L60 120" stroke="#cbb8ff" stroke-width="1.2"/>
+    <!-- neck -->
+    <rect x="54" y="88" width="12" height="14" rx="4" fill="#f3d8c8"/>
+    <!-- head -->
+    <ellipse cx="60" cy="60" rx="34" ry="33" fill="#f7e0d0"/>
+    <!-- hair front -->
+    <path d="M26 60 C24 30 40 16 60 16 C80 16 96 30 94 60 C92 46 80 40 74 52 C72 40 64 38 60 46 C56 38 48 40 46 52 C40 40 28 46 26 60 Z" fill="url(#ghair)"/>
+    <path d="M60 16 C40 16 24 30 26 60 L20 62 C16 34 34 8 60 8 C86 8 104 34 100 62 L94 60 C96 30 80 16 60 16 Z" fill="url(#ghair)"/>
+    <!-- eyes -->
+    <ellipse cx="49" cy="62" rx="6.2" ry="8" fill="#fff" stroke="#b8a6e6" stroke-width="1.4"/>
+    <ellipse cx="71" cy="62" rx="6.2" ry="8" fill="#fff" stroke="#b8a6e6" stroke-width="1.4"/>
+    <circle cx="49" cy="60" r="1.6" fill="#d9d2ef"/><circle cx="71" cy="60" r="1.6" fill="#d9d2ef"/>
+    <!-- blush + smile -->
+    <ellipse cx="42" cy="72" rx="4" ry="2.4" fill="#f7b8b8" opacity=".6"/>
+    <ellipse cx="78" cy="72" rx="4" ry="2.4" fill="#f7b8b8" opacity=".6"/>
+    <path d="M53 76 Q60 82 67 76" fill="none" stroke="#a86a5c" stroke-width="1.6" stroke-linecap="round"/>
+    <!-- earring -->
+    <circle cx="27" cy="70" r="2.2" fill="#1a1526"/>
+  </svg>`;
+}
+function firstOwnedHero(){ return [...owned][0] || DATA.heroes[0].id; }
+const TUT=[
+  {text:"Welcome, Gatewarden! I'm <b>Ivory</b>, your Gate Guide. Give me a moment to show you around — it's quick, I promise.", go:()=>openHome()},
+  {text:"This is your <b>Heroes' Hall</b>. You begin with <b>two</b> Vowbound — a battle needs a party of five, so we'll fix that soon. The class chip and faction emblem under each card tell you their role at a glance.", go:()=>{buildHeroGrid();updateHomeNav('heroes');show('screen-heroes');}, sel:'#heroGrid'},
+  {text:"Tap a hero to open their page. Here you <b>Level Up</b> and <b>Star Up</b> to raise their stats — spend Gold and Star Shards. Stronger heroes clear tougher content.", go:()=>openHero(firstOwnedHero()), sel:'#hdBar'},
+  {text:"Below, each skill (S1/S2/S3) levels with <b>Insight</b>, and <b>Ascension</b> unlocks passives as you raise stars. This is how a hero grows deep, not just tall.", sel:'#hdKit'},
+  {text:"Tap <b>Gear Power</b> to open <b>Equipment</b>. Each hero has 5 slots — Weapon, Necklace, Bracelet and two Rings. <b>Weapons are class-locked</b> (a Dagger only fits an Assassin, and so on).", go:()=>{curHero=firstOwnedHero();openGear();}, sel:'#geSlots'},
+  {text:"<b>Enhance</b> a piece with Gold to grow it. Don't hoard junk — <b>sell</b> spare gear for Gold with the ⤵ button on a piece, or pick rarities and <b>Quick-sell</b> them all at once here.", sel:'#geSellBox'},
+  {text:"Your <b>Bag</b> holds usable items and spare gear. <b>Energy Potions</b> refill your Energy, and the Gear tab lets you sell leftover pieces you didn't equip.", go:()=>openInventory(), sel:'#invTabs'},
+  {text:"The <b>Shop</b> has value packs, Crystals and cosmetics. Cosmetics only — no pay-to-win stats. The Monthly Vow Card is the best Crystal value if you play daily.", go:()=>openShop('value'), sel:'#shopTabs'},
+  {text:"<b>Quests</b> — Daily, Weekly and Monthly — pay you for simply playing: Crystals, Gold, Energy and even <b>Vow Tickets</b>. Check the badge on the home screen and claim them often.", go:()=>openQuests(), sel:'#qTabs'},
+  {text:"The <b>Raid Portal</b> holds the weekly boss, the co-op Guild boss, and all <b>Dungeons</b> — Skill, Gold, EXP and the gear dungeons. Battles cost <b>Energy</b>, so pick your fights.", go:()=>openRaid(), sel:'#raidScroll'},
+  {text:"Join or found a <b>Guild</b> for chat, donations, a shared shop and a co-op boss. Team play earns Guild Marks and extra rewards.", go:()=>openGuild(), sel:'#screen-guild'},
+  {text:"Back home: your <b>⭐ Commander level</b> (top-left) rises from <b>everything you defeat</b>, and each level <b>raises your max Energy</b> — so playing literally lets you play more.", go:()=>openHome(), sel:'#cmdrPill'},
+  {text:"Last stop — the <b>Vow Gate</b>. Summon heroes here: <b>3% Legendary</b>, a Legendary guaranteed within 70 pulls, and every 10-pull gives an Epic or better.", go:()=>openGacha(), sel:'#gachaBar'},
+  {text:"🎟️ <b>Vow Tickets</b> are premium summon tickets — <b>each one is a free single summon</b>, earned from the Battle Pass, quests, raids and the guild shop. Spend them here anytime.", sel:'.vowtk'},
+  {text:"And your welcome gift: a <b>FREE summon with a guaranteed Epic</b>! Tap <b>Finish</b>, then hit the glowing golden button. You've also got <b>1600 Crystals</b> for a full 10-pull. Good luck, Gatewarden!", sel:'#freePullBtn'},
+];
+let tutIdx=0;
+function startTutorial(){ tutIdx=0; $('#tutArt').innerHTML=guideArtHTML(); $('#tutorial').classList.add('on'); tutRender(); }
+function tutRender(){ const s=TUT[tutIdx]; if(s.go){try{s.go();}catch(e){}}
+  $('#tutText').innerHTML=s.text; $('#tutStepN').textContent=(tutIdx+1)+' / '+TUT.length;
+  $('#tutNext').textContent = s.next || (tutIdx>=TUT.length-1?'Finish ✓':'Next ▸');
+  const el=s.sel?document.querySelector(s.sel):null;
+  if(el&&el.scrollIntoView){try{el.scrollIntoView({block:'center',inline:'nearest'});}catch(e){}}
+  requestAnimationFrame(()=>setTimeout(()=>tutSpot(s.sel),140)); }
+function tutSpot(sel){ const hole=$('#tutHole'); const el=sel?document.querySelector(sel):null;
+  if(el){const r=el.getBoundingClientRect(); if(r.width&&r.height&&r.bottom>0&&r.top<innerHeight){
+    const pad=8; hole.classList.add('hit');
+    hole.style.left=Math.max(2,r.left-pad)+'px'; hole.style.top=Math.max(2,r.top-pad)+'px';
+    hole.style.width=Math.min(innerWidth-4,r.width+pad*2)+'px'; hole.style.height=(r.height+pad*2)+'px'; return; } }
+  hole.classList.remove('hit'); hole.style.left='50%';hole.style.top='40%';hole.style.width='0';hole.style.height='0'; }
+function tutNext(){ if(tutIdx>=TUT.length-1){ tutFinish(); return; } tutIdx++; tutRender(); }
+function tutFinish(){ tutorialDone=true; $('#tutorial').classList.remove('on'); saveGame();
+  if($('#screen-gacha').classList.contains('on')){ renderGachaOffers(); toast('Tap the glowing FREE Summon to claim your guaranteed Epic!'); }
+  else openHome(); }
+function tutSkip(){ tutorialDone=true; $('#tutorial').classList.remove('on'); saveGame(); openHome(); }
 
 /* ---------- screens ---------- */
 function show(id){$$('.screen').forEach(s=>s.classList.toggle('on',s.id===id));}
@@ -4622,12 +4735,12 @@ renderCrys();
 /* ---------- login / auth gate (device-level, outside the save) ---------- */
 const AUTH_KEY='ashgate_auth';
 function doLogin(method){try{localStorage.setItem(AUTH_KEY,method);}catch(e){} SFX.tap&&SFX.tap(); show('screen-title');
-  if(pendingOnboard){pendingOnboard=false;setTimeout(showOnboard,300);} }
+  if(pendingOnboard){pendingOnboard=false;setTimeout(startTutorial,350);} }
 { const lb=$('#loginBg'), u=(typeof TITLEART!=='undefined')?TITLEART:null; if(lb&&u)lb.style.backgroundImage=`url(${u})`; }
 $('#loginGoogle')?.addEventListener('click',()=>doLogin('google'));
 $('#loginApple')?.addEventListener('click',()=>doLogin('apple'));
 $('#loginGuest')?.addEventListener('click',()=>doLogin('guest'));
-{ let authed=false; try{authed=!!localStorage.getItem(AUTH_KEY);}catch(e){} if(authed){show('screen-title'); if(pendingOnboard){pendingOnboard=false;setTimeout(showOnboard,300);}} }
+{ let authed=false; try{authed=!!localStorage.getItem(AUTH_KEY);}catch(e){} if(authed){show('screen-title'); if(pendingOnboard){pendingOnboard=false;setTimeout(startTutorial,350);}} }
 setInterval(()=>{const before=Math.floor(energy);energyTick();
   document.querySelectorAll('.enN').forEach(e=>e.textContent=Math.floor(energy));
   document.querySelectorAll('.enEta').forEach(e=>e.textContent=energyEta());
@@ -4696,8 +4809,13 @@ $('#setReset').addEventListener('click',()=>{uiConfirm('Reset ALL progress — r
 // onboarding controls
 $('#obNext').addEventListener('click',()=>{SFX.tap();if(obStep>=ONBOARD.length-1)closeOnboard();else{obStep++;renderOnboard();}});
 $('#obSkip').addEventListener('click',()=>{closeOnboard();});
-$('#setBody').insertAdjacentHTML('afterbegin','<button id="setHowto" class="settgl" style="width:100%;margin-bottom:6px">How to play ▸</button>');
+// tutorial (Ivory) controls
+$('#tutNext').addEventListener('click',()=>{SFX.tap();tutNext();});
+$('#tutSkip').addEventListener('click',()=>{tutSkip();});
+addEventListener('resize',()=>{if($('#tutorial').classList.contains('on'))tutSpot(TUT[tutIdx]&&TUT[tutIdx].sel);});
+$('#setBody').insertAdjacentHTML('afterbegin','<button id="setTut" class="settgl" style="width:100%;margin-bottom:6px">▶ Replay guided tour</button><button id="setHowto" class="settgl" style="width:100%;margin-bottom:6px">How to play ▸</button>');
 $('#setHowto').addEventListener('click',()=>{show('screen-title');showOnboard();});
+$('#setTut').addEventListener('click',()=>{startTutorial();});
 $('#autoBtn').addEventListener('click',e=>{ui.auto=!ui.auto;if(G)G.auto=ui.auto;
   const b=e.currentTarget;b.classList.toggle('active',ui.auto);b.textContent=ui.auto?'Auto ▶':'Manual';
   if(G&&G.auto&&G.awaiting){const u=G.awaiting;closeCommand(u);G.awaiting=null;autoActAlly(u);render();if(checkEnd())return;advanceRound();if(G.over)return;scheduleNext();}});

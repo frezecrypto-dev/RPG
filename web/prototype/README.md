@@ -350,13 +350,39 @@ and **keyboard-operable (Enter/Space fires the ultimate)** — and enemy cards
 carry labels. A focus-visible ring and a gentle screen-fade transition round it
 off, both respecting `prefers-reduced-motion`.
 
-## Onboarding
+## Guided tutorial (Ivory)
 
-First launch opens a five-slide primer — what ASHGATE is, roles & faction
-synergy, shared Surge and manual ultimates, reading boss telegraphs, and the
-progression/endgame loop — so a new player knows the hooks before the first
-fight. Returning players skip it; anyone can replay it from ⚙ Settings ▸ How to
-play.
+New players are met by **Ivory, the Gate Guide** — a chibi mascot who pops in at
+the bottom of the screen right after login and walks them through the whole game
+in 15 steps. She **auto-navigates** to each area and **spotlights** the exact
+button she's talking about: the Heroes' Hall and your two starter heroes, a
+hero's Level/Star/Skill/Ascend upgrades, Equipment (equip, enhance, and how to
+**sell/quick-sell** gear), the Bag, Shop, Quests, the Raid Portal, Guild, the
+Commander level, and finally the Vow Gate — where she hands over the **free
+guaranteed-Epic summon**. Skippable, and replayable any time from ⚙ Settings ▸
+Replay guided tour. (The classic five-slide text primer is still there under
+"How to play".) The guide art is a built-in chibi placeholder wired to a single
+`GUIDEART` slot, so a custom illustration can be dropped in without touching the
+tutorial logic.
+
+### New-player start & first summons
+
+A fresh account starts with **2 heroes** and **1,600 Crystals** (a full 10-pull).
+The Vow Gate shows a glowing one-time **FREE Summon with a guaranteed Epic**, so
+everyone lands a strong unit immediately, and the starting Crystals cover a
+10-pull (which itself guarantees an Epic or better) — enough to field a party of
+five out of the gate.
+
+### Vow Tickets
+
+**Vow Tickets** (🎟️) are premium summon tickets — **each one is a free single
+summon** on the Featured Gate, with the same rates and pity as a Crystal pull.
+They're earned from the Battle Pass, quests, weekly raids, and the guild shop
+(reward tables that used to convert "tickets" into Crystals now grant real
+tickets). A ticket count sits on the summon bar and a ticket-summon button
+appears whenever you hold at least one.
+
+## Settings
 
 ## Settings
 
