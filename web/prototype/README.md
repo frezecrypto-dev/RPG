@@ -97,20 +97,29 @@ core stats, Gear Power, Ascension, and the skill kit sit below.
 ## Equipment (doc 09 s5)
 
 The 5-slot gear system is live, not a placeholder multiplier. Each hero has
-**Weapon / Armor / Helm / Charm / Sigil** slots; pieces roll a main stat by
-slot, 1–4 substats by rarity (C/R/E/L), a tier (T1–T4), and one of six sets.
-Enhancing to +5/+10/+15 rerolls a substat higher (the bounded-grind rule).
+**Weapon / Necklace / Bracelet / Ring I / Ring II** slots; pieces roll a main
+stat by slot, 1–4 substats by rarity (C/R/E/L), a tier (T1–T4), and one of six
+sets. Enhancing to +5/+10/+15 rerolls a substat higher (the bounded-grind rule).
 Gear stats feed the same `computeStats` the battle engine reads, so ATK%, HP%,
 DEF, SPD, **crit rate/damage**, and **lifesteal** all change how fights play;
 **Aegis 4-pc** grants a battle-start barrier and **Mending** boosts heals.
-Pieces come from **stage drops** (bosses drop better) and a gold **Forge**;
-**Auto-Equip** fills a hero from the bag. Browsing a slot shows each candidate's
-**Gear-Power delta** (▲/▼) vs. what's equipped, and unwanted pieces **scrap for
-Gold** (single or bulk "Scrap Commons"). Each hero also keeps **three saveable
-loadout presets** (doc 09) — snapshot the current gear, then swap builds in one
-tap; applying a preset pulls its pieces back even if another hero borrowed them.
-Two set 4-pc effects that aren't pure numbers in the doc (Vanguard/Gravebind)
-use a stat proxy here.
+
+**Weapons are class-locked.** Every class wields its own weapon type — Dagger
+(Assassin), Greatshield (Tank), Waraxe (Berserker), Staff (Mage), Grimoire
+(Necro), Reliquary (Healer), Longbow (Ranger) — shown as a **class sign** on the
+piece, and a hero can only equip its own type; a wrong-class weapon renders
+🔒 class-locked. Accessories (necklace / bracelet / rings) stay universal, and
+`canEquip()` enforces the rule in manual equip, auto-equip and loadout presets.
+
+Pieces come only from **raid & dungeon drops** (bosses and gear dungeons — no
+forge shortcut). **Auto-Equip** fills a hero from the bag, skipping wrong-class
+weapons. Browsing a slot shows each candidate's **Gear-Power delta** (▲/▼) vs.
+what's equipped; unwanted pieces **sell for Gold** individually or via a
+**rarity-select quick-sell** (toggle C/R/E/L, one tap to clear all matching
+unequipped pieces). Each hero also keeps **three saveable loadout presets** (doc
+09) — snapshot the current gear, then swap builds in one tap; applying a preset
+pulls its pieces back even if another hero borrowed them. Two set 4-pc effects
+that aren't pure numbers in the doc (Vanguard/Gravebind) use a stat proxy here.
 
 ## Guild (doc 07)
 
@@ -134,9 +143,12 @@ Once in a guild, the hub has these tabs:
   Vow ticket (weekly-limited, per doc 07 §3.2's "discount channel, not a power
   gate").
 - **Guild Boss** — a weekly co-op boss (The Sunken Colossus) where **every
-  member's damage stacks** toward a shared guild goal; you run it on the full
-  combat engine (your damage adds to your weekly contribution), members
-  contribute in parallel, and hitting the goal unlocks a **weekly Guild Chest**.
+  member's damage stacks** toward a shared HP bar; you run it on the full combat
+  engine (your damage adds to your weekly contribution), members contribute in
+  parallel, and the **weekly Guild Chest unlocks only when the guild defeats the
+  boss** — drives the shared bar to zero and the run shows "Boss defeated!" before
+  the chest can be claimed. Solo-killing the boss in a single run also drops
+  personal **boss loot** (gear) on top of your contribution.
 
 ## Weekly Boss Raid
 
@@ -147,7 +159,9 @@ weakness for the Break system and its own battlefield), shown on a dedicated
 **weekly best damage %**, and a **milestone reward rail** (20 / 40 / 60 / 80 /
 100%) pays out Gold, Crystals, gear ore, Ash Relics, and Featured Vow tickets —
 claimed by how far you got, and the track (and boss) **reset each week**, so
-there's a fresh chase every week on top of the all-time best.
+there's a fresh chase every week on top of the all-time best. **Boss loot (gear)
+now drops only when you actually defeat the boss** — a partial run still pays
+currency by damage %, but no kill means no gear, so the chase has a real prize.
 
 ## Co-op Raid (per-run)
 
