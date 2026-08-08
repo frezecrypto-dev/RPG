@@ -185,6 +185,20 @@ buffs DEF+HP, Freeblades and Gravebound ATK, Hollowed crit, Choir healing+ATK.
 The bonus previews live as chips on the team-select screen and fires at battle
 start, so thematic teams are a real, visible payoff — not just flavour.
 
+## Login & Energy
+
+The app opens on a **login screen** — the Vow Gate keyart with **Sign in with
+Google / Apple** or **Continue as Guest** — the first thing a new player sees;
+the choice is remembered device-side, so returning players skip straight in
+(onboarding then runs once, after login).
+
+An **Energy** system (⚡, doc 09 s6) gates battles so the game can't be cleared
+in one sitting: campaign fights cost 6 (8 on Hard), dungeons and Gold/EXP raids
+8, and the weekly/guild bosses 10; Arena stays free. Energy **regenerates 1 per
+5 minutes** (with a live countdown in the header) and can be **refilled with
+Crystals**; a low-Energy attempt offers that refill. It's shown in the home and
+campaign headers and persists in the save.
+
 ## Home / lobby (doc 16)
 
 The map doubles as a lobby: a persistent **resource header** (Crystals / Gold /

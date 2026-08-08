@@ -44,6 +44,25 @@
   .scrhead .back{margin-left:auto}
 
   /* ---------- title screen ---------- */
+  /* login / auth gate */
+  #screen-login{align-items:center;justify-content:flex-end;text-align:center;padding:40px 30px 46px;
+    background:radial-gradient(circle at 50% 30%,rgba(24,18,44,.7),rgba(6,5,12,.98))}
+  #loginBg{position:absolute;inset:0;z-index:0;background-size:cover;background-position:center 22%}
+  #loginBg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,5,12,.35) 20%,rgba(6,5,12,.75) 62%,rgba(6,5,12,.96))}
+  #loginInner{position:relative;z-index:1;width:100%;max-width:340px;display:flex;flex-direction:column;align-items:center;gap:6px}
+  .loginmark{font-size:11px;letter-spacing:.4em;text-transform:uppercase;color:var(--umbra)}
+  .logintitle{font-family:var(--font-title);font-size:52px;line-height:1;letter-spacing:.02em;margin:2px 0;
+    background:linear-gradient(180deg,#fff,#cbb8ff);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 12px rgba(123,92,255,.5))}
+  .loginsub{font-size:12px;color:var(--muted);margin-bottom:22px}
+  #loginBtns{display:flex;flex-direction:column;gap:10px;width:100%}
+  .loginbtn{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;padding:13px;border-radius:12px;
+    font-size:14px;font-weight:600;cursor:pointer;border:1px solid var(--line);transition:.15s}
+  .loginbtn .lbico{font-size:16px;font-weight:800}
+  .loginbtn.google{background:#fff;color:#1a1a22;border-color:#fff} .loginbtn.google .lbico{color:#4285F4}
+  .loginbtn.apple{background:#0a0a0f;color:#fff;border-color:#3a3a44}
+  .loginbtn.guest{background:linear-gradient(180deg,rgba(123,92,255,.24),rgba(123,92,255,.08));color:#cbb8ff;border-color:var(--umbra)}
+  .loginbtn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.4)}
+  .loginlegal{font-size:9px;color:var(--faint);margin-top:16px;line-height:1.5;max-width:280px}
   #screen-title{align-items:center;justify-content:center;text-align:center;padding:32px;gap:18px;
     background:radial-gradient(circle at 50% 38%,rgba(24,18,44,.9),rgba(6,5,12,.98))}
   #titleBg,#mapBg{position:absolute;inset:0;z-index:0;background-size:cover;background-position:center;opacity:0;transition:opacity .5s}
@@ -1318,6 +1337,8 @@
   .hometitle h1{font-family:var(--font-title);font-size:26px;margin:1px 0 0}
   #homeRes{display:flex;gap:14px;margin-top:8px;flex-wrap:wrap}
   #homeRes .res{font-size:12px;color:var(--muted)} #homeRes .res .num{color:var(--ink);font-weight:600}
+  .eres .enIco{color:#ffe08a;filter:drop-shadow(0 0 4px rgba(255,210,90,.6))}
+  .eres .enSlash,.eres .enMax{color:var(--muted);font-size:.85em} .eres .enEta{color:var(--faint);font-size:9px;margin-left:3px}
   #hubScene{position:absolute;top:78px;left:0;right:0;bottom:64px;z-index:2}
   .bld{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:7px;
     background:none;border:none;cursor:pointer;padding:4px;transition:transform .16s cubic-bezier(.2,1.2,.3,1)}
@@ -1391,8 +1412,23 @@
   </div></div>
   <button id="setBtn" title="Settings" aria-label="Settings">⚙</button>
   <button id="sndBtn" title="Sound on/off" aria-label="Toggle sound">🔊</button>
+  <!-- LOGIN -->
+  <section class="screen on" id="screen-login">
+    <div id="loginBg"></div>
+    <div id="loginInner">
+      <div class="loginmark">The Vow Gate</div>
+      <h1 class="logintitle">ASHGATE</h1>
+      <div class="loginsub">A dark-fantasy squad RPG</div>
+      <div id="loginBtns">
+        <button class="loginbtn google" id="loginGoogle"><span class="lbico">G</span> Sign in with Google</button>
+        <button class="loginbtn apple" id="loginApple"><span class="lbico"></span> Sign in with Apple</button>
+        <button class="loginbtn guest" id="loginGuest">Continue as Guest</button>
+      </div>
+      <div class="loginlegal">By continuing you agree to the Terms of Service and Privacy Policy.</div>
+    </div>
+  </section>
   <!-- TITLE -->
-  <section class="screen on" id="screen-title">
+  <section class="screen" id="screen-title">
     <div id="titleBg"></div>
     <div class="mark">Ashgate</div>
     <h1>ASHGATE</h1>
@@ -1409,6 +1445,7 @@
     <div id="homeTop">
       <div class="hometitle"><div class="eyebrow">The Vow Gate</div><h1>Ashgate</h1></div>
       <div id="homeRes">
+        <span class="res eres"><span class="enIco">⚡</span> <b class="num enN">120</b><span class="enSlash">/</span><span class="enMax">120</span></span>
         <span class="res"><i class="cur crystal"></i> <b class="num crysN">0</b></span>
         <span class="res"><i class="cur gold"></i> <b class="num goldN">0</b></span>
         <span class="res"><i class="cur shard"></i> <b class="num shardN">0</b></span>
@@ -1450,6 +1487,7 @@
     <div class="scrhead"><div><div class="eyebrow">Campaign</div><h1>Ashgate</h1></div>
       <button class="ghost back" id="mapHome">◄ Home</button></div>
     <div id="mapRes">
+      <span class="res eres" title="Energy — spent on battles, regens over time"><span class="enIco">⚡</span> <b class="num enN">120</b><span class="enSlash">/</span><span class="enMax">120</span> <small class="enEta"></small></span>
       <span class="res"><i class="cur crystal"></i> <b class="num crysN">0</b></span>
       <span class="res"><i class="cur gold"></i> <b class="num goldN">0</b></span>
       <span class="res"><i class="cur shard"></i> <b class="num shardN">0</b></span>
@@ -1804,6 +1842,20 @@ const SFX=(()=>{
   };
 })();
 let owned=new Set(STARTER), crystals=4500, gold=20000, starShards=120, relics=0, sigils=0, pity=0, insight=40;
+let energy=120, energyMax=120, energyTs=Date.now();   // stamina: regens 1 / 5 min, gates battles (doc 09 s6)
+const ENERGY_REGEN_MS=5*60*1000, ENERGY_REFILL_COST=50;
+function energyTick(){ if(energy>=energyMax){energyTs=Date.now();return;} const gained=Math.floor((Date.now()-energyTs)/ENERGY_REGEN_MS);
+  if(gained>0){ energy=Math.min(energyMax,energy+gained); energyTs+=gained*ENERGY_REGEN_MS; if(energy>=energyMax)energyTs=Date.now(); } }
+function energyGrant(n){ energyTick(); energy=Math.min(energyMax+n,energy+n); } // gifts/potions can overfill a touch
+function energyPay(cost){ energyTick();
+  if(energy>=cost){ energy-=cost; renderCrys(); saveGame(); return true; }
+  if(confirm(`Not enough Energy (${Math.floor(energy)}/${cost}). Refill to full for ${ENERGY_REFILL_COST} Crystals?`)){
+    if(crystals>=ENERGY_REFILL_COST){ crystals-=ENERGY_REFILL_COST; energy=energyMax; energyTs=Date.now(); energy-=cost; renderCrys(); saveGame(); return true; }
+    alert('Not enough Crystals to refill Energy.');
+  }
+  return false; }
+function energyEta(){ if(energy>=energyMax)return 'full'; const ms=ENERGY_REGEN_MS-((Date.now()-energyTs)%ENERGY_REGEN_MS);
+  const m=Math.floor(ms/60000), s=Math.floor(ms%60000/1000); return `+1 in ${m}:${String(s).padStart(2,'0')}`; }
 let bpXP=0, bpClaimF=[], bpClaimP=[], bpPrem=false;   // Battle Pass "Gatewarden's Vow" (doc 10 s4)
 let evtEarned=0, evtBal=0, evtMile=[], evtShop={};    // Events point-farm (doc 10 s3): earned=lifetime(milestones), bal=spendable(shop)
 let login={n:0, date:''};                             // 28-day login track (pauses on miss, never resets)
@@ -1900,16 +1952,21 @@ function renderCrys(){
   _setCur('relicN',relics,'relics');
   _setCur('gleamN',gleam,'gleam');
   _setCur('insN',insight,'insight');
+  energyTick();
+  document.querySelectorAll('.enN').forEach(e=>e.textContent=Math.floor(energy));
+  document.querySelectorAll('.enMax').forEach(e=>e.textContent=energyMax);
+  document.querySelectorAll('.enEta').forEach(e=>e.textContent=energyEta());
   const pl=$('#pityLeft');if(pl)pl.textContent=Math.max(0,70-pity);}
 
 /* ---------- save / load (localStorage, graceful fallback) ---------- */
 const SAVE_KEY='ashgate_save_v1';
 let hasSave=false;
 function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(
-  {v:3,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,raidBest,crystals,gold,starShards,relics,sigils,pity,insight,inventory,gearOn,gearUID,loadouts,daily,bpXP,bpClaimF,bpClaimP,bpPrem,evtEarned,evtBal,evtMile,evtShop,login,gleam,vowCard,shopFirst,cosmetics,shopDaily,raidWeek,guild,muted:ui.muted,pref:{speed:ui.speed,auto:ui.auto}}));}catch(e){}}
+  {v:3,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,raidBest,crystals,gold,starShards,relics,sigils,pity,insight,energy,energyTs,inventory,gearOn,gearUID,loadouts,daily,bpXP,bpClaimF,bpClaimP,bpPrem,evtEarned,evtBal,evtMile,evtShop,login,gleam,vowCard,shopFirst,cosmetics,shopDaily,raidWeek,guild,muted:ui.muted,pref:{speed:ui.speed,auto:ui.auto}}));}catch(e){}}
 function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s||(s.v!==1&&s.v!==2&&s.v!==3))return false;
   owned=new Set(s.owned);progress=s.progress||{};cleared=new Set(s.cleared);
   crystals=s.crystals??crystals;gold=s.gold??gold;starShards=s.starShards??starShards;relics=s.relics??0;sigils=s.sigils??0;pity=s.pity??0;insight=s.insight??40;
+  energy=s.energy??energy;energyTs=s.energyTs??Date.now();energyTick();
   inventory=s.inventory||[];gearOn=s.gearOn||{};gearUID=s.gearUID||inventory.reduce((m,p)=>Math.max(m,p.uid),0);
   loadouts=s.loadouts||{};clearedHard=new Set(s.clearedHard||[]);arenaRank=s.arenaRank||0;raidBest=s.raidBest||0;raidWeek=s.raidWeek||{id:-1,best:0,claimed:[]};
   daily=s.daily||{date:'',win:0,summon:0,enhance:0,claimed:[]};dailyCheck();ui.muted=s.muted??false;
@@ -2366,6 +2423,7 @@ function renderDungeons(){
 }
 function startDungeon(which,t){
   const ids=autoTeam(); if(!ids.length){alert('Summon some heroes first.');return;} team=ids;
+  if(!energyPay(8))return;
   if(which==='skill'){const ti=SKILLDUN.tiers.find(x=>x.t===t);if(!ti)return;
     runDungeon({name:SKILLDUN.name+' · '+ti.name,bg:SKILLDUN.bg,foes:ti.foes,mul:ti.mul,tag:'📖 SKILL DUNGEON',
       reward:{kind:'skill',insight:ti.reward,name:SKILLDUN.name+' · '+ti.name}});
@@ -2590,6 +2648,7 @@ function guildBuy(i){guildWeekCheck();const it=GUILD_SHOP[i],bought=guild.shopBo
   if(bought>=it.limit||guild.marks<it.cost)return; guild.marks-=it.cost; guild.shopBought[it.id]=bought+1;
   grantReward(it.rw); SFX.rare('E');renderCrys();renderGuild();saveGame();}
 function guildBossEnter(){ const ids=autoTeam(); if(!ids.length){alert('Summon some heroes first.');return;} team=ids;
+  if(!energyPay(10))return;
   curHard=false; const b=GUILDBOSS;
   const boss={id:'ENM-GBOSS', _artId:b.id, name:b.name, stats:{hp:b.hp,atk:b.atk,def:b.def,spd:116},
     side:'enemy',hp:b.hp,max:b.hp,barrier:0,status:{},alive:true,el:null,cd:{},
@@ -4156,7 +4215,7 @@ function endGame(win){
   const nx=$('#resNext');
   if(win&&!last){nx.textContent='Continue';nx.onclick=()=>{buildMap();show('screen-map');};}
   else if(win&&last){nx.textContent='Roster';nx.onclick=()=>{buildMap();show('screen-map');};}
-  else{nx.textContent='Retry';nx.onclick=()=>deploy();}
+  else{nx.textContent='Retry';nx.onclick=()=>{if(energyPay(curHard?8:6))deploy();};}
 }
 
 /* ---------- controls ---------- */
@@ -4200,9 +4259,10 @@ $$('#mapModes .modebtn').forEach(btn=>btn.addEventListener('click',()=>{
   const wantHard=btn.dataset.mode==='hard'; if(wantHard&&!campaignHasBoss())return;
   hardMode=wantHard;SFX.tap();buildMap();}));
 $('#resetBtn').addEventListener('click',()=>{if(confirm('Reset all progress — roster, upgrades, and chapter clears?'))resetSave();});
+let pendingOnboard=false;
 hasSave=loadGame();
 if(hasSave){$('#toMap').textContent='Continue';$('#resetBtn').style.display='block';}
-else{grantStarterGear();showOnboard();}  // first run: teach the basics
+else{grantStarterGear();pendingOnboard=true;}  // first run: teach the basics (shown after login)
 renderCrys();
 // ambient ember/dust atmosphere
 (function buildAmbient(){
@@ -4226,6 +4286,19 @@ renderCrys();
 })();
 { const tb=$('#titleBg'), u=(typeof TITLEART!=='undefined')?TITLEART:((typeof BG!=='undefined')?BG['1']:null);
   if(tb&&u){ tb.style.backgroundImage=`url(${u})`; tb.classList.add('on'); } }
+/* ---------- login / auth gate (device-level, outside the save) ---------- */
+const AUTH_KEY='ashgate_auth';
+function doLogin(method){try{localStorage.setItem(AUTH_KEY,method);}catch(e){} SFX.tap&&SFX.tap(); show('screen-title');
+  if(pendingOnboard){pendingOnboard=false;setTimeout(showOnboard,300);} }
+{ const lb=$('#loginBg'), u=(typeof TITLEART!=='undefined')?TITLEART:null; if(lb&&u)lb.style.backgroundImage=`url(${u})`; }
+$('#loginGoogle')?.addEventListener('click',()=>doLogin('google'));
+$('#loginApple')?.addEventListener('click',()=>doLogin('apple'));
+$('#loginGuest')?.addEventListener('click',()=>doLogin('guest'));
+{ let authed=false; try{authed=!!localStorage.getItem(AUTH_KEY);}catch(e){} if(authed){show('screen-title'); if(pendingOnboard){pendingOnboard=false;setTimeout(showOnboard,300);}} }
+setInterval(()=>{const before=Math.floor(energy);energyTick();
+  document.querySelectorAll('.enN').forEach(e=>e.textContent=Math.floor(energy));
+  document.querySelectorAll('.enEta').forEach(e=>e.textContent=energyEta());
+  if(Math.floor(energy)!==before)saveGame();},1000);
 $('#toGacha')?.addEventListener('click',()=>{openGacha();}); $('#mapHome')?.addEventListener('click',()=>{openHome();});
 $('#toHeroes')?.addEventListener('click',()=>{buildHeroGrid();renderCrys();show('screen-heroes');});
 $('#toArena')?.addEventListener('click',()=>{SFX.tap();openArena();});
@@ -4266,7 +4339,10 @@ function flashBar(){const b=$('#gachaBar');b.style.transition='none';b.style.bac
   setTimeout(()=>{b.style.transition='background .5s';b.style.background='';},60);}
 $('#teamBack').addEventListener('click',()=>{const a=arenaTarget;arenaTarget=null;raidPending=false;if(a){renderArena();show('screen-arena');}else{buildMap();show('screen-map');}});
 $('#suggestBtn').addEventListener('click',suggestTeam);
-$('#startBtn').addEventListener('click',()=>{if(team.length!==5)return;raidPending?deployRaid():arenaTarget?deployArena(arenaTarget):deploy();});
+$('#startBtn').addEventListener('click',()=>{if(team.length!==5)return;
+  if(raidPending){ if(!energyPay(10))return; deployRaid(); }
+  else if(arenaTarget){ deployArena(arenaTarget); }                 // Arena is free (gated by first-clear)
+  else { if(!energyPay(hardMode?8:6))return; deploy(); }});
 $('#resMap').addEventListener('click',()=>{buildMap();show('screen-map');});
 function syncSnd(){const b=$('#sndBtn');b.textContent=ui.muted?'🔇':'🔊';b.classList.toggle('muted',ui.muted);}
 $('#sndBtn').addEventListener('click',()=>{ui.muted=!ui.muted;SFX.setMuted(ui.muted);if(!ui.muted)SFX.tap();syncSnd();saveGame();});
