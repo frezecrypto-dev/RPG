@@ -4708,7 +4708,7 @@ $('#resetBtn').addEventListener('click',()=>{uiConfirm('Reset all progress — r
 let pendingOnboard=false;
 hasSave=loadGame();
 if(hasSave){$('#toMap').textContent='Continue';$('#resetBtn').style.display='block';}
-else{grantStarterGear();pendingOnboard=true;}  // first run: teach the basics (shown after login)
+else{pendingOnboard=true;}  // first run: start with NO gear — all equipment comes from drops (raids/dungeons/campaign)
 renderCrys();
 // ambient ember/dust atmosphere
 (function buildAmbient(){
