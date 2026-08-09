@@ -441,3 +441,16 @@ Darius Cinderhelm, the Dark Sovereign) plus the Order's creatures (Ashbound Tita
 Hollow Seraph) — each tappable for a full-art dossier with bio — and the three-act
 arc (Embers in the Ash · Fractures in the Chain · Eclipse or Dawn). Character art
 is embedded as compact WEBP; the large source PNGs are kept out of the build.
+
+### Cinematic pre-battle dialogue
+
+The three-act campaign is stitched into the **Campaign Gate**: it unlocks after
+Chapter 4 and runs Act I → II → III with boss-tier Order enemies. Story stages
+open with a **visual-novel dialogue** the first time you enter them. Each speaking
+Vow leader or Order boss appears as a **large transparent standee** (background
+removed, like the tutorial guide) with a speech bubble above so their face stays
+visible. When two characters trade lines the standee **alternates left ↔ right**
+per line, and the bubble border tints purple for The Vow and red for the Dark
+Order. The backdrop dims to a cinematic near-black so the scene reads as a story
+beat rather than the home map. Beats are shown once (tracked in `ashgate_story_seen`)
+and the standee cutouts live in the `STORYCUT` map.
