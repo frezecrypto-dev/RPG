@@ -435,12 +435,19 @@ console errors).
 
 A dedicated **Story** screen (home ▸ 📖 Story) presents the campaign lore with the
 uploaded key art: the Ash Gate world map, the world/faction intro (The Dark Order
-vs. **The Vow**), dossier cards for the **Triarch** (Serin Vale, Lyra Ashenquill,
-Kael Thorne) and the **Faces of the Dark Order** (Lady Vorena Ashfall, General
-Darius Cinderhelm, the Dark Sovereign) plus the Order's creatures (Ashbound Titan,
-Hollow Seraph) — each tappable for a full-art dossier with bio — and the three-act
-arc (Embers in the Ash · Fractures in the Chain · Eclipse or Dawn). Character art
-is embedded as compact WEBP; the large source PNGs are kept out of the build.
+vs. **The Vow**) — each faction card now headed by its **banner art** (the Order's
+thorned sigil, the Vow's triangle emblem) — dossier cards for the **Triarch** (Serin
+Vale, Lyra Ashenquill, Kael Thorne) and the **Faces of the Dark Order** (Lady Vorena
+Ashfall, General Darius Cinderhelm, the Dark Sovereign, **High Cantor Melis** — the
+Voice of Stillness — plus the creatures Ashbound Titan and Hollow Seraph) — each
+tappable for a full-art dossier with bio — and the three-act arc (Embers in the Ash ·
+Fractures in the Chain · Eclipse or Dawn). Character art is embedded as compact WEBP;
+the large source PNGs are kept out of the build.
+
+**High Cantor Melis** joins Act II as a boss: the **Silent Choir** stage (between
+The Broken Ring and the Vorena finale) pits you against her tier-X caster before a
+pre-battle exchange with Lyra. Her speaking standee is a background-removed cutout
+like the rest of the cast.
 
 ### Cinematic pre-battle dialogue
 
