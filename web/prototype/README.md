@@ -471,7 +471,18 @@ full-screen ending card:
 Each viewed ending is recorded (`ashgate_endings`) and all three appear in a new
 **The Three Endings** gallery on the Story screen, tappable to replay or preview
 any path. Logic lives in the `installStoryEndings()` module; `window.openEndingChoice()`
-is called from `endGame` on the finale win.
+is called from `endGame` when the finale stage (flagged `finale:true`) is beaten.
+
+### Length — expanded campaign
+
+The Ash Gates story runs **40 stages across three acts** (Act I: 13, Act II: 13,
+Act III: 14) — 65 waves, 13 bosses and 20 scripted dialogue beats. New Dark Order
+creatures fill out the roster (**Ash Revenant**, **Gloom Chanter**, **Cinder
+Warden**) and a new named boss — **The Pale Architect**, the Order's ash-reactor
+engineer named in the lore — appears in Act II and returns in Act III. Act III
+also stages boss *reprises* (the Architect, Melis, and Vorena) on the climb up the
+Ash Spire before the Sovereign finale, so the last act builds instead of ending
+abruptly. The Sovereign remains the final boss that opens the Dawn/Eclipse/Ash choice.
 
 ### Cinematic pre-battle dialogue
 

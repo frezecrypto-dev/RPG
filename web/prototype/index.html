@@ -4826,7 +4826,7 @@ function endGame(win){
     : `On to the next gate. Summon and level between fights to stay ahead of the curve.`;
   $('#resSub').innerHTML=(win?rewTxt+dropTxt:'')+msg;
   const nx=$('#resNext');
-  const finaleWin = win && !H && curStage.id==='7-7' && typeof window.openEndingChoice==='function';
+  const finaleWin = win && !H && curStage.finale && typeof window.openEndingChoice==='function';
   if(finaleWin){$('#resEyebrow').textContent='The Sovereign falls';$('#resSub').innerHTML=(rewTxt+dropTxt)+`The Great Stillness is broken — but the gates hang in the balance. The Vow's final choice is yours to make.`;
     nx.textContent='Decide the fate of the gates ▸';nx.onclick=()=>{$('#result').style.display='none';window.openEndingChoice();};}
   else if(win&&!last){nx.textContent='Continue';nx.onclick=()=>{buildMap();show('screen-map');};}
@@ -5017,6 +5017,10 @@ $('#speedBtn').addEventListener('click',e=>{ui.speed=ui.speed>=3?1:ui.speed+1;if
     HOUND:   {name:'Ember Hound',     glyph:'🐺', hp:1750, atk:275, def:110, spd:122, root:'physical', res:{phys:-0.25}, tier:'M', traits:['swarm'], efx:'var(--ember)'},
     WRAITH:  {name:'Gate Wraith',     glyph:'👻', hp:4400, atk:305, def:190, spd:114, root:'magical',  res:{}, tier:'B', traits:['undead'], efx:'var(--nec)'},
     KNIGHT:  {name:'Gate Knight',     glyph:'⚔️', hp:5400, atk:335, def:240, spd:100, root:'physical', res:{mag:-0.25}, tier:'B', traits:['armored'], efx:'var(--warden)'},
+    REVENANT:{name:'Ash Revenant',    glyph:'🧟', hp:4800, atk:325, def:205, spd:108, root:'physical', res:{mag:-0.2},  tier:'B', traits:['undead'], efx:'var(--nec)'},
+    CHANTER: {name:'Gloom Chanter',   glyph:'🎼', hp:4200, atk:335, def:170, spd:116, root:'magical',  res:{},         tier:'B', efx:'var(--umbra)'},
+    CWARDEN: {name:'Cinder Warden',   glyph:'🔰', hp:6300, atk:355, def:275, spd:92,  root:'physical', res:{mag:-0.3},  tier:'B', traits:['armored'], efx:'var(--ember)'},
+    ARCHITECT:{name:'The Pale Architect', glyph:'⚗️', hp:88000, atk:560, def:300, spd:116, root:'magical', res:{phys:-0.2}, tier:'X', tg:'Ash-Reactor Overload', efx:'var(--gate)'},
     SERAPH:  {name:'Hollow Seraph',   art:'seraph',   hp:54000,  atk:435, def:255, spd:118, root:'magical',  res:{}, tier:'X', traits:['undead'], tg:'Soundless Scream', efx:'var(--bone)'},
     TITAN:   {name:'Ashbound Titan',  art:'titan',    hp:92000,  atk:490, def:350, spd:86,  root:'physical', res:{mag:-0.25}, tier:'X', traits:['colossal','armored'], tg:'Seismic Ruin', efx:'var(--granite)'},
     DARIUS:  {name:'General Darius Cinderhelm', art:'darius', hp:74000, atk:530, def:300, spd:112, root:'physical', res:{mag:-0.25}, tier:'X', tg:'Ashfall Offensive', efx:'var(--ember)'},
@@ -5032,57 +5036,87 @@ $('#speedBtn').addEventListener('click',e=>{ui.speed=ui.speed>=3?1:ui.speed+1;if
   }
   const K=(id,l)=>'ENM-ORD-'+id+'@'+l;
   const mkCh=(id,act,name,fam,stages)=>({id,act,name,family:fam,story:true,stages:stages.map((s,i)=>(
-    {id:id+'-'+(i+1),name:s.n,teach:s.teach||(s.boss?'Boss · Dark Order':'Ash Legion'),boss:!!s.boss,waves:s.w}))});
+    {id:id+'-'+(i+1),name:s.n,teach:s.teach||(s.boss?'Boss · Dark Order':'Ash Legion'),boss:!!s.boss,finale:!!s.finale,waves:s.w}))});
 
   DATA.chapters.push(mkCh('5','ACT I','Embers in the Ash','ORD',[
     {n:'The Rehabilitation Cell', teach:'Escape · your first breath of freedom', w:[[K('LEGION',30),K('LEGION',30)],[K('LEGION',31),K('MARKSMAN',31)]]},
     {n:'The Rehab Camp',          w:[[K('LEGION',32),K('MARKSMAN',32)],[K('HOUND',33),K('HOUND',33),K('LEGION',33)]]},
+    {n:'Ashfall Road',            w:[[K('HOUND',33),K('HOUND',33),K('MARKSMAN',33)],[K('LEGION',34),K('LEGION',34)]]},
     {n:"Smuggler's Run",          teach:'Escort · get the caravan through', w:[[K('HOUND',34),K('HOUND',34)],[K('MARKSMAN',35),K('LEGION',35)]]},
     {n:'The Ember Hound Pack',    w:[[K('HOUND',36),K('HOUND',36),K('HOUND',36)],[K('HOUND',37),K('HOUND',37),K('MARKSMAN',37)]]},
-    {n:'The Stolen Archive',      teach:'Steal the fragment that names the Stillness', w:[[K('WRAITH',38)],[K('LEGION',38),K('MARKSMAN',38),K('LEGION',38)]]},
+    {n:'The Hidden Haven',        teach:'Defend · hold until the survivors are safe', w:[[K('MARKSMAN',37),K('MARKSMAN',37),K('LEGION',37)],[K('HOUND',38),K('HOUND',38),K('LEGION',38)]]},
+    {n:'The Stolen Archive',      teach:'Steal the fragment that names the Stillness', w:[[K('WRAITH',38)],[K('LEGION',39),K('MARKSMAN',39),K('LEGION',39)]]},
     {n:'Wraiths in the Vault',    w:[[K('WRAITH',40),K('WRAITH',40)]]},
-    {n:'Legion Checkpoint',       w:[[K('LEGION',41),K('KNIGHT',41)],[K('MARKSMAN',42),K('MARKSMAN',42),K('LEGION',42)]]},
-    {n:'Hollow Skies',            boss:true, teach:'Mini-boss · Hollow Seraph', w:[[K('SERAPH',44)]]},
+    {n:'The Silent Village',      teach:'New foe · Ash Revenant', w:[[K('REVENANT',41),K('REVENANT',41)],[K('REVENANT',42),K('LEGION',42),K('LEGION',42)]]},
+    {n:'Legion Checkpoint',       w:[[K('LEGION',42),K('KNIGHT',42)],[K('MARKSMAN',43),K('MARKSMAN',43),K('LEGION',43)]]},
+    {n:'Revenant Ambush',         w:[[K('REVENANT',44),K('REVENANT',44),K('WRAITH',44)]]},
+    {n:'Hollow Skies',            boss:true, teach:'Mini-boss · Hollow Seraph', w:[[K('SERAPH',45)]]},
     {n:'The Burning Fortress',    boss:true, teach:'Act I Boss · General Darius Cinderhelm', w:[[K('KNIGHT',46),K('KNIGHT',46)],[K('DARIUS',48)]]},
   ]));
   DATA.chapters.push(mkCh('6','ACT II','Fractures in the Chain','ORD',[
     {n:'Liberate Emberhold',      teach:'Take the town back', w:[[K('LEGION',50),K('HOUND',50)],[K('MARKSMAN',51),K('KNIGHT',51)]]},
     {n:'The Taxed City',          w:[[K('MARKSMAN',52),K('MARKSMAN',52),K('LEGION',52)]]},
+    {n:'The Propaganda Square',   teach:'New foe · Gloom Chanter', w:[[K('CHANTER',53),K('LEGION',53),K('LEGION',53)],[K('CHANTER',54),K('MARKSMAN',54)]]},
     {n:'Gate Knight Vanguard',    w:[[K('KNIGHT',54),K('KNIGHT',54)]]},
     {n:'The Ashbound Titan',      boss:true, teach:'Boss · siege construct', w:[[K('TITAN',56)]]},
-    {n:'The Reactor Depths',      w:[[K('WRAITH',58),K('WRAITH',58)],[K('KNIGHT',58),K('MARKSMAN',58)]]},
+    {n:'The Reactor Approach',    w:[[K('CWARDEN',56),K('LEGION',56),K('LEGION',56)],[K('CWARDEN',57),K('MARKSMAN',57)]]},
+    {n:'The Pale Architect',      boss:true, teach:'Boss · the Order’s ash-reactor engineer', w:[[K('CHANTER',57),K('CWARDEN',57)],[K('ARCHITECT',59)]]},
+    {n:'The Reactor Depths',      w:[[K('WRAITH',59),K('WRAITH',59)],[K('KNIGHT',59),K('MARKSMAN',59)]]},
     {n:'The Broken Ring',         w:[[K('WRAITH',60),K('KNIGHT',60),K('WRAITH',60)]]},
-    {n:'The Silent Choir',        boss:true, teach:'Boss · High Cantor Melis, Voice of Stillness', w:[[K('LEGION',61),K('LEGION',61)],[K('MELIS',62)]]},
-    {n:'Warden of Gates',         boss:true, teach:'Act II Boss · Lady Vorena Ashfall', w:[[K('KNIGHT',62),K('KNIGHT',62)],[K('VORENA',64)]]},
+    {n:"Cinder Warden's Stand",   w:[[K('CWARDEN',61),K('CWARDEN',61),K('KNIGHT',61)]]},
+    {n:'The Silent Choir',        boss:true, teach:'Boss · High Cantor Melis, Voice of Stillness', w:[[K('CHANTER',61),K('CHANTER',61)],[K('MELIS',62)]]},
+    {n:'The Obsidian Council',    w:[[K('KNIGHT',62),K('CWARDEN',62),K('CHANTER',62)]]},
+    {n:'Warden of Gates',         boss:true, teach:'Act II Boss · Lady Vorena Ashfall', w:[[K('KNIGHT',63),K('KNIGHT',63)],[K('VORENA',64)]]},
   ]));
   DATA.chapters.push(mkCh('7','ACT III','Eclipse or Dawn','ORD',[
     {n:'March on the Spire',      teach:'The final road', w:[[K('KNIGHT',66),K('MARKSMAN',66),K('HOUND',66)]]},
+    {n:'The Frozen Marches',      w:[[K('REVENANT',67),K('REVENANT',67),K('CHANTER',67)]]},
     {n:'Wraith Storm',            w:[[K('WRAITH',68),K('WRAITH',68),K('WRAITH',68)]]},
-    {n:'The Ash Hounds',          w:[[K('HOUND',70),K('HOUND',70),K('HOUND',70),K('HOUND',70)]]},
+    {n:'The Ash Hounds',          w:[[K('HOUND',69),K('HOUND',69),K('HOUND',69),K('HOUND',69)]]},
+    {n:'The Spire Gates',         w:[[K('CWARDEN',70),K('KNIGHT',70),K('CWARDEN',70)]]},
     {n:'Seraph Reprise',          boss:true, teach:'Elite · Hollow Seraph', w:[[K('SERAPH',72)],[K('KNIGHT',72),K('KNIGHT',72)]]},
     {n:'Titan at the Gate',       boss:true, teach:'Elite · Ashbound Titan', w:[[K('TITAN',74)]]},
-    {n:'The Last Gauntlet',       boss:true, teach:'The Order makes its stand', w:[[K('KNIGHT',76),K('WRAITH',76)],[K('DARIUS',78)],[K('VORENA',78)]]},
-    {n:'The Great Stillness',     boss:true, teach:'Final Boss · The Dark Sovereign', w:[[K('WRAITH',80),K('WRAITH',80)],[K('SOVEREIGN',82)]]},
+    {n:"The Architect's Revenge", boss:true, teach:'Elite · The Pale Architect', w:[[K('CHANTER',74),K('CWARDEN',74)],[K('ARCHITECT',75)]]},
+    {n:'The Choir Eternal',       boss:true, teach:'Elite · High Cantor Melis', w:[[K('REVENANT',75),K('REVENANT',75)],[K('MELIS',76)]]},
+    {n:"The Warden's Last Lock",  boss:true, teach:'Elite · Lady Vorena Ashfall', w:[[K('KNIGHT',76),K('KNIGHT',76)],[K('VORENA',77)]]},
+    {n:'The Last Gauntlet',       boss:true, teach:'The Order makes its stand', w:[[K('KNIGHT',78),K('WRAITH',78)],[K('DARIUS',79)],[K('VORENA',79)]]},
+    {n:'The Ash Spire Ascent',    w:[[K('CWARDEN',79),K('CHANTER',79),K('REVENANT',79)],[K('WRAITH',80),K('WRAITH',80)]]},
+    {n:'Heart of the Stillness',  teach:'The threshold of the ritual', w:[[K('WRAITH',81),K('REVENANT',81),K('WRAITH',81)]]},
+    {n:'The Great Stillness',     boss:true, finale:true, teach:'Final Boss · The Dark Sovereign', w:[[K('WRAITH',82),K('WRAITH',82)],[K('SOVEREIGN',84)]]},
   ]));
 
   // --- Vow / Order dialogue, keyed by stage id ---
   const V='vow', O='order';
   window.STORY_DIALOGUE={
+    // ---- ACT I ----
     '5-1':[{s:'serin',side:V,n:'Serin Vale',t:"You're awake — and breathing. That already makes you lucky in an Order cell. I'm Serin Vale, Speaker of Embers. Stay close, hit hard, and remember the oath: no gate shall fall silent while we yet breathe."}],
-    '5-3':[{s:'kael',side:V,n:'Kael Thorne',t:"These folk just need to reach a Haven. You hold the line, I'll walk them through the ash-storm. Nobody dies on my road — that's the deal."}],
-    '5-5':[{s:'lyra',side:V,n:'Lyra Ashenquill',t:"That fragment isn't loot — it's proof. The Great Stillness won't save the gates. It fossilizes everything: land, memory, us. Take it, and the world finally has to listen."}],
-    '5-8':[{s:'serin',side:V,n:'Serin Vale',t:"A Hollow Seraph — it screams alarms only the Order can hear. Put it down fast, before the whole garrison wakes."}],
-    '5-9':[{s:'darius',side:O,n:'General Darius Cinderhelm',t:"I am Darius Cinderhelm, Marshal of Ash. I bring peace through order. Your little Vow is a candle in a gale — and I have come to snuff it."},
+    '5-4':[{s:'kael',side:V,n:'Kael Thorne',t:"These folk just need to reach a Haven. You hold the line, I'll walk them through the ash-storm. Nobody dies on my road — that's the deal."}],
+    '5-6':[{s:'kael',side:V,n:'Kael Thorne',t:"This is a Haven — first place these people have felt safe in years. Hold the perimeter while they get inside. Not one of them falls on my watch."}],
+    '5-7':[{s:'lyra',side:V,n:'Lyra Ashenquill',t:"That fragment isn't loot — it's proof. The Great Stillness won't save the gates. It fossilizes everything: land, memory, us. Take it, and the world finally has to listen."}],
+    '5-9':[{s:'lyra',side:V,n:'Lyra Ashenquill',t:"The Order calls them Ash Revenants — people the Stillness already claimed, hollowed out and set marching. They can't be saved. Give them the only peace left."}],
+    '5-12':[{s:'serin',side:V,n:'Serin Vale',t:"A Hollow Seraph — it screams alarms only the Order can hear. Put it down fast, before the whole garrison wakes."}],
+    '5-13':[{s:'darius',side:O,n:'General Darius Cinderhelm',t:"I am Darius Cinderhelm, Marshal of Ash. I bring peace through order. Your little Vow is a candle in a gale — and I have come to snuff it."},
            {s:'serin',side:V,n:'Serin Vale',t:"Peace? You erased a whole town to bury one mistake. That candle's going to burn your fortress down. Move!"}],
+    // ---- ACT II ----
     '6-1':[{s:'serin',side:V,n:'Serin Vale',t:"Emberhold flew Order banners this morning. By nightfall it flies ours. Fast and hard — take the town back."}],
-    '6-4':[{s:'kael',side:V,n:'Kael Thorne',t:"That's an Ashbound Titan — a walking wall of stone and gate-fire. Crack its plating, then bring it down before it flattens the whole district."}],
-    '6-7':[{s:'melis',side:O,n:'High Cantor Melis',t:"Shhh. No more marching, no more grief. Lay down your oaths, little Vow, and let the Stillness sing you to sleep — you will never ache again. Isn't silence a kind of mercy?"},
+    '6-3':[{s:'lyra',side:V,n:'Lyra Ashenquill',t:"Hear that hymn? Gloom Chanters — they sing the fight right out of a crowd. Silence them fast, before the whole square kneels to the Stillness."}],
+    '6-5':[{s:'kael',side:V,n:'Kael Thorne',t:"That's an Ashbound Titan — a walking wall of stone and gate-fire. Crack its plating, then bring it down before it flattens the whole district."}],
+    '6-7':[{s:'lyra',side:V,n:'Lyra Ashenquill',t:"The Pale Architect designed the ash-reactors that feed the Great Stillness. Wreck his machine here and the Order's ritual begins to starve. This one's personal for me — go."}],
+    '6-11':[{s:'melis',side:O,n:'High Cantor Melis',t:"Shhh. No more marching, no more grief. Lay down your oaths, little Vow, and let the Stillness sing you to sleep — you will never ache again. Isn't silence a kind of mercy?"},
            {s:'lyra',side:V,n:'Lyra Ashenquill',t:"Your hymn is a shroud, Cantor. We would rather scream the truth than be sung into stone. Cover your ears and cut her song short!"}],
-    '6-8':[{s:'vorena',side:O,n:'Lady Vorena Ashfall',t:"The gates are tools. Nothing more. And you are a variable I will simply... lock out of existence."},
+    '6-13':[{s:'vorena',side:O,n:'Lady Vorena Ashfall',t:"The gates are tools. Nothing more. And you are a variable I will simply... lock out of existence."},
            {s:'lyra',side:V,n:'Lyra Ashenquill',t:"She holds the gate-locks. Beat her, and the corridor of freedom is ours to keep."}],
+    // ---- ACT III ----
     '7-1':[{s:'serin',side:V,n:'Serin Vale',t:"The Sovereign's ritual will freeze every gate at once. We march on the Ash Spire now — whatever it costs. This is the last road."}],
-    '7-6':[{s:'lyra',side:V,n:'Lyra Ashenquill',t:"They've thrown their whole council at us. Darius, Vorena — everything. Hold together. We are almost through."}],
-    '7-7':[{s:'sovereign',side:O,n:'The Dark Sovereign',t:"I am the Only Necessary Shadow. Change is the disease. Stillness is the cure. Kneel, little Vow, and be preserved forever."},
+    '7-8':[{s:'lyra',side:V,n:'Lyra Ashenquill',t:"The Architect rebuilt his reactor inside the Spire. He does not learn. Break it a second time — for good this time."}],
+    '7-9':[{s:'melis',side:O,n:'High Cantor Melis',t:"You silenced my choir, but the song remembers you. Sleep now, little Vow — you have earned your rest."},
+           {s:'serin',side:V,n:'Serin Vale',t:"Not while one gate still breathes. Again, Melis — and this time, stay quiet."}],
+    '7-10':[{s:'vorena',side:O,n:'Lady Vorena Ashfall',t:"You keep taking my gates. So I will take everything else — one lock at a time, until there is nothing of you left to save."},
+           {s:'lyra',side:V,n:'Lyra Ashenquill',t:"She's desperate now. Good — desperate people make mistakes. End it, and the last locks are ours."}],
+    '7-11':[{s:'darius',side:O,n:'General Darius Cinderhelm',t:"Far enough, Vow. The whole Obsidian Council stands between you and the Spire. You will not pass us all."},
+           {s:'serin',side:V,n:'Serin Vale',t:"Then we go through the council. Stay together — we're almost home. One more gauntlet and the Spire is open."}],
+    '7-13':[{s:'lyra',side:V,n:'Lyra Ashenquill',t:"This is it — the heart of the ritual. Beyond that arch, the Sovereign waits. Whatever we choose in there... it remakes the world. No more running. No more silence."}],
+    '7-14':[{s:'sovereign',side:O,n:'The Dark Sovereign',t:"I am the Only Necessary Shadow. Change is the disease. Stillness is the cure. Kneel, little Vow, and be preserved forever."},
            {s:'serin',side:V,n:'Serin Vale',t:"No. We break, we bleed, we change — that is what it means to live. For every gate. For everyone still breathing. VOW!"}],
   };
 
