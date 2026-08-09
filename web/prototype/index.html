@@ -4826,7 +4826,10 @@ function endGame(win){
     : `On to the next gate. Summon and level between fights to stay ahead of the curve.`;
   $('#resSub').innerHTML=(win?rewTxt+dropTxt:'')+msg;
   const nx=$('#resNext');
-  if(win&&!last){nx.textContent='Continue';nx.onclick=()=>{buildMap();show('screen-map');};}
+  const finaleWin = win && !H && curStage.id==='7-7' && typeof window.openEndingChoice==='function';
+  if(finaleWin){$('#resEyebrow').textContent='The Sovereign falls';$('#resSub').innerHTML=(rewTxt+dropTxt)+`The Great Stillness is broken — but the gates hang in the balance. The Vow's final choice is yours to make.`;
+    nx.textContent='Decide the fate of the gates ▸';nx.onclick=()=>{$('#result').style.display='none';window.openEndingChoice();};}
+  else if(win&&!last){nx.textContent='Continue';nx.onclick=()=>{buildMap();show('screen-map');};}
   else if(win&&last){nx.textContent='Roster';nx.onclick=()=>{buildMap();show('screen-map');};}
   else{nx.textContent='Retry';nx.onclick=()=>{if(energyPay(curHard?8:6))deploy();};}
 }
@@ -5140,5 +5143,154 @@ $('#speedBtn').addEventListener('click',e=>{ui.speed=ui.speed>=3?1:ui.speed+1;if
   window.stageEnter=function(s){ const dl=window.STORY_DIALOGUE[s.id];
     if(dl && !seenGet()[s.id]){ seenMark(s.id); playDialogue(dl, ()=>openTeam(s)); }
     else openTeam(s); };
+})();
+
+/* ============================================================
+   STORY ENDINGS — Dawn · Eclipse · Ash
+   Shown after the Sovereign (stage 7-7) falls; also replayable
+   from the Story screen gallery.
+   ============================================================ */
+(function installStoryEndings(){
+  const V='vow', O='order';
+  const ENDINGS=[
+    {key:'dawn', icon:'🌅', title:'Dawn', card:'The Gates Rekindled', accent:'#ffcf6b',
+     teaser:'Risk everything to keep the gates alive — wrench the ritual open and turn it against itself.',
+     lines:[
+       {s:'serin',side:V,n:'Serin Vale',t:"Don't seal them — turn the ritual inside out. If the gates must sing, let them sing us awake, not asleep. Everyone, hold the line one last time!"},
+       {s:'lyra',side:V,n:'Lyra Ashenquill',t:"The array is rewriting itself... ash is pulling back from the stone. The gates are breathing again. We did it — we actually did it."}],
+     epilogue:"The Vow refuses the Stillness and refuses the severing. They wrench the Sovereign's own array open and let the gates blaze back to life. Ash recedes from the fields; colour bleeds back into a grey world. Sky, sea and stone are linked once more — fragile, watched, but alive. Dawn breaks over Ash Gates, and the oath is kept: no gate fell silent while the Vow yet breathed."},
+    {key:'eclipse', icon:'🌒', title:'Eclipse', card:'The Severed Sky', accent:'#8aa2ff',
+     teaser:'Shatter every gate to end the ritual forever — freedom, at the cost of the world’s connections.',
+     lines:[
+       {s:'lyra',side:V,n:'Lyra Ashenquill',t:"We can't hold it and we can't let it close on its terms. There's only one road left — break them. All of them. Forever."},
+       {s:'kael',side:V,n:'Kael Thorne',t:"Then no one else gets sung to sleep. A smaller world, a quieter sky... but ours. Do it, Lyra. I'll get everyone home."}],
+     epilogue:"The Vow makes the hardest cut. They collapse the gate-array and every gateway with it — and the Stillness dies in the same breath. The ash settles and stops spreading. But the roads between realms are gone; sky, sea and stone drift into separate, lonelier worlds. Humanity survives, free and diminished, learning to live under a permanent eclipse where the gates once shone. No more silence — and no more crossing."},
+    {key:'ash', icon:'🔥', title:'Ash', card:'What the Fire Kept', accent:'#ff6a53',
+     teaser:'Burn the Spire and everything in it. Win at any cost — and carry the scar forever.',
+     lines:[
+       {s:'sovereign',side:O,n:'The Dark Sovereign',t:"You cannot kill an idea, little Vow. Silence is patient. It will outlast even your fire."},
+       {s:'serin',side:V,n:'Serin Vale',t:"Maybe. But not today. Burn it — burn all of it. We'll live with the ash. We always have."}],
+     epilogue:"There is no clever answer left — only fire. The Vow buries the ritual under the burning ruin of the Ash Spire, and much of themselves with it. The Sovereign is gone, the Stillness broken — but the cost is written in ash: cities lost, names forgotten, oaths paid in full. The survivors walk out grey and quiet into a scarred dawn, carrying the fallen in memory. They won. It does not feel like winning. It feels like ash — and the stubborn, unkillable will to begin again."},
+  ];
+  const byKey=k=>ENDINGS.find(e=>e.key===k);
+  // --- unlocked tracking (device-level) ---
+  const EKEY='ashgate_endings';
+  function unGet(){try{return JSON.parse(localStorage.getItem(EKEY))||{};}catch(e){return {};}}
+  function unMark(k){try{const s=unGet();s[k]=1;localStorage.setItem(EKEY,JSON.stringify(s));}catch(e){}}
+
+  // --- styles ---
+  const st=document.createElement('style');
+  st.textContent=`
+    #storyfate,#storyend{position:fixed;inset:0;z-index:9994;display:none}
+    #storyfate.on,#storyend.on{display:flex}
+    #storyfate{flex-direction:column;justify-content:center;padding:22px 16px;overflow-y:auto;
+      background:radial-gradient(circle at 50% 24%,rgba(20,12,30,.96),rgba(5,4,10,.99))}
+    #storyfate .sfhead{text-align:center;margin-bottom:16px}
+    #storyfate .sfeye{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
+    #storyfate .sfttl{font-family:var(--font-title);font-size:21px;color:#fff;line-height:1.25}
+    #storyfate .sfsub{font-size:12px;color:var(--muted);margin-top:8px;max-width:420px;margin-left:auto;margin-right:auto;line-height:1.6}
+    .fatecard{width:100%;text-align:left;border:1px solid var(--line);border-radius:15px;padding:14px 15px;margin:9px 0;cursor:pointer;
+      background:linear-gradient(100deg,rgba(255,255,255,.03),transparent);transition:transform .15s,border-color .2s,box-shadow .2s;position:relative;overflow:hidden}
+    .fatecard:hover{transform:translateY(-3px)}
+    .fatecard .fcbar{position:absolute;left:0;top:0;bottom:0;width:4px}
+    .fatecard .fcttl{font-family:var(--font-title);font-size:17px;display:flex;align-items:center;gap:9px}
+    .fatecard .fctag{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin:3px 0 6px}
+    .fatecard .fctxt{font-size:12px;line-height:1.55;color:var(--muted)}
+    .fatecard .fcseen{position:absolute;top:11px;right:12px;font-size:9px;font-weight:800;letter-spacing:.1em;color:#0b0a12;padding:2px 7px;border-radius:99px}
+    #storyend{align-items:center;justify-content:center;padding:22px 18px;text-align:center;
+      background:radial-gradient(circle at 50% 30%,rgba(16,11,26,.97),rgba(4,3,8,.995))}
+    #storyend .seinner{max-width:440px;animation:uipop .4s cubic-bezier(.2,.9,.3,1) both}
+    #storyend .seicon{font-size:44px;margin-bottom:6px;filter:drop-shadow(0 4px 14px rgba(0,0,0,.6))}
+    #storyend .seeye{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--faint)}
+    #storyend .setitle{font-family:var(--font-title);font-size:30px;margin:2px 0 2px;line-height:1.1}
+    #storyend .secard{font-family:var(--font-title);font-size:15px;color:var(--muted);margin-bottom:16px}
+    #storyend .setext{font-size:13px;line-height:1.7;color:var(--ink);margin-bottom:22px}
+    #storyend .sebtn{padding:12px 26px;border-radius:12px;border:1px solid var(--umbra);background:linear-gradient(180deg,#7b5cff,#5a3fd6);color:#fff;font-size:13px;font-weight:700;cursor:pointer}
+    #storyend .sehint{font-size:10.5px;color:var(--faint);margin-top:14px}
+    /* endings gallery on the Story screen */
+    .stendgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+    .endcell{position:relative;border:1px solid var(--line);border-radius:13px;padding:13px 10px;text-align:center;cursor:pointer;
+      background:var(--panel2);transition:transform .15s,border-color .2s}
+    .endcell:hover{transform:translateY(-3px)}
+    .endcell .ecico{font-size:26px}
+    .endcell .ecname{font-family:var(--font-title);font-size:14px;margin-top:4px}
+    .endcell .ectag{font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-top:2px}
+    .endcell .ecseen{position:absolute;top:7px;right:8px;font-size:11px}
+  `;
+  document.head.appendChild(st);
+
+  // --- choice overlay ---
+  const fate=document.createElement('div'); fate.id='storyfate';
+  fate.innerHTML=`<div class="sfhead"><div class="sfeye">The Great Stillness is broken</div>
+    <div class="sfttl">What becomes of the gates?</div>
+    <div class="sfsub">The Sovereign has fallen and the ritual is unravelling in your hands. The Vow's last choice will remake — or unmake — the world of Ash Gates.</div></div>
+    <div id="fateCards"></div>`;
+  document.body.appendChild(fate);
+  const end=document.createElement('div'); end.id='storyend';
+  end.innerHTML=`<div class="seinner"><div class="seicon" id="seIcon"></div>
+    <div class="seeye">Ending</div><div class="setitle" id="seTitle"></div><div class="secard" id="seCard"></div>
+    <div class="setext" id="seText"></div><button class="sebtn" id="seBtn">Return to Ash Gates</button>
+    <div class="sehint" id="seHint"></div></div>`;
+  document.body.appendChild(end);
+
+  function renderFateCards(){
+    document.getElementById('fateCards').innerHTML=ENDINGS.map(e=>{
+      const seen=unGet()[e.key];
+      return `<button class="fatecard" data-k="${e.key}">
+        <span class="fcbar" style="background:${e.accent}"></span>
+        ${seen?`<span class="fcseen" style="background:${e.accent}">SEEN</span>`:''}
+        <div class="fcttl" style="color:${e.accent}"><span>${e.icon}</span>${e.title} — <span style="color:var(--ink)">${e.card}</span></div>
+        <div class="fctag">Path of ${e.title}</div>
+        <div class="fctxt">${e.teaser}</div></button>`;}).join('');
+    document.getElementById('fateCards').querySelectorAll('.fatecard').forEach(b=>
+      b.addEventListener('click',()=>chooseEnding(b.dataset.k)));
+  }
+  function showEndCard(e){
+    document.getElementById('seIcon').textContent=e.icon;
+    const t=document.getElementById('seTitle');t.textContent=e.title;t.style.color=e.accent;
+    document.getElementById('seCard').textContent='“'+e.card+'”';
+    document.getElementById('seText').textContent=e.epilogue;
+    const btn=document.getElementById('seBtn');btn.style.background=`linear-gradient(180deg,${e.accent},color-mix(in srgb,${e.accent} 60%,#000))`;
+    btn.style.color='#0b0a12';btn.style.borderColor=e.accent;
+    document.getElementById('seHint').textContent='Every ending is replayable from Story ▸ The Three Endings.';
+    end.classList.add('on');
+  }
+  function chooseEnding(k){
+    const e=byKey(k); if(!e)return;
+    unMark(k); fate.classList.remove('on');
+    try{SFX.tap&&SFX.tap();}catch(_){}
+    window.playDialogue(e.lines, ()=>showEndCard(e));
+  }
+  document.getElementById('seBtn').addEventListener('click',()=>{
+    end.classList.remove('on');
+    try{SFX.win&&SFX.win();}catch(_){}
+    if(typeof buildMap==='function')buildMap();
+    if(typeof show==='function')show('screen-map');
+  });
+
+  // exposed: called by endGame when stage 7-7 is beaten
+  window.openEndingChoice=function(){renderFateCards();fate.classList.add('on');try{SFX.tap&&SFX.tap();}catch(_){}};
+  // exposed: preview/replay a single ending (from the gallery)
+  window.playEnding=function(k){const e=byKey(k);if(!e)return;window.playDialogue(e.lines,()=>showEndCard(e));};
+
+  // --- inject the endings gallery into the Story screen ---
+  if(typeof window.renderStory==='function'){
+    const _rs=window.renderStory;
+    window.renderStory=function(){
+      _rs.apply(this,arguments);
+      const scroll=document.getElementById('storyScroll'); if(!scroll)return;
+      const un=unGet();
+      const sec=document.createElement('div');
+      sec.innerHTML=`<div class="stsec">The Three Endings</div>
+        <div class="stendgrid">${ENDINGS.map(e=>`<button class="endcell" data-k="${e.key}">
+          ${un[e.key]?`<span class="ecseen" style="color:${e.accent}">✓</span>`:''}
+          <div class="ecico">${e.icon}</div><div class="ecname" style="color:${e.accent}">${e.title}</div>
+          <div class="ectag">${e.card}</div></button>`).join('')}</div>
+        <div class="stend" style="margin-top:8px">Reach the Ash Spire and defeat the Dark Sovereign to forge your ending — or tap to preview each path.</div>`;
+      // place it right before the final "ending is yours to forge" line
+      const tail=scroll.querySelector('.stend'); if(tail)scroll.insertBefore(sec,tail); else scroll.appendChild(sec);
+      sec.querySelectorAll('.endcell').forEach(b=>b.addEventListener('click',()=>window.playEnding(b.dataset.k)));
+    };
+  }
 })();
 </script>

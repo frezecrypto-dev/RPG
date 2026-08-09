@@ -454,6 +454,25 @@ The faction banners are cropped tighter so each sigil reads clearly, and a small
 each dossier card, and the dossier modal title — so you can tell Vow from Dark
 Order at a glance.
 
+### The three endings — Dawn · Eclipse · Ash
+
+Beating the Dark Sovereign (Act III, stage 7-7) no longer just ends the run: the
+result screen offers **"Decide the fate of the gates"**, which opens a choice of
+three endings, each with its own two-line epilogue dialogue (with standees) and a
+full-screen ending card:
+
+- **🌅 Dawn — The Gates Rekindled** — turn the ritual against itself and let the
+  gates blaze back to life; a fragile, hopeful world.
+- **🌒 Eclipse — The Severed Sky** — shatter every gate to kill the Stillness
+  forever; free but severed, each realm alone.
+- **🔥 Ash — What the Fire Kept** — burn the Spire and win at a terrible cost;
+  the Sovereign gets the last word before Serin answers with fire.
+
+Each viewed ending is recorded (`ashgate_endings`) and all three appear in a new
+**The Three Endings** gallery on the Story screen, tappable to replay or preview
+any path. Logic lives in the `installStoryEndings()` module; `window.openEndingChoice()`
+is called from `endGame` on the finale win.
+
 ### Cinematic pre-battle dialogue
 
 The three-act campaign is stitched into the **Campaign Gate**: it unlocks after
