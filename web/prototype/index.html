@@ -3595,7 +3595,7 @@ function renderSlots(){
   $('#teamSyn').innerHTML=syn.length
     ? syn.map(x=>`<span class="synchip" style="--hue:var(${x.color})">${x.name} ×${x.n} · +${Math.round(x.t*100)}% ${x.bonus}</span>`).join('')
     : `<span class="synhint">Match 2+ heroes of a faction for a synergy bonus</span>`;
-  $('#startBtn').disabled = team.length!==5;
+  $('#startBtn').disabled = team.length<1;   // deploy with 1-5 heroes (full team of 5 is optimal, not required)
 }
 
 /* ---------- GACHA (doc 08 rates + pity) ---------- */
@@ -4979,7 +4979,7 @@ function flashBar(){const b=$('#gachaBar');b.style.transition='none';b.style.bac
   setTimeout(()=>{b.style.transition='background .5s';b.style.background='';},60);}
 $('#teamBack').addEventListener('click',()=>{const a=arenaTarget;arenaTarget=null;raidPending=false;if(a){renderArena();show('screen-arena');}else{buildMap();show('screen-map');}});
 $('#suggestBtn').addEventListener('click',suggestTeam);
-$('#startBtn').addEventListener('click',()=>{if(team.length!==5)return;
+$('#startBtn').addEventListener('click',()=>{if(team.length<1)return;
   if(raidPending){ if(!energyPay(10))return; deployRaid(); }
   else if(arenaTarget){ deployArena(arenaTarget); }                 // Arena is free (gated by first-clear)
   else { if(!energyPay(hardMode?8:6))return; deploy(); }});
