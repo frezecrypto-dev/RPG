@@ -1288,7 +1288,8 @@
   #homeStory{position:absolute;top:160px;right:16px;z-index:4}
   /* story / lore screen */
   #storyScroll{flex:1;overflow-y:auto;padding:14px 16px 90px}
-  .stmap{width:100%;aspect-ratio:1536/2752;max-height:360px;background-size:cover;background-position:center top;border-radius:14px;border:1px solid var(--line);box-shadow:0 8px 30px rgba(0,0,0,.5)}
+  .stmap{width:100%;height:auto;display:block;border-radius:14px;border:1px solid var(--line);box-shadow:0 8px 30px rgba(0,0,0,.5)}
+  .stmapcap{text-align:center;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:6px 0 2px}
   .stintro{font-size:12.5px;line-height:1.65;color:var(--muted);margin:14px 2px}
   .stintro b{color:#cbb8ff}
   .stfactions{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:6px}
@@ -2447,10 +2448,11 @@ function buildMap(){
   DATA.chapters.forEach((ch,ci)=>{
     const prevChapterDone = ci===0 || DATA.chapters[ci-1].stages.every(s=>cleared.has(s.id));
     const chNormalDone = ch.stages.every(s=>cleared.has(s.id));
-    const div=document.createElement('div'); div.className='chdiv'+(ci===0?' first':'');
-    const lockTxt = H ? (chNormalDone?'':'🔒 clear on Normal first') : (prevChapterDone?'':`🔒 clear Chapter ${DATA.chapters[ci-1].id}`);
-    div.innerHTML=`<span class="chnum">Chapter ${ch.id}${H?' · Hard':''}</span><span class="chname">${ch.name}</span>`+
-      (lockTxt?`<span class="chlock">${lockTxt}</span>`:'');
+    const div=document.createElement('div'); div.className='chdiv'+(ci===0?' first':'')+(ch.story?' storyact':'');
+    const lockTxt = H ? (chNormalDone?'':'🔒 clear on Normal first') : (prevChapterDone?'':(ch.story?'🔒 Finish Chapter 4 to begin the campaign':`🔒 clear Chapter ${DATA.chapters[ci-1].id}`));
+    div.innerHTML = ch.story
+      ? `<span class="chnum">⚔ ${ch.act}</span><span class="chname">${ch.name}</span>`+(lockTxt?`<span class="chlock">${lockTxt}</span>`:'')
+      : `<span class="chnum">Chapter ${ch.id}${H?' · Hard':''}</span><span class="chname">${ch.name}</span>`+(lockTxt?`<span class="chlock">${lockTxt}</span>`:'');
     list.appendChild(div);
     ch.stages.forEach((s,si)=>{
       let done,playable;
@@ -2462,7 +2464,7 @@ function buildMap(){
       const badge=done?'<span class="badge clr">Cleared</span>':(s.boss?'<span class="badge boss">Boss</span>':(playable?'<span class="badge go">Play</span>':''));
       n.innerHTML=`<div class="dot">${done?'✓':(s.boss?'☠':(si+1))}</div>
         <div class="card"><div><div class="stg">Stage ${s.id}${H?' · Hard':''}</div><div class="snm">${s.name}</div><div class="teach">${s.teach}</div></div>${badge}</div>`;
-      if(playable){ n.querySelector('.card').addEventListener('click',()=>openTeam(s)); }
+      if(playable){ n.querySelector('.card').addEventListener('click',()=>stageEnter(s)); }
       list.appendChild(n); idx++;
     });
   });
@@ -3875,7 +3877,8 @@ function renderStory(){
       <div class="dcn">${c.n}</div><div class="dct">${c.t.split(' · ')[0]}</div></button>`).join('');
   const vow=STORY_CHARS.filter(c=>c.side==='vow'), order=STORY_CHARS.filter(c=>c.side==='order');
   $('#storyScroll').innerHTML=`
-    <div class="stmap" style="background-image:url(${STORYART.map})"></div>
+    <img class="stmap" src="${STORYART.map}" alt="Map of Ash Gates">
+    <div class="stmapcap">The fractured realm of Ash Gates</div>
     <p class="stintro">Ash Gates is a fractured world built around ancient gateways that once linked realms of sky, sea and stone. When the gates cracked, they bled a grey, burning ash that poisons land and memory. From that ruin rose a doctrine — that the gates must be sealed, conquered, or rewritten — the belief that hardened into the <b>Dark Order</b>.</p>
     <div class="stfactions">
       <div class="stfac order"><div class="stfh">☒ The Dark Order</div><p>Once scholars who stabilized collapsing gates, the Order turned necessity into tyranny. It rules through fortress-cities and ash-touched armies, driving toward the <b>Great Stillness</b> — freezing every gate into an eternal, silent dusk. But the Stillness will not save the world: the ash will settle into stone and suffocate all life.</p></div>
@@ -4987,4 +4990,137 @@ $('#autoBtn').addEventListener('click',e=>{ui.auto=!ui.auto;if(G)G.auto=ui.auto;
   const b=e.currentTarget;b.classList.toggle('active',ui.auto);b.textContent=ui.auto?'Auto ▶':'Manual';
   if(G&&G.auto&&G.awaiting){const u=G.awaiting;closeCommand(u);G.awaiting=null;autoActAlly(u);render();if(checkEnd())return;advanceRound();if(G.over)return;scheduleNext();}});
 $('#speedBtn').addEventListener('click',e=>{ui.speed=ui.speed>=3?1:ui.speed+1;if(G)G.speed=ui.speed;e.target.textContent=ui.speed+'×';});
+
+/* ============================================================
+   STORY CAMPAIGN — The World of Ash Gates (Acts I–III)
+   Appended after Chapter 4; Dark Order bosses + Vow dialogue.
+   ============================================================ */
+(function installStoryCampaign(){
+  // --- Dark Order roster (creatures + faces). art -> STORYART key for boss standees ---
+  const E={
+    LEGION:  {name:'Ash Legionnaire', glyph:'🛡️', hp:2600, atk:215, def:180, spd:95,  root:'physical', res:{mag:-0.25}, tier:'M', traits:['armored'], efx:'var(--bone)'},
+    MARKSMAN:{name:'Cinder Marksman', glyph:'🎯', hp:1950, atk:255, def:120, spd:106, root:'physical', res:{mag:-0.25}, tier:'M', efx:'var(--ember)'},
+    HOUND:   {name:'Ember Hound',     glyph:'🐺', hp:1750, atk:275, def:110, spd:122, root:'physical', res:{phys:-0.25}, tier:'M', traits:['swarm'], efx:'var(--ember)'},
+    WRAITH:  {name:'Gate Wraith',     glyph:'👻', hp:4400, atk:305, def:190, spd:114, root:'magical',  res:{}, tier:'B', traits:['undead'], efx:'var(--nec)'},
+    KNIGHT:  {name:'Gate Knight',     glyph:'⚔️', hp:5400, atk:335, def:240, spd:100, root:'physical', res:{mag:-0.25}, tier:'B', traits:['armored'], efx:'var(--warden)'},
+    SERAPH:  {name:'Hollow Seraph',   art:'seraph',   hp:54000,  atk:435, def:255, spd:118, root:'magical',  res:{}, tier:'X', traits:['undead'], tg:'Soundless Scream', efx:'var(--bone)'},
+    TITAN:   {name:'Ashbound Titan',  art:'titan',    hp:92000,  atk:490, def:350, spd:86,  root:'physical', res:{mag:-0.25}, tier:'X', traits:['colossal','armored'], tg:'Seismic Ruin', efx:'var(--granite)'},
+    DARIUS:  {name:'General Darius Cinderhelm', art:'darius', hp:74000, atk:530, def:300, spd:112, root:'physical', res:{mag:-0.25}, tier:'X', tg:'Ashfall Offensive', efx:'var(--ember)'},
+    VORENA:  {name:'Lady Vorena Ashfall',      art:'vorena', hp:86000, atk:565, def:285, spd:118, root:'magical',  res:{phys:-0.25}, tier:'X', tg:'The Broken Ring', efx:'var(--gate)'},
+    SOVEREIGN:{name:'The Dark Sovereign',      art:'sovereign', hp:135000, atk:650, def:345, spd:122, root:'magical', res:{}, tier:'X', traits:['undead'], tg:'The Great Stillness', efx:'var(--umbra)'},
+  };
+  for(const id in E){const d=E[id], key='ENM-ORD-'+id;
+    DATA.enemies[key]={id:key,name:d.name,stats:{hp:d.hp,atk:d.atk,def:d.def,spd:d.spd},damageRoot:d.root,
+      traits:d.traits||[],physRes:(d.res&&d.res.phys)||0,magRes:(d.res&&d.res.mag)||0,immunities:d.imm||[],
+      skillPower:d.tier==='X'?1.35:d.tier==='B'?1.15:1,tier:d.tier,tgName:d.tg||null,_glyph:d.glyph,_efx:d.efx};
+    if(d.art && typeof EART!=='undefined' && STORYART[d.art]) EART[key]=STORYART[d.art];
+  }
+  const K=(id,l)=>'ENM-ORD-'+id+'@'+l;
+  const mkCh=(id,act,name,fam,stages)=>({id,act,name,family:fam,story:true,stages:stages.map((s,i)=>(
+    {id:id+'-'+(i+1),name:s.n,teach:s.teach||(s.boss?'Boss · Dark Order':'Ash Legion'),boss:!!s.boss,waves:s.w}))});
+
+  DATA.chapters.push(mkCh('5','ACT I','Embers in the Ash','ORD',[
+    {n:'The Rehabilitation Cell', teach:'Escape · your first breath of freedom', w:[[K('LEGION',30),K('LEGION',30)],[K('LEGION',31),K('MARKSMAN',31)]]},
+    {n:'The Rehab Camp',          w:[[K('LEGION',32),K('MARKSMAN',32)],[K('HOUND',33),K('HOUND',33),K('LEGION',33)]]},
+    {n:"Smuggler's Run",          teach:'Escort · get the caravan through', w:[[K('HOUND',34),K('HOUND',34)],[K('MARKSMAN',35),K('LEGION',35)]]},
+    {n:'The Ember Hound Pack',    w:[[K('HOUND',36),K('HOUND',36),K('HOUND',36)],[K('HOUND',37),K('HOUND',37),K('MARKSMAN',37)]]},
+    {n:'The Stolen Archive',      teach:'Steal the fragment that names the Stillness', w:[[K('WRAITH',38)],[K('LEGION',38),K('MARKSMAN',38),K('LEGION',38)]]},
+    {n:'Wraiths in the Vault',    w:[[K('WRAITH',40),K('WRAITH',40)]]},
+    {n:'Legion Checkpoint',       w:[[K('LEGION',41),K('KNIGHT',41)],[K('MARKSMAN',42),K('MARKSMAN',42),K('LEGION',42)]]},
+    {n:'Hollow Skies',            boss:true, teach:'Mini-boss · Hollow Seraph', w:[[K('SERAPH',44)]]},
+    {n:'The Burning Fortress',    boss:true, teach:'Act I Boss · General Darius Cinderhelm', w:[[K('KNIGHT',46),K('KNIGHT',46)],[K('DARIUS',48)]]},
+  ]));
+  DATA.chapters.push(mkCh('6','ACT II','Fractures in the Chain','ORD',[
+    {n:'Liberate Emberhold',      teach:'Take the town back', w:[[K('LEGION',50),K('HOUND',50)],[K('MARKSMAN',51),K('KNIGHT',51)]]},
+    {n:'The Taxed City',          w:[[K('MARKSMAN',52),K('MARKSMAN',52),K('LEGION',52)]]},
+    {n:'Gate Knight Vanguard',    w:[[K('KNIGHT',54),K('KNIGHT',54)]]},
+    {n:'The Ashbound Titan',      boss:true, teach:'Boss · siege construct', w:[[K('TITAN',56)]]},
+    {n:'The Reactor Depths',      w:[[K('WRAITH',58),K('WRAITH',58)],[K('KNIGHT',58),K('MARKSMAN',58)]]},
+    {n:'The Broken Ring',         w:[[K('WRAITH',60),K('KNIGHT',60),K('WRAITH',60)]]},
+    {n:'Warden of Gates',         boss:true, teach:'Act II Boss · Lady Vorena Ashfall', w:[[K('KNIGHT',62),K('KNIGHT',62)],[K('VORENA',64)]]},
+  ]));
+  DATA.chapters.push(mkCh('7','ACT III','Eclipse or Dawn','ORD',[
+    {n:'March on the Spire',      teach:'The final road', w:[[K('KNIGHT',66),K('MARKSMAN',66),K('HOUND',66)]]},
+    {n:'Wraith Storm',            w:[[K('WRAITH',68),K('WRAITH',68),K('WRAITH',68)]]},
+    {n:'The Ash Hounds',          w:[[K('HOUND',70),K('HOUND',70),K('HOUND',70),K('HOUND',70)]]},
+    {n:'Seraph Reprise',          boss:true, teach:'Elite · Hollow Seraph', w:[[K('SERAPH',72)],[K('KNIGHT',72),K('KNIGHT',72)]]},
+    {n:'Titan at the Gate',       boss:true, teach:'Elite · Ashbound Titan', w:[[K('TITAN',74)]]},
+    {n:'The Last Gauntlet',       boss:true, teach:'The Order makes its stand', w:[[K('KNIGHT',76),K('WRAITH',76)],[K('DARIUS',78)],[K('VORENA',78)]]},
+    {n:'The Great Stillness',     boss:true, teach:'Final Boss · The Dark Sovereign', w:[[K('WRAITH',80),K('WRAITH',80)],[K('SOVEREIGN',82)]]},
+  ]));
+
+  // --- Vow / Order dialogue, keyed by stage id ---
+  const V='vow', O='order';
+  window.STORY_DIALOGUE={
+    '5-1':[{s:'serin',side:V,n:'Serin Vale',t:"You're awake — and breathing. That already makes you lucky in an Order cell. I'm Serin Vale, Speaker of Embers. Stay close, hit hard, and remember the oath: no gate shall fall silent while we yet breathe."}],
+    '5-3':[{s:'kael',side:V,n:'Kael Thorne',t:"These folk just need to reach a Haven. You hold the line, I'll walk them through the ash-storm. Nobody dies on my road — that's the deal."}],
+    '5-5':[{s:'lyra',side:V,n:'Lyra Ashenquill',t:"That fragment isn't loot — it's proof. The Great Stillness won't save the gates. It fossilizes everything: land, memory, us. Take it, and the world finally has to listen."}],
+    '5-8':[{s:'serin',side:V,n:'Serin Vale',t:"A Hollow Seraph — it screams alarms only the Order can hear. Put it down fast, before the whole garrison wakes."}],
+    '5-9':[{s:'darius',side:O,n:'General Darius Cinderhelm',t:"I am Darius Cinderhelm, Marshal of Ash. I bring peace through order. Your little Vow is a candle in a gale — and I have come to snuff it."},
+           {s:'serin',side:V,n:'Serin Vale',t:"Peace? You erased a whole town to bury one mistake. That candle's going to burn your fortress down. Move!"}],
+    '6-1':[{s:'serin',side:V,n:'Serin Vale',t:"Emberhold flew Order banners this morning. By nightfall it flies ours. Fast and hard — take the town back."}],
+    '6-4':[{s:'kael',side:V,n:'Kael Thorne',t:"That's an Ashbound Titan — a walking wall of stone and gate-fire. Crack its plating, then bring it down before it flattens the whole district."}],
+    '6-7':[{s:'vorena',side:O,n:'Lady Vorena Ashfall',t:"The gates are tools. Nothing more. And you are a variable I will simply... lock out of existence."},
+           {s:'lyra',side:V,n:'Lyra Ashenquill',t:"She holds the gate-locks. Beat her, and the corridor of freedom is ours to keep."}],
+    '7-1':[{s:'serin',side:V,n:'Serin Vale',t:"The Sovereign's ritual will freeze every gate at once. We march on the Ash Spire now — whatever it costs. This is the last road."}],
+    '7-6':[{s:'lyra',side:V,n:'Lyra Ashenquill',t:"They've thrown their whole council at us. Darius, Vorena — everything. Hold together. We are almost through."}],
+    '7-7':[{s:'sovereign',side:O,n:'The Dark Sovereign',t:"I am the Only Necessary Shadow. Change is the disease. Stillness is the cure. Kneel, little Vow, and be preserved forever."},
+           {s:'serin',side:V,n:'Serin Vale',t:"No. We break, we bleed, we change — that is what it means to live. For every gate. For everyone still breathing. VOW!"}],
+  };
+
+  // --- dialogue overlay ---
+  const style=document.createElement('style');
+  style.textContent=`
+    #storydlg{position:fixed;inset:0;z-index:9993;display:none}
+    #storydlg.on{display:block}
+    #storydlg .sddim{position:absolute;inset:0;background:radial-gradient(circle at 50% 40%,rgba(8,6,18,.6),rgba(6,5,12,.92))}
+    #storydlg .sdart{position:absolute;bottom:0;width:52%;max-width:300px;max-height:82vh;background-size:contain;background-repeat:no-repeat;background-position:bottom center;
+      filter:drop-shadow(0 8px 24px rgba(0,0,0,.6));animation:sdIn .4s cubic-bezier(.2,.9,.3,1) both}
+    #storydlg.vow .sdart{left:2%;background-position:bottom left}
+    #storydlg.order .sdart{right:2%;background-position:bottom right}
+    @keyframes sdIn{from{transform:translateY(26px);opacity:0}to{transform:none;opacity:1}}
+    #storydlg .sdbubble{position:absolute;left:14px;right:14px;bottom:150px;z-index:2;
+      background:linear-gradient(180deg,#1a1533,#110d24);border:1px solid var(--umbra);border-radius:16px;padding:14px 16px 12px;
+      box-shadow:0 16px 44px rgba(0,0,0,.6);animation:uipop .25s cubic-bezier(.2,.9,.3,1) both}
+    #storydlg.order .sdbubble{border-color:var(--gate,#ff3b5c)}
+    #storydlg .sdname{font-family:var(--font-title);font-size:15px;margin-bottom:5px;color:#cbb8ff}
+    #storydlg.order .sdname{color:#ff8a9c}
+    #storydlg .sdtext{font-size:13.5px;line-height:1.6;color:var(--ink)}
+    #storydlg .sdfoot{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+    #storydlg .sddots{font-size:10px;color:var(--faint);letter-spacing:.2em}
+    #storydlg .sdbtns{display:flex;gap:8px}
+    #storydlg .sdskip{padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:none;color:var(--muted);font-size:11px;font-weight:600;cursor:pointer}
+    #storydlg .sdnext{padding:9px 16px;border-radius:10px;border:1px solid var(--umbra);background:linear-gradient(180deg,#7b5cff,#5a3fd6);color:#fff;font-size:12px;font-weight:700;cursor:pointer}
+    /* story-act divider on the map */
+    .chdiv.storyact{border-top:1px solid color-mix(in srgb,var(--gate,#ff3b5c) 40%,var(--line));margin-top:14px;padding-top:12px}
+    .chdiv.storyact .chnum{color:#ff9a6b}
+  `;
+  document.head.appendChild(style);
+  const dlg=document.createElement('div'); dlg.id='storydlg';
+  dlg.innerHTML=`<div class="sddim"></div><div class="sdart" id="sdArt"></div>
+    <div class="sdbubble"><div class="sdname" id="sdName"></div><div class="sdtext" id="sdText"></div>
+      <div class="sdfoot"><span class="sddots" id="sdDots"></span>
+        <span class="sdbtns"><button class="sdskip" id="sdSkip">Skip</button><button class="sdnext" id="sdNext">Next ▸</button></span></div></div>`;
+  document.body.appendChild(dlg);
+  let _dl=[], _di=0, _done=null;
+  function dlRender(){const L=_dl[_di]; if(!L){dlEnd();return;}
+    dlg.className='on '+(L.side||'vow');
+    document.getElementById('sdArt').style.backgroundImage=`url(${STORYART[L.s]||''})`;
+    document.getElementById('sdName').textContent=L.n; document.getElementById('sdText').textContent=L.t;
+    document.getElementById('sdDots').textContent=_dl.map((_,i)=>i===_di?'●':'○').join(' ');
+    document.getElementById('sdNext').textContent=_di>=_dl.length-1?'Begin ▸':'Next ▸';}
+  function dlEnd(){dlg.classList.remove('on'); const f=_done; _done=null; if(f)f();}
+  window.playDialogue=function(lines,done){_dl=lines||[];_di=0;_done=done||null; if(!_dl.length){dlEnd();return;} try{SFX.tap&&SFX.tap();}catch(e){} dlRender();};
+  document.getElementById('sdNext').addEventListener('click',()=>{_di++; if(_di>=_dl.length)dlEnd(); else{try{SFX.tap&&SFX.tap();}catch(e){}dlRender();}});
+  document.getElementById('sdSkip').addEventListener('click',dlEnd);
+
+  // --- seen tracking (device-level, independent of the save) ---
+  const SEEN_KEY='ashgate_story_seen';
+  function seenGet(){try{return JSON.parse(localStorage.getItem(SEEN_KEY))||{};}catch(e){return {};}}
+  function seenMark(id){try{const s=seenGet();s[id]=1;localStorage.setItem(SEEN_KEY,JSON.stringify(s));}catch(e){}}
+  // stageEnter: play pre-battle story beat (once) then open team select
+  window.stageEnter=function(s){ const dl=window.STORY_DIALOGUE[s.id];
+    if(dl && !seenGet()[s.id]){ seenMark(s.id); playDialogue(dl, ()=>openTeam(s)); }
+    else openTeam(s); };
+})();
 </script>
