@@ -479,7 +479,10 @@ The Ash Gates story runs **40 stages across three acts** (Act I: 13, Act II: 13,
 Act III: 14) — 65 waves, 13 bosses and 20 scripted dialogue beats. New Dark Order
 creatures fill out the roster (**Ash Revenant**, **Gloom Chanter**, **Cinder
 Warden**) and a new named boss — **The Pale Architect**, the Order's ash-reactor
-engineer named in the lore — appears in Act II and returns in Act III. Act III
+engineer named in the lore — appears in Act II and returns in Act III. All four
+have full **AI-generated dark-fantasy art** (Higgsfield Seedream 5.0 Lite),
+background-removed to transparent cutouts, embedded in `ECUT` for battle and
+aliased into `STORYART` so they also appear as dossier cards on the Story screen. Act III
 also stages boss *reprises* (the Architect, Melis, and Vorena) on the climb up the
 Ash Spire before the Sovereign finale, so the last act builds instead of ending
 abruptly. The Sovereign remains the final boss that opens the Dawn/Eclipse/Ash choice.
