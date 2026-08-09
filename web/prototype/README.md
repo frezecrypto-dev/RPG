@@ -449,6 +449,11 @@ The Broken Ring and the Vorena finale) pits you against her tier-X caster before
 pre-battle exchange with Lyra. Her speaking standee is a background-removed cutout
 like the rest of the cast.
 
+The faction banners are cropped tighter so each sigil reads clearly, and a small
+**flag chip** (`FLAGICON`) now sits next to every name — the two faction headers,
+each dossier card, and the dossier modal title — so you can tell Vow from Dark
+Order at a glance.
+
 ### Cinematic pre-battle dialogue
 
 The three-act campaign is stitched into the **Campaign Gate**: it unlocks after
