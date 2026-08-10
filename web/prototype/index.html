@@ -1440,6 +1440,11 @@
   .rhname{font-family:var(--font-title);font-size:16px;line-height:1.12;margin:2px 0}
   .rhsub{font-size:10px;color:var(--muted)} .rhsub .wk{color:#ffd27f;filter:drop-shadow(0 0 3px currentColor)}
   .rhtimer{font-size:10px;color:var(--warn);margin-top:3px}
+  .raidaffix{display:flex;gap:9px;align-items:flex-start;margin:8px 0 2px;padding:9px 11px;border-radius:12px;
+    border:1px solid color-mix(in srgb,var(--warn) 45%,var(--line));background:linear-gradient(180deg,rgba(255,180,60,.10),rgba(255,180,60,.03))}
+  .raidaffix .rafx-ic{font-size:16px;color:var(--warn);line-height:1.3}
+  .raidaffix .rafx-tx{display:flex;flex-direction:column;gap:2px}
+  .raidaffix .rafx-tx b{font-size:12px;color:#ffcf6b} .raidaffix .rafx-tx span{font-size:10.5px;line-height:1.45;color:var(--muted)}
   .raidbestwrap{padding:2px}
   .raidbestlbl{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:4px}
   .raidbar{height:10px;border-radius:6px;background:#221c34;overflow:hidden;border:1px solid var(--line)}
@@ -2269,14 +2274,23 @@ const QUEST_DEFS={
   d:[ {id:'win',key:'win',label:'Win 3 battles',goal:3,rw:[{t:'crystal',n:80},{t:'energy',n:20}]},
       {id:'summon',key:'summon',label:'Summon once',goal:1,rw:[{t:'gold',n:8000}]},
       {id:'dungeon',key:'dungeon',label:'Clear a dungeon',goal:1,rw:[{t:'insight',n:30},{t:'energy',n:15}]},
-      {id:'spend',key:'energy',label:'Spend 24 Energy',goal:24,rw:[{t:'potionS',n:1}]} ],
+      {id:'spend',key:'energy',label:'Spend 24 Energy',goal:24,rw:[{t:'potionS',n:1}]},
+      {id:'enh',key:'enhance',label:'Enhance gear 3×',goal:3,rw:[{t:'gold',n:12000}]},
+      {id:'star',key:'star',label:'Star up a hero',goal:1,rw:[{t:'shard',n:15}]},
+      {id:'raidD',key:'raid',label:'Fight the weekly raid',goal:1,rw:[{t:'crystal',n:60}]} ],
   w:[ {id:'win20',key:'win',label:'Win 20 battles',goal:20,rw:[{t:'crystal',n:300},{t:'potionL',n:1}]},
       {id:'dun5',key:'dungeon',label:'Clear 5 dungeons',goal:5,rw:[{t:'gold',n:120000}]},
-      {id:'raid',key:'raid',label:'Fight a raid',goal:1,rw:[{t:'ticket',n:1}]},
-      {id:'donate',key:'donate',label:'Donate to your guild 3×',goal:3,rw:[{t:'crate',n:5},{t:'energy',n:60}]} ],
+      {id:'raid',key:'raid',label:'Fight the raid 3×',goal:3,rw:[{t:'ticket',n:1},{t:'relic',n:3}]},
+      {id:'donate',key:'donate',label:'Donate to your guild 3×',goal:3,rw:[{t:'crate',n:5},{t:'energy',n:60}]},
+      {id:'summon10',key:'summon',label:'Summon 10 times',goal:10,rw:[{t:'ticket',n:1},{t:'crystal',n:150}]},
+      {id:'enh25',key:'enhance',label:'Enhance gear 25×',goal:25,rw:[{t:'ore',n:6}]},
+      {id:'arena10',key:'arena',label:'Win 10 Arena battles',goal:10,rw:[{t:'crystal',n:250},{t:'gleam',n:300}]} ],
   m:[ {id:'win80',key:'win',label:'Win 80 battles',goal:80,rw:[{t:'crystal',n:800},{t:'ticket',n:2}]},
       {id:'login',key:'login',label:'Claim 15 daily logins',goal:15,rw:[{t:'crystal',n:500}]},
-      {id:'dun30',key:'dungeon',label:'Clear 30 dungeons',goal:30,rw:[{t:'relic',n:12},{t:'potionL',n:3}]} ],
+      {id:'dun30',key:'dungeon',label:'Clear 30 dungeons',goal:30,rw:[{t:'relic',n:12},{t:'potionL',n:3}]},
+      {id:'summon60',key:'summon',label:'Summon 60 times',goal:60,rw:[{t:'ticket',n:3},{t:'crystal',n:600}]},
+      {id:'raidM',key:'raid',label:'Fight the raid 12×',goal:12,rw:[{t:'crystal',n:700},{t:'ore',n:10}]},
+      {id:'star10',key:'star',label:'Star up heroes 10×',goal:10,rw:[{t:'crate',n:10},{t:'ticket',n:1}]} ],
 };
 const QUEST_META={d:{name:'Daily',reset:'resets at midnight'},w:{name:'Weekly',reset:'resets weekly'},m:{name:'Monthly',reset:'resets monthly'}};
 function questPeriodCheck(){const t=new Date().toDateString(),w=Math.floor(Date.now()/(7*864e5)),d=new Date(),mo=d.getFullYear()+'-'+d.getMonth();
@@ -3436,7 +3450,7 @@ function deployArena(sq){
 }
 function endArena(win){
   const sq=G.arena; let reward=0,goldR=0; const firstClear=win&&(sq.rank-1===arenaRank);
-  if(win){ dailyBump('win');
+  if(win){ dailyBump('win'); questBump('arena');
     if(firstClear){arenaRank=Math.max(arenaRank,sq.rank);reward=60+sq.rank*25;crystals+=reward;goldR=6000+sq.rank*2000;gold+=goldR;}
     saveGame(); }
   renderCrys(); setMvp(win);
@@ -3460,7 +3474,27 @@ const RAIDBOSSES=[
   {id:'ENM-GNT-X01', name:'Gorthaug, the Mountain That Walks', bg:'2', root:'physical', weak:['magical'],          tg:'Avalanche',         glyph:'⛰️', efx:'var(--granite)',hp:155000, atk:430, def:240},
   {id:'ENM-GRD-X01', name:'The Vaultwarden Eternal',           bg:'3', root:'magical',  weak:['physical'],         tg:'Sealing Judgment',  glyph:'🗝️', efx:'var(--warden)', hp:180000, atk:410, def:220},
   {id:'ENM-UND-X01', name:'Mortmain, Sovereign of the Gate',   bg:'4', root:'magical',  weak:['holy','physical'],  tg:'Grave Tide',        glyph:'💀', efx:'var(--bone)',   hp:210000, atk:500, def:270},
+  // Dark Order raid bosses (art via EART alias of STORYART)
+  {id:'ENM-ORD-DARIUS',    name:'General Darius Cinderhelm, Marshal of Ash', bg:'2', root:'physical', weak:['magical'],         tg:'Ashfall Offensive',    glyph:'🔥', efx:'var(--ember)',  hp:170000, atk:470, def:250},
+  {id:'ENM-ORD-VORENA',    name:'Lady Vorena Ashfall, Warden of Gates',      bg:'3', root:'magical',  weak:['physical'],        tg:'The Broken Ring',      glyph:'💠', efx:'var(--gate)',   hp:190000, atk:455, def:230},
+  {id:'ENM-ORD-MELIS',     name:'High Cantor Melis, Voice of Stillness',     bg:'4', root:'magical',  weak:['physical'],        tg:'Hymn of Stillness',    glyph:'🔔', efx:'var(--umbra)',  hp:185000, atk:465, def:225},
+  {id:'ENM-ORD-TITAN',     name:'The Ashbound Titan',                        bg:'2', root:'physical', weak:['magical'],         tg:'Seismic Ruin',         glyph:'🗿', efx:'var(--granite)',hp:240000, atk:445, def:305},
+  {id:'ENM-ORD-SERAPH',    name:'The Hollow Seraph',                         bg:'4', root:'magical',  weak:['holy','physical'], tg:'Soundless Scream',     glyph:'👁️', efx:'var(--bone)',   hp:175000, atk:490, def:210},
+  {id:'ENM-ORD-ARCHITECT', name:'The Pale Architect',                        bg:'3', root:'magical',  weak:['physical'],        tg:'Ash-Reactor Overload', glyph:'⚗️', efx:'var(--gate)',   hp:195000, atk:475, def:235},
+  {id:'ENM-ORD-SOVEREIGN',  name:'The Dark Sovereign',                       bg:'4', root:'magical',  weak:['holy'],            tg:'The Great Stillness',  glyph:'👁️', efx:'var(--umbra)',  hp:270000, atk:545, def:285},
 ];
+// Weekly boss affixes — a rotating modifier that changes how you have to fight the boss.
+const RAID_AFFIXES=[
+  {id:'none',     name:'Standard Gate',  desc:'No modifier this week — a clean damage race.', mod:null},
+  {id:'frenzy',   name:'Bloodfrenzy',    desc:'Boss ATK +35%, DEF −25% — a glass race: out-damage its rising fury.', mod:b=>{b.stats.atk=Math.round(b.stats.atk*1.35);b.stats.def=Math.round(b.stats.def*0.75);}},
+  {id:'aegis',    name:'Ash Aegis',      desc:'Boss opens with a heavy barrier — break it fast before the clock runs.', mod:b=>{b.barrier=Math.round(b.max*0.18);}},
+  {id:'gale',     name:'Gale Cadence',   desc:'Boss SPD +45% — it acts far more often; control it or out-burst it.', mod:b=>{b.stats.spd=Math.round(b.stats.spd*1.45);}},
+  {id:'stone',    name:'Stone Hide',     desc:'Boss HP +45% and a tougher break bar — a true endurance run.', mod:b=>{b.stats.hp=Math.round(b.stats.hp*1.45);b.hp=b.max=b.stats.hp;b.toughMax=b.tough=Math.round(b.toughMax*1.5);}},
+  {id:'ward',     name:'Null Ward',      desc:'Boss shrugs off its off-element — only its true weakness bites.', mod:b=>{if(b.physRes>=0)b.physRes=0.35;if(b.magRes>=0)b.magRes=0.35;}},
+  {id:'bulwark',  name:'Cinder Bulwark', desc:'Boss DEF +45% — bring raw ATK and armor-break to crack it.', mod:b=>{b.stats.def=Math.round(b.stats.def*1.45);}},
+  {id:'overload', name:'Gate Overload',  desc:'Boss ATK +55% but HP −15% — a knife-edge sprint: burst it before it bursts you.', mod:b=>{b.stats.atk=Math.round(b.stats.atk*1.55);b.stats.hp=Math.round(b.stats.hp*0.85);b.hp=b.max=b.stats.hp;}},
+];
+function raidAffixOfWeek(){const i=((raidWeekIdx()*3+1)%RAID_AFFIXES.length+RAID_AFFIXES.length)%RAID_AFFIXES.length;return RAID_AFFIXES[i];}
 const RAIDMILE=[
   {pct:20, rw:[{t:'gold',n:60000},{t:'crystal',n:80}]},
   {pct:40, rw:[{t:'crystal',n:160},{t:'crate',n:5}]},
@@ -3475,27 +3509,29 @@ function raidWeekCheck(){const k=raidWeekIdx(); if(raidWeek.id!==k){raidWeek={id
 function raidClaimMile(i){raidWeekCheck();const m=RAIDMILE[i];if(!m||raidWeek.best<m.pct||raidWeek.claimed.includes(i))return;
   m.rw.forEach(grantReward);raidWeek.claimed.push(i);SFX.rare('E');renderCrys();renderRaid();saveGame();}
 function mkRaidBoss(){const b=raidBossOfWeek();
-  return {id:'ENM-RAID-'+b.id.split('-')[1], _artId:b.id, name:b.name,
+  const boss={id:'ENM-RAID-'+b.id.split('-')[1], _artId:b.id, name:b.name,
     stats:{hp:b.hp,atk:b.atk,def:b.def,spd:118},
     side:'enemy',hp:b.hp,max:b.hp,barrier:0,status:{},alive:true,el:null,cd:{},
     damageRoot:b.root,skillPower:1.3,traits:b.weak.includes('holy')?['undead']:[],
     physRes:b.weak.includes('physical')?-0.25:0,magRes:b.weak.includes('magical')?-0.25:0,immunities:['STS-STUN','STS-ATK-DOWN'],
     tier:'X',isBoss:true,isMini:false,tgName:b.tg,_glyph:b.glyph,_efx:b.efx,
     weakTypes:b.weak,toughMax:240,tough:240,broken:0,vuln:0};
+  const af=raidAffixOfWeek(); boss._affix=af.id; boss._affixName=af.name; if(af.mod)af.mod(boss);
+  return boss;
 }
 function raidCheck(){
   const boss=G.raidBoss; if(!boss||!boss.alive)return;
-  const pct=boss.hp/boss.max;
+  const pct=boss.hp/boss.max, nm=boss.name.split(',')[0], isSlime=(boss._artId||'').includes('SLM');
   if(G.raidPhase<2 && pct<=.66){G.raidPhase=2;boss.status['STS-ATK-UP']=99;
-    for(let i=0;i<2;i++){const a=mkEnemy('ENM-SLM-M01@12');a.name='Drowned Hand';a._glyph='🖐️';a._efx='var(--slime)';G.enemies.push(a);}
-    renderEnemies();logMsg('<b>Krul Ascended</b> — <b style="color:var(--slime)">the crown drowns you</b> · Phase 2 (enrage + adds)');}
+    if(isSlime){ for(let i=0;i<2;i++){const a=mkEnemy('ENM-SLM-M01@12');a.name='Drowned Hand';a._glyph='🖐️';a._efx='var(--slime)';G.enemies.push(a);} renderEnemies(); }
+    logMsg(`<b>${nm}</b> — <b style="color:${boss._efx}">enrages</b> · Phase 2${isSlime?' (adds!)':''}`);}
   else if(G.raidPhase<3 && pct<=.33){G.raidPhase=3;boss.status['STS-ATK-UP']=99;
     boss.barrier=Math.max(boss.barrier,Math.round(boss.max*.05));SFX.surge();
-    logMsg('<b>Krul Ascended</b> — <b style="color:var(--danger)">Tidal Cataclysm rises</b> · Phase 3');}
+    logMsg(`<b>${nm}</b> — <b style="color:var(--danger)">${boss.tgName} rises</b> · Phase 3`);}
 }
 function openRaid(){raidWeekCheck();renderRaid();renderCrys();updateHomeNav('raid');show('screen-raid');}
 function renderRaid(){
-  raidWeekCheck(); const wb=raidBossOfWeek(), best=raidWeek.best;
+  raidWeekCheck(); const wb=raidBossOfWeek(), best=raidWeek.best, af=raidAffixOfWeek();
   const art=(typeof ECUT!=='undefined'&&ECUT[wb.id])||(typeof EART!=='undefined'&&EART[wb.id])||'';
   const wk=wb.weak.map(t=>`<span class="wk">${WEAKICON[t]||''}</span>`).join('');
   const mnodes=RAIDMILE.map((m,i)=>{const reached=best>=m.pct,claimed=raidWeek.claimed.includes(i),ready=reached&&!claimed;
@@ -3511,6 +3547,7 @@ function renderRaid(){
         <div class="rhsub">Weakness ${wk} · Multi-phase · 30-round damage race</div>
         <div class="rhtimer">Resets in <b>${fmtDur(raidWeekEndsMs())}</b></div></div>
     </div>
+    ${af&&af.id!=='none'?`<div class="raidaffix"><span class="rafx-ic">✦</span><div class="rafx-tx"><b>Weekly Affix · ${af.name}</b><span>${af.desc}</span></div></div>`:''}
     <div class="raidbestwrap"><div class="raidbestlbl"><span>Your weekly best</span><b style="color:var(--warn)">${best}%</b></div>
       <div class="raidbar"><div class="raidbarf" style="width:${best}%"></div></div></div>
     <div class="emile"><div class="emlabel">Weekly Milestone Rewards · claim by best damage %</div>
@@ -3535,8 +3572,8 @@ function deployRaid(){
   applySynergy(G.heroes);
   applyEventFactionWeek(G.heroes);   // event faction-week +15% (doc 10 s3)
   $('#speedBtn').textContent=ui.speed+'×';$('#autoBtn').classList.toggle('active',ui.auto);
-  const wb=raidBossOfWeek();
-  $('#btlChapter').textContent='☠ WEEKLY RAID';
+  const wb=raidBossOfWeek(), af=raidAffixOfWeek();
+  $('#btlChapter').textContent='☠ WEEKLY RAID'+(af&&af.id!=='none'?' · '+af.name:'');
   $('#btlName').textContent=wb.name;
   setBattleBg(wb.bg);
   buildParty();renderEnemies();render();renderTelegraph();
@@ -4308,7 +4345,7 @@ function doStar(){const h=hero(curHero),pr=prog(curHero),sc=starCost(h,pr);
   if(pr.stars>=h.starCap)return;
   if(pr.dupes>0){ if(gold<sc.gold)return; pr.dupes--; gold-=sc.gold; }         // spend a stored duplicate copy (gold only)
   else { if(starShards<sc.shards||gold<sc.gold)return; starShards-=sc.shards; gold-=sc.gold; }
-  pr.stars++; SFX.rare&&SFX.rare('R'); renderHero(); saveGame();}
+  pr.stars++; questBump&&questBump('star'); SFX.rare&&SFX.rare('R'); renderHero(); saveGame();}
 function doSkill(slot){const pr=prog(curHero),lv=pr.skills[slot];if(lv>=SKILL_CAP)return;const c=skillCost(slot,lv);if(insight<c)return;
   insight-=c;pr.skills[slot]++;SFX.tap();renderHero();saveGame();}
 

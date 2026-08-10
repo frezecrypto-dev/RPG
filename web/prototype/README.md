@@ -153,8 +153,17 @@ Once in a guild, the hub has these tabs:
 ## Weekly Boss Raid
 
 The raid is now a **weekly** loop. A **rotating boss** cycles every 7 days through
-a four-boss pool (Krul, Gorthaug, the Vaultwarden, Mortmain — each with its own
-weakness for the Break system and its own battlefield), shown on a dedicated
+an **eleven-boss pool** — the four originals (Krul, Gorthaug, the Vaultwarden,
+Mortmain) plus seven Dark Order bosses (Darius, Vorena, Melis, the Ashbound Titan,
+the Hollow Seraph, the Pale Architect and the Dark Sovereign, each with their own
+art, weakness and battlefield). On top of the boss swap, a **Weekly Affix** rotates
+independently from a pool of eight (Bloodfrenzy, Ash Aegis, Gale Cadence, Stone
+Hide, Null Ward, Cinder Bulwark, Gate Overload, or a clean Standard Gate). The
+affix rewrites how you must fight — more ATK, a starting barrier, huge speed, a
+brutal HP wall, resistance to everything but the true weakness — so the boss/affix
+pair gives **88 distinct weekly combinations** and a real reason to re-tune the
+team each reset. The affix is shown on the Raid hub and on the battle header. It's
+shown on a dedicated
 **Weekly Raid** hub (bottom-bar *Raid*) with a live reset countdown. You bank a
 **weekly best damage %**, and a **milestone reward rail** (20 / 40 / 60 / 80 /
 100%) pays out Gold, Crystals, gear ore, Ash Relics, and Featured Vow tickets —
@@ -235,9 +244,11 @@ leaving a guild, and resetting all now pop a proper in-game dialog and confirm.
 
 A **📋 Quests** panel (home top-right, with a live claimable badge) tracks three
 tiers that auto-reset on their own clock — **Daily** (midnight), **Weekly**, and
-**Monthly** (rollovers detected on load and on every progress tick). Objectives
-count real play: win battles, summon, clear dungeons, spend Energy, fight raids,
-donate to your guild, claim daily logins. Progress bars fill live and a pulsing
+**Monthly** (rollovers detected on load and on every progress tick). The board is
+now much fuller — **7 daily, 7 weekly, 6 monthly** objectives that count real play:
+win battles, summon (up to 60/month), clear dungeons, spend Energy, fight raids
+(up to 12/month), enhance gear, star up heroes, win Arena, donate to your guild,
+claim daily logins. Progress bars fill live and a pulsing
 **Claim** unlocks when a goal is met; rewards span Crystals, Gold, Insight,
 Vow tickets, relics, **Energy** and **Energy Potions** — closing the Energy loop
 so active players top themselves back up. Claimed state and progress persist per
