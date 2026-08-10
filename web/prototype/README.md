@@ -444,6 +444,20 @@ tappable for a full-art dossier with bio — and the three-act arc (Embers in th
 Fractures in the Chain · Eclipse or Dawn). Character art is embedded as compact WEBP;
 the large source PNGs are kept out of the build.
 
+### Battle pause & summon glow-up
+
+In-battle you can now hit **⏸ Pause** (top bar) for an overlay with Resume, a Sound
+toggle, Settings, and **Abandon & return home** — a real pause (`G.paused` halts the
+turn loop; resume restarts it). The floating sound/settings buttons that used to
+overlap the round counter are hidden during battle and live in that menu instead.
+
+The **summon** was rebuilt as a cinematic *Ash Gate awakening*: rune rings draw and
+spin, motes of light gather to a central seam, the gate bursts with a bloom + flash,
+then each hero **materialises through the gate** in a spotlight — rarity-tinted aura,
+rotating god-rays and rune rings, a holographic gloss sweep across the card, a
+shimmering rarity ribbon, and gold explosion + falling stars for Legendaries. All
+pure CSS/SVG (injected once via `ensureSummonFx()`), so it runs anywhere.
+
 **High Cantor Melis** joins Act II as a boss: the **Silent Choir** stage (between
 The Broken Ring and the Vorena finale) pits you against her tier-X caster before a
 pre-battle exchange with Lyra. Her speaking standee is a background-removed cutout
