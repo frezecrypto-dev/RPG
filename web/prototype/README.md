@@ -456,7 +456,19 @@ spin, motes of light gather to a central seam, the gate bursts with a bloom + fl
 then each hero **materialises through the gate** in a spotlight — rarity-tinted aura,
 rotating god-rays and rune rings, a holographic gloss sweep across the card, a
 shimmering rarity ribbon, and gold explosion + falling stars for Legendaries. All
-pure CSS/SVG (injected once via `ensureSummonFx()`), so it runs anywhere.
+pure CSS/SVG (injected once via `ensureSummonFx()`), so it runs anywhere. The pull
+always **ignites blue**, then reveals its true colour — **purple for Epic, gold for
+Legendary** — with the rings whirling faster as it escalates (Legendary escalates
+hardest and longest before the gate breaks). Sound is synth-built to match: a blue
+charge riser, a colour-reveal escalation, and a rarity burst chord.
+
+**Skill clarity & targeting.** Manual play now reads clearly: every command button
+shows a plain-language brief (Single foe / AOE — hits ALL foes / Heal whole team /
+Taunt — draw enemy fire / Team buff), colour-coded by category. Damage skills flag
+the recommended **★ BEST** foe (weak, else lowest HP) alongside the WEAK/BREAK
+markers; single-ally heals enter ally-select and flag the weakest ally; AOE/team/self
+skills flash everyone they affect. Attacks got punchier too — a wind-up→strike lunge,
+a recoil hit reaction, and an extra impact boom on crits and Breaks.
 
 **High Cantor Melis** joins Act II as a boss: the **Silent Choir** stage (between
 The Broken Ring and the Vorena finale) pits you against her tier-X caster before a

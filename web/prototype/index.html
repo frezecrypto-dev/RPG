@@ -419,13 +419,14 @@
   .unit.ready:not(.turn)::after{content:"ULT";position:absolute;bottom:16px;left:50%;transform:translateX(-50%);z-index:7;
     font-size:8px;font-weight:800;letter-spacing:.1em;color:#0a0910;background:var(--hue);padding:1px 6px;border-radius:4px;animation:readytag 1.3s ease-in-out infinite}
   @keyframes readytag{0%,100%{box-shadow:0 0 0 var(--hue)}50%{box-shadow:0 0 14px var(--hue)}}
-  .unit.ally.attacking .sprite{animation:lungeAlly .4s cubic-bezier(.3,1.4,.4,1)}
-  .unit.enemy.attacking .sprite{animation:lungeEnemy .4s cubic-bezier(.3,1.4,.4,1)}
-  @keyframes lungeAlly{0%{transform:translateY(0)}35%{transform:translate(6px,-22px) scale(1.06)}100%{transform:translateY(0)}}
-  @keyframes lungeEnemy{0%{transform:translateY(0)}35%{transform:translate(-6px,20px) scale(1.06)}100%{transform:translateY(0)}}
-  .unit.hit .sprite{animation:hurtFlash .3s ease}
-  @keyframes hurtFlash{0%{transform:translateX(0);filter:drop-shadow(0 8px 7px rgba(0,0,0,.5)) brightness(2.4) saturate(.3)}
-    30%{transform:translateX(5px)}60%{transform:translateX(-4px)}100%{transform:translateX(0);filter:drop-shadow(0 8px 7px rgba(0,0,0,.5))}}
+  .unit.ally.attacking .sprite{animation:lungeAlly .44s cubic-bezier(.3,1.5,.35,1)}
+  .unit.enemy.attacking .sprite{animation:lungeEnemy .44s cubic-bezier(.3,1.5,.35,1)}
+  /* wind-up (anticipation) → explosive strike forward → settle back */
+  @keyframes lungeAlly{0%{transform:translateY(0)}18%{transform:translate(-7px,6px) scale(.95)}42%{transform:translate(16px,-30px) scale(1.1) rotate(3deg)}62%{transform:translate(10px,-14px) scale(1.04)}100%{transform:translateY(0)}}
+  @keyframes lungeEnemy{0%{transform:translateY(0)}18%{transform:translate(7px,-6px) scale(.95)}42%{transform:translate(-16px,28px) scale(1.1) rotate(-3deg)}62%{transform:translate(-10px,14px) scale(1.04)}100%{transform:translateY(0)}}
+  .unit.hit .sprite{animation:hurtFlash .34s ease}
+  @keyframes hurtFlash{0%{transform:translateX(0);filter:drop-shadow(0 8px 7px rgba(0,0,0,.5)) brightness(2.6) saturate(.2)}
+    18%{transform:translate(8px,1px) scale(1.04,.96)}40%{transform:translate(-6px,0) scale(.98,1.02)}70%{transform:translateX(3px)}100%{transform:translateX(0);filter:drop-shadow(0 8px 7px rgba(0,0,0,.5))}}
   .unit.dead .sprite,.unit.dying .sprite{animation:dieFall .5s ease forwards}
   @keyframes dieFall{0%{opacity:1}100%{opacity:0;transform:translateY(14px) rotate(8deg) scale(.9);filter:grayscale(1) brightness(.4)}}
   .unit.dead{pointer-events:none}
@@ -4528,7 +4529,7 @@ function dealDamage(src,tgt,power,root,sub){
   if(tgt.barrier>0&&sub!=='bleed'){const ab=Math.min(tgt.barrier,d);tgt.barrier-=ab;d-=ab;}
   tgt.hp=Math.max(0,tgt.hp-d); if(src.side==='ally'){gainSurge(4);src._dmg=(src._dmg||0)+d;}
   if(src.side==='ally'&&(src.stats.lifesteal||0)>0&&d>0)heal(src,Math.round(d*src.stats.lifesteal));
-  floatNum(tgt,d,isCrit?'crit':'',root,sub); shake(tgt); if(d>0)SFX[isCrit?'crit':'hit']();
+  floatNum(tgt,d,isCrit?'crit':'',root,sub); shake(tgt); if(d>0){SFX[isCrit?'crit':'hit']();if(isCrit&&SFX.impact)SFX.impact(1.1);}
   if(d>0){const kind=sub==='bleed'?'bleed':sub==='holy'?'holy':root==='magical'?'mag':'phys';impactFx(tgt,{kind,crit:isCrit});}
   // Break / Toughness: hitting a weakness drains the toughness bar; at 0 the enemy BREAKS (stun + burst + vulnerable)
   if(d>0&&src.side==='ally'&&tgt.side==='enemy'&&matchesWeak(tgt,root,sub)){
@@ -4544,7 +4545,7 @@ function triggerBreak(e,src){
   e.broken=1; e.vuln=2; e.status['STS-STUN']=1;   // skips its next turn, +25% damage taken for 2 rounds
   const bd=Math.round(e.max*0.05 + statOf(src,'atk')*1.6);
   e.hp=Math.max(0,e.hp-bd); if(src.side==='ally'){src._dmg=(src._dmg||0)+bd;gainSurge(10);}
-  breakPop(e); floatNum(e,bd,'crit','magical'); impactFx(e,{kind:'mag',crit:true}); battleShake(true); SFX.crit&&SFX.crit();
+  breakPop(e); floatNum(e,bd,'crit','magical'); impactFx(e,{kind:'mag',crit:true}); battleShake(true); SFX.crit&&SFX.crit(); SFX.impact&&SFX.impact(1.3);
   if(e.el){e.el.classList.add('breaking');setTimeout(()=>e.el&&e.el.classList.remove('breaking'),640);}
   logMsg(`<b style="color:#7fe9ff">BREAK!</b> <b>${e.name}</b> — stunned & vulnerable`);
 }
