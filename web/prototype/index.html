@@ -864,6 +864,8 @@
   .rcard .g,.hcard .g{border-top:2px solid var(--rc,transparent)}
   .rgem{position:absolute;top:5px;left:5px;z-index:4;width:15px;height:15px;border-radius:4px;display:flex;align-items:center;justify-content:center;
     font-size:9px;font-weight:800;color:#0a0910;background:var(--rc,var(--rC));box-shadow:0 1px 4px rgba(0,0,0,.6);letter-spacing:0}
+  .dupebadge{position:absolute;top:5px;right:5px;z-index:4;min-width:16px;height:16px;padding:0 4px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+    font-size:9px;font-weight:800;color:#0a0910;background:linear-gradient(180deg,#ffe08a,#ffb43a);box-shadow:0 0 8px rgba(255,180,60,.6),0 1px 4px rgba(0,0,0,.6);letter-spacing:.02em}
   .rar-L .rgem{box-shadow:0 0 8px var(--rL),0 1px 4px rgba(0,0,0,.6)}
   .rar-E .rgem{box-shadow:0 0 7px color-mix(in srgb,var(--rE) 70%,transparent),0 1px 4px rgba(0,0,0,.6)}
   .rcard.rar-L .g,.hcard.rar-L .g,.rcard.rar-E .g,.hcard.rar-E .g{position:relative}
@@ -2289,7 +2291,7 @@ let guild={joined:false, isLeader:false, name:'', tag:'', desc:'', banner:{emble
 let progress={};
 const RATES={L:0.03,E:0.14,R:0.38,C:0.45};
 function prog(id){if(!progress[id]){const h=hero(id);progress[id]={level:20,stars:h?h.startStars:1,skills:{S1:1,S2:1,S3:1},asc:0};}
-  if(!progress[id].skills)progress[id].skills={S1:1,S2:1,S3:1};if(progress[id].asc==null)progress[id].asc=0;return progress[id];}
+  if(!progress[id].skills)progress[id].skills={S1:1,S2:1,S3:1};if(progress[id].asc==null)progress[id].asc=0;if(progress[id].dupes==null)progress[id].dupes=0;return progress[id];}
 const ASC_CAP=6;
 const ascCost=rank=>({relics:2+rank, gold:20000*(rank+1)});
 const SKILL_CAP=5;
@@ -3718,7 +3720,7 @@ function _resolvePull(n,opts){opts=opts||{};
   const cards=results.map(rar=>{
     const h=drawOne(rar);
     const isNew=!owned.has(h.id);
-    if(isNew){owned.add(h.id);prog(h.id);} else starShards+=DUPE_SHARDS[rar];
+    if(isNew){owned.add(h.id);prog(h.id);} else {prog(h.id).dupes++;}   // duplicate → a copy kept on the hero (use it to star up)
     return {h,rar,isNew};
   });
   renderCrys();
@@ -3839,7 +3841,7 @@ function showPulls(cards){
   cards.forEach((c)=>{
     const el=document.createElement('div');
     el.className='pr '+c.rar+' revealed'; el.style.setProperty('--rc',`var(${RAR[c.rar]})`);   // grid = final summary, already shown big
-    el.innerHTML=`<div class="flr"></div><div class="tag ${c.isNew?'new':'dupe'}">${c.isNew?'NEW':'+'+DUPE_SHARDS[c.rar]+' shard'}</div>
+    el.innerHTML=`<div class="flr"></div><div class="tag ${c.isNew?'new':'dupe'}">${c.isNew?'NEW':'◈ COPY'}</div>
       <div class="g">${classArt(c.h.class,44)}${artImg(c.h.id,c.h.name)}</div><div class="n">${c.h.name}</div>`;
     grid.appendChild(el);
   });
@@ -3971,7 +3973,7 @@ function giSpotShow(card, idx, total){
       <div class="sp-pedestal"></div>
     </div>
     <div class="sp-name">${card.h.name}</div>
-    <div class="sp-tag ${card.isNew?'new':'dupe'}">${card.isNew?'✦ NEW':'+'+DUPE_SHARDS[rar]+' Soul Shards'}</div>
+    <div class="sp-tag ${card.isNew?'new':'dupe'}">${card.isNew?'✦ NEW':'◈ DUPLICATE — copy kept · star up in Heroes'}</div>
     <div class="sp-skip">tap to skip</div>`;
   wireArt(spot);
   if(rar==='L'){ SFX.rare&&SFX.rare('L'); $('#pullResults').classList.add('introShake');
@@ -4053,7 +4055,7 @@ function claimForge(rarity,cost,pickId){
   if(pickId)h=hero(pickId);
   else{const fresh=DATA.heroes.filter(x=>x.rarity===rarity&&!owned.has(x.id));
     const src=fresh.length?fresh:DATA.heroes.filter(x=>x.rarity===rarity);h=src[0|Math.random()*src.length];}
-  const isNew=!owned.has(h.id);if(isNew){owned.add(h.id);prog(h.id);}else starShards+=DUPE_SHARDS[rarity];
+  const isNew=!owned.has(h.id);if(isNew){owned.add(h.id);prog(h.id);}else{prog(h.id).dupes++;}
   renderCrys();saveGame();showPulls([{h,rar:rarity,isNew}]);
 }
 
@@ -4065,7 +4067,7 @@ function buildHeroGrid(){
   DATA.heroes.filter(h=>owned.has(h.id)).sort((a,b)=>RORDER[a.rarity]-RORDER[b.rarity]).forEach(h=>{
     const c=CLASS[h.class],pr=prog(h.id),el=document.createElement('div');
     el.className='hcard rar-'+h.rarity;el.style.setProperty('--hue',`var(${c.hue})`);el.style.setProperty('--rc',`var(${RAR[h.rarity]})`);
-    el.innerHTML=`<div class="rgem">${h.rarity}</div><div class="g">${artImg(h.id,h.name)}</div>
+    el.innerHTML=`<div class="rgem">${h.rarity}</div>${pr.dupes>0?`<div class="dupebadge" title="Duplicate copies — spend on a star-up">◈${pr.dupes}</div>`:''}<div class="g">${artImg(h.id,h.name)}</div>
       <div class="rn">${h.name}</div><div class="lv">Lv ${pr.level} · ${'★'.repeat(pr.stars)}</div>
       ${classMetaHTML(h,26)}`;
     el.addEventListener('click',()=>openHero(h.id));box.appendChild(el);
@@ -4269,6 +4271,7 @@ function renderHero(){
   else{bL.disabled=gold<lc;bL.querySelector('small').innerHTML='<i class="cur gold"></i> '+lc.toLocaleString();}
   const sc=starCost(h,pr),bS=$('#btnStar');
   if(pr.stars>=h.starCap){bS.disabled=true;bS.querySelector('small').textContent='max ★';}
+  else if(pr.dupes>0){bS.disabled=gold<sc.gold;bS.querySelector('small').innerHTML='◈ copy · <i class="cur gold"></i> '+(sc.gold/1000)+'k';}
   else{bS.disabled=(starShards<sc.shards||gold<sc.gold);bS.querySelector('small').innerHTML='<i class="cur shard"></i> '+sc.shards+' · <i class="cur gold"></i> '+(sc.gold/1000)+'k';}
   renderHdSlots();
   renderHdGear();
@@ -4303,7 +4306,10 @@ function doAscend(){const h=hero(curHero),pr=prog(curHero);
 function doLevel(){const pr=prog(curHero),cap=DATA.levelCapByStar[pr.stars],lc=levelCost(pr);
   if(pr.level>=cap||gold<lc)return;gold-=lc;pr.level++;renderHero();saveGame();}
 function doStar(){const h=hero(curHero),pr=prog(curHero),sc=starCost(h,pr);
-  if(pr.stars>=h.starCap||starShards<sc.shards||gold<sc.gold)return;starShards-=sc.shards;gold-=sc.gold;pr.stars++;renderHero();saveGame();}
+  if(pr.stars>=h.starCap)return;
+  if(pr.dupes>0){ if(gold<sc.gold)return; pr.dupes--; gold-=sc.gold; }         // spend a stored duplicate copy (gold only)
+  else { if(starShards<sc.shards||gold<sc.gold)return; starShards-=sc.shards; gold-=sc.gold; }
+  pr.stars++; SFX.rare&&SFX.rare('R'); renderHero(); saveGame();}
 function doSkill(slot){const pr=prog(curHero),lv=pr.skills[slot];if(lv>=SKILL_CAP)return;const c=skillCost(slot,lv);if(insight<c)return;
   insight-=c;pr.skills[slot]++;SFX.tap();renderHero();saveGame();}
 
