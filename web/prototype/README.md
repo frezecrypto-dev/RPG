@@ -462,6 +462,19 @@ Legendary** — with the rings whirling faster as it escalates (Legendary escala
 hardest and longest before the gate breaks). Sound is synth-built to match: a blue
 charge riser, a colour-reveal escalation, and a rarity burst chord.
 
+**Story cast redrawn.** All nine story characters (Serin, Lyra, Kael, Vorena,
+Darius, the Dark Sovereign, Ashbound Titan, Hollow Seraph, High Cantor Melis) were
+regenerated in the playable-roster art style — dark-fantasy anime, premium mobile
+gacha quality, clean lineart with painterly rendering, high-contrast rim light and
+crisp readable silhouettes — then background-removed to transparent cutouts. The new
+art drives the dossier cards, the pre-battle dialogue standees, and the in-battle
+boss standees from one `STORYART`/`STORYCUT` set.
+
+**Duplicate heroes are kept, not sold.** Pulling a hero you already own stores a
+**copy** on that hero (a gold ◈ badge on the Heroes card) instead of auto-converting
+to shards; a star-up spends a stored copy (gold only), so dupes visibly power up that
+exact unit in your roster.
+
 **Skill clarity & targeting.** Manual play now reads clearly: every command button
 shows a plain-language brief (Single foe / AOE — hits ALL foes / Heal whole team /
 Taunt — draw enemy fire / Team buff), colour-coded by category. Damage skills flag
