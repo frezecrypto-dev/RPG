@@ -1464,6 +1464,22 @@
   .spmile.reached{opacity:1;border-color:color-mix(in srgb,#7fe9ff 45%,var(--line));background:rgba(127,233,255,.08)}
   .spmile b{display:block;font-family:var(--font-title);font-size:13px;color:#cbb8ff} .spmile span{font-size:8.5px;color:var(--faint)}
   .spnote{font-size:10.5px;color:var(--muted);line-height:1.5;margin-top:12px}
+  /* Guild War */
+  .gwtop{border:1px solid var(--danger);border-radius:14px;padding:12px;background:linear-gradient(180deg,rgba(255,59,92,.08),transparent);margin-bottom:10px}
+  .gwvs{text-align:center;font-size:12px;color:var(--muted)} .gwvs b{color:var(--ink)} .gwvs .riv{color:#ff8a9c} .gwvs span{margin:0 6px;font-size:10px;color:var(--faint)}
+  .gwscore{display:flex;align-items:center;justify-content:center;gap:12px;margin:5px 0}
+  .gws{font-family:var(--font-title);font-size:30px} .gws.me{color:var(--warn)} .gws.riv{color:#ff8a9c} .gwsx{color:var(--faint)}
+  .gwbarwrap{margin:2px 0} .gwbar{height:7px;border-radius:5px;background:rgba(6,5,14,.7);overflow:hidden} .gwbarf{height:100%;background:linear-gradient(90deg,var(--warn),#ffe6a8);border-radius:5px}
+  .gwtimer{text-align:center;font-size:10px;color:var(--muted);margin-top:6px}
+  .gwnodes{display:flex;flex-direction:column;gap:9px}
+  .gwnode{border:1px solid var(--line);border-radius:13px;padding:11px 12px;background:var(--panel2)}
+  .gwnode.cap{border-color:color-mix(in srgb,var(--good,#54d38a) 45%,var(--line));background:rgba(84,211,138,.06);opacity:.9}
+  .gwnhead{display:flex;justify-content:space-between;align-items:center} .gwnhead b{font-family:var(--font-title);font-size:15px}
+  .gwpts{font-size:10px;font-weight:700;color:var(--warn);background:rgba(255,207,107,.12);padding:2px 8px;border-radius:99px}
+  .gwdef{display:flex;gap:6px;margin:8px 0 6px}
+  .gwh{flex:0 0 auto;width:34px;height:34px;border-radius:8px;border:1px solid color-mix(in srgb,var(--hue) 45%,var(--line));display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--hue) 14%,var(--panel))}
+  .gwmeta{font-size:10px;color:var(--faint)} .gwrw{font-size:10.5px;color:var(--muted);margin:5px 0 8px}
+  .gwatk{width:100%} .gwcapd{text-align:center;font-size:12px;font-weight:700;color:var(--good,#54d38a);padding:6px}
   .raidbestwrap{padding:2px}
   .raidbestlbl{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:4px}
   .raidbar{height:10px;border-radius:6px;background:#221c34;overflow:hidden;border:1px solid var(--line)}
@@ -2325,7 +2341,8 @@ function questPeriodCheck(){const t=new Date().toDateString(),w=Math.floor(Date.
 function questBump(key,n){n=n||1;questPeriodCheck();['d','w','m'].forEach(tr=>{quests[tr].prog[key]=(quests[tr].prog[key]||0)+n;});}
 let guild={joined:false, isLeader:false, name:'', tag:'', desc:'', banner:{emblem:'🐺',color:'crimson',shape:'shield'},
   level:1, xp:0, marks:0, donateDate:'', donatedToday:0, roster:null,
-  chat:[], shopWeek:-1, shopBought:{}, boss:{week:-1, myDmg:0, claimed:false}, tab:'chat'}; // guild (doc 07): sim co-op
+  chat:[], shopWeek:-1, shopBought:{}, boss:{week:-1, myDmg:0, claimed:false},
+  war:{week:-1, captured:[false,false,false,false,false], claimed:false, merits:0}, tab:'chat'}; // guild (doc 07): sim co-op
 let progress={};
 const RATES={L:0.03,E:0.14,R:0.38,C:0.45};
 function prog(id){if(!progress[id]){const h=hero(id);progress[id]={level:20,stars:h?h.startStars:1,skills:{S1:1,S2:1,S3:1},asc:0};}
@@ -3189,7 +3206,9 @@ function guildWeekIdx(){return Math.floor(Date.now()/(7*864e5));}
 function guildDayCheck(){const t=new Date().toDateString();if(guild.donateDate!==t){guild.donateDate=t;guild.donatedToday=0;}}
 function guildWeekCheck(){const w=guildWeekIdx();
   if(guild.shopWeek!==w){guild.shopWeek=w;guild.shopBought={};}
-  if(guild.boss.week!==w){guild.boss={week:w,myDmg:0,claimed:false};}}
+  if(guild.boss.week!==w){guild.boss={week:w,myDmg:0,claimed:false};}
+  if(!guild.war)guild.war={week:-1,captured:[false,false,false,false,false],claimed:false,merits:0};
+  if(guild.war.week!==w){const merits=guild.war.merits||0;guild.war={week:w,captured:[false,false,false,false,false],claimed:false,merits};}}
 function guildBoardMembers(){const w=guildWeekIdx();
   const base=(guild.roster&&guild.roster.length)?guild.roster:[{n:'You',r:guild.isLeader?'Leader':'Member',c:0},...GUILD_MEMBERS];
   return base.map((m,i)=> m.n==='You' ? {...m,r:guild.isLeader?'Leader':'Member',c:guild.boss.myDmg}
@@ -3210,7 +3229,7 @@ function renderGuild(){
   const tabsEl=$('#guildTabs'), top=$('#guildTop'), body=$('#guildBody');
   if(!guild.joined){ tabsEl.style.display='none'; top.innerHTML=''; body.className='scrollmode'; renderGuildJoin(body); return; }
   tabsEl.style.display='flex';
-  const tablist=[['chat','💬 Chat'],['donate','🎁 Donate'],['shop','⚒ Shop'],['boss','☠ Boss']];
+  const tablist=[['chat','💬 Chat'],['donate','🎁 Donate'],['shop','⚒ Shop'],['boss','☠ Boss'],['war','⚔ War']];
   if(guild.isLeader)tablist.push(['manage','⚙ Manage']);
   if(!tablist.some(t=>t[0]===guild.tab))guild.tab='chat';
   tabsEl.innerHTML=tablist.map(([k,l])=>`<button class="gtab ${k===guild.tab?'on':''}" data-gt="${k}">${l}</button>`).join('');
@@ -3254,6 +3273,7 @@ function renderGuild(){
           <button class="eibuy" data-gi="${i}" ${sold||!afford?'disabled':''}>${sold?'Sold out':`💠 ${it.cost}`}</button></div>`;}).join('')}</div>`;
     body.querySelectorAll('.eibuy').forEach(b=>b.addEventListener('click',()=>guildBuy(+b.dataset.gi)));
   }
+  else if(guild.tab==='war'){ renderGuildWar(body); }
   else { // boss
     const goal=guildGoal(), total=guildTotal(), pct=Math.min(100,Math.round(100*total/goal)), done=total>=goal;
     const art=(typeof ECUT!=='undefined'&&ECUT[GUILDBOSS.id])||(typeof EART!=='undefined'&&EART[GUILDBOSS.id])||'';
@@ -3314,6 +3334,88 @@ function endGuildBoss(win){
 function guildBossClaim(){guildWeekCheck();if(guildTotal()<guildGoal()||guild.boss.claimed)return;
   guild.boss.claimed=true; crystals+=600; gold+=300000; relics+=8; guild.marks+=200;
   SFX.rare('L');renderCrys();renderGuild();saveGame();}
+
+/* ---------- GUILD WAR (weekly): five fronts vs a rival guild ---------- */
+const GWAR_RIVAL='The Cinder Pact';
+const GWAR_NODES=[
+  {name:'Outer Gate',     lvl:66, stars:4, pts:1, rw:[{t:'gold',n:80000},{t:'crystal',n:80}]},
+  {name:'Ash Bastion',    lvl:74, stars:5, pts:1, rw:[{t:'crystal',n:120},{t:'crate',n:5}]},
+  {name:'Reactor Wall',   lvl:82, stars:5, pts:2, rw:[{t:'relic',n:3},{t:'ore',n:6}]},
+  {name:'Choir Spire',    lvl:90, stars:6, pts:2, rw:[{t:'crystal',n:200},{t:'ticket',n:1}]},
+  {name:'Sovereign Keep', lvl:100,stars:6, pts:3, rw:[{t:'crystal',n:350},{t:'ticket',n:2},{t:'relic',n:4}]},
+];
+function gwarDefenseTeam(i){
+  const byR=r=>DATA.heroes.filter(h=>h.rarity===r);
+  const L=byR('L'),E=byR('E'),R=byR('R');
+  const layouts=[[R,R,R,E,E],[R,E,E,E,R],[E,E,E,L,E],[E,L,E,L,E],[L,L,E,L,L]];
+  const rows=layouts[i]||[E,E,E,E,E];
+  return rows.map((pool,s)=>{const p=pool&&pool.length?pool:DATA.heroes;return p[(i*7+s*13+3)%p.length].id;});
+}
+function gwarScore(){return GWAR_NODES.reduce((a,n,i)=>a+(guild.war.captured[i]?n.pts:0),0);}
+function gwarMaxScore(){return GWAR_NODES.reduce((a,n)=>a+n.pts,0);}
+function gwarRivalScore(){const left=((guildWeekIdx()+1)*7*864e5-Date.now())/(7*864e5);const elapsed=Math.min(1,Math.max(0,1-left));
+  return Math.min(gwarMaxScore(),Math.floor(gwarMaxScore()*elapsed*0.85));}
+function renderGuildWar(body){
+  guildWeekCheck();
+  const my=gwarScore(), riv=gwarRivalScore(), max=gwarMaxScore(), allDone=GWAR_NODES.every((n,i)=>guild.war.captured[i]);
+  const nodes=GWAR_NODES.map((n,i)=>{const cap=guild.war.captured[i];
+    const def=gwarDefenseTeam(i).map(id=>hero(id)).filter(Boolean);
+    const rw=n.rw.map(r=>{const m=BPRWD[r.t]||BPRWD.cos;return `${m.ic} ${r.n?m.lbl(r.n):m.lbl()}`;}).join(' · ');
+    const heads=def.slice(0,5).map(h=>`<span class="gwh" style="--hue:var(${CLASS[h.class].hue})" title="${h.name} · ${CLASS[h.class].l}">${classChip(h.class,22)}</span>`).join('');
+    return `<div class="gwnode ${cap?'cap':''}">
+      <div class="gwnhead"><b>${n.name}</b><span class="gwpts">+${n.pts} pt${n.pts>1?'s':''}</span></div>
+      <div class="gwdef">${heads}</div>
+      <div class="gwmeta">Enemy Lv ${n.lvl} · ${'★'.repeat(n.stars)}</div>
+      <div class="gwrw">${rw}</div>
+      ${cap?'<div class="gwcapd">✓ Captured</div>':`<button class="cta gwatk" data-gw="${i}">Attack ▸</button>`}</div>`;}).join('');
+  body.innerHTML=`<div class="gwtop">
+      <div class="gwvs"><b>${guild.name||'Your Lodge'}</b> <span>vs</span> <b class="riv">${GWAR_RIVAL}</b></div>
+      <div class="gwscore"><span class="gws me">${my}</span><span class="gwsx">—</span><span class="gws riv">${riv}</span></div>
+      <div class="gwbarwrap"><div class="gwbar"><div class="gwbarf" style="width:${Math.round(100*my/max)}%"></div></div></div>
+      <div class="gwtimer">War ends in <b>${fmtDur(((guildWeekIdx()+1)*7*864e5)-Date.now())}</b> · 💠 War Merits <b style="color:#7fe9ff">${guild.war.merits}</b></div>
+    </div>
+    <div class="gwnodes">${nodes}</div>
+    ${allDone?`<button class="cta" id="gwChest" style="width:100%;margin-top:10px" ${guild.war.claimed?'disabled':''}>${guild.war.claimed?'War Chest claimed':'⚔ Claim War Chest 🎁'}</button>`
+      :`<div class="raidnote">Capture all five fronts to beat <b>${GWAR_RIVAL}</b> and unlock the War Chest. Each front is a defense team — bring the right counters.</div>`}`;
+  body.querySelectorAll('.gwatk').forEach(b=>b.addEventListener('click',()=>guildWarAttack(+b.dataset.gw)));
+  const gc=$('#gwChest');if(gc)gc.addEventListener('click',guildWarClaim);
+  wireArt(body);
+}
+function guildWarAttack(i){ if(guild.war.captured[i])return;
+  const ids=autoTeam(); if(!ids.length){toast('Summon some heroes first.');return;} team=ids;
+  if(!energyPay(8))return; deployGuildWar(i); }
+function deployGuildWar(i){
+  const n=GWAR_NODES[i]; curHard=false;
+  const foes=gwarDefenseTeam(i).map((id,idx)=>mkFoe(id,n.lvl,n.stars,idx===0));
+  G={heroes:team.map(mkHero),waves:[foes],wi:0,enemies:foes,surge:0,round:1,over:false,busy:false,auto:ui.auto,speed:ui.speed,telegraph:null,hard:false,gwar:{node:i},awaiting:null,pendingSkill:null};
+  applySynergy(G.heroes);applyEventFactionWeek(G.heroes);
+  $('#speedBtn').textContent=ui.speed+'×';$('#autoBtn').classList.toggle('active',ui.auto);$('#autoBtn').textContent=ui.auto?'Auto ▶':'Manual';
+  $('#btlChapter').textContent='⚔ GUILD WAR · '+GWAR_RIVAL;
+  $('#btlName').textContent=n.name;
+  setBattleBg('3');
+  buildParty();renderEnemies();render();renderTelegraph();
+  $('#roundNum').textContent='1';$('#result').style.display='none';$('#wavepip').textContent='';
+  logMsg('The '+n.name+' stands against you…');logSynergies(G.heroes.map(u=>u.id));
+  show('screen-battle');turnQueue=[];setTimeout(step,450);
+}
+function endGuildWar(win){
+  const i=G.gwar.node, n=GWAR_NODES[i]; setMvp(win); let sub='';
+  if(win){
+    guildWeekCheck(); guild.war.captured[i]=true;
+    n.rw.forEach(grantReward); const m=2+n.pts; guild.war.merits+=m;
+    sub=`<b style="color:var(--warn)">${n.name} captured!</b> +${n.pts} war point${n.pts>1?'s':''} · <b style="color:#7fe9ff">💠 +${m} War Merits</b>.<br>Node rewards granted — push the next front to beat ${GWAR_RIVAL}.`;
+    saveGame();
+  } else { sub=`Your team was pushed back from <b>${n.name}</b>. Re-tune your counters and attack again — the front is still open.`; }
+  const r=$('#result');r.style.display='flex';resultCinematic(win);
+  $('#resEyebrow').textContent=win?'Front captured':'Assault repelled';
+  const v=$('#resVerdict');v.textContent=win?'VICTORY':'DEFEAT';v.className='verdict '+(win?'win':'lose');
+  $('#resSub').innerHTML=sub;
+  const nx=$('#resNext');nx.textContent='War';nx.onclick=()=>{guild.tab='war';openGuild();};
+  $('#resMap').textContent='Leave'; window._resHub=()=>{guild.tab='war';openGuild();};
+}
+function guildWarClaim(){ guildWeekCheck(); if(!GWAR_NODES.every((n,i)=>guild.war.captured[i])||guild.war.claimed)return;
+  guild.war.claimed=true; crystals+=500; gold+=250000; relics+=6; guild.war.merits+=10; guild.marks+=150;
+  SFX.rare('L'); renderCrys(); renderGuild(); saveGame(); }
 /* ----- create / join a guild ----- */
 function renderGuildJoin(body){
   if(guildView==='create'){renderGuildCreate(body);return;}
@@ -5241,6 +5343,7 @@ function endGame(win){
   if(G.trial)return endTrial(win);
   if(G.dungeon)return endDungeon(win);
   if(G.spire)return endSpire(win);
+  if(G.gwar)return endGuildWar(win);
   if(G.guildBoss)return endGuildBoss(win);
   const H=curHard;
   const firstNormal = win && !cleared.has(curStage.id);
