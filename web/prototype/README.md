@@ -172,6 +172,24 @@ there's a fresh chase every week on top of the all-time best. **Boss loot (gear)
 now drops only when you actually defeat the boss** — a partial run still pays
 currency by damage %, but no kill means no gear, so the chase has a real prize.
 
+## Guild War (weekly)
+
+A new guild tab (⚔ **War**) pits your lodge against a rival guild (**The Cinder
+Pact**) across **five fortified fronts** each week. Every front is defended by a
+scaling AI hero team (higher rarities and levels the deeper you push), previewed by
+its class composition so you can bring the right counters. Capturing a front is an
+arena-style battle that banks **war points**, the front's reward, and **War Merits**;
+beat the rival's (simulated) score and, once all five fall, claim the **War Chest**.
+The war resets weekly (Merits carry over). Reuses the battle engine via `mkFoe`;
+`endGuildWar` handles scoring and routes back to the War tab.
+
+## Battle feel
+
+On top of the earlier juice pass (wind-up→strike lunge, hit recoil, impact booms,
+richer synth SFX), **casters now fling a glowing bolt** at their target on magical
+hits — a projectile that flies from attacker to target and orients to its travel
+direction, so ranged/magic attacks read distinctly from melee lunges.
+
 ## Ash Spire — endless ascent (endgame)
 
 A long-form endgame ladder reached from the Raid hub (🗼 **Ash Spire**). You climb

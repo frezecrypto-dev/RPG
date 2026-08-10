@@ -1079,6 +1079,10 @@
     transform:rotate(var(--rot,-32deg)) scaleX(.2);animation:slashOut .34s ease-out forwards}
   @keyframes slashOut{0%{opacity:0;transform:rotate(var(--rot,-32deg)) scaleX(.2)}
     35%{opacity:1;transform:rotate(var(--rot,-32deg)) scaleX(1)}100%{opacity:0;transform:rotate(var(--rot,-32deg)) scaleX(1.05)}}
+  /* caster projectile — a bolt that flies from the attacker to its target */
+  .boltfx{position:absolute;width:16px;height:5px;border-radius:3px;pointer-events:none;z-index:9;
+    box-shadow:0 0 12px currentColor,0 0 4px #fff;filter:drop-shadow(0 0 3px currentColor);animation:boltFly .22s linear forwards}
+  @keyframes boltFly{0%{transform:translate(0,0) scaleX(.6);opacity:.2}18%{opacity:1}100%{transform:translate(var(--dx),var(--dy)) scaleX(1);opacity:1}}
 
   /* ============ map path life ============ */
   .track{background:repeating-linear-gradient(180deg,var(--umbra) 0 6px,transparent 6px 20px)!important;
@@ -4776,6 +4780,7 @@ function statOf(u,k){let v=u.stats[k];const m={'STS-ATK-UP':['atk',.3],'STS-ATK-
 function dealDamage(src,tgt,power,root,sub){
   if(!tgt.alive)return 0;
   lunge(src);   // attacker lunges toward its target
+  if(root==='magical')projectileFx(src,tgt,FXCOL[sub==='holy'?'holy':'mag']);   // casters fling a bolt
   let atk=statOf(src,'atk'),def=statOf(tgt,'def'); if(sub==='pierce')def*=.7;
   const mit=1000/(1000+def), res=root==='physical'?(tgt.physRes||0):(tgt.magRes||0);
   let elem=res<=-.2?1.25:res>=.2?.85:1; if(sub==='holy'&&(tgt.traits||[]).includes('undead'))elem*=1.25;
@@ -5220,6 +5225,18 @@ function weakPop(u){const host=u.el;if(!host)return;const r=host.getBoundingClie
   s.style.left=(r.left-a.left+r.width/2-30)+'px';s.style.top=(r.top-a.top+r.height*.2)+'px';
   $('#fx').appendChild(s);setTimeout(()=>s.remove(),900);}
 const FXCOL={phys:'#ffd9a0',mag:'#c6a8ff',bleed:'#ff6b8a',heal:'#7dffb0',holy:'#fff2b0'};
+// a glowing bolt that flies from a caster to its target (cosmetic)
+function projectileFx(src,tgt,col){
+  if(!src||!tgt||!src.el||!tgt.el)return;
+  const a=$('#app').getBoundingClientRect(), s=src.el.getBoundingClientRect(), t=tgt.el.getBoundingClientRect();
+  const x0=s.left-a.left+s.width/2, y0=s.top-a.top+s.height*0.42, x1=t.left-a.left+t.width/2, y1=t.top-a.top+t.height*0.46;
+  const ang=Math.atan2(y1-y0,x1-x0)*180/Math.PI;
+  const p=document.createElement('div'); p.className='boltfx';
+  p.style.left=x0+'px'; p.style.top=y0+'px'; p.style.color=col; p.style.background=col;
+  p.style.setProperty('--dx',(x1-x0).toFixed(0)+'px'); p.style.setProperty('--dy',(y1-y0).toFixed(0)+'px');
+  p.style.rotate=ang.toFixed(0)+'deg';
+  $('#fx').appendChild(p); setTimeout(()=>{if(p.parentNode)p.remove();},260);
+}
 function impactFx(u,opt){opt=opt||{};const host=u.el;if(!host)return;
   const r=host.getBoundingClientRect(),a=$('#app').getBoundingClientRect();
   const cx=r.left-a.left+r.width/2, cy=r.top-a.top+r.height*(opt.kind==='heal'?.6:.46);
