@@ -341,6 +341,23 @@
   .cmdbtn.ult:not([disabled]){border-color:color-mix(in srgb,var(--warn) 55%,var(--line));background:linear-gradient(180deg,rgba(60,44,20,.7),rgba(20,14,8,.85))}
   .cmdbtn.ult:not([disabled]) .ci{color:var(--warn)}
   .cmdbtn[disabled]{opacity:.4;cursor:default}
+  .cmdbtn .cbrief{font-size:8px;line-height:1.15;text-align:center;color:var(--muted);min-height:19px;display:flex;align-items:center;padding:0 1px}
+  /* skill category accents — tell damage / AOE / heal / buff / taunt / debuff apart at a glance */
+  .cmdbtn.cat-dmg .ci{color:#ff8a6b} .cmdbtn.cat-aoe .ci{color:#ffb454} .cmdbtn.cat-heal .ci{color:#54d38a}
+  .cmdbtn.cat-buff .ci{color:#7fa8ff} .cmdbtn.cat-taunt .ci{color:#ffcf6b} .cmdbtn.cat-debuff .ci{color:#c58cff}
+  .cmdbtn.cat-heal .cbrief{color:#8fe3b6} .cmdbtn.cat-aoe .cbrief{color:#ffcf9a} .cmdbtn.cat-taunt .cbrief{color:#ffe6a8}
+  .cmdbtn.cat-heal{border-color:color-mix(in srgb,#54d38a 40%,var(--line))} .cmdbtn.cat-aoe{border-color:color-mix(in srgb,#ffb454 40%,var(--line))}
+  .cmdbtn.cat-taunt{border-color:color-mix(in srgb,#ffcf6b 40%,var(--line))}
+  /* ally (heal) target highlight + recommended badges */
+  .unit.allytgt .sprite{filter:drop-shadow(0 0 12px #54d38a) drop-shadow(0 8px 8px rgba(0,0,0,.55));animation:tgtpulse 1s ease-in-out infinite}
+  .unit .bestbadge{position:absolute;bottom:-3px;left:50%;transform:translateX(-50%);z-index:7;font-size:8px;font-weight:800;letter-spacing:.06em;
+    color:#0b0a12;background:var(--warn,#ffcf6b);padding:1px 6px;border-radius:99px;box-shadow:0 1px 5px rgba(0,0,0,.5);white-space:nowrap}
+  .unit .bestbadge.aid{background:#54d38a}
+  .unit.besttgt .sprite{filter:drop-shadow(0 0 14px var(--warn,#ffcf6b)) drop-shadow(0 8px 8px rgba(0,0,0,.55))}
+  .unit.allytgt.besttgt .sprite{filter:drop-shadow(0 0 14px #54d38a) drop-shadow(0 8px 8px rgba(0,0,0,.55))}
+  /* AOE / team / self affected flash */
+  .unit.aoeflash .sprite{animation:aoeflash .62s ease}
+  @keyframes aoeflash{0%{filter:brightness(1)}30%{filter:brightness(2.2) drop-shadow(0 0 14px #fff)}100%{filter:brightness(1)}}
   /* enemy target selection */
   .unit.targetable{cursor:pointer}
   .unit.targetable .sprite{filter:drop-shadow(0 0 10px var(--warn)) drop-shadow(0 8px 8px rgba(0,0,0,.55));animation:tgtpulse 1s ease-in-out infinite}
@@ -4710,16 +4727,39 @@ function autoActAlly(u){
 }
 /* ---------- tactical command layer (doc 02 s11 manual play) ---------- */
 function needsEnemyTarget(sk){return sk.target==='single_enemy'||sk.target==='splash2';}
+function needsAllyTarget(sk){return sk.target==='single_ally';}
+// plain-language description of what a skill actually does (target + effect)
+const STATUS_WORD={'TAUNT':'taunt','DR-25':'guard','ATK-UP':'ATK↑','DEF-UP':'DEF↑','SPD-UP':'SPD↑','IMMUNITY':'immune','DEF-DOWN':'DEF↓','SPD-DOWN':'slow','ARMOR-BREAK':'armor break','BLEED':'bleed','STUN':'stun','MARK':'mark','BIND':'bind','DECAY':'decay','COUNTER':'counter','STEALTH':'stealth'};
+function statusWord(st){for(const k in STATUS_WORD)if((st||'').indexOf(k)>=0)return STATUS_WORD[k];return '';}
+function skillBrief(sk){
+  const ef=sk.effects||[], t=sk.target, dmg=(sk.power||0)>0;
+  const has=v=>ef.some(e=>e.verb===v);
+  const words=[]; ef.forEach(e=>{if(e.verb==='applyStatus'){const w=statusWord(e.status);if(w&&words.indexOf(w)<0)words.push(w);}});
+  const taunt=ef.some(e=>e.verb==='applyStatus'&&(e.status||'').indexOf('TAUNT')>=0);
+  const wl=words.length?' · '+words.join(', '):'';
+  if(t==='self'){ if(taunt)return{ic:'🛡',txt:'Taunt — draw enemy fire',cat:'taunt'}; return{ic:'⤴',txt:'Self buff'+wl,cat:'buff'}; }
+  if(t==='team_ally'){ if(has('heal'))return{ic:'✚',txt:'Heal whole team',cat:'heal'}; if(has('shield'))return{ic:'❖',txt:'Shield whole team',cat:'heal'}; if(has('cleanse'))return{ic:'✚',txt:'Cleanse the team',cat:'heal'}; return{ic:'⤴',txt:'Team buff'+wl,cat:'buff'}; }
+  if(t==='single_ally'){ if(has('revive'))return{ic:'✚',txt:'Revive / heal an ally',cat:'heal'}; if(has('heal')||has('shield'))return{ic:'✚',txt:'Heal one ally',cat:'heal'}; return{ic:'⤴',txt:'Buff one ally',cat:'buff'}; }
+  if(t==='lowest_hp_ally')return{ic:'✚',txt:'Heal weakest ally',cat:'heal'};
+  if(t==='all_enemies')return{ic:'✸',txt:'AOE — hits ALL foes'+(!dmg?wl:''),cat:'aoe'};
+  if(t==='splash2')return{ic:'✷',txt:'Foe + splash nearby',cat:'aoe'};
+  if(!dmg&&words.length)return{ic:'☇',txt:'Weaken a foe'+wl,cat:'debuff'};
+  return{ic:'⚔',txt:'Single foe'+(words.length?' · +'+words.join(', '):''),cat:'dmg'};
+}
 function enterCommand(u){
   G.awaiting=u; G.pendingSkill=null;
   if(u.el)u.el.classList.add('turn');
   const c=$('#cmdBar'); c.style.setProperty('--hue',`var(${CLASS[u.class].hue})`);
   const s2cd=(u.cd.S2||0), s2ok=s2cd<=0, cost=u.kit.S3.surgeCost||60, s3ok=G.surge>=cost;
+  const skBtn=(slot,tag,extra,disabled)=>{const sk=u.kit[slot],br=skillBrief(sk);
+    return `<button class="cmdbtn cat-${br.cat} ${extra||''}" data-slot="${slot}" ${disabled?'disabled':''}>
+      <span class="ci">${br.ic}</span><span class="cn">${sk.name}</span>
+      <span class="cbrief">${br.txt}</span><span class="cmeta">${tag}</span></button>`;};
   c.innerHTML=`<div class="cmdwho"><span class="cmdcls">${CLASS[u.class].g}</span><b>${u.name}</b><span class="cmdhint">Choose an action</span></div>
     <div class="cmdrow">
-      <button class="cmdbtn" data-slot="S1"><span class="ci">⚔</span><span class="cn">${u.kit.S1.name}</span><span class="cmeta">Basic</span></button>
-      <button class="cmdbtn" data-slot="S2" ${s2ok?'':'disabled'}><span class="ci">✦</span><span class="cn">${u.kit.S2.name}</span><span class="cmeta">${s2ok?'Core skill':'Cooldown '+s2cd}</span></button>
-      <button class="cmdbtn ult" data-slot="S3" ${s3ok?'':'disabled'}><span class="ci">★</span><span class="cn">${u.kit.S3.name}</span><span class="cmeta">${s3ok?'Ultimate · ✧'+cost:'Needs ✧'+cost}</span></button>
+      ${skBtn('S1','Basic','',false)}
+      ${skBtn('S2',s2ok?'Ready':'CD '+s2cd,'',!s2ok)}
+      ${skBtn('S3',s3ok?'Ult · ✧'+cost:'Needs ✧'+cost,'ult',!s3ok)}
     </div>`;
   c.classList.add('show');
   c.querySelectorAll('.cmdbtn').forEach(b=>b.addEventListener('click',()=>{if(b.hasAttribute('disabled'))return;SFX.tap();chooseSkill(u,b.dataset.slot);}));
@@ -4727,25 +4767,58 @@ function enterCommand(u){
 function chooseSkill(u,slot){
   clearTargetSelect();
   const c=$('#cmdBar');c.querySelectorAll('.cmdbtn').forEach(b=>b.classList.toggle('sel',b.dataset.slot===slot));
-  if(needsEnemyTarget(u.kit[slot]))beginTargetSelect(u,slot);
-  else execCommand(u,slot,null);
+  const sk=u.kit[slot];
+  if(needsEnemyTarget(sk))beginTargetSelect(u,slot);
+  else if(needsAllyTarget(sk))beginAllyTargetSelect(u,slot);
+  else { flashAffected(u,sk); execCommand(u,slot,null); }
+}
+// briefly light up everyone an untargeted skill will affect, so AOE / team / self reads clearly
+function flashAffected(u,sk){
+  let list=[];
+  if(sk.target==='all_enemies')list=livingE();
+  else if(sk.target==='team_ally')list=livingH();
+  else if(sk.target==='self')list=[u];
+  else if(sk.target==='lowest_hp_ally'){const a=livingH().slice().sort((x,y)=>(x.hp/x.max)-(y.hp/y.max));list=a[0]?[a[0]]:[];}
+  list.forEach(t=>{if(t.el){t.el.classList.add('aoeflash');setTimeout(()=>{if(t.el)t.el.classList.remove('aoeflash');},640);}});
+}
+function beginAllyTargetSelect(u,slot){
+  G.pendingSkill={u,slot}; clearSpotlight();
+  const h=$('#cmdBar').querySelector('.cmdhint'); if(h)h.textContent='Tap an ally to aid';
+  const allies=livingH();
+  const rec=allies.slice().sort((a,b)=>(a.hp/a.max)-(b.hp/b.max))[0];   // weakest ally = best heal target
+  allies.forEach(a=>{ if(!a.el)return;
+    a.el.classList.add('targetable','allytgt');
+    if(a===rec && allies.length>1){a.el.classList.add('besttgt'); if(!a.el.querySelector('.bestbadge')){const bb=document.createElement('div');bb.className='bestbadge aid';bb.textContent='★ LOW HP';a.el.appendChild(bb);}}
+    a._tapH=()=>{SFX.tap();const ps=G.pendingSkill;if(ps){clearTargetSelect();execCommand(ps.u,ps.slot,a);}};
+    a.el.addEventListener('click',a._tapH);
+  });
 }
 function beginTargetSelect(u,slot){
   G.pendingSkill={u,slot}; clearSpotlight();   // brighten the field so every enemy is visible to target
   const sk=u.kit[slot], root=rootFor(u,sk);
-  const h=$('#cmdBar').querySelector('.cmdhint'); if(h)h.textContent='Tap an enemy to strike';
-  livingE().forEach(e=>{ if(!e.el)return;
+  const h=$('#cmdBar').querySelector('.cmdhint'); if(h)h.textContent=(sk.target==='splash2'?'Tap a foe — also splashes nearby':'Tap an enemy to strike');
+  const foes=livingE();
+  foes.forEach(e=>{ if(!e.el)return;
     e.el.classList.add('targetable');
     const weak=matchesWeak(e,root,sk.subtag);
     if(weak){e.el.classList.add('weaktgt'); if(!e.el.querySelector('.weakbadge')){const wb=document.createElement('div');wb.className='weakbadge';wb.textContent=e.tough>0?'WEAK':'BREAK';e.el.appendChild(wb);}}
     e._tapH=()=>{SFX.tap();const ps=G.pendingSkill;if(ps){clearTargetSelect();execCommand(ps.u,ps.slot,e);}};
     e.el.addEventListener('click',e._tapH);
   });
+  // recommend the best foe to hit: prefer one weak to this attack, then the lowest-HP foe
+  if(foes.length){
+    const rec=foes.slice().sort((a,b)=>{
+      const wa=matchesWeak(a,root,sk.subtag)?0:1, wb=matchesWeak(b,root,sk.subtag)?0:1;
+      if(wa!==wb)return wa-wb; return a.hp-b.hp;
+    })[0];
+    if(rec&&rec.el&&!rec.el.querySelector('.bestbadge')){const bb=document.createElement('div');bb.className='bestbadge';bb.textContent='★ BEST';rec.el.appendChild(bb);rec.el.classList.add('besttgt');}
+  }
 }
 function clearTargetSelect(){
-  (G.enemies||[]).forEach(e=>{ if(!e.el)return;
-    e.el.classList.remove('targetable','weaktgt');
-    const wb=e.el.querySelector('.weakbadge'); if(wb)wb.remove();
+  const all=(G.enemies||[]).concat(G.heroes||[]);
+  all.forEach(e=>{ if(!e||!e.el)return;
+    e.el.classList.remove('targetable','weaktgt','allytgt','besttgt');
+    e.el.querySelectorAll('.weakbadge,.bestbadge').forEach(x=>x.remove());
     if(e._tapH){e.el.removeEventListener('click',e._tapH);e._tapH=null;} });
 }
 function closeCommand(u){
