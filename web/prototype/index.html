@@ -796,6 +796,26 @@
     display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);padding:0;line-height:1}
   #sndBtn:hover{border-color:var(--umbra-dim)}
   #sndBtn.muted{opacity:.5}
+  /* In battle the global sound/settings buttons overlap the round counter — hide them; their
+     functions move into the Pause menu (⏸) so nothing floats over the HUD. */
+  body[data-screen="screen-battle"] #setBtn,
+  body[data-screen="screen-battle"] #sndBtn{display:none}
+  #pauseBtn{font-size:12px;line-height:1;min-width:32px}
+  #pauseMenu{position:absolute;inset:0;z-index:60;display:none;align-items:center;justify-content:center;padding:22px;
+    background:radial-gradient(circle at 50% 34%,rgba(20,14,32,.82),rgba(5,4,10,.94));backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+  #pauseMenu.on{display:flex;animation:uifade .2s ease both}
+  #pauseMenu .pm-card{width:100%;max-width:340px;border:1px solid var(--umbra);border-radius:20px;padding:22px 20px;text-align:center;
+    background:linear-gradient(180deg,#191233,#100c22);box-shadow:0 24px 60px rgba(0,0,0,.6);animation:uipop .3s cubic-bezier(.2,.9,.3,1) both}
+  #pauseMenu .pm-eyebrow{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--faint)}
+  #pauseMenu .pm-title{font-family:var(--font-title);font-size:23px;margin:3px 0 6px;color:#fff}
+  #pauseMenu .pm-sub{font-size:12px;line-height:1.55;color:var(--muted);margin-bottom:18px}
+  #pauseMenu .pm-btns{display:flex;flex-direction:column;gap:9px}
+  #pauseMenu .pm-btn{padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.04);
+    color:var(--ink);font-size:13px;font-weight:600;cursor:pointer;transition:transform .12s,border-color .2s,background .2s}
+  #pauseMenu .pm-btn:hover{transform:translateY(-2px);border-color:var(--umbra-dim)}
+  #pauseMenu .pm-btn.primary{border-color:var(--umbra);background:linear-gradient(180deg,#7b5cff,#5a3fd6);color:#fff}
+  #pauseMenu .pm-btn.danger{border-color:var(--danger);color:#ff9aa8;background:rgba(255,59,92,.08)}
+  #pauseMenu .pm-btn.danger:hover{background:rgba(255,59,92,.16)}
   /* ============ visual polish pass ============ */
   /* ambient ember/dust atmosphere over the whole app */
   #ambient{position:absolute;inset:0;z-index:4;pointer-events:none;overflow:hidden;mix-blend-mode:screen}
@@ -1974,8 +1994,21 @@
     <div id="top">
       <div class="world"><div class="chapter" id="btlChapter">Ch.1 · The Drowned Quarter</div>
         <div class="stagename" id="btlName">Stage</div></div>
-      <div class="btnrow"><button class="ui-btn" id="speedBtn">1×</button><button class="ui-btn" id="autoBtn">Manual</button></div>
+      <div class="btnrow"><button class="ui-btn" id="pauseBtn" title="Pause / menu" aria-label="Pause">⏸</button><button class="ui-btn" id="speedBtn">1×</button><button class="ui-btn" id="autoBtn">Manual</button></div>
       <div id="round"><div class="lbl">Round</div><div class="r num" id="roundNum">1</div></div>
+    </div>
+    <div id="pauseMenu" role="dialog" aria-modal="true" aria-label="Battle paused">
+      <div class="pm-card">
+        <div class="pm-eyebrow">Battle paused</div>
+        <div class="pm-title">Take a breath</div>
+        <div class="pm-sub">The fight is on hold. Resume when you're ready — or fall back to safety.</div>
+        <div class="pm-btns">
+          <button class="pm-btn primary" id="pmResume">▶ Resume battle</button>
+          <button class="pm-btn" id="pmMute">🔊 Sound: On</button>
+          <button class="pm-btn" id="pmSettings">⚙ Settings</button>
+          <button class="pm-btn danger" id="pmAbandon">⨯ Abandon &amp; return home</button>
+        </div>
+      </div>
     </div>
     <div id="stage">
       <div id="turnline"></div>
@@ -2440,7 +2473,7 @@ function tutFinish(){ tutorialDone=true; $('#tutorial').classList.remove('on'); 
 function tutSkip(){ tutorialDone=true; $('#tutorial').classList.remove('on'); saveGame(); openHome(); }
 
 /* ---------- screens ---------- */
-function show(id){$$('.screen').forEach(s=>s.classList.toggle('on',s.id===id));}
+function show(id){$$('.screen').forEach(s=>s.classList.toggle('on',s.id===id));try{document.body.dataset.screen=id;}catch(e){}}
 
 /* ---------- MAP (multi-chapter) ---------- */
 function allStages(){return DATA.chapters.flatMap(c=>c.stages);}
@@ -4468,7 +4501,7 @@ function roundStart(){
 function order(){return [...G.heroes,...G.enemies].filter(u=>u.alive).sort((a,b)=>statOf(b,'spd')-statOf(a,'spd')||(a.side==='ally'?-1:1));}
 let turnQueue=[];
 function step(){
-  if(G.over||G.busy||G.awaiting)return; if(checkEnd())return;   // awaiting a manual command → hold the timer
+  if(G.over||G.busy||G.awaiting||G.paused)return; if(checkEnd())return;   // awaiting a manual command → hold the timer
   if(!turnQueue.length){roundStart();render();if(checkEnd())return;turnQueue=order();}
   const u=turnQueue.shift(); if(!u||!u.alive)return scheduleNext(0);
   const waiting=actUnit(u); render(); if(checkEnd())return;
@@ -4984,8 +5017,20 @@ $('#startBtn').addEventListener('click',()=>{if(team.length<1)return;
   else if(arenaTarget){ deployArena(arenaTarget); }                 // Arena is free (gated by first-clear)
   else { if(!energyPay(hardMode?8:6))return; deploy(); }});
 $('#resMap').addEventListener('click',()=>{buildMap();show('screen-map');});
-function syncSnd(){const b=$('#sndBtn');b.textContent=ui.muted?'🔇':'🔊';b.classList.toggle('muted',ui.muted);}
+function syncSnd(){const b=$('#sndBtn');if(b){b.textContent=ui.muted?'🔇':'🔊';b.classList.toggle('muted',ui.muted);}
+  const pm=$('#pmMute');if(pm)pm.textContent=(ui.muted?'🔇 Sound: Off':'🔊 Sound: On');}
 $('#sndBtn').addEventListener('click',()=>{ui.muted=!ui.muted;SFX.setMuted(ui.muted);if(!ui.muted)SFX.tap();syncSnd();saveGame();});
+/* ---------- Battle pause / abandon ---------- */
+function battlePause(){ if(!G||G.over)return; G.paused=true; syncSnd(); $('#pauseMenu').classList.add('on'); SFX.tap&&SFX.tap(); }
+function battleResume(){ $('#pauseMenu').classList.remove('on'); if(!G||G.over)return; G.paused=false; SFX.tap&&SFX.tap();
+  if(G.auto && !G.busy && !G.awaiting) scheduleNext(180); }   // restart the auto loop
+function battleAbandon(){ $('#pauseMenu').classList.remove('on'); if(G)G.over=true; if(typeof clearSpotlight==='function')clearSpotlight();
+  raidPending=false; arenaTarget=null; SFX.tap&&SFX.tap(); openHome(); }
+$('#pauseBtn')&&$('#pauseBtn').addEventListener('click',battlePause);
+$('#pmResume')&&$('#pmResume').addEventListener('click',battleResume);
+$('#pmMute')&&$('#pmMute').addEventListener('click',()=>{ui.muted=!ui.muted;SFX.setMuted(ui.muted);if(!ui.muted)SFX.tap();syncSnd();saveGame();});
+$('#pmSettings')&&$('#pmSettings').addEventListener('click',()=>{$('#pauseMenu').classList.remove('on');openSettings();});
+$('#pmAbandon')&&$('#pmAbandon').addEventListener('click',battleAbandon);
 // unlock/resume Web Audio on first user gesture (browser autoplay policy)
 document.addEventListener('pointerdown',()=>SFX.resume(),{once:true});
 syncSnd();
