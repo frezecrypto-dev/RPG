@@ -172,6 +172,20 @@ there's a fresh chase every week on top of the all-time best. **Boss loot (gear)
 now drops only when you actually defeat the boss** — a partial run still pays
 currency by damage %, but no kill means no gear, so the chase has a real prize.
 
+## Ash Spire — endless ascent (endgame)
+
+A long-form endgame ladder reached from the Raid hub (🗼 **Ash Spire**). You climb
+**floor by floor with no ceiling**, and every floor scales up (enemy level + a
+compounding stat multiplier), so the run turns into a real "how high can you push
+your five" tuning problem. **Every 5th floor is an Elite, every 10th a Boss** (the
+Dark Order roster), and a defeat sends you back — but you always **resume from your
+best floor**, so progress never resets mid-run. Clearing floors pays Gold and
+Insight that scale with height; every 5th floor grants **Ash Seals** (a slow,
+hard-won currency — ×3 on boss floors), and milestone floors (F10/25/50/75/100/…)
+drop **big caches** of Crystals, Relics and Vow Tickets. The whole floor race
+**resets monthly** for a fresh climb, while your Ash Seals carry over. State
+(`spire`) persists in the save.
+
 ## Co-op Raid (per-run)
 
 A weekly **multi-phase raid boss** — Krul Ascended, the Drowned Crown (120k HP)

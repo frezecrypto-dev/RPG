@@ -1445,6 +1445,25 @@
   .raidaffix .rafx-ic{font-size:16px;color:var(--warn);line-height:1.3}
   .raidaffix .rafx-tx{display:flex;flex-direction:column;gap:2px}
   .raidaffix .rafx-tx b{font-size:12px;color:#ffcf6b} .raidaffix .rafx-tx span{font-size:10.5px;line-height:1.45;color:var(--muted)}
+  /* Ash Spire (endless) */
+  #spireScroll{padding:2px 2px 20px}
+  .spirehero{display:flex;gap:12px;align-items:center;border:1px solid var(--umbra);border-radius:15px;padding:13px;
+    background:linear-gradient(120deg,rgba(123,92,255,.14),rgba(60,44,120,.05))}
+  .sptower{font-size:44px;filter:drop-shadow(0 4px 14px rgba(0,0,0,.6))}
+  .sptag{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#b79bff}
+  .spname{font-family:var(--font-title);font-size:22px;color:#fff;margin:2px 0}
+  .spsub{font-size:10.5px;color:var(--muted);line-height:1.4}
+  .spstats{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:10px 0}
+  .spstat{border:1px solid var(--line);border-radius:12px;padding:9px 12px;display:flex;flex-direction:column;gap:2px;background:var(--panel2)}
+  .spstat span{font-size:10px;color:var(--faint)} .spstat b{font-size:17px}
+  .spireenter{width:100%;margin:4px 0 12px}
+  .spmiles{border:1px solid var(--line);border-radius:13px;padding:10px 12px;background:var(--panel2)}
+  .spmlabel{font-size:10px;color:var(--faint);margin-bottom:8px}
+  .spmtrack{display:flex;gap:7px;overflow-x:auto;padding-bottom:2px}
+  .spmile{flex:0 0 auto;min-width:56px;text-align:center;border:1px solid var(--line);border-radius:10px;padding:7px 6px;opacity:.5}
+  .spmile.reached{opacity:1;border-color:color-mix(in srgb,#7fe9ff 45%,var(--line));background:rgba(127,233,255,.08)}
+  .spmile b{display:block;font-family:var(--font-title);font-size:13px;color:#cbb8ff} .spmile span{font-size:8.5px;color:var(--faint)}
+  .spnote{font-size:10.5px;color:var(--muted);line-height:1.5;margin-top:12px}
   .raidbestwrap{padding:2px}
   .raidbestlbl{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:4px}
   .raidbar{height:10px;border-radius:6px;background:#221c34;overflow:hidden;border:1px solid var(--line)}
@@ -1912,6 +1931,12 @@
       <span class="res"><i class="cur relic"></i> <b class="num relicN">0</b></span>
     </div>
     <div id="raidScroll"></div>
+  </section>
+
+  <section class="screen" id="screen-spire">
+    <div class="scrhead"><div><div class="eyebrow">Endgame</div><h1>Ash Spire</h1></div>
+      <button class="ghost back" id="spireBack">Back</button></div>
+    <div id="spireScroll"></div>
   </section>
 
   <section class="screen" id="screen-guild">
@@ -2413,7 +2438,7 @@ function renderCrys(){
 const SAVE_KEY='ashgate_save_v1';
 let hasSave=false;
 function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(
-  {v:3,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,raidBest,crystals,gold,starShards,relics,sigils,pity,insight,plvl,pxp,vowTickets,freePullUsed,tutorialDone,energy,energyTs,inventory,gearOn,gearUID,loadouts,daily,bpXP,bpClaimF,bpClaimP,bpPrem,evtEarned,evtBal,evtMile,evtShop,login,gleam,vowCard,shopFirst,cosmetics,shopDaily,raidWeek,guild,quests,items,muted:ui.muted,pref:{speed:ui.speed,auto:ui.auto}}));}catch(e){}}
+  {v:3,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,raidBest,crystals,gold,starShards,relics,sigils,pity,insight,plvl,pxp,vowTickets,freePullUsed,tutorialDone,energy,energyTs,inventory,gearOn,gearUID,loadouts,daily,bpXP,bpClaimF,bpClaimP,bpPrem,evtEarned,evtBal,evtMile,evtShop,login,gleam,vowCard,shopFirst,cosmetics,shopDaily,raidWeek,guild,quests,items,spire,muted:ui.muted,pref:{speed:ui.speed,auto:ui.auto}}));}catch(e){}}
 function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s||(s.v!==1&&s.v!==2&&s.v!==3))return false;
   owned=new Set(s.owned);progress=s.progress||{};cleared=new Set(s.cleared);
   crystals=s.crystals??crystals;gold=s.gold??gold;starShards=s.starShards??starShards;relics=s.relics??0;sigils=s.sigils??0;pity=s.pity??0;insight=s.insight??40;
@@ -2422,6 +2447,7 @@ function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s
   energy=s.energy??energy;energyTs=s.energyTs??Date.now();energyTick();
   inventory=s.inventory||[];gearOn=s.gearOn||{};gearUID=s.gearUID||inventory.reduce((m,p)=>Math.max(m,p.uid),0);
   loadouts=s.loadouts||{};clearedHard=new Set(s.clearedHard||[]);arenaRank=s.arenaRank||0;raidBest=s.raidBest||0;raidWeek=s.raidWeek||{id:-1,best:0,claimed:[]};
+  spire=s.spire||{best:0,month:'',seals:0};
   daily=s.daily||{date:'',win:0,summon:0,enhance:0,claimed:[]};dailyCheck();ui.muted=s.muted??false;
   bpXP=s.bpXP||0;bpClaimF=s.bpClaimF||[];bpClaimP=s.bpClaimP||[];bpPrem=!!s.bpPrem;
   evtEarned=s.evtEarned||0;evtBal=s.evtBal||0;evtMile=s.evtMile||[];evtShop=s.evtShop||{};login=s.login||{n:0,date:''};
@@ -3495,6 +3521,89 @@ const RAID_AFFIXES=[
   {id:'overload', name:'Gate Overload',  desc:'Boss ATK +55% but HP −15% — a knife-edge sprint: burst it before it bursts you.', mod:b=>{b.stats.atk=Math.round(b.stats.atk*1.55);b.stats.hp=Math.round(b.stats.hp*0.85);b.hp=b.max=b.stats.hp;}},
 ];
 function raidAffixOfWeek(){const i=((raidWeekIdx()*3+1)%RAID_AFFIXES.length+RAID_AFFIXES.length)%RAID_AFFIXES.length;return RAID_AFFIXES[i];}
+
+/* ---------- ASH SPIRE — endless ascent (monthly floor race + Ash Seals) ---------- */
+let spire={best:0, month:'', seals:0};        // best floor this month + Ash Seal currency (persisted)
+let spireFloor=1;                              // runtime: the floor you're about to attempt
+const SPIRE_BASICS=['ENM-ORD-LEGION','ENM-ORD-MARKSMAN','ENM-ORD-HOUND','ENM-ORD-REVENANT','ENM-ORD-CHANTER','ENM-ORD-WRAITH','ENM-ORD-KNIGHT','ENM-ORD-CWARDEN'];
+const SPIRE_BOSSES=['ENM-ORD-DARIUS','ENM-ORD-VORENA','ENM-ORD-MELIS','ENM-ORD-TITAN','ENM-ORD-SERAPH','ENM-ORD-ARCHITECT','ENM-ORD-SOVEREIGN'];
+const SPIRE_MILE=[10,25,50,75,100,150,200];
+function spireMonthKey(){const d=new Date();return d.getFullYear()+'-'+d.getMonth();}
+function spireCheck(){const m=spireMonthKey(); if(spire.month!==m){spire={best:0,month:m,seals:spire.seals||0};} spireFloor=Math.max(1,spire.best+1);}
+function spireFloorKind(f){return f%10===0?'boss':f%5===0?'elite':'normal';}
+function openSpire(){spireCheck();renderSpire();renderCrys();updateHomeNav('raid');show('screen-spire');}
+function renderSpire(){
+  spireCheck();
+  const f=spireFloor, kind=spireFloorKind(f), best=spire.best;
+  const kindTxt=kind==='boss'?'👑 Boss floor':kind==='elite'?'⚔ Elite floor':'Ash horde';
+  const mnodes=SPIRE_MILE.map(m=>`<div class="spmile ${best>=m?'reached':''}"><b>F${m}</b><span>${m%50===0?'✦ big cache':'◈ seals'}</span></div>`).join('');
+  $('#spireScroll').innerHTML=`
+    <div class="spirehero">
+      <div class="sptower">🗼</div>
+      <div class="spinfo"><div class="sptag">Endless Ascent · resets monthly</div>
+        <div class="spname">Floor ${f}</div>
+        <div class="spsub">${kindTxt} · foes grow stronger every floor — climb as high as you can</div></div>
+    </div>
+    <div class="spstats">
+      <div class="spstat"><span>This month's best</span><b style="color:var(--warn)">Floor ${best}</b></div>
+      <div class="spstat"><span>◈ Ash Seals</span><b style="color:#7fe9ff">${spire.seals}</b></div>
+    </div>
+    <button class="cta spireenter" id="spireEnter">${f>1?'Resume climb · Floor '+f+' ▸':'Begin the climb ▸'}</button>
+    <div class="spmiles"><div class="spmlabel">Milestone caches · every 5th floor grants Ash Seals; F50/100/… grant a big cache</div>
+      <div class="spmtrack">${mnodes}</div></div>
+    <div class="spnote">Every 5th floor is an <b>Elite</b>, every 10th a <b>Boss</b>. A defeat sends you back, but you always resume from your best floor. Ash Seals are a slow, hard-won currency — hoard them.</div>`;
+  $('#spireEnter').addEventListener('click',()=>{SFX.tap();runSpire(spireFloor);});
+}
+function runSpire(floor){
+  const ids=autoTeam(); if(!ids.length){toast('Summon some heroes first.');return;} team=ids;
+  if(!energyPay(6))return;
+  spireFloor=floor;
+  const lvl=Math.round(28+floor*1.6), mul=+(1+floor*0.05).toFixed(3), kind=spireFloorKind(floor);
+  let keys=[];
+  if(kind==='boss'){ keys=[SPIRE_BOSSES[((floor/10-1)%SPIRE_BOSSES.length+SPIRE_BOSSES.length)%SPIRE_BOSSES.length]]; }
+  else if(kind==='elite'){ const elites=['ENM-ORD-KNIGHT','ENM-ORD-CWARDEN','ENM-ORD-WRAITH'];
+    keys=[elites[Math.floor(Math.random()*elites.length)]]; const n=1+Math.floor(floor/30);
+    for(let i=0;i<n;i++)keys.push(SPIRE_BASICS[Math.floor(Math.random()*SPIRE_BASICS.length)]); }
+  else { const n=Math.min(4,2+Math.floor(floor/15)); for(let i=0;i<n;i++)keys.push(SPIRE_BASICS[Math.floor(Math.random()*SPIRE_BASICS.length)]); }
+  const foes=keys.map(k=>{const e=mkEnemy(k+'@'+lvl);
+    e.stats={hp:Math.round(e.stats.hp*mul),atk:Math.round(e.stats.atk*mul),def:Math.round(e.stats.def*mul),spd:e.stats.spd};
+    e.hp=e.max=e.stats.hp; return e;});
+  curHard=false;
+  G={heroes:team.map(mkHero),waves:[foes],wi:0,enemies:foes,surge:0,round:1,over:false,busy:false,auto:ui.auto,speed:ui.speed,telegraph:null,hard:false,spire:{floor},awaiting:null,pendingSkill:null};
+  applySynergy(G.heroes);applyEventFactionWeek(G.heroes);
+  $('#speedBtn').textContent=ui.speed+'×';$('#autoBtn').classList.toggle('active',ui.auto);$('#autoBtn').textContent=ui.auto?'Auto ▶':'Manual';
+  $('#btlChapter').textContent='🗼 ASH SPIRE'+(kind==='boss'?' · BOSS':kind==='elite'?' · ELITE':'');
+  $('#btlName').textContent='Floor '+floor;
+  setBattleBg(kind==='boss'?'4':'3');
+  buildParty();renderEnemies();render();renderTelegraph();
+  $('#roundNum').textContent='1';$('#result').style.display='none';$('#wavepip').textContent='';
+  logMsg('Floor '+floor+' — the Spire tests you…');logSynergies(G.heroes.map(u=>u.id));
+  show('screen-battle');turnQueue=[];setTimeout(step,450);
+}
+function endSpire(win){
+  const floor=G.spire.floor; setMvp(win); let sub='';
+  if(win){
+    spireCheck();
+    const gGold=Math.round(1200+floor*380), gIns=Math.max(4,Math.round(4+floor*0.5));
+    gold+=gGold; insight+=gIns; let extra='';
+    if(floor%5===0){ const s=(floor%10===0)?3:1; spire.seals+=s; extra+=` · <b style="color:#7fe9ff">◈ +${s} Ash Seal${s>1?'s':''}</b>`; }
+    if(SPIRE_MILE.includes(floor)){ const big=floor%50===0; crystals+=big?400:150; relics+=big?6:2; if(big)vowTickets+=1;
+      extra+=` · <b style="color:var(--warn)">Milestone cache!</b> +${big?400:150} Crystals, +${big?6:2} Relics${big?', +1 Vow Ticket':''}`; }
+    spire.best=Math.max(spire.best,floor); spireFloor=floor+1; questBump('win'); saveGame();
+    sub=`<b style="color:var(--warn)"><i class="cur gold"></i> +${gGold.toLocaleString()} Gold</b> · 📖 +${gIns} Insight${extra}<br>The next floor is stronger. Keep climbing, or bank your progress and rest.`;
+  } else {
+    spireFloor=Math.max(1,spire.best+1);
+    sub=`The Spire repels you on <b>Floor ${floor}</b>. Strengthen your five and climb again — you resume from your best floor (${spire.best}).`;
+  }
+  const r=$('#result');r.style.display='flex';resultCinematic(win);
+  $('#resEyebrow').textContent=win?('Floor '+floor+' cleared'):'The climb ends';
+  const v=$('#resVerdict');v.textContent=win?'ASCENDED':'REPELLED';v.className='verdict '+(win?'win':'lose');
+  $('#resSub').innerHTML=sub;
+  const nx=$('#resNext');
+  if(win){nx.textContent='Ascend · Floor '+(floor+1)+' ▸';nx.onclick=()=>{runSpire(floor+1);};}
+  else{nx.textContent='Retry Floor '+floor;nx.onclick=()=>{runSpire(floor);};}
+  $('#resMap').textContent='Leave'; window._resHub=openSpire;
+}
 const RAIDMILE=[
   {pct:20, rw:[{t:'gold',n:60000},{t:'crystal',n:80}]},
   {pct:40, rw:[{t:'crystal',n:160},{t:'crate',n:5}]},
@@ -3555,11 +3664,13 @@ function renderRaid(){
     <button class="cta raidenter" id="raidEnter">Enter Raid ▸</button>
     <div class="raidnote">Rewards are by damage %, and the milestone track resets with the boss each week. All-time best: <b>${raidBest}%</b>.</div>
     <div class="portalgrid">
+      <button class="portalcard" id="raidToSpire"><span class="pcico">🗼</span><span class="pctx"><b>Ash Spire</b><small>Endless climb · Floor ${spire&&spire.best||0}</small></span></button>
       <button class="portalcard" id="raidToDungeons"><span class="pcico">🗝️</span><span class="pctx"><b>Dungeons</b><small>Skill · Equipment farms</small></span></button>
       <button class="portalcard" id="raidToGold"><span class="pcico">💰</span><span class="pctx"><b>Gold & EXP Raids</b><small>Farm gold + hero XP</small></span></button>
     </div>`;
   $('#raidScroll').querySelectorAll('.emnode.ready').forEach(n=>n.addEventListener('click',()=>raidClaimMile(+n.dataset.mi)));
   $('#raidEnter').addEventListener('click',()=>{SFX.tap();openRaidTeam();});
+  $('#raidToSpire').addEventListener('click',()=>{SFX.tap();openSpire();});
   $('#raidToDungeons').addEventListener('click',()=>{SFX.tap();openDungeons();});
   $('#raidToGold').addEventListener('click',()=>{SFX.tap();openDungeons();});
 }
@@ -5124,10 +5235,12 @@ function endGame(win){
   if(win){ let ec=G.raid?EVT.earn.raid : (G.pvp||G.trial||G.dungeon||G.guildBoss)?EVT.earn.arena
     : Math.round((curStage&&curStage.boss?EVT.earn.boss:EVT.earn.normal)*(curHard?EVT.earn.hardMul:1));
     evtEarn(ec); }   // Ember Cinders from any PvE clear (event point-farm, doc 10 s3)
+  window._resHub=null; { const _rm=document.getElementById('resMap'); if(_rm&&_rm.textContent!=='To Map')_rm.textContent='To Map'; }
   if(G.pvp)return endArena(win);
   if(G.raid)return endRaid(win);
   if(G.trial)return endTrial(win);
   if(G.dungeon)return endDungeon(win);
+  if(G.spire)return endSpire(win);
   if(G.guildBoss)return endGuildBoss(win);
   const H=curHard;
   const firstNormal = win && !cleared.has(curStage.id);
@@ -5279,6 +5392,7 @@ $('#evtBack')?.addEventListener('click',()=>{openHome();});
 $('#homeShop')?.addEventListener('click',()=>{SFX.tap();openShop('value');});
 $('#dunBack')?.addEventListener('click',()=>{openHome();});
 $('#raidBack')?.addEventListener('click',()=>{openHome();});
+$('#spireBack')?.addEventListener('click',()=>{openHome();});
 $('#guildBack')?.addEventListener('click',()=>{openHome();});
 $('#guildTabs')?.addEventListener('click',e=>{const b=e.target.closest('.gtab');if(b){SFX.tap();guildSetTab(b.dataset.gt);}});
 $('#shopBack')?.addEventListener('click',()=>{openHome();});
@@ -5310,7 +5424,7 @@ $('#startBtn').addEventListener('click',()=>{if(team.length<1)return;
   if(raidPending){ if(!energyPay(10))return; deployRaid(); }
   else if(arenaTarget){ deployArena(arenaTarget); }                 // Arena is free (gated by first-clear)
   else { if(!energyPay(hardMode?8:6))return; deploy(); }});
-$('#resMap').addEventListener('click',()=>{buildMap();show('screen-map');});
+$('#resMap').addEventListener('click',()=>{if(window._resHub){const f=window._resHub;window._resHub=null;f();return;}buildMap();show('screen-map');});
 function syncSnd(){const b=$('#sndBtn');if(b){b.textContent=ui.muted?'🔇':'🔊';b.classList.toggle('muted',ui.muted);}
   const pm=$('#pmMute');if(pm)pm.textContent=(ui.muted?'🔇 Sound: Off':'🔊 Sound: On');}
 $('#sndBtn').addEventListener('click',()=>{ui.muted=!ui.muted;SFX.setMuted(ui.muted);if(!ui.muted)SFX.tap();syncSnd();saveGame();});
