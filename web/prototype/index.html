@@ -1084,10 +1084,25 @@
   #stage.hitstop{filter:brightness(1.35) contrast(1.08)}
   #stage.ultzoom{animation:ultZoomK .62s cubic-bezier(.2,.9,.3,1)}
   @keyframes ultZoomK{0%{transform:scale(1)}22%{transform:scale(1.055)}100%{transform:scale(1)}}
+  /* kill cam — slow push-in + desaturated flash as the last foe drops */
+  #stage.killcam{animation:killCamK .9s cubic-bezier(.2,.7,.2,1)}
+  @keyframes killCamK{0%{transform:scale(1);filter:none}
+    18%{transform:scale(1.09);filter:saturate(1.35) brightness(1.15)}
+    70%{transform:scale(1.05);filter:saturate(1.1)}100%{transform:scale(1);filter:none}}
+  .unit.killfocus .sprite{animation:killFlash .9s ease}
+  @keyframes killFlash{0%{filter:brightness(2.6) saturate(.4) drop-shadow(0 0 18px #fff)}100%{filter:none}}
   /* caster projectile — a bolt that flies from the attacker to its target */
   .boltfx{position:absolute;width:16px;height:5px;border-radius:3px;pointer-events:none;z-index:9;
-    box-shadow:0 0 12px currentColor,0 0 4px #fff;filter:drop-shadow(0 0 3px currentColor);animation:boltFly .22s linear forwards}
+    box-shadow:0 0 12px currentColor,0 0 4px #fff;filter:drop-shadow(0 0 3px currentColor);
+    animation:boltFly var(--bdur,220ms) linear forwards}
   @keyframes boltFly{0%{transform:translate(0,0) scaleX(.6);opacity:.2}18%{opacity:1}100%{transform:translate(var(--dx),var(--dy)) scaleX(1);opacity:1}}
+  /* melee dash — the attacker closes the distance, strikes, then returns */
+  .unit.dashing .sprite{animation:dashStrike calc(var(--mdur,260ms) * 2) cubic-bezier(.25,.8,.3,1)}
+  @keyframes dashStrike{0%{transform:translate(0,0)}
+    45%{transform:translate(var(--mx,0),var(--my,0)) scale(1.06)}
+    58%{transform:translate(var(--mx,0),var(--my,0)) scale(1.06)}
+    100%{transform:translate(0,0)}}
+  .unit.dashing{z-index:8}
 
   /* ============ map path life ============ */
   .track{background:repeating-linear-gradient(180deg,var(--umbra) 0 6px,transparent 6px 20px)!important;
@@ -4784,11 +4799,13 @@ function statOf(u,k){let v=u.stats[k];const m={'STS-ATK-UP':['atk',.3],'STS-ATK-
   for(const s in u.status){const q=m[s];if(q&&q[0]===k)v*=(1+q[1]);}return v;}
 function dealDamage(src,tgt,power,root,sub){
   if(!tgt.alive)return 0;
-  lunge(src);   // attacker lunges toward its target
-  {const ch=CLASSHIT[src&&src.class];
-   // ranged/magic classes fling a bolt in their own colour; melee lands a class-flavoured strike
-   if(root==='magical'||src.class==='RNG')projectileFx(src,tgt,(ch&&ch.col)||FXCOL[sub==='holy'?'holy':'mag']);
-   if(ch)classHitFx(src,tgt);}
+  // --- windup: melee close the distance, ranged/casters launch a projectile ---
+  const ch=CLASSHIT[src&&src.class];
+  const ranged=(root==='magical'||(src&&src.class==='RNG'));
+  let travel=0;
+  if(ranged){ travel=projectileFx(src,tgt,(ch&&ch.col)||FXCOL[sub==='holy'?'holy':'mag'])||0; lunge(src); }
+  else if(MELEE_CLASS[src&&src.class]){ travel=dashTo(src,tgt); }   // dash replaces the lunge (same transform)
+  else { lunge(src); }
   let atk=statOf(src,'atk'),def=statOf(tgt,'def'); if(sub==='pierce')def*=.7;
   const mit=1000/(1000+def), res=root==='physical'?(tgt.physRes||0):(tgt.magRes||0);
   let elem=res<=-.2?1.25:res>=.2?.85:1; if(sub==='holy'&&(tgt.traits||[]).includes('undead'))elem*=1.25;
@@ -4797,8 +4814,14 @@ function dealDamage(src,tgt,power,root,sub){
   if(tgt.barrier>0&&sub!=='bleed'){const ab=Math.min(tgt.barrier,d);tgt.barrier-=ab;d-=ab;}
   tgt.hp=Math.max(0,tgt.hp-d); if(src.side==='ally'){gainSurge(4);src._dmg=(src._dmg||0)+d;}
   if(src.side==='ally'&&(src.stats.lifesteal||0)>0&&d>0)heal(src,Math.round(d*src.stats.lifesteal));
-  floatNum(tgt,d,isCrit?'crit':'',root,sub); shake(tgt); if(d>0){SFX[isCrit?'crit':'hit']();if(isCrit){if(SFX.impact)SFX.impact(1.1);hitStop(110);}}
-  if(d>0){const kind=sub==='bleed'?'bleed':sub==='holy'?'holy':root==='magical'?'mag':'phys';impactFx(tgt,{kind,crit:isCrit});}
+  // --- impact: fires when the blow actually connects (after the dash / projectile flight) ---
+  const landHit=()=>{
+    if(ch)classHitFx(src,tgt);
+    floatNum(tgt,d,isCrit?'crit':'',root,sub); shake(tgt);
+    if(d>0){SFX[isCrit?'crit':'hit']();if(isCrit){if(SFX.impact)SFX.impact(1.1);hitStop(110);}
+      const kind=sub==='bleed'?'bleed':sub==='holy'?'holy':root==='magical'?'mag':'phys';impactFx(tgt,{kind,crit:isCrit});}
+  };
+  if(travel>0)setTimeout(landHit,travel); else landHit();
   // Break / Toughness: hitting a weakness drains the toughness bar; at 0 the enemy BREAKS (stun + burst + vulnerable)
   if(d>0&&src.side==='ally'&&tgt.side==='enemy'&&matchesWeak(tgt,root,sub)){
     weakPop(tgt);gainSurge(6);SFX.crit&&SFX.crit();
@@ -4831,7 +4854,17 @@ function onKill(src,t){
     for(const s in t.status)delete t.status[s];SFX.surge();floatNum(t,0,'heal');
     logMsg('<b>Mortmain</b> <b style="color:var(--bone)">reknits at the Gate</b> — 35% HP');renderEnemies();return;}
   t.alive=false;t.hp=0;if(src.side==='ally')gainSurge(10);SFX.death();
-  if(t.side==='enemy'&&t.el){t.el.classList.add('dying');if(t.isBoss||t.isMini)battleShake(true);}}
+  if(t.side==='enemy'&&t.el){t.el.classList.add('dying');if(t.isBoss||t.isMini)battleShake(true);
+    // kill cam: the killing blow on the last foe of a wave gets a slow-mo push-in
+    if(src.side==='ally'&&livingE().length===0)killCam(t);}}
+let _killCamT=null;
+function killCam(t){
+  const st=$('#stage'); if(!st)return;
+  st.classList.remove('killcam'); void st.offsetWidth; st.classList.add('killcam');
+  if(t&&t.el){t.el.classList.add('killfocus');setTimeout(()=>t.el&&t.el.classList.remove('killfocus'),900);}
+  hitStop(190); battleShake(true); SFX.impact&&SFX.impact(1.35);
+  clearTimeout(_killCamT); _killCamT=setTimeout(()=>st.classList.remove('killcam'),900);
+}
 function gainSurge(n){const b=G.surge;G.surge=clamp(G.surge+n,0,100);if(b<100&&G.surge>=100)SFX.surge();}
 const livingE=()=>G.enemies.filter(e=>e.alive), livingH=()=>G.heroes.filter(h=>h.alive);
 function pickTarget(src){
@@ -5217,6 +5250,23 @@ function renderTurnline(){const el=$('#turnline');if(!el||!G)return;
     return `<div class="tchip ${i===0?'now':''} ${ally?'ally':'foe'}" style="--c:${hue}" title="${u.name}">${face}</div>`;}).join('');}
 function lunge(u){if(!u.el)return;u.el.classList.remove('attacking');void u.el.offsetWidth;u.el.classList.add('attacking');
   setTimeout(()=>u.el&&u.el.classList.remove('attacking'),400/(G?G.speed:1));}
+// melee classes actually close the distance: dash to the target, strike, dash back
+const MELEE_CLASS={TNK:1,BSK:1,ASN:1};
+function dashTo(src,tgt){
+  if(!src||!tgt||!src.el||!tgt.el)return 0;
+  const s=src.el.getBoundingClientRect(), t=tgt.el.getBoundingClientRect();
+  const dx=(t.left+t.width/2)-(s.left+s.width/2);
+  const dy=(t.top+t.height*0.55)-(s.top+s.height*0.55);
+  const sp=(G&&G.speed)||1, dur=Math.round(260/sp);
+  const gap=src.side==='ally'?-46:46;                   // stop just short of the target
+  const el=src.el;
+  el.style.setProperty('--mx',(dx+gap).toFixed(0)+'px');
+  el.style.setProperty('--my',dy.toFixed(0)+'px');
+  el.style.setProperty('--mdur',dur+'ms');
+  el.classList.remove('dashing');void el.offsetWidth;el.classList.add('dashing');
+  setTimeout(()=>{if(el)el.classList.remove('dashing');},dur*2+120);
+  return dur;   // time until the blow connects
+}
 function shake(u){if(u.el){u.el.classList.add('hit');setTimeout(()=>u.el&&u.el.classList.remove('hit'),320);}}
 let _shakeT=null;
 function battleShake(big){const s=$('#screen-battle');if(!s)return;const cls=big?'qshake-big':'qshake';
@@ -5281,15 +5331,20 @@ function classHitFx(src,tgt){
     fx.appendChild(sp);setTimeout(()=>{if(sp.parentNode)sp.remove();},640);}
 }
 function projectileFx(src,tgt,col){
-  if(!src||!tgt||!src.el||!tgt.el)return;
+  if(!src||!tgt||!src.el||!tgt.el)return 0;
   const a=$('#app').getBoundingClientRect(), s=src.el.getBoundingClientRect(), t=tgt.el.getBoundingClientRect();
   const x0=s.left-a.left+s.width/2, y0=s.top-a.top+s.height*0.42, x1=t.left-a.left+t.width/2, y1=t.top-a.top+t.height*0.46;
   const ang=Math.atan2(y1-y0,x1-x0)*180/Math.PI;
+  // flight time scales with distance so the bolt visibly travels before it lands
+  const dist=Math.hypot(x1-x0,y1-y0), sp=(G&&G.speed)||1;
+  const dur=Math.max(120,Math.min(420,Math.round(dist*1.5)))/sp;
   const p=document.createElement('div'); p.className='boltfx';
   p.style.left=x0+'px'; p.style.top=y0+'px'; p.style.color=col; p.style.background=col;
   p.style.setProperty('--dx',(x1-x0).toFixed(0)+'px'); p.style.setProperty('--dy',(y1-y0).toFixed(0)+'px');
+  p.style.setProperty('--bdur',dur.toFixed(0)+'ms');
   p.style.rotate=ang.toFixed(0)+'deg';
-  $('#fx').appendChild(p); setTimeout(()=>{if(p.parentNode)p.remove();},260);
+  $('#fx').appendChild(p); setTimeout(()=>{if(p.parentNode)p.remove();},dur+60);
+  return Math.round(dur);
 }
 function impactFx(u,opt){opt=opt||{};const host=u.el;if(!host)return;
   const r=host.getBoundingClientRect(),a=$('#app').getBoundingClientRect();
