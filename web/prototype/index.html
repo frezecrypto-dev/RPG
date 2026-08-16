@@ -1074,11 +1074,16 @@
   @keyframes sparkOut{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--dx,0),var(--dy,0)) scale(.25)}}
   .ringfx{position:absolute;width:30px;height:30px;border-radius:50%;border:2px solid currentColor;pointer-events:none;z-index:9;
     box-shadow:0 0 12px currentColor;animation:ringOut .4s ease-out forwards}
-  @keyframes ringOut{0%{opacity:.9;transform:scale(.28)}100%{opacity:0;transform:scale(1.7)}}
+  @keyframes ringOut{0%{opacity:.9;transform:scale(calc(.28*var(--rs,1)))}100%{opacity:0;transform:scale(calc(1.7*var(--rs,1)))}}
   .slashfx{position:absolute;width:64px;height:4px;border-radius:2px;pointer-events:none;z-index:9;filter:blur(.4px);
     transform:rotate(var(--rot,-32deg)) scaleX(.2);animation:slashOut .34s ease-out forwards}
   @keyframes slashOut{0%{opacity:0;transform:rotate(var(--rot,-32deg)) scaleX(.2)}
     35%{opacity:1;transform:rotate(var(--rot,-32deg)) scaleX(1)}100%{opacity:0;transform:rotate(var(--rot,-32deg)) scaleX(1.05)}}
+  /* hit-stop + ultimate punch-in on the battlefield */
+  #stage{transition:transform .18s cubic-bezier(.2,.9,.3,1),filter .12s ease}
+  #stage.hitstop{filter:brightness(1.35) contrast(1.08)}
+  #stage.ultzoom{animation:ultZoomK .62s cubic-bezier(.2,.9,.3,1)}
+  @keyframes ultZoomK{0%{transform:scale(1)}22%{transform:scale(1.055)}100%{transform:scale(1)}}
   /* caster projectile — a bolt that flies from the attacker to its target */
   .boltfx{position:absolute;width:16px;height:5px;border-radius:3px;pointer-events:none;z-index:9;
     box-shadow:0 0 12px currentColor,0 0 4px #fff;filter:drop-shadow(0 0 3px currentColor);animation:boltFly .22s linear forwards}
@@ -4780,7 +4785,10 @@ function statOf(u,k){let v=u.stats[k];const m={'STS-ATK-UP':['atk',.3],'STS-ATK-
 function dealDamage(src,tgt,power,root,sub){
   if(!tgt.alive)return 0;
   lunge(src);   // attacker lunges toward its target
-  if(root==='magical')projectileFx(src,tgt,FXCOL[sub==='holy'?'holy':'mag']);   // casters fling a bolt
+  {const ch=CLASSHIT[src&&src.class];
+   // ranged/magic classes fling a bolt in their own colour; melee lands a class-flavoured strike
+   if(root==='magical'||src.class==='RNG')projectileFx(src,tgt,(ch&&ch.col)||FXCOL[sub==='holy'?'holy':'mag']);
+   if(ch)classHitFx(src,tgt);}
   let atk=statOf(src,'atk'),def=statOf(tgt,'def'); if(sub==='pierce')def*=.7;
   const mit=1000/(1000+def), res=root==='physical'?(tgt.physRes||0):(tgt.magRes||0);
   let elem=res<=-.2?1.25:res>=.2?.85:1; if(sub==='holy'&&(tgt.traits||[]).includes('undead'))elem*=1.25;
@@ -4789,7 +4797,7 @@ function dealDamage(src,tgt,power,root,sub){
   if(tgt.barrier>0&&sub!=='bleed'){const ab=Math.min(tgt.barrier,d);tgt.barrier-=ab;d-=ab;}
   tgt.hp=Math.max(0,tgt.hp-d); if(src.side==='ally'){gainSurge(4);src._dmg=(src._dmg||0)+d;}
   if(src.side==='ally'&&(src.stats.lifesteal||0)>0&&d>0)heal(src,Math.round(d*src.stats.lifesteal));
-  floatNum(tgt,d,isCrit?'crit':'',root,sub); shake(tgt); if(d>0){SFX[isCrit?'crit':'hit']();if(isCrit&&SFX.impact)SFX.impact(1.1);}
+  floatNum(tgt,d,isCrit?'crit':'',root,sub); shake(tgt); if(d>0){SFX[isCrit?'crit':'hit']();if(isCrit){if(SFX.impact)SFX.impact(1.1);hitStop(110);}}
   if(d>0){const kind=sub==='bleed'?'bleed':sub==='holy'?'holy':root==='magical'?'mag':'phys';impactFx(tgt,{kind,crit:isCrit});}
   // Break / Toughness: hitting a weakness drains the toughness bar; at 0 the enemy BREAKS (stun + burst + vulnerable)
   if(d>0&&src.side==='ally'&&tgt.side==='enemy'&&matchesWeak(tgt,root,sub)){
@@ -4805,7 +4813,7 @@ function triggerBreak(e,src){
   e.broken=1; e.vuln=2; e.status['STS-STUN']=1;   // skips its next turn, +25% damage taken for 2 rounds
   const bd=Math.round(e.max*0.05 + statOf(src,'atk')*1.6);
   e.hp=Math.max(0,e.hp-bd); if(src.side==='ally'){src._dmg=(src._dmg||0)+bd;gainSurge(10);}
-  breakPop(e); floatNum(e,bd,'crit','magical'); impactFx(e,{kind:'mag',crit:true}); battleShake(true); SFX.crit&&SFX.crit(); SFX.impact&&SFX.impact(1.3);
+  breakPop(e); floatNum(e,bd,'crit','magical'); impactFx(e,{kind:'mag',crit:true}); battleShake(true); hitStop(170); SFX.crit&&SFX.crit(); SFX.impact&&SFX.impact(1.3);
   if(e.el){e.el.classList.add('breaking');setTimeout(()=>e.el&&e.el.classList.remove('breaking'),640);}
   logMsg(`<b style="color:#7fe9ff">BREAK!</b> <b>${e.name}</b> — stunned & vulnerable`);
 }
@@ -5214,6 +5222,14 @@ let _shakeT=null;
 function battleShake(big){const s=$('#screen-battle');if(!s)return;const cls=big?'qshake-big':'qshake';
   s.classList.remove('qshake','qshake-big');void s.offsetWidth;s.classList.add(cls);
   clearTimeout(_shakeT);_shakeT=setTimeout(()=>s.classList.remove('qshake','qshake-big'),big?460:320);}
+// hit-stop: freeze the field for a beat so heavy blows land with weight
+let _hitStopT=null;
+function hitStop(ms){const st=$('#stage');if(!st)return;st.classList.add('hitstop');
+  clearTimeout(_hitStopT);_hitStopT=setTimeout(()=>st.classList.remove('hitstop'),ms||90);}
+// brief punch-in on the battlefield when an ultimate detonates
+let _ultZoomT=null;
+function ultZoom(){const st=$('#stage');if(!st)return;st.classList.remove('ultzoom');void st.offsetWidth;st.classList.add('ultzoom');
+  clearTimeout(_ultZoomT);_ultZoomT=setTimeout(()=>st.classList.remove('ultzoom'),620);}
 function floatNum(u,val,cls,root,sub){const host=u.el;if(!host)return;const r=host.getBoundingClientRect(),a=$('#app').getBoundingClientRect();
   const s=document.createElement('div');s.className='dmg '+(cls||'');
   s.style.color=cls==='heal'?'var(--good)':sub==='bleed'?'#ff6b8a':root==='magical'?'#b9a5ff':'#ffd9a0';
@@ -5226,6 +5242,44 @@ function weakPop(u){const host=u.el;if(!host)return;const r=host.getBoundingClie
   $('#fx').appendChild(s);setTimeout(()=>s.remove(),900);}
 const FXCOL={phys:'#ffd9a0',mag:'#c6a8ff',bleed:'#ff6b8a',heal:'#7dffb0',holy:'#fff2b0'};
 // a glowing bolt that flies from a caster to its target (cosmetic)
+// per-class signature strike FX — every class hits with its own look
+const CLASSHIT={
+  TNK:{col:'#8fb4e6', kind:'bash',   n:6},
+  BSK:{col:'#ff7a4d', kind:'cleave', n:12},
+  ASN:{col:'#ff5a7a', kind:'flurry', n:9},
+  MAG:{col:'#c6a8ff', kind:'burst',  n:12},
+  NEC:{col:'#a06bff', kind:'drain',  n:10},
+  HLR:{col:'#ffe6a8', kind:'smite',  n:8},
+  RNG:{col:'#8fe3b6', kind:'pierce', n:7},
+};
+function classHitFx(src,tgt){
+  const c=CLASSHIT[src&&src.class]; if(!c||!tgt||!tgt.el)return;
+  const r=tgt.el.getBoundingClientRect(), a=$('#app').getBoundingClientRect();
+  const cx=r.left-a.left+r.width/2, cy=r.top-a.top+r.height*0.46, fx=$('#fx');
+  const mkSlash=(rot,len,delay)=>{const sl=document.createElement('div');sl.className='slashfx';
+    sl.style.left=(cx-len/2)+'px';sl.style.top=(cy-2)+'px';sl.style.width=len+'px';
+    sl.style.setProperty('--rot',rot+'deg');sl.style.animationDelay=delay+'ms';
+    sl.style.background=`linear-gradient(90deg,transparent,${c.col},#fff,transparent)`;
+    fx.appendChild(sl);setTimeout(()=>{if(sl.parentNode)sl.remove();},420+delay);};
+  const mkRing=(scale,delay)=>{const rg=document.createElement('div');rg.className='ringfx';
+    rg.style.left=(cx-15)+'px';rg.style.top=(cy-15)+'px';rg.style.color=c.col;
+    rg.style.setProperty('--rs',scale);rg.style.animationDelay=delay+'ms';
+    fx.appendChild(rg);setTimeout(()=>{if(rg.parentNode)rg.remove();},460+delay);};
+  if(c.kind==='flurry'){ [0,70,140].forEach((d,i)=>mkSlash(i%2?38:-38,58,d)); }
+  else if(c.kind==='cleave'){ mkSlash(-58,98,0); mkRing(1.25,60); }
+  else if(c.kind==='bash'){ mkRing(1.05,0); mkRing(1.5,90); }
+  else if(c.kind==='pierce'){ mkSlash(-8,112,0); }
+  else if(c.kind==='burst'){ mkRing(0.8,0); mkRing(1.35,80); mkRing(1.9,160); }
+  else if(c.kind==='drain'){ mkRing(1.2,0); }
+  else if(c.kind==='smite'){ mkSlash(-90,88,0); mkRing(1.2,70); }
+  for(let i=0;i<c.n;i++){const sp=document.createElement('div');sp.className='sparkfx';
+    const ang=Math.random()*Math.PI*2,dist=18+Math.random()*46;
+    sp.style.left=cx+'px';sp.style.top=cy+'px';sp.style.color=c.col;sp.style.background=c.col;
+    sp.style.setProperty('--dx',(Math.cos(ang)*dist).toFixed(0)+'px');
+    sp.style.setProperty('--dy',(Math.sin(ang)*dist).toFixed(0)+'px');
+    const sz=(2+Math.random()*2.6).toFixed(1);sp.style.width=sz+'px';sp.style.height=sz+'px';
+    fx.appendChild(sp);setTimeout(()=>{if(sp.parentNode)sp.remove();},640);}
+}
 function projectileFx(src,tgt,col){
   if(!src||!tgt||!src.el||!tgt.el)return;
   const a=$('#app').getBoundingClientRect(), s=src.el.getBoundingClientRect(), t=tgt.el.getBoundingClientRect();
@@ -5276,6 +5330,7 @@ const ULTFX={
 };
 function classUltFx(u){
   const cfg=ULTFX[u.class]||ULTFX.MAG, fx=$('#fx'); if(!fx)return;
+  ultZoom(); hitStop(150);   // punch-in + freeze so ultimates feel heavy
   const hue=CLASS[u.class].hue, a=$('#app').getBoundingClientRect(), row=$('#enemyStage');
   let cx=a.width/2, cy=a.height*0.42;
   if(row){const r=row.getBoundingClientRect(); if(r.width){cx=r.left-a.left+r.width/2; cy=r.top-a.top+r.height/2;}}
