@@ -111,7 +111,20 @@
   .bestthumb.locked .artimg{filter:brightness(.5)}
   .cxg{font-size:17px;cursor:pointer;filter:drop-shadow(0 1px 3px rgba(0,0,0,.5))}
   .cxg.locked{filter:grayscale(1);opacity:.28;cursor:default}
-  #arRankBar{padding:6px 20px 10px;font-size:12px;color:var(--warn);border-bottom:1px solid var(--line);letter-spacing:.03em}
+  #arRankBar{padding:10px 20px 12px;border-bottom:1px solid var(--line)}
+  .arrankcard{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .arrk-tier{font-family:var(--font-title);font-size:22px;color:var(--tc);line-height:1}
+  .arrk-div{font-size:13px;opacity:.8;margin-left:2px}
+  .arrk-rp{font-size:11px;color:var(--muted);margin-top:3px}
+  .arrk-medal{flex:none}
+  .arrk-bar{height:7px;border-radius:4px;background:var(--panel);overflow:hidden;margin-top:8px;border:1px solid var(--line)}
+  .arrk-fill{height:100%;border-radius:4px;transition:width .5s ease}
+  .arrk-next{font-size:10.5px;color:var(--faint);margin-top:5px}
+  .arclaim{margin-top:8px;width:100%;padding:8px;border-radius:9px;border:1px solid var(--warn);background:rgba(255,196,86,.14);color:var(--ink);font-size:11px;font-weight:700;cursor:pointer}
+  .archead{display:flex;align-items:center;justify-content:space-between;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);margin:2px 0 2px}
+  .arrefresh{font-size:10px;padding:4px 9px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--muted);cursor:pointer;text-transform:none;letter-spacing:0}
+  .arstake{font-size:10px;color:var(--muted);margin-top:3px;font-family:var(--font-hud)}
+  .artier{border:1px solid var(--umbra);border-radius:7px;padding:3px 0;text-align:center}
   #arList{flex:1;overflow-y:auto;padding:12px 20px 26px;display:flex;flex-direction:column;gap:8px}
   .arcard{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:12px;padding:11px 13px;background:var(--panel2)}
   .arcard.current{border-color:var(--umbra);box-shadow:0 0 0 1px var(--umbra-dim) inset}
@@ -2485,7 +2498,7 @@ function renderCrys(){
 const SAVE_KEY='ashgate_save_v1';
 let hasSave=false;
 function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(
-  {v:3,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,raidBest,crystals,gold,starShards,relics,sigils,pity,insight,plvl,pxp,vowTickets,freePullUsed,tutorialDone,energy,energyTs,inventory,gearOn,gearUID,loadouts,daily,bpXP,bpClaimF,bpClaimP,bpPrem,evtEarned,evtBal,evtMile,evtShop,login,gleam,vowCard,shopFirst,cosmetics,shopDaily,raidWeek,guild,quests,items,spire,muted:ui.muted,pref:{speed:ui.speed,auto:ui.auto}}));}catch(e){}}
+  {v:3,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,arena,raidBest,crystals,gold,starShards,relics,sigils,pity,insight,plvl,pxp,vowTickets,freePullUsed,tutorialDone,energy,energyTs,inventory,gearOn,gearUID,loadouts,daily,bpXP,bpClaimF,bpClaimP,bpPrem,evtEarned,evtBal,evtMile,evtShop,login,gleam,vowCard,shopFirst,cosmetics,shopDaily,raidWeek,guild,quests,items,spire,muted:ui.muted,pref:{speed:ui.speed,auto:ui.auto}}));}catch(e){}}
 function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s||(s.v!==1&&s.v!==2&&s.v!==3))return false;
   owned=new Set(s.owned);progress=s.progress||{};cleared=new Set(s.cleared);
   crystals=s.crystals??crystals;gold=s.gold??gold;starShards=s.starShards??starShards;relics=s.relics??0;sigils=s.sigils??0;pity=s.pity??0;insight=s.insight??40;
@@ -2493,7 +2506,7 @@ function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s
   vowTickets=s.vowTickets||0;freePullUsed=!!s.freePullUsed;tutorialDone=!!s.tutorialDone;
   energy=s.energy??energy;energyTs=s.energyTs??Date.now();energyTick();
   inventory=s.inventory||[];gearOn=s.gearOn||{};gearUID=s.gearUID||inventory.reduce((m,p)=>Math.max(m,p.uid),0);
-  loadouts=s.loadouts||{};clearedHard=new Set(s.clearedHard||[]);arenaRank=s.arenaRank||0;raidBest=s.raidBest||0;raidWeek=s.raidWeek||{id:-1,best:0,claimed:[]};
+  loadouts=s.loadouts||{};clearedHard=new Set(s.clearedHard||[]);arenaRank=s.arenaRank||0;arena=Object.assign({rp:0,best:0,streak:0,wins:0,season:0,seed:1,claimed:[]},s.arena||{});raidBest=s.raidBest||0;raidWeek=s.raidWeek||{id:-1,best:0,claimed:[]};
   spire=s.spire||{best:0,month:'',seals:0};
   daily=s.daily||{date:'',win:0,summon:0,enhance:0,claimed:[]};dailyCheck();ui.muted=s.muted??false;
   bpXP=s.bpXP||0;bpClaimF=s.bpClaimF||[];bpClaimP=s.bpClaimP||[];bpPrem=!!s.bpPrem;
@@ -3543,25 +3556,44 @@ function guildLeave(){uiConfirm('Leave '+guild.name+'? You can join or create an
   guild.boss={week:-1,myDmg:0,claimed:false};guildView='list';guild.tab='chat';SFX.tap();renderGuild();saveGame();},{yes:'Leave',danger:true});}
 
 /* ---------- PvP ARENA ---------- */
-let arenaRank=0, arenaTarget=null;
-function buildArena(){
-  const byCR={};
-  DATA.heroes.forEach(h=>{(byCR[h.class]=byCR[h.class]||{});(byCR[h.class][h.rarity]=byCR[h.class][h.rarity]||[]).push(h.id);});
-  const pick=(cls,rar)=>((byCR[cls]||{})[rar]||[])[0]||((byCR[cls]||{}).C||[])[0];
-  const specs=[
-    {name:'Ashfield Recruits',  tier:'Bronze',   rar:'C', lvl:22, stars:2},
-    {name:'Gatehouse Watch',    tier:'Bronze',   rar:'C', lvl:28, stars:3},
-    {name:'Emberguard Blades',  tier:'Silver',   rar:'R', lvl:34, stars:3},
-    {name:'The Hollowed Choir', tier:'Silver',   rar:'R', lvl:40, stars:4},
-    {name:'Freeblade Vanguard', tier:'Gold',     rar:'E', lvl:46, stars:4},
-    {name:'The Vowbound',       tier:'Gold',     rar:'E', lvl:52, stars:5},
-    {name:'Gravebound Elite',   tier:'Platinum', rar:'E', lvl:58, stars:5},
-    {name:'Sovereign Guard',    tier:'Diamond',  rar:'L', lvl:64, stars:6},
-  ];
+let arenaRank=0, arenaTarget=null;   // arenaRank kept for legacy saves
+// ---- Ranked ladder: RP points → tiers → divisions, with promotion floors ----
+let arena={rp:0, best:0, streak:0, wins:0, season:0, seed:1, claimed:[]};
+const ARENA_TIERS=[
+  {n:'Bronze',   rp:0,    col:'#c08457'},
+  {n:'Silver',   rp:400,  col:'#c8d0dc'},
+  {n:'Gold',     rp:900,  col:'#ffcf6b'},
+  {n:'Platinum', rp:1500, col:'#5fe0d0'},
+  {n:'Diamond',  rp:2300, col:'#7bd0ff'},
+  {n:'Master',   rp:3300, col:'#c58bff'},
+  {n:'Legend',   rp:4600, col:'#ff8f5a'},
+];
+function arenaTierIdx(rp){let i=0;for(let k=0;k<ARENA_TIERS.length;k++){if(rp>=ARENA_TIERS[k].rp)i=k;}return i;}
+function arenaTierInfo(rp){const i=arenaTierIdx(rp),t=ARENA_TIERS[i],nx=ARENA_TIERS[i+1]||null;
+  const span=nx?nx.rp-t.rp:1200, into=rp-t.rp;
+  // 3 divisions per tier (III→II→I); Legend is open-ended
+  const div=nx?['III','II','I'][Math.min(2,Math.floor(into/(span/3)))]:'';
+  const pct=nx?Math.max(0,Math.min(1,into/span)):Math.min(1,into/1200);
+  return {idx:i,tier:t,next:nx,div,pct,floor:t.rp};}
+function arenaByCR(){const m={};DATA.heroes.forEach(h=>{(m[h.class]=m[h.class]||{});(m[h.class][h.rarity]=m[h.class][h.rarity]||[]).push(h.id);});return m;}
+const _ARBYCR=arenaByCR();
+function arenaPick(cls,rar){const c=_ARBYCR[cls]||{};return (c[rar]||[])[0]||(c.E||[])[0]||(c.R||[])[0]||(c.C||[])[0];}
+const ARENA_NAMES=['Ashfield Reavers','Gatehouse Watch','Emberguard Blades','The Hollowed Choir','Freeblade Vanguard','The Vowbound','Gravebound Elite','Sovereign Guard','Cinder Wardens','Palewatch Order','Duskbanner Host','The Last Choir'];
+function arenaChallengers(){
+  const rp=arena.rp, info=arenaTierInfo(rp);
+  const baseLvl=Math.max(20,Math.min(70,Math.round(20+rp/45)));
+  const baseStars=Math.max(2,Math.min(6,2+Math.floor(rp/700)));
+  const rar=rp<400?'C':rp<900?'R':rp<2300?'E':'L';
+  const diffs=[{k:'Easy',dl:-6,ds:0,stake:18,col:'var(--good)'},{k:'Even',dl:0,ds:0,stake:27,col:'var(--warn)'},{k:'Hard',dl:6,ds:1,stake:40,col:'var(--danger)'}];
   const five=['TNK','BSK','RNG','MAG','HLR'];
-  return specs.map((s,i)=>({...s,rank:i+1,team:five.map(cls=>pick(cls,s.rar))}));
+  return diffs.map((d,i)=>{
+    const seed=(arena.seed*13+i*7);
+    const nm=ARENA_NAMES[seed%ARENA_NAMES.length];
+    return {name:nm, diff:d.k, diffCol:d.col, stake:d.stake, tier:info.tier.n,
+      lvl:Math.max(18,baseLvl+d.dl), stars:Math.max(2,Math.min(6,baseStars+d.ds)), rar,
+      team:five.map(cls=>arenaPick(cls,rar))};
+  });
 }
-const ARENA=buildArena();
 function foeStats(h,level,stars){const g=1+h.perLevel*h.rarityGrowth*(level-1),sf=1+DATA.starBonusPerStar*(stars-h.startStars),gm=1.15;
   return {hp:Math.round(h.baseL1.hp*g*sf*gm),atk:Math.round(h.baseL1.atk*g*sf*gm),def:Math.round(h.baseL1.def*g*sf),
           spd:h.baseL1.spd,crit_rate:.08,crit_dmg:.6,lifesteal:0,heal_pct:0,aegis:0};}
@@ -3570,22 +3602,45 @@ function mkFoe(id,level,stars,captain){const h=hero(id),c=CLASS[h.class],st=foeS
     damageRoot:h.damageRoot,skillPower:h.kit.S1.power||1,traits:[],physRes:0,magRes:0,immunities:[],
     tier:captain?'B':'M',isBoss:false,isMini:!!captain,_glyph:c.g,_efx:`var(${c.hue})`,
     tgName:captain?('Signature: '+h.kit.S3.name):null};}
-function arenaTierName(rank){return rank<=0?'Unranked':(ARENA[rank-1]?ARENA[rank-1].tier+' — '+ARENA[rank-1].name:'Champion');}
-function openArena(){renderArena();show('screen-arena');}
+function arenaTierName(){const info=arenaTierInfo(arena.rp);return info.tier.n+(info.div?' '+info.div:'');}
+let _arChal=null;
+function openArena(){_arChal=arenaChallengers();renderArena();show('screen-arena');}
 function renderArena(){
-  $('#arRank').textContent = arenaRank>=ARENA.length?'Champion — you top the ladder'
-    : (arenaRank===0?'Unranked — beat the first squad to enter the ladder':'Your rank: '+arenaTierName(arenaRank));
-  const list=$('#arList');list.innerHTML=ARENA.map((sq,i)=>{
-    const state=i<arenaRank?'cleared':(i===arenaRank?'current':'locked');
+  const info=arenaTierInfo(arena.rp),t=info.tier,col=t.col;
+  const bestInfo=arenaTierInfo(arena.best);
+  const nextTxt=info.next?`${info.next.rp-arena.rp} RP to <b style="color:${ARENA_TIERS[info.idx+1].col}">${info.next.n}</b>`:'Top tier reached';
+  // claimable promotion reward: first time you enter a new tier
+  const canClaim=info.idx>(arena.claimed.length?Math.max(...arena.claimed):-1);
+  const claimRow=canClaim?`<button class="arclaim" id="arClaimBtn">Claim ${t.n} promotion reward · <i class="cur crystal"></i> ${arenaPromoReward(info.idx).crys} · <i class="cur relic"></i> ${arenaPromoReward(info.idx).relics}</button>`:'';
+  $('#arRankBar').innerHTML=`
+    <div class="arrankcard" style="--tc:${col}">
+      <div class="arrk-l"><div class="arrk-tier">${t.n}${info.div?' <span class="arrk-div">'+info.div+'</span>':''}</div>
+        <div class="arrk-rp"><b>${arena.rp}</b> RP · Best ${bestInfo.tier.n}${arena.streak>1?` · 🔥 ${arena.streak} win streak`:''}</div></div>
+      <div class="arrk-medal">${arenaMedal(info.idx,col)}</div>
+    </div>
+    <div class="arrk-bar"><div class="arrk-fill" style="width:${(info.pct*100).toFixed(0)}%;background:${col}"></div></div>
+    <div class="arrk-next">${nextTxt}</div>${claimRow}`;
+  const list=$('#arList');
+  list.innerHTML=`<div class="archead"><span>Today's Challengers</span><button class="arrefresh" id="arRefresh">↻ New</button></div>`+
+    _arChal.map((sq,i)=>{
     const glyphs=sq.team.map(id=>CLASS[hero(id).class].g).join(' ');
-    const btn=state==='current'?`<button class="arbtn" data-i="${i}">Challenge</button>`
-      :state==='cleared'?`<span class="arbadge done">✓ Beaten</span>`:`<span class="arbadge lock">🔒</span>`;
-    return `<div class="arcard ${state}"><div class="artier">${sq.tier}</div>
+    return `<div class="arcard current"><div class="artier" style="color:${sq.diffCol};border-color:${sq.diffCol}">${sq.diff}</div>
       <div class="armeta"><div class="arname">${sq.name}</div>
-        <div class="arteam">${glyphs}<span class="arlvl">Lv ${sq.lvl} · ${sq.stars}★</span></div></div>${btn}</div>`;
+        <div class="arteam">${glyphs}<span class="arlvl">Lv ${sq.lvl} · ${sq.stars}★</span></div>
+        <div class="arstake">Win <b style="color:var(--good)">+${arenaWinRP(sq)} RP</b> · Loss <span style="color:var(--danger)">−${ARENA_LOSS_RP} RP</span></div></div>
+      <button class="arbtn" data-i="${i}">Fight</button></div>`;
   }).join('');
-  list.querySelectorAll('.arbtn').forEach(b=>b.addEventListener('click',()=>openArenaTeam(ARENA[+b.dataset.i])));
+  const cb=$('#arClaimBtn');if(cb)cb.addEventListener('click',arenaClaimPromo);
+  const rf=$('#arRefresh');if(rf)rf.addEventListener('click',()=>{arena.seed++;_arChal=arenaChallengers();renderArena();});
+  list.querySelectorAll('.arbtn').forEach(b=>b.addEventListener('click',()=>openArenaTeam(_arChal[+b.dataset.i])));
 }
+const ARENA_LOSS_RP=14;
+function arenaWinRP(sq){return sq.stake+Math.min(15,arena.streak*3);}
+function arenaPromoReward(idx){return {crys:80+idx*40, relics:2+idx};}
+function arenaMedal(idx,col){return `<svg viewBox="0 0 40 40" width="40" height="40"><circle cx="20" cy="16" r="11" fill="none" stroke="${col}" stroke-width="2.5"/><circle cx="20" cy="16" r="6" fill="${col}" opacity="0.35"/><path d="M13 24 L9 38 L20 32 L31 38 L27 24" fill="${col}" opacity="0.55"/><text x="20" y="20" text-anchor="middle" font-size="10" fill="${col}" font-weight="700">${idx+1}</text></svg>`;}
+function arenaClaimPromo(){const info=arenaTierInfo(arena.rp);if(info.idx<=(arena.claimed.length?Math.max(...arena.claimed):-1))return;
+  const rw=arenaPromoReward(info.idx);crystals+=rw.crys;relics+=rw.relics;arena.claimed.push(info.idx);
+  SFX.rare&&SFX.rare('L');toast&&toast(info.tier.n+' reward claimed');renderCrys();renderArena();saveGame();}
 function openArenaTeam(sq){arenaTarget=sq;curStage=null;
   $('#teamStage').textContent='Arena · '+sq.tier+' — '+sq.name;
   if(!team.length)suggestTeam();buildRoster();renderSlots();show('screen-team');}
@@ -3607,19 +3662,34 @@ function deployArena(sq){
   show('screen-battle');turnQueue=[];setTimeout(step,450);
 }
 function endArena(win){
-  const sq=G.arena; let reward=0,goldR=0; const firstClear=win&&(sq.rank-1===arenaRank);
+  const sq=G.arena;
+  const beforeIdx=arenaTierIdx(arena.rp);
+  let rpDelta=0,reward=0,goldR=0,promoted=false;
   if(win){ dailyBump('win'); questBump('arena');
-    if(firstClear){arenaRank=Math.max(arenaRank,sq.rank);reward=60+sq.rank*25;crystals+=reward;goldR=6000+sq.rank*2000;gold+=goldR;}
-    saveGame(); }
+    arena.streak++; arena.wins++;
+    rpDelta=arenaWinRP(sq); arena.rp+=rpDelta;
+    arena.best=Math.max(arena.best,arena.rp);
+    const afterIdx=arenaTierIdx(arena.rp); promoted=afterIdx>beforeIdx;
+    reward=40+arenaTierIdx(arena.rp)*20; crystals+=reward;
+    goldR=4000+arenaTierIdx(arena.rp)*1500; gold+=goldR;
+  } else {
+    arena.streak=0;
+    const floor=arenaTierInfo(arena.rp).floor;   // promotion protection: never drop below the current tier
+    rpDelta=-Math.min(ARENA_LOSS_RP, arena.rp-floor); arena.rp+=rpDelta;
+  }
+  arena.seed++; _arChal=arenaChallengers();  // fresh challengers after each fight
+  saveGame();
   renderCrys(); setMvp(win);
   const r=$('#result');r.style.display='flex';resultCinematic(win);
-  $('#resEyebrow').textContent=win?(firstClear?'Rank up':'Arena win'):'Arena defeat';
+  $('#resEyebrow').textContent=win?(promoted?'Promoted!':'Arena win'):'Arena defeat';
   const v=$('#resVerdict');v.textContent=win?'VICTORY':'DEFEAT';v.className='verdict '+(win?'win':'lose');
-  const rewTxt=(reward||goldR)?`<div style="color:var(--umbra);margin-bottom:6px"><i class="cur crystal"></i> +${reward} Crystals · <span style="color:var(--warn)"><i class="cur gold"></i> +${goldR.toLocaleString()} Gold</span></div>`:'';
-  const msg=!win?`Your five fall in the Arena. Re-gear, level up, and challenge again.`
-    :firstClear?`You climbed to <b style="color:var(--warn)">${arenaTierName(arenaRank)}</b>.${arenaRank>=ARENA.length?' You top the ladder — Champion!':' The next squad awaits.'}`
-    :`Already ranked past this squad — challenge the current one for rewards.`;
-  $('#resSub').innerHTML=(win?rewTxt:'')+msg;
+  const info=arenaTierInfo(arena.rp);
+  const rpTxt=`<div style="margin-bottom:6px"><b style="color:${win?'var(--good)':'var(--danger)'}">${rpDelta>=0?'+':''}${rpDelta} RP</b> · now <b style="color:${info.tier.col}">${info.tier.n}${info.div?' '+info.div:''}</b> (${arena.rp} RP)</div>`;
+  const rewTxt=(reward||goldR)?`<div style="color:var(--umbra);margin-bottom:6px"><i class="cur crystal"></i> +${reward} · <span style="color:var(--warn)"><i class="cur gold"></i> +${goldR.toLocaleString()}</span></div>`:'';
+  const msg=!win?`Your five fall in the Arena. Re-gear, level up, and climb again.`
+    :promoted?`You broke into <b style="color:${info.tier.col}">${info.tier.n}</b> — claim your promotion reward on the Arena screen.`
+    :`Keep the streak going for bonus RP.`;
+  $('#resSub').innerHTML=rpTxt+(win?rewTxt:'')+msg;
   const nx=$('#resNext');nx.textContent='Arena';nx.onclick=()=>{openArena();};
 }
 
