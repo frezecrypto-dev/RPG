@@ -207,6 +207,34 @@
   @keyframes nmShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
   .nmerr{font-size:10.5px;color:var(--danger);min-height:14px;margin:8px 0 12px}
   .nmcard .cta{width:100%}
+  /* ===== Daily Rites: Wheel of Ash + Gate Gamble ===== */
+  #homeDaily{position:absolute;right:14px;bottom:96px;z-index:6;display:flex;flex-direction:column;align-items:center;gap:1px;width:58px;height:58px;justify-content:center;border-radius:50%;border:1px solid var(--umbra);background:radial-gradient(circle at 50% 35%,rgba(123,92,255,.35),rgba(10,8,20,.85));cursor:pointer;backdrop-filter:blur(4px);box-shadow:0 6px 16px rgba(0,0,0,.4)}
+  #homeDaily .hdico{font-size:20px;line-height:1} #homeDaily .hdlbl{font-size:8px;letter-spacing:.05em;color:var(--muted)}
+  #homeDaily.notify::after{content:'';position:absolute;top:2px;right:2px;width:12px;height:12px;border-radius:50%;background:var(--danger);border:2px solid #0a0814;animation:dailyPulse 1.4s ease-in-out infinite}
+  @keyframes dailyPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.25);opacity:.7}}
+  #dailyTabs{display:flex;gap:6px;padding:8px 16px 6px;border-bottom:1px solid var(--line)}
+  .rtab{flex:1;padding:9px;border-radius:9px;border:1px solid var(--line);background:var(--panel);color:var(--muted);font-size:11px;font-weight:700;cursor:pointer}
+  .rtab.on{border-color:var(--umbra);background:rgba(123,92,255,.16);color:var(--ink)}
+  #dailyScroll{flex:1;overflow-y:auto;padding:16px 20px 30px;display:flex;flex-direction:column;align-items:center;gap:14px}
+  .wheelwrap{position:relative;width:250px;height:250px;margin-top:8px}
+  .wpointer{position:absolute;top:-10px;left:50%;transform:translateX(-50%);font-size:26px;color:#ffcf6b;z-index:3;filter:drop-shadow(0 2px 3px #000)}
+  .wheel{width:250px;height:250px;border-radius:50%;position:relative;border:5px solid #2a2140;box-shadow:0 0 0 4px #4a3a8f,0 10px 30px rgba(0,0,0,.5);transform:rotate(0deg)}
+  .wlbl{position:absolute;top:50%;left:50%;width:2px;height:2px;display:flex;flex-direction:column;align-items:center;color:#fff;text-shadow:0 1px 2px #000;pointer-events:none}
+  .wlbl .wic{font-size:17px;line-height:1} .wlbl .wn{font-size:8px;font-weight:700;white-space:nowrap;margin-top:1px}
+  .whub{position:absolute;top:50%;left:50%;width:38px;height:38px;margin:-19px 0 0 -19px;border-radius:50%;background:radial-gradient(circle,#1a1430,#0a0814);border:2px solid #7b5cff;display:flex;align-items:center;justify-content:center;color:#cbb8ff;font-size:16px}
+  .wheelmsg{font-size:13px;color:var(--ink);text-align:center;min-height:18px} .wheelmsg b{font-family:var(--font-title)}
+  #dailyScroll .cta{width:100%;max-width:280px}
+  .ritenote{font-size:10px;color:var(--faint);text-align:center;line-height:1.5;max-width:300px}
+  .gambleintro{font-size:12px;color:var(--muted);text-align:center;line-height:1.5;max-width:300px}
+  .gamblerow{display:flex;gap:12px;justify-content:center;margin:6px 0}
+  .gcard{width:88px;height:130px;border-radius:13px;border:1px solid var(--umbra);background:linear-gradient(160deg,#221a44,#0e0b1e);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s,box-shadow .15s;padding:0}
+  .gcard:hover:not(:disabled){transform:translateY(-5px);box-shadow:0 8px 20px rgba(123,92,255,.35)}
+  .gcard:disabled{cursor:default}
+  .gcard.spent{opacity:.5}
+  .gcback{font-size:40px;color:#7b5cff;filter:drop-shadow(0 0 8px rgba(123,92,255,.6))}
+  .gcard.revealed{background:var(--panel2)} .gcard.picked{border-color:#ffcf6b;box-shadow:0 0 0 2px #ffcf6b inset,0 0 16px rgba(255,207,107,.5)}
+  .gcface{display:flex;flex-direction:column;align-items:center;gap:6px;border:1px solid;border-radius:10px;padding:10px 6px;width:100%;height:100%;justify-content:center}
+  .gcface .wic{font-size:26px} .gcface .gcn{font-size:9px;text-align:center;color:var(--ink);line-height:1.2}
   .artier{border:1px solid var(--umbra);border-radius:7px;padding:3px 0;text-align:center}
   #arList{flex:1;overflow-y:auto;padding:12px 20px 26px;display:flex;flex-direction:column;gap:8px}
   .arcard{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:12px;padding:11px 13px;background:var(--panel2)}
@@ -1948,6 +1976,14 @@
     <div id="profScroll"></div>
   </section>
 
+  <!-- DAILY RITES (minigames) -->
+  <section class="screen" id="screen-daily">
+    <div class="scrhead"><div><div class="eyebrow">Daily</div><h1>Daily Rites</h1></div>
+      <button class="ghost back" id="dailyBack">Back</button></div>
+    <div id="dailyTabs"></div>
+    <div id="dailyScroll"></div>
+  </section>
+
   <!-- USERNAME MODAL -->
   <div id="nameModal">
     <div class="nmcard">
@@ -1997,6 +2033,7 @@
         <span class="bldlbl">Arena</span></button>
       <div id="hubFeat"></div>
     </div>
+    <button id="homeDaily" title="Daily Rites — free spin & draw"><span class="hdico">🎡</span><span class="hdlbl">Daily</span></button>
     <nav id="homeNav">
       <button class="navb on" data-nav="home"><span class="navi">🏰</span><span>Home</span></button>
       <button class="navb" data-nav="shop"><span class="navi">🛒</span><span>Shop</span></button>
@@ -2544,6 +2581,7 @@ let bpXP=0, bpClaimF=[], bpClaimP=[], bpPrem=false;   // Battle Pass "Gatewarden
 let evtEarned=0, evtBal=0, evtMile=[], evtShop={};    // Events point-farm (doc 10 s3): earned=lifetime(milestones), bal=spendable(shop)
 let login={n:0, date:''};                             // 28-day login track (pauses on miss, never resets)
 let gleam=0;                                          // Gleam — cosmetic-only soft currency (doc 10 s4/s5)
+let rites={spinDate:'', gambleDate:'', gambleWin:0};  // daily minigames: Wheel of Ash + Gate Gamble
 // ---- Player profile: username + avatar (a hero portrait) + earned frames ----
 let profile={name:'', avatar:null, frame:'default', frames:['default']};
 // ---- Character skins (cosmetic-only) — art injected into SKINART/SKINCUT ----
@@ -2743,7 +2781,7 @@ function renderCrys(){
 const SAVE_KEY='ashgate_save_v1';
 let hasSave=false;
 function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(
-  {v:3,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,arena,raidBest,crystals,gold,starShards,relics,sigils,pity,insight,plvl,pxp,vowTickets,freePullUsed,tutorialDone,energy,energyTs,inventory,gearOn,gearUID,loadouts,daily,bpXP,bpClaimF,bpClaimP,bpPrem,evtEarned,evtBal,evtMile,evtShop,login,gleam,vowCard,shopFirst,cosmetics,skinOn,profile,shopDaily,raidWeek,guild,quests,items,spire,muted:ui.muted,pref:{speed:ui.speed,auto:ui.auto}}));}catch(e){}}
+  {v:3,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,arena,raidBest,crystals,gold,starShards,relics,sigils,pity,insight,plvl,pxp,vowTickets,freePullUsed,tutorialDone,energy,energyTs,inventory,gearOn,gearUID,loadouts,daily,bpXP,bpClaimF,bpClaimP,bpPrem,evtEarned,evtBal,evtMile,evtShop,login,gleam,rites,vowCard,shopFirst,cosmetics,skinOn,profile,shopDaily,raidWeek,guild,quests,items,spire,muted:ui.muted,pref:{speed:ui.speed,auto:ui.auto}}));}catch(e){}}
 function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s||(s.v!==1&&s.v!==2&&s.v!==3))return false;
   owned=new Set(s.owned);progress=s.progress||{};cleared=new Set(s.cleared);
   crystals=s.crystals??crystals;gold=s.gold??gold;starShards=s.starShards??starShards;relics=s.relics??0;sigils=s.sigils??0;pity=s.pity??0;insight=s.insight??40;
@@ -2756,7 +2794,7 @@ function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s
   daily=s.daily||{date:'',win:0,summon:0,enhance:0,claimed:[]};dailyCheck();ui.muted=s.muted??false;
   bpXP=s.bpXP||0;bpClaimF=s.bpClaimF||[];bpClaimP=s.bpClaimP||[];bpPrem=!!s.bpPrem;
   evtEarned=s.evtEarned||0;evtBal=s.evtBal||0;evtMile=s.evtMile||[];evtShop=s.evtShop||{};login=s.login||{n:0,date:''};
-  gleam=s.gleam||0;vowCard=s.vowCard||{active:false,day:0,date:''};shopFirst=s.shopFirst||[];cosmetics=s.cosmetics||[];skinOn=s.skinOn||{};profile=Object.assign({name:'',avatar:null,frame:'default',frames:['default']},s.profile||{});shopDaily=s.shopDaily||{date:'',bought:{}};
+  gleam=s.gleam||0;vowCard=s.vowCard||{active:false,day:0,date:''};shopFirst=s.shopFirst||[];cosmetics=s.cosmetics||[];skinOn=s.skinOn||{};profile=Object.assign({name:'',avatar:null,frame:'default',frames:['default']},s.profile||{});rites=Object.assign({spinDate:'',gambleDate:'',gambleWin:0},s.rites||{});shopDaily=s.shopDaily||{date:'',bought:{}};
   if(s.guild)guild={...guild,...s.guild};
   if(s.quests)quests=s.quests; if(s.items)items=s.items; questPeriodCheck();
   if(s.pref){ui.speed=s.pref.speed||1;ui.auto=!!s.pref.auto;}
@@ -4100,6 +4138,96 @@ function submitUsername(){const inp=$('#nmInput'), err=$('#nmErr'); const v=inp.
 }
 function updateHomeProfile(){const b=$('#homeProfile'); if(!b)return;
   b.innerHTML=avatarFramed(38)+`<span class="hpname">${playerName()}</span>`;}
+/* ================= DAILY RITES — Wheel of Ash + Gate Gamble ================= */
+const RITE_PRIZES=[
+  {k:'gold',   ic:'<i class="cur gold"></i>',   n:20000, w:22, col:'#b8892f', lbl:'20k Gold'},
+  {k:'shard',  ic:'<i class="cur shard"></i>',  n:30,    w:18, col:'#3f74a8', lbl:'30 Shards'},
+  {k:'gleam',  ic:'✧',                          n:100,   w:15, col:'#7a5cc0', lbl:'100 Gleam'},
+  {k:'crystal',ic:'<i class="cur crystal"></i>',n:100,   w:12, col:'#5a3fd6', lbl:'100 Crystals'},
+  {k:'energy', ic:'⚡',                         n:60,    w:14, col:'#c79a3a', lbl:'60 Energy'},
+  {k:'relic',  ic:'<i class="cur relic"></i>',  n:3,     w:9,  col:'#3fa878', lbl:'3 Relics'},
+  {k:'seal',   ic:'◈',                          n:2,     w:6,  col:'#3f9aa8', lbl:'2 Ash Seals'},
+  {k:'ticket', ic:'🎟️',                        n:1,     w:4,  col:'#c05a2f', lbl:'Vow Ticket'},
+];
+function riteGrant(p){switch(p.k){
+  case'gold':gold+=p.n;break; case'shard':starShards+=p.n;break; case'gleam':gleam+=p.n;break;
+  case'crystal':crystals+=p.n;break; case'energy':energyGrant(p.n);break; case'relic':relics+=p.n;break;
+  case'seal':spire.seals=(spire.seals||0)+p.n;break; case'ticket':vowTickets+=p.n;break; }}
+function ritePickIndex(){const tot=RITE_PRIZES.reduce((a,p)=>a+p.w,0);let r=Math.random()*tot;
+  for(let i=0;i<RITE_PRIZES.length;i++){r-=RITE_PRIZES[i].w;if(r<0)return i;}return 0;}
+function ritesDayCheck(){/* dates compared inline */}
+function spinAvailFree(){return rites.spinDate!==new Date().toDateString();}
+function gambleAvailFree(){return rites.gambleDate!==new Date().toDateString();}
+let dailyTab='wheel', _wheelRot=0, _spinning=false;
+function openDaily(){dailyTab='wheel';renderDaily();show('screen-daily');}
+function renderDaily(){
+  $('#dailyTabs').innerHTML=[['wheel','🎡 Wheel of Ash'],['gamble','🎴 Gate Gamble']].map(([k,l])=>
+    `<button class="rtab ${k===dailyTab?'on':''}" data-dt="${k}">${l}</button>`).join('');
+  $$('#dailyTabs .rtab').forEach(b=>b.addEventListener('click',()=>{dailyTab=b.dataset.dt;renderDaily();}));
+  if(dailyTab==='wheel')renderWheel(); else renderGamble();
+}
+const SPIN_COST=60;
+function renderWheel(){
+  const box=$('#dailyScroll');
+  const seg=360/RITE_PRIZES.length;
+  const grad=RITE_PRIZES.map((p,i)=>`${p.col} ${i*seg}deg ${(i+1)*seg}deg`).join(',');
+  const labels=RITE_PRIZES.map((p,i)=>{const a=i*seg+seg/2;
+    return `<div class="wlbl" style="transform:rotate(${a}deg) translateY(-104px) rotate(${-a}deg)"><span class="wic">${p.ic}</span><span class="wn">${p.lbl.split(' ')[0]}</span></div>`;}).join('');
+  const free=spinAvailFree();
+  box.innerHTML=`
+    <div class="wheelwrap">
+      <div class="wpointer">▼</div>
+      <div class="wheel" id="wheelEl" style="background:conic-gradient(from ${-seg/2}deg,${grad})">${labels}<div class="whub">✦</div></div>
+    </div>
+    <div class="wheelmsg" id="wheelMsg">${free?'Your <b>free daily spin</b> is ready!':'Free spin used — extra spins cost Crystals.'}</div>
+    <button class="cta" id="spinBtn">${free?'🎡 Free Spin':`Spin again · <i class="cur crystal"></i> ${SPIN_COST}`}</button>
+    <div class="ritenote">One free spin every day. The Wheel of Ash pays Gold, Shards, Gleam, Crystals, Energy, Relics, Ash Seals and the occasional Vow Ticket.</div>`;
+  const bt=$('#spinBtn'); if(bt)bt.addEventListener('click',spinWheel);
+}
+function spinWheel(){
+  if(_spinning)return; const free=spinAvailFree();
+  if(!free){ if(crystals<SPIN_COST){flashBar&&flashBar();return;} crystals-=SPIN_COST; }
+  _spinning=true;
+  const idx=ritePickIndex(), seg=360/RITE_PRIZES.length;
+  // land sector idx center under the top pointer: rotate so its center goes to 0deg (top)
+  const target=360*5 - (idx*seg) + (_wheelRot - (_wheelRot%360));
+  _wheelRot=target;
+  const el=$('#wheelEl'); if(el){el.style.transition='transform 3.4s cubic-bezier(.15,.85,.15,1)';el.style.transform=`rotate(${_wheelRot}deg)`;}
+  if(free)rites.spinDate=new Date().toDateString();
+  const bt=$('#spinBtn'); if(bt)bt.disabled=true;
+  setTimeout(()=>{
+    const p=RITE_PRIZES[idx]; riteGrant(p);
+    SFX.rare&&SFX.rare(p.k==='ticket'||p.k==='seal'?'L':'E');
+    const m=$('#wheelMsg'); if(m)m.innerHTML=`You won <b style="color:${p.col}">${p.ic} ${p.lbl}</b>!`;
+    _spinning=false; renderCrys(); saveGame(); updateDailyNotify();
+    const b2=$('#spinBtn'); if(b2){b2.disabled=false;b2.innerHTML=`Spin again · <i class="cur crystal"></i> ${SPIN_COST}`;}
+  },3500);
+}
+function renderGamble(){
+  const box=$('#dailyScroll'); const free=gambleAvailFree();
+  box.innerHTML=`
+    <div class="gambleintro">Pick one of three sealed gates. One free draw a day — fortune favors the bold.</div>
+    <div class="gamblerow" id="gambleRow">${[0,1,2].map(i=>`<button class="gcard" data-gc="${i}"><div class="gcback">🜂</div></button>`).join('')}</div>
+    <div class="wheelmsg" id="gambleMsg">${free?'Your <b>free daily draw</b> is ready — choose a gate.':'Free draw used. Come back tomorrow, or spin the Wheel.'}</div>
+    <div class="ritenote">Behind the gates: Gold, Shards, Gleam, Crystals — and rarely a Vow Ticket or Ash Seals.</div>`;
+  if(free){box.querySelectorAll('.gcard').forEach(b=>b.addEventListener('click',()=>gamblePick(+b.dataset.gc)));}
+  else{box.querySelectorAll('.gcard').forEach(b=>b.classList.add('spent'));}
+}
+function gamblePick(which){
+  if(!gambleAvailFree())return;
+  rites.gambleDate=new Date().toDateString(); rites.gambleWin=(rites.gambleWin||0)+1;
+  // reveal all three; chosen one gets a weighted prize, others show flavour
+  const prizes=[0,1,2].map(()=>RITE_PRIZES[ritePickIndex()]);
+  const p=prizes[which]; riteGrant(p); SFX.rare&&SFX.rare(p.k==='ticket'||p.k==='seal'?'L':'E');
+  const row=$('#gambleRow'); if(row)row.querySelectorAll('.gcard').forEach((b,i)=>{
+    b.classList.add('revealed'); if(i===which)b.classList.add('picked');
+    b.innerHTML=`<div class="gcface" style="border-color:${prizes[i].col}"><span class="wic">${prizes[i].ic}</span><span class="gcn">${prizes[i].lbl}</span></div>`;
+    b.disabled=true;});
+  const m=$('#gambleMsg'); if(m)m.innerHTML=`You opened <b style="color:${p.col}">${p.ic} ${p.lbl}</b>!`;
+  renderCrys(); saveGame(); updateDailyNotify();
+}
+function dailyRewardReady(){return spinAvailFree()||gambleAvailFree();}
+function updateDailyNotify(){const b=$('#homeDaily'); if(b)b.classList.toggle('notify',dailyRewardReady());}
 const ARENA_LOSS_RP=14;
 function arenaWinRP(sq){return sq.stake+Math.min(15,arena.streak*3);}
 function arenaPromoReward(idx){return {crys:80+idx*40, relics:2+idx};}
@@ -6226,7 +6354,7 @@ $('#toMap').addEventListener('click',()=>{openHome();});
 /* ---------- Home hub navigation ---------- */
 function updateHomeNav(active){$$('#homeNav .navb').forEach(b=>b.classList.toggle('on',b.dataset.nav===active));}
 function openHome(){renderCrys();updateHomeNav('home');const f=$('#hubFeat');if(f)f.textContent='Tap a building to enter';
-  checkFrameUnlocks();updateHomeProfile();
+  checkFrameUnlocks();updateHomeProfile();updateDailyNotify();
   const sn=$('#homeNav .navb[data-nav="shop"]');if(sn)sn.classList.toggle('notify',vowCanClaim());updateQuestBadge();show('screen-home');}
 function navGo(dest){
   if(dest==='home'){openHome();return;}
@@ -6317,6 +6445,8 @@ $('#loginGuest')?.addEventListener('click',()=>doLogin('guest'));
 { let authed=false; try{authed=!!localStorage.getItem(AUTH_KEY);}catch(e){} if(authed){show('screen-title'); if(!profile.name){promptUsername(true);} else if(pendingOnboard){pendingOnboard=false;setTimeout(startTutorial,350);}} }
 $('#homeProfile')?.addEventListener('click',()=>{SFX.tap&&SFX.tap();openProfile();});
 $('#profBack')?.addEventListener('click',()=>openHome());
+$('#homeDaily')?.addEventListener('click',()=>{SFX.tap&&SFX.tap();openDaily();});
+$('#dailyBack')?.addEventListener('click',()=>openHome());
 $('#nmConfirm')?.addEventListener('click',submitUsername);
 $('#nmInput')?.addEventListener('keydown',e=>{if(e.key==='Enter')submitUsername();});
 setInterval(()=>{const before=Math.floor(energy);energyTick();
