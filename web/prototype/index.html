@@ -124,6 +124,26 @@
   .archead{display:flex;align-items:center;justify-content:space-between;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);margin:2px 0 2px}
   .arrefresh{font-size:10px;padding:4px 9px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--muted);cursor:pointer;text-transform:none;letter-spacing:0}
   .arstake{font-size:10px;color:var(--muted);margin-top:3px;font-family:var(--font-hud)}
+  /* Arena view toggle */
+  .arviewtabs{display:flex;gap:6px;margin-bottom:10px}
+  .arvt{flex:1;padding:8px;border-radius:9px;border:1px solid var(--line);background:var(--panel);color:var(--muted);font-size:11px;font-weight:700;cursor:pointer}
+  .arvt.on{border-color:var(--umbra);background:rgba(123,92,255,.16);color:var(--ink)}
+  /* Power Ranking leaderboard */
+  .lbtop{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--umbra);border-radius:13px;padding:12px;background:linear-gradient(120deg,rgba(123,92,255,.12),var(--panel2))}
+  .lbttag{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+  .lbtkk{font-family:var(--font-title);font-size:22px;color:#ffcf6b;line-height:1.1} .lbtkk span{font-size:10px;color:var(--muted);font-family:var(--font-body);letter-spacing:.02em}
+  .lbtrk{font-size:11px;color:var(--muted);margin-top:2px}
+  .lblist{display:flex;flex-direction:column;gap:3px}
+  .lbrow{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;background:var(--panel2);border:1px solid transparent}
+  .lbrow .lbrk{width:34px;font-family:var(--font-hud);font-size:11px;color:var(--muted);text-align:center}
+  .lbrow .lbnm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
+  .lbrow .lbcp{font-family:var(--font-hud);font-size:12px;color:#ffcf6b}
+  .lbrow.top3{background:linear-gradient(90deg,rgba(255,207,107,.14),var(--panel2))}
+  .lbrow.top1{border-color:rgba(255,207,107,.5)} .lbrow.top2{border-color:rgba(200,208,220,.4)} .lbrow.top3{border-color:rgba(205,127,50,.4)}
+  .lbrow.top3 .lbrk{font-size:15px}
+  .lbrow.me{background:rgba(123,92,255,.18);border-color:var(--umbra)} .lbrow.me .lbnm{font-weight:700;color:var(--ink)}
+  .lbpin{margin-top:12px;padding-top:10px;border-top:1px dashed var(--line)}
+  .lbpinlbl{font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);margin-bottom:5px}
   .artier{border:1px solid var(--umbra);border-radius:7px;padding:3px 0;text-align:center}
   #arList{flex:1;overflow-y:auto;padding:12px 20px 26px;display:flex;flex-direction:column;gap:8px}
   .arcard{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:12px;padding:11px 13px;background:var(--panel2)}
@@ -699,6 +719,9 @@
   .hs-empty{color:var(--faint);opacity:.5}
   #hdRarity{color:var(--muted)}
   #hdStats{display:grid;grid-template-columns:1fr 1fr;gap:8px 18px}
+  #hdStats .cpbadge{grid-column:1 / -1;display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:10px;border:1px solid rgba(255,207,107,.4);background:linear-gradient(120deg,rgba(255,207,107,.12),transparent)}
+  #hdStats .cpbadge .cpl{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--warn)}
+  #hdStats .cpbadge .cpv{font-family:var(--font-title);font-size:19px;color:#ffcf6b}
   .statrow{display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--line)}
   .statrow .k{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
   .statrow .v{font-family:var(--font-title);font-size:17px;font-variant-numeric:tabular-nums}
@@ -3112,6 +3135,19 @@ const SKILLDUN={ id:'skill', name:'Rite of Insight', icon:'📖', cur:'Insight',
     {t:3,name:'Master',    rec:52000, mul:4.6,reward:340,foes:['ENM-GRD-E02','ENM-GRD-B01','ENM-GRD-X01']},
   ]};
 function teamPowerOf(ids){return Math.round(ids.reduce((s,id)=>{const h=hero(id);if(!h)return s;const pr=prog(id),st=statsAt(h,pr.level,pr.stars);return s+st.hp*0.12+st.atk+st.def+heroGearPower(id)*0.15;},0));}
+// ---- Combat Power (KK): a single number that rises with level, stars, skills, ascension & gear ----
+const RAR_CP_BASE={C:1,R:1.15,E:1.35,L:1.6};
+function heroCP(id){const h=hero(id);if(!h)return 0;const pr=prog(id),st=statsAt(h,pr.level,pr.stars);
+  const skills=(pr.skills.S1||1)+(pr.skills.S2||1)+(pr.skills.S3||1);
+  const asc=(pr.asc||0)+(pr.basc||0), over=pr.over?1:0;
+  let cp = st.hp*0.10 + st.atk*1.0 + st.def*0.9 + st.spd*3
+         + st.crit_rate*500 + st.crit_dmg*260
+         + skills*70 + pr.stars*90 + asc*160 + over*800
+         + heroGearPower(id)*0.22;
+  return Math.round(cp*(RAR_CP_BASE[h.rarity]||1));}
+function accountCP(){let s=0;owned.forEach(id=>{s+=heroCP(id);});return Math.round(s);}
+// best-team CP (top 5 heroes) — a secondary readout
+function topTeamCP(){return [...owned].map(heroCP).sort((a,b)=>b-a).slice(0,5).reduce((a,b)=>a+b,0);}
 function autoTeam(){ if(team&&team.length>=1)return team.slice(0,5);
   const own=DATA.heroes.filter(h=>owned.has(h.id));
   return own.slice().sort((a,b)=>{const pa=prog(a.id),pb=prog(b.id);return (pb.level*10-RORDER[b.rarity])-(pa.level*10-RORDER[a.rarity]);}).slice(0,5).map(h=>h.id);}
@@ -3709,16 +3745,20 @@ function mkFoe(id,level,stars,captain){const h=hero(id),c=CLASS[h.class],st=foeS
     tier:captain?'B':'M',isBoss:false,isMini:!!captain,_glyph:c.g,_efx:`var(${c.hue})`,
     tgName:captain?('Signature: '+h.kit.S3.name):null};}
 function arenaTierName(){const info=arenaTierInfo(arena.rp);return info.tier.n+(info.div?' '+info.div:'');}
-let _arChal=null;
+let _arChal=null, arenaView='ladder';
 function openArena(){_arChal=arenaChallengers();renderArena();show('screen-arena');}
+function arenaViewTabs(){return `<div class="arviewtabs">
+  <button class="arvt ${arenaView==='ladder'?'on':''}" data-av="ladder">⚔ Ladder</button>
+  <button class="arvt ${arenaView==='rank'?'on':''}" data-av="rank">🏆 Power Rank</button></div>`;}
 function renderArena(){
+  if(arenaView==='rank'){renderLeaderboard();return;}
   const info=arenaTierInfo(arena.rp),t=info.tier,col=t.col;
   const bestInfo=arenaTierInfo(arena.best);
   const nextTxt=info.next?`${info.next.rp-arena.rp} RP to <b style="color:${ARENA_TIERS[info.idx+1].col}">${info.next.n}</b>`:'Top tier reached';
   // claimable promotion reward: first time you enter a new tier
   const canClaim=info.idx>(arena.claimed.length?Math.max(...arena.claimed):-1);
   const claimRow=canClaim?`<button class="arclaim" id="arClaimBtn">Claim ${t.n} promotion reward · <i class="cur crystal"></i> ${arenaPromoReward(info.idx).crys} · <i class="cur relic"></i> ${arenaPromoReward(info.idx).relics}</button>`:'';
-  $('#arRankBar').innerHTML=`
+  $('#arRankBar').innerHTML=arenaViewTabs()+`
     <div class="arrankcard" style="--tc:${col}">
       <div class="arrk-l"><div class="arrk-tier">${t.n}${info.div?' <span class="arrk-div">'+info.div+'</span>':''}</div>
         <div class="arrk-rp"><b>${arena.rp}</b> RP · Best ${bestInfo.tier.n}${arena.streak>1?` · 🔥 ${arena.streak} win streak`:''}</div></div>
@@ -3739,6 +3779,45 @@ function renderArena(){
   const cb=$('#arClaimBtn');if(cb)cb.addEventListener('click',arenaClaimPromo);
   const rf=$('#arRefresh');if(rf)rf.addEventListener('click',()=>{arena.seed++;_arChal=arenaChallengers();renderArena();});
   list.querySelectorAll('.arbtn').forEach(b=>b.addEventListener('click',()=>openArenaTeam(_arChal[+b.dataset.i])));
+  wireArenaViewTabs();
+}
+function wireArenaViewTabs(){$$('#arRankBar .arvt').forEach(b=>b.addEventListener('click',()=>{arenaView=b.dataset.av;renderArena();}));}
+/* ---------- Global Power Ranking (KK leaderboard) ---------- */
+const LB_FIRST=['Kael','Serin','Lyra','Corvin','Mira','Talon','Riven','Sable','Vesper','Cyra','Doran','Elias','Fenn','Isolde','Joran','Kira','Lorne','Maeve','Nadia','Oren','Perrin','Rook','Soraya','Tamsin','Ulric','Vale','Wren','Xael','Yara','Zeph','Bran','Cael','Dain','Enna','Faye'];
+const LB_LAST=['the Unbroken','Ashborn','Gatewarden','of the Vow','Cinderhelm','Nightfall','Emberhart','Palewatch','Duskbanner','Gravewend','Ironvow','Stormcaller','the Hollow','Vowbound','of Ashgate','Embervale','Ashenmoor'];
+function playerName(){try{return (guild&&guild.name)?'You':'You';}catch(e){return 'You';}}
+function leaderboard(){
+  const my=accountCP();
+  const bots=[];
+  for(let i=0;i<160;i++){
+    const nm=LB_FIRST[(i*7+3)%LB_FIRST.length]+' '+LB_LAST[(i*11+5)%LB_LAST.length];
+    const base=2600000*Math.pow(0.958,i);           // top-heavy whale distribution
+    const jit=((i*29)%100-50)/900;
+    bots.push({n:nm, cp:Math.max(1200,Math.round(base*(1+jit))), me:false});
+  }
+  const all=[...bots,{n:'You',cp:my,me:true}].sort((a,b)=>b.cp-a.cp);
+  const rank=all.findIndex(x=>x.me)+1;
+  return {all, rank, my};
+}
+function renderLeaderboard(){
+  const {all,rank,my}=leaderboard();
+  const top=all.slice(0,100);
+  const inTop=rank<=100;
+  const rowHTML=(x,i)=>`<div class="lbrow ${x.me?'me':''} ${i<3?'top3 top'+(i+1):''}">
+      <span class="lbrk">${i<3?['🥇','🥈','🥉'][i]:'#'+(i+1)}</span>
+      <span class="lbnm">${x.me?'★ You':x.n}</span>
+      <span class="lbcp">${x.cp.toLocaleString()}</span></div>`;
+  const listRows=top.map((x)=>rowHTML(x,all.indexOf(x))).join('');
+  const pinned=!inTop?`<div class="lbpin"><div class="lbpinlbl">Your standing</div>${rowHTML({n:'You',cp:my,me:true},rank-1)}</div>`:'';
+  $('#arRankBar').innerHTML=arenaViewTabs()+`
+    <div class="lbtop">
+      <div class="lbtl"><div class="lbttag">Global Power Ranking</div><div class="lbtkk"><b>${my.toLocaleString()}</b> <span>KK · Combat Power</span></div>
+        <div class="lbtrk">You are rank <b style="color:${rank<=100?'var(--good)':'var(--warn)'}">#${rank.toLocaleString()}</b> worldwide</div></div>
+      <div class="lbtico">${arenaMedal(Math.max(0,6-Math.floor(rank/20)),'#ffcf6b')}</div>
+    </div>`;
+  const list=$('#arList');
+  list.innerHTML=`<div class="archead"><span>Top 100 · by total Combat Power</span></div><div class="lblist">${listRows}</div>${pinned}`;
+  wireArenaViewTabs();
 }
 const ARENA_LOSS_RP=14;
 function arenaWinRP(sq){return sq.stake+Math.min(15,arena.streak*3);}
@@ -4758,7 +4837,8 @@ function renderHero(){
     (f?`<span class="hdcf-badge" style="--hue:var(${f.color})">${factionChip(h.faction,20)}<b style="color:var(${f.color})">${f.name}</b></span>`:'');
   const nxt = pr.level<cap ? statsAt(h,pr.level+1,pr.stars) : null;
   const rows=[['HP',st.hp,nxt&&nxt.hp],['ATK',st.atk,nxt&&nxt.atk],['DEF',st.def,nxt&&nxt.def],['SPD',st.spd,nxt&&nxt.spd]];
-  $('#hdStats').innerHTML=rows.map(([k,v,n])=>`<div class="statrow"><span class="k">${k}</span><span class="v">${v.toLocaleString()}${(n&&n>v)?`<span class="up">▲${(n-v).toLocaleString()}</span>`:''}</span></div>`).join('');
+  $('#hdStats').innerHTML=`<div class="cpbadge"><span class="cpl">⚔ Combat Power</span><span class="cpv">${heroCP(curHero).toLocaleString()}</span></div>`+
+    rows.map(([k,v,n])=>`<div class="statrow"><span class="k">${k}</span><span class="v">${v.toLocaleString()}${(n&&n>v)?`<span class="up">▲${(n-v).toLocaleString()}</span>`:''}</span></div>`).join('');
   $('#hdKit').innerHTML=`<div class="kh">Kit · Skill Levels <span class="khsub">📖 ${insight} Insight</span></div>`+['S1','S2','S3'].map(s=>{const sk=h.kit[s],lv=pr.skills[s],max=lv>=SKILL_CAP,cost=skillCost(s,lv);
     const btn=max?`<button class="skbtn" disabled>Max</button>`:`<button class="skbtn" data-s="${s}" ${insight<cost?'disabled':''}>▸ 📖 ${cost}</button>`;
     return `<div class="krow"><span class="slot">${s}</span><span class="kn">${sk.name} <span class="kt">${s==='S3'?'Ult':s==='S2'?'CD'+(sk.cooldown||3):'Basic'}</span></span><span class="sklv">Lv${lv}</span>${btn}</div>`;}).join('');
