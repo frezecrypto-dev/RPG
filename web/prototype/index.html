@@ -1543,11 +1543,28 @@
   .raidnote{font-size:9.5px;color:var(--faint);line-height:1.5;text-align:center}
   .gbslain{font-size:12px;font-weight:800;letter-spacing:.04em;color:var(--good);text-align:center;margin-top:8px;
     text-shadow:0 0 10px color-mix(in srgb,var(--good) 55%,transparent)}
-  .portalgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}
+  .portalhead{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);margin:16px 0 -2px}
+  .portalgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}
   .portalcard{display:flex;align-items:center;gap:9px;padding:11px;border-radius:12px;border:1px solid var(--line);background:var(--panel2);cursor:pointer;text-align:left;transition:.14s}
   .portalcard:hover{border-color:var(--umbra);transform:translateY(-2px)}
+  .portalcard.hero-card{grid-column:1 / -1;border-color:color-mix(in srgb,var(--umbra) 55%,var(--line));background:linear-gradient(120deg,rgba(123,92,255,.12),var(--panel2))}
+  .portalcard.hero-card .pcico{font-size:28px}
   .portalcard .pcico{font-size:22px} .portalcard .pctx{display:flex;flex-direction:column;line-height:1.2}
   .portalcard .pctx b{font-size:12px} .portalcard .pctx small{font-size:9px;color:var(--muted)}
+  /* boss-rotation / upcoming preview strip */
+  .brwrap{margin-top:16px;border:1px solid var(--line);border-radius:13px;padding:10px 11px;background:var(--panel2)}
+  .brhead{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);margin-bottom:8px}
+  .brrow{display:flex;align-items:center;gap:11px;padding:7px 0;border-top:1px solid var(--line)}
+  .brrow:first-of-type{border-top:none}
+  .brart{width:40px;height:40px;flex:none;border-radius:9px;overflow:hidden;display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(circle at 50% 35%,color-mix(in srgb,var(--efx,#7b5cff) 30%,transparent),transparent 70%);border:1px solid var(--line)}
+  .brart img{width:100%;height:100%;object-fit:cover;object-position:top center}
+  .brart .brgl{font-size:20px}
+  .brtx{flex:1;min-width:0}
+  .brwk{font-size:9px;letter-spacing:.05em;text-transform:uppercase;color:var(--umbra)}
+  .brnm{font-family:var(--font-title);font-size:14px;line-height:1.15;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .brmeta{font-size:9.5px;color:var(--muted);margin-top:1px}
+  .brmeta .wk{font-size:11px}
   /* guild */
   #homeGuild{position:absolute;top:124px;right:16px;z-index:4}
   #screen-guild.on{display:flex;flex-direction:column}
@@ -3794,6 +3811,14 @@ function renderSpire(){
   const f=spireFloor, kind=spireFloorKind(f), best=spire.best;
   const kindTxt=kind==='boss'?'👑 Boss floor':kind==='elite'?'⚔ Elite floor':'Ash horde';
   const mnodes=SPIRE_MILE.map(m=>`<div class="spmile ${best>=m?'reached':''}"><b>F${m}</b><span>${m%50===0?'✦ big cache':'◈ seals'}</span></div>`).join('');
+  // next 3 boss floors coming up
+  const nextBossFloors=[]; for(let fl=Math.ceil(f/10)*10, c=0; c<3; fl+=10, c++){nextBossFloors.push(fl);}
+  const spbosses=nextBossFloors.map(fl=>{const bid=SPIRE_BOSSES[((fl/10-1)%SPIRE_BOSSES.length+SPIRE_BOSSES.length)%SPIRE_BOSSES.length];
+    const rb=RAIDBOSSES.find(x=>x.id===bid), bh=hero(bid);
+    const art=(typeof ECUT!=='undefined'&&ECUT[bid])||(typeof EART!=='undefined'&&EART[bid])||'';
+    const nm=(rb?rb.name:bh?bh.name:(bid||'Boss').replace('ENM-ORD-','')).split(',')[0];
+    return `<div class="brrow"><div class="brart">${art?`<img src="${art}" alt="">`:`<span class="brgl">👑</span>`}</div>
+      <div class="brtx"><div class="brwk">Floor ${fl}</div><div class="brnm">${nm}</div><div class="brmeta">Boss encounter · Lv ~${Math.round(28+fl*1.6)}</div></div></div>`;}).join('');
   $('#spireScroll').innerHTML=`
     <div class="spirehero">
       <div class="sptower">🗼</div>
@@ -3808,6 +3833,7 @@ function renderSpire(){
     <button class="cta spireenter" id="spireEnter">${f>1?'Resume climb · Floor '+f+' ▸':'Begin the climb ▸'}</button>
     <div class="spmiles"><div class="spmlabel">Milestone caches · every 5th floor grants Ash Seals; F50/100/… grant a big cache</div>
       <div class="spmtrack">${mnodes}</div></div>
+    <div class="brwrap"><div class="brhead">👑 Upcoming Boss Floors</div>${spbosses}</div>
     <div class="spnote">Every 5th floor is an <b>Elite</b>, every 10th a <b>Boss</b>. A defeat sends you back, but you always resume from your best floor. Ash Seals are a slow, hard-won currency — hoard them.</div>`;
   $('#spireEnter').addEventListener('click',()=>{SFX.tap();runSpire(spireFloor);});
 }
@@ -3870,6 +3896,20 @@ const RAIDMILE=[
 ];
 function raidWeekIdx(){return Math.floor(Date.now()/(7*864e5));}
 function raidBossOfWeek(){return RAIDBOSSES[((raidWeekIdx()%RAIDBOSSES.length)+RAIDBOSSES.length)%RAIDBOSSES.length];}
+function raidBossAt(weekOffset){const i=(((raidWeekIdx()+weekOffset)%RAIDBOSSES.length)+RAIDBOSSES.length)%RAIDBOSSES.length;return RAIDBOSSES[i];}
+function raidAffixAt(weekOffset){const i=(((raidWeekIdx()+weekOffset)*3+1)%RAID_AFFIXES.length+RAID_AFFIXES.length)%RAID_AFFIXES.length;return RAID_AFFIXES[i];}
+// A compact "coming weeks" boss-rotation overview.
+function bossRotationHTML(){
+  const rows=[1,2,3].map(off=>{const b=raidBossAt(off),af=raidAffixAt(off);
+    const art=(typeof ECUT!=='undefined'&&ECUT[b.id])||(typeof EART!=='undefined'&&EART[b.id])||'';
+    const wk=b.weak.map(t=>`<span class="wk">${WEAKICON[t]||''}</span>`).join('');
+    return `<div class="brrow" style="--efx:${b.efx}">
+      <div class="brart">${art?`<img src="${art}" alt="">`:`<span class="brgl">${b.glyph}</span>`}</div>
+      <div class="brtx"><div class="brwk">In ${off} week${off>1?'s':''}</div>
+        <div class="brnm">${b.name.split(',')[0]}</div>
+        <div class="brmeta">Weakness ${wk} · Affix: ${af.id!=='none'?af.name:'Standard'}</div></div></div>`;}).join('');
+  return `<div class="brwrap"><div class="brhead">☠ Boss Rotation · coming weeks</div>${rows}</div>`;
+}
 function raidWeekEndsMs(){return (raidWeekIdx()+1)*7*864e5 - Date.now();}
 function raidWeekCheck(){const k=raidWeekIdx(); if(raidWeek.id!==k){raidWeek={id:k,best:0,claimed:[]};}}
 function raidClaimMile(i){raidWeekCheck();const m=RAIDMILE[i];if(!m||raidWeek.best<m.pct||raidWeek.claimed.includes(i))return;
@@ -3920,8 +3960,10 @@ function renderRaid(){
       <div class="emtrack"><div class="emfill" style="width:${best}%"></div>${mnodes}</div></div>
     <button class="cta raidenter" id="raidEnter">Enter Raid ▸</button>
     <div class="raidnote">Rewards are by damage %, and the milestone track resets with the boss each week. All-time best: <b>${raidBest}%</b>.</div>
+    ${bossRotationHTML()}
+    <div class="portalhead">More to raid</div>
     <div class="portalgrid">
-      <button class="portalcard" id="raidToSpire"><span class="pcico">🗼</span><span class="pctx"><b>Ash Spire</b><small>Endless climb · Floor ${spire&&spire.best||0}</small></span></button>
+      <button class="portalcard hero-card" id="raidToSpire"><span class="pcico">🗼</span><span class="pctx"><b>Ash Spire</b><small>Endless climb · Floor ${spire&&spire.best||0}</small></span></button>
       <button class="portalcard" id="raidToDungeons"><span class="pcico">🗝️</span><span class="pctx"><b>Dungeons</b><small>Skill · Equipment farms</small></span></button>
       <button class="portalcard" id="raidToGold"><span class="pcico">💰</span><span class="pctx"><b>Gold & EXP Raids</b><small>Farm gold + hero XP</small></span></button>
     </div>`;
