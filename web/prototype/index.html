@@ -746,7 +746,8 @@
   #hdAsc .asctrack:first-child{border-top:none;padding-top:2px}
   #hdAsc .asclbl.g b{color:#5fe0a0} #hdAsc .asclbl.r b{color:#ff5a6a}
   #hdAsc .asctag{font-size:8px;opacity:.6;letter-spacing:.08em}
-  #hdAsc .ap.g{color:#5fe0a0} #hdAsc .ap.r{color:#ff5a6a}
+  #hdAsc .ap.g{color:#5fe0a0} #hdAsc .ap.r{color:#ff5a6a} #hdAsc .ap.ob{color:#ffcf6b;margin-left:6px;letter-spacing:1px}
+  #hdAsc .obrow.lit{border-color:#ffcf6b;background:linear-gradient(180deg,rgba(255,207,107,.16),rgba(255,120,80,.06))}
   #hdAsc .ascnow{margin-top:8px;font-size:10px;color:var(--muted);text-align:center} #hdAsc .ascnow b{color:var(--ink)}
   #hdAsc .obrow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:9px;padding:9px 10px;border-radius:10px;border:1px solid #ffbe6e;background:linear-gradient(180deg,rgba(255,190,110,.1),rgba(255,120,80,.05))}
   #hdAsc .obrow.done{border-color:#ffcf6b;justify-content:center;text-align:center;flex-direction:column;gap:2px}
@@ -2484,8 +2485,16 @@ const ascCost=rank=>({relics:2+rank, gold:20000*(rank+1)});
 // Bloodbound Ascension — the red track, fed by duplicate copies of the same champion
 const BASC_CAP=6;
 const bloodboundCost=rank=>({copies:1, gold:25000*(rank+1)});
-// Overbreak — the endgame gate: only when both tracks are complete (6 green + 6 red). Deliberately steep.
-const overbreakCost=()=>({relics:12, gold:600000, seals:10, copies:1});
+// Overbreak — the endgame gate: only when both tracks are complete (6 green + 6 red). Deliberately steep,
+// and now level-able (O1..O5): each rank costs more and adds more power.
+const OVER_CAP=5;
+const OVER_NAMES=['','I','II','III','IV','V'];
+// cost to go from level `lvl` (0=unlock O1) to the next — escalates each rank
+const overbreakCost=lvl=>({relics:12+8*lvl, gold:600000+300000*lvl, seals:10+4*lvl, copies:1+lvl});
+// power granted at Overbreak level L (1..5)
+function overCore(L){return L>0?0.30+0.10*(L-1):0;}          // +30% at O1 → +70% at O5
+function overCritR(L){return L>0?0.05+0.02*(L-1):0;}
+function overCritD(L){return L>0?0.25+0.08*(L-1):0;}
 const SKILL_CAP=5;
 const skillCost=(slot,lv)=>Math.round(8*lv*(slot==='S3'?1.5:1));   // in Insight (skill essence, farmed from the Skill Dungeon)
 const skillMult=lv=>1+0.06*((lv||1)-1);
@@ -2547,12 +2556,12 @@ function gearBonus(id){
 function computeStats(h,level,stars){
   const g=1+h.perLevel*h.rarityGrowth*(level-1), sf=1+DATA.starBonusPerStar*(stars-h.startStars);
   const p=progress[h.id]||{};
-  const asc=p.asc||0, basc=p.basc||0, over=p.over?1:0;   // green (relic) + red (bloodbound) tracks + Overbreak
-  const am=1 + 0.04*asc + 0.04*basc + (over?0.30:0);     // ascension core-stat multiplier
+  const asc=p.asc||0, basc=p.basc||0, over=p.over||0;   // green (relic) + red (bloodbound) tracks + Overbreak level
+  const am=1 + 0.04*asc + 0.04*basc + overCore(over);   // ascension core-stat multiplier
   const b={hp:h.baseL1.hp*g*sf*am,atk:h.baseL1.atk*g*sf*am,def:h.baseL1.def*g*sf*am,spd:h.baseL1.spd};
   const a=gearBonus(h.id).agg;
-  const critR=(asc>=3?0.05:0)+(basc>=3?0.05:0)+(over?0.05:0);
-  const critD=(asc>=6?0.15:0)+(basc>=6?0.15:0)+(over?0.25:0);
+  const critR=(asc>=3?0.05:0)+(basc>=3?0.05:0)+overCritR(over);
+  const critD=(asc>=6?0.15:0)+(basc>=6?0.15:0)+overCritD(over);
   return {
     hp:Math.round((b.hp+(a.hp_flat||0))*(1+(a.hp_pct||0))),
     atk:Math.round((b.atk+(a.atk_flat||0))*(1+(a.atk_pct||0))),
@@ -3149,10 +3158,10 @@ function teamPowerOf(ids){return Math.round(ids.reduce((s,id)=>{const h=hero(id)
 const RAR_CP_BASE={C:1,R:1.15,E:1.35,L:1.6};
 function heroCP(id){const h=hero(id);if(!h)return 0;const pr=prog(id),st=statsAt(h,pr.level,pr.stars);
   const skills=(pr.skills.S1||1)+(pr.skills.S2||1)+(pr.skills.S3||1);
-  const asc=(pr.asc||0)+(pr.basc||0), over=pr.over?1:0;
+  const asc=(pr.asc||0)+(pr.basc||0), over=pr.over||0;
   let cp = st.hp*0.10 + st.atk*1.0 + st.def*0.9 + st.spd*3
          + st.crit_rate*500 + st.crit_dmg*260
-         + skills*70 + pr.stars*90 + asc*160 + over*800
+         + skills*70 + pr.stars*90 + asc*160 + over*900
          + heroGearPower(id)*0.22;
   return Math.round(cp*(RAR_CP_BASE[h.rarity]||1));}
 function accountCP(){let s=0;owned.forEach(id=>{s+=heroCP(id);});return Math.round(s);}
@@ -4916,12 +4925,12 @@ function renderHdSlots(){
       <span class="hstx"><span class="hsn">${GSLOT[sl].n}</span><span class="hsv">${sub}</span></span></button>`;}).join('');
   box.querySelectorAll('.hdslot').forEach(b=>b.addEventListener('click',()=>openGear(b.dataset.sl)));
 }
-function ascBonusText(a,b,over){const core=4*(a+b)+(over?30:0);const parts=[`+${core}% core stats`];
-  const cr=(a>=3?5:0)+(b>=3?5:0)+(over?5:0), cd=(a>=6?15:0)+(b>=6?15:0)+(over?25:0);
+function ascBonusText(a,b,over){const core=Math.round(4*(a+b)+overCore(over)*100);const parts=[`+${core}% core stats`];
+  const cr=Math.round(((a>=3?0.05:0)+(b>=3?0.05:0)+overCritR(over))*100), cd=Math.round(((a>=6?0.15:0)+(b>=6?0.15:0)+overCritD(over))*100);
   if(cr)parts.push(`+${cr}% crit rate`); if(cd)parts.push(`+${cd}% crit dmg`); return parts.join(' · ');}
 function renderHdAsc(){
   const h=hero(curHero),pr=prog(curHero),maxed=pr.stars>=h.starCap;
-  const a=pr.asc||0,b=pr.basc||0,over=pr.over?1:0;
+  const a=pr.asc||0,b=pr.basc||0,over=pr.over||0;
   const gAtCap=a>=ASC_CAP, rAtCap=b>=BASC_CAP, bothFull=gAtCap&&rAtCap;
   const gpips=`<span class="ap g">${'◆'.repeat(a)}${'◇'.repeat(ASC_CAP-a)}</span>`;
   const rpips=`<span class="ap r">${'◆'.repeat(b)}${'◇'.repeat(BASC_CAP-b)}</span>`;
@@ -4936,17 +4945,25 @@ function renderHdAsc(){
   else if(rAtCap) rRight=`<span class="ascsub" style="color:#ff5a6a">Maxed</span>`;
   else{const c=bloodboundCost(b);const can=pr.dupes>=c.copies&&gold>=c.gold;
     rRight=`<button class="ascbtn r" id="bascBtn" ${can?'':'disabled'}>Bind ◈${c.copies} · <i class="cur gold"></i> ${c.gold/1000}k <span class="bcp">${pr.dupes} copies</span></button>`;}
-  // Overbreak gate
+  // Overbreak gate — now level-able O1..O5
   let overRow='';
-  if(over){ overRow=`<div class="obrow done"><span class="obl">✸ OVERBROKEN</span><span class="obsub">Beyond the six-fold gate — maximum ascension reached.</span></div>`; }
-  else if(bothFull){ const c=overbreakCost();
-    const can=relics>=c.relics&&gold>=c.gold&&(spire.seals||0)>=c.seals&&pr.dupes>=c.copies;
-    overRow=`<div class="obrow"><div class="obtx"><span class="obl">✸ OVERBREAK</span><span class="obsub">Shatter the six-fold limit. +30% core · +5% crit · +25% crit dmg.</span></div>
-      <button class="ascbtn ob" id="obBtn" ${can?'':'disabled'}>Overbreak</button></div>
-      <div class="obcost">Requires <i class="cur relic"></i> ${c.relics} · <i class="cur gold"></i> ${(c.gold/1000)}k · ◈ ${c.seals} Ash Seals · ◈${c.copies} copy</div>`; }
+  if(bothFull || over>0){
+    const opips=`<span class="ap ob">${'✦'.repeat(over)}${'✧'.repeat(OVER_CAP-over)}</span>`;
+    const atMax=over>=OVER_CAP;
+    let obRight;
+    if(atMax) obRight=`<span class="ascsub" style="color:#ffcf6b">Fully overbroken</span>`;
+    else{const c=overbreakCost(over);const can=relics>=c.relics&&gold>=c.gold&&(spire.seals||0)>=c.seals&&pr.dupes>=c.copies;
+      obRight=`<button class="ascbtn ob" id="obBtn" ${can?'':'disabled'}>Overbreak ${OVER_NAMES[over+1]}</button>`;}
+    const nextTxt=atMax?'':`→ ${ascBonusText(a,b,over+1)}`;
+    const costTxt=atMax?'':(()=>{const c=overbreakCost(over);return `Cost <i class="cur relic"></i> ${c.relics} · <i class="cur gold"></i> ${(c.gold/1000)}k · ◈ ${c.seals} Ash Seals · ◈${c.copies} cop${c.copies>1?'ies':'y'}`;})();
+    overRow=`<div class="obrow ${over>0?'lit':''}">
+        <div class="obtx"><span class="obl">✸ OVERBREAK ${over>0?OVER_NAMES[over]:''}</span>${opips}
+          <span class="obsub">${over>0?'Radiant stars — beyond the six-fold gate. ':'Shatter the six-fold limit. '}${nextTxt}</span></div>
+        ${obRight}</div>${costTxt?`<div class="obcost">${costTxt}</div>`:''}`;
+  }
   // dissolve truly-spare copies (only once the red track is full)
   let dissolve='';
-  if(maxed && rAtCap && !over && pr.dupes>0){
+  if(maxed && rAtCap && over<1 && pr.dupes>0){
     const v=COPY_VALUE[h.rarity]||COPY_VALUE.C, tot={shards:v.shards*pr.dupes,relics:v.relics*pr.dupes};
     dissolve=`<div class="ascdis"><span class="adl">◈ ${pr.dupes} spare cop${pr.dupes>1?'ies':'y'}</span>
       <button class="ascbtn adbtn" id="dissolveBtn">Dissolve → <i class="cur shard"></i> ${tot.shards}${v.relics?` · <i class="cur relic"></i> ${tot.relics}`:''}</button></div>`;
@@ -4975,11 +4992,11 @@ function doBloodbound(){const h=hero(curHero),pr=prog(curHero);
   if(pr.stars<h.starCap||pr.basc>=BASC_CAP)return;const c=bloodboundCost(pr.basc);
   if(pr.dupes<c.copies||gold<c.gold)return;pr.dupes-=c.copies;gold-=c.gold;pr.basc++;
   SFX.rare&&SFX.rare('L');toast&&toast('Bloodbound — a red star burns');renderHero();saveGame();}
-function doOverbreak(){const h=hero(curHero),pr=prog(curHero);
-  if(pr.over||pr.asc<ASC_CAP||pr.basc<BASC_CAP)return;const c=overbreakCost();
+function doOverbreak(){const h=hero(curHero),pr=prog(curHero);const lvl=pr.over||0;
+  if(pr.asc<ASC_CAP||pr.basc<BASC_CAP||lvl>=OVER_CAP)return;const c=overbreakCost(lvl);
   if(relics<c.relics||gold<c.gold||(spire.seals||0)<c.seals||pr.dupes<c.copies)return;
-  relics-=c.relics;gold-=c.gold;spire.seals-=c.seals;pr.dupes-=c.copies;pr.over=1;
-  SFX.rare&&SFX.rare('L');toast&&toast('★ OVERBREAK — the limit shatters');renderHero();saveGame();}
+  relics-=c.relics;gold-=c.gold;spire.seals-=c.seals;pr.dupes-=c.copies;pr.over=lvl+1;
+  SFX.rare&&SFX.rare('L');toast&&toast('✸ OVERBREAK '+OVER_NAMES[pr.over]+' — power surges');renderHero();saveGame();}
 function doLevel(){const pr=prog(curHero),cap=DATA.levelCapByStar[pr.stars],lc=levelCost(pr);
   if(pr.level>=cap||gold<lc)return;gold-=lc;pr.level++;renderHero();saveGame();}
 function doStar(){const h=hero(curHero),pr=prog(curHero),sc=starCost(h,pr);
