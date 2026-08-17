@@ -1519,6 +1519,15 @@
   /* weekly raid hub */
   #raidRes{display:flex;flex-wrap:wrap;gap:6px 14px;padding:6px 16px 4px;font-size:12px}
   #raidScroll{flex:1;overflow-y:auto;padding:10px 16px 26px;display:flex;flex-direction:column;gap:13px}
+  #raidTabs{display:flex;gap:5px;padding:4px 12px 8px;overflow-x:auto;border-bottom:1px solid var(--line);-ms-overflow-style:none;scrollbar-width:none}
+  #raidTabs::-webkit-scrollbar{display:none}
+  .rtab{flex:0 0 auto;padding:8px 12px;border-radius:9px;border:1px solid var(--line);background:var(--panel);color:var(--muted);font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap}
+  .rtab.on{border-color:var(--umbra);background:rgba(123,92,255,.16);color:var(--ink)}
+  .rtintro{font-size:11px;color:var(--muted);padding:2px 2px 0} .rtintro b{color:var(--ink)}
+  .spirefeat{display:flex;gap:12px;align-items:center;border:1px solid var(--umbra);border-radius:15px;padding:12px;background:linear-gradient(120deg,rgba(169,112,255,.14),var(--panel2))}
+  .spirefeat-ic{width:64px;height:64px;flex:none;display:flex;align-items:center;justify-content:center;font-size:34px}
+  .spirefeat-ic img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 0 8px rgba(169,112,255,.5))}
+  .spirefeat-nm{font-family:var(--font-title);font-size:22px;line-height:1.05;background:linear-gradient(90deg,#e6d3ff,#a970ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
   .raidhero{display:flex;gap:12px;align-items:center;border:1px solid var(--danger);border-radius:15px;padding:12px;
     background:linear-gradient(100deg,color-mix(in srgb,var(--efx,var(--danger)) 20%,transparent),rgba(14,11,24,.6) 65%)}
   .rhart{width:78px;height:78px;flex:none;border-radius:12px;overflow:hidden;border:1px solid var(--danger);background:#0e0b18;display:flex;align-items:flex-end;justify-content:center;font-size:38px}
@@ -2060,13 +2069,14 @@
   </section>
 
   <section class="screen" id="screen-raid">
-    <div class="scrhead"><div><div class="eyebrow">Co-op</div><h1>Weekly Raid</h1></div>
+    <div class="scrhead"><div><div class="eyebrow">Endgame</div><h1>Raid Portal</h1></div>
       <button class="ghost back" id="raidBack">Back</button></div>
     <div id="raidRes">
       <span class="res"><i class="cur crystal"></i> <b class="num crysN">0</b></span>
       <span class="res"><i class="cur gold"></i> <b class="num goldN">0</b></span>
       <span class="res"><i class="cur relic"></i> <b class="num relicN">0</b></span>
     </div>
+    <div id="raidTabs"></div>
     <div id="raidScroll"></div>
   </section>
 
@@ -3177,9 +3187,8 @@ const RESRAIDS=[
     tierAmt:[1,2,3]},
 ];
 function openDungeons(){renderDungeons();renderCrys();show('screen-dungeons');}
-function renderDungeons(){
-  const box=$('#dunScroll'); const ids=autoTeam(); const pw=teamPowerOf(ids);
-  const tierRow=(pref,mk)=>SKILLDUN.tiers.map(mk).join('');
+// Skill + Equipment dungeons section (reused by the Dungeons screen and the Raid Portal tab)
+function dungeonsSectionHTML(pw,ids){
   const skillTiers=SKILLDUN.tiers.map(ti=>{const under=pw<ti.rec*0.8;
     return `<div class="duntier${under?' under':''}">
       <div class="dtinfo"><div class="dtname"><b>${ti.name}</b></div>
@@ -3195,21 +3204,28 @@ function renderDungeons(){
       <div class="dunhead"><div class="dunname">${d.icon} ${d.name}</div><div class="duncur">${d.label} gear</div></div>
       <div class="dunblurb">Farm ${d.label} pieces — main-stat and set roll by tier; harder tiers drop higher gear tiers and rarities.</div>${tiers}</div>`;
   }).join('');
-  box.innerHTML=`<div class="duncard">
+  return `<div class="duncard">
       <div class="dunhead"><div class="dunname">${SKILLDUN.icon} ${SKILLDUN.name}</div><div class="duncur">Insight → skill levels</div></div>
       <div class="dunblurb">${SKILLDUN.blurb}</div>${skillTiers}
       <div class="dunteam">Your five: <b>${ids.map(id=>hero(id)?hero(id).name.split(' ')[0]:'?').join(' · ')}</b> · power ${pw.toLocaleString()}<br>Deploy any campaign stage to change your team.</div>
     </div>
-    <div class="dunsect">⚒ Equipment Dungeons</div>${equipCards}
-    <div class="dunsect">💰 Gold & EXP Raids</div>${RESRAIDS.map((d,di)=>{
-      const tiers=DUN_TIERS.map(ti=>{const under=pw<ti.rec*0.8, amt=d.tierAmt[ti.t-1];
-        const rewTxt=d.kind==='gold'?`<b>+${amt.toLocaleString()}</b> Gold`:`each hero <b>+${amt} level${amt>1?'s':''}</b>`;
-        return `<div class="duntier${under?' under':''}"><div class="dtinfo"><div class="dtname"><b>Tier ${ti.name}</b></div>
-          <div class="dtsub">Rec. power ${ti.rec.toLocaleString()} · ${rewTxt}${under?' · <span class="warnx">under-powered</span>':''}</div></div>
-          <button class="cta dtgo" data-dun="res${di}" data-t="${ti.t}">Enter</button></div>`;}).join('');
-      return `<div class="duncard"><div class="dunhead"><div class="dunname">${d.icon} ${d.name}</div><div class="duncur">${d.label} raid</div></div>
-        <div class="dunblurb">${d.kind==='gold'?'A quick payday — clear it for a lump of Gold. Great for funding level-ups and enhancements.':'Your five gain a little XP and level up right in the fight — a slow but steady way to raise your bench.'}</div>${tiers}</div>`;
-    }).join('')}`;
+    <div class="dunsect">⚒ Equipment Dungeons</div>${equipCards}`;
+}
+// Gold & EXP resource raids section
+function goldExpSectionHTML(pw){
+  return RESRAIDS.map((d,di)=>{
+    const tiers=DUN_TIERS.map(ti=>{const under=pw<ti.rec*0.8, amt=d.tierAmt[ti.t-1];
+      const rewTxt=d.kind==='gold'?`<b>+${amt.toLocaleString()}</b> Gold`:`each hero <b>+${amt} level${amt>1?'s':''}</b>`;
+      return `<div class="duntier${under?' under':''}"><div class="dtinfo"><div class="dtname"><b>Tier ${ti.name}</b></div>
+        <div class="dtsub">Rec. power ${ti.rec.toLocaleString()} · ${rewTxt}${under?' · <span class="warnx">under-powered</span>':''}</div></div>
+        <button class="cta dtgo" data-dun="res${di}" data-t="${ti.t}">Enter</button></div>`;}).join('');
+    return `<div class="duncard"><div class="dunhead"><div class="dunname">${d.icon} ${d.name}</div><div class="duncur">${d.label} raid</div></div>
+      <div class="dunblurb">${d.kind==='gold'?'A quick payday — clear it for a lump of Gold. Great for funding level-ups and enhancements.':'Your five gain a little XP and level up right in the fight — a slow but steady way to raise your bench.'}</div>${tiers}</div>`;
+  }).join('');
+}
+function renderDungeons(){
+  const box=$('#dunScroll'); const ids=autoTeam(); const pw=teamPowerOf(ids);
+  box.innerHTML=dungeonsSectionHTML(pw,ids)+`<div class="dunsect">💰 Gold & EXP Raids</div>`+goldExpSectionHTML(pw);
   box.querySelectorAll('.dtgo').forEach(b=>b.addEventListener('click',()=>startDungeon(b.dataset.dun,+b.dataset.t)));
 }
 function startDungeon(which,t){
@@ -4048,9 +4064,26 @@ function raidCheck(){
     boss.barrier=Math.max(boss.barrier,Math.round(boss.max*.05));SFX.surge();
     logMsg(`<b>${nm}</b> — <b style="color:var(--danger)">${boss.tgName} rises</b> · Phase 3`);}
 }
+let raidTab='weekly';
+const RAID_TABS=[['weekly','⚔ Weekly'],['spire','🗼 Ash Spire'],['dungeons','🗝️ Dungeons'],['gold','💰 Gold & EXP'],['boss','☠ Boss']];
 function openRaid(){raidWeekCheck();renderRaid();renderCrys();updateHomeNav('raid');show('screen-raid');}
 function renderRaid(){
-  raidWeekCheck(); const wb=raidBossOfWeek(), best=raidWeek.best, af=raidAffixOfWeek();
+  raidWeekCheck();
+  $('#raidTabs').innerHTML=RAID_TABS.map(([k,l])=>`<button class="rtab ${k===raidTab?'on':''}" data-rt="${k}">${l}</button>`).join('');
+  $$('#raidTabs .rtab').forEach(b=>b.addEventListener('click',()=>{raidTab=b.dataset.rt;SFX.tap&&SFX.tap();renderRaid();$('#raidScroll').scrollTop=0;}));
+  const box=$('#raidScroll');
+  if(raidTab==='weekly') renderRaidWeekly(box);
+  else if(raidTab==='spire') renderRaidSpireTab(box);
+  else if(raidTab==='dungeons'){ const ids=autoTeam(),pw=teamPowerOf(ids);
+    box.innerHTML=`<div class="rtintro">🗝️ <b>Dungeons</b> — farm Insight for skills and gear pieces by set.</div>`+dungeonsSectionHTML(pw,ids);
+    box.querySelectorAll('.dtgo').forEach(b=>b.addEventListener('click',()=>startDungeon(b.dataset.dun,+b.dataset.t))); }
+  else if(raidTab==='gold'){ const ids=autoTeam(),pw=teamPowerOf(ids);
+    box.innerHTML=`<div class="rtintro">💰 <b>Gold & EXP Raids</b> — quick paydays and hero XP to fund your roster.</div>`+goldExpSectionHTML(pw);
+    box.querySelectorAll('.dtgo').forEach(b=>b.addEventListener('click',()=>startDungeon(b.dataset.dun,+b.dataset.t))); }
+  else if(raidTab==='boss') renderRaidBossTab(box);
+}
+function renderRaidWeekly(box){
+  const wb=raidBossOfWeek(), best=raidWeek.best, af=raidAffixOfWeek();
   const art=(typeof ECUT!=='undefined'&&ECUT[wb.id])||(typeof EART!=='undefined'&&EART[wb.id])||'';
   const wk=wb.weak.map(t=>`<span class="wk">${WEAKICON[t]||''}</span>`).join('');
   const mnodes=RAIDMILE.map((m,i)=>{const reached=best>=m.pct,claimed=raidWeek.claimed.includes(i),ready=reached&&!claimed;
@@ -4058,7 +4091,7 @@ function renderRaid(){
     return `<div class="emnode ${claimed?'claimed':reached?'reached':''} ${ready?'ready':''}" data-mi="${i}">
       <div class="emdot">${claimed?'✓':reached?'★':'◆'}</div><div class="empts">${m.pct}%</div>
       <div class="emrw">${rw}</div>${ready?'<div class="emclaim">Claim</div>':''}</div>`;}).join('');
-  $('#raidScroll').innerHTML=`
+  box.innerHTML=`
     <div class="raidhero" style="--efx:${wb.efx}">
       <div class="rhart">${art?`<img src="${art}" alt="${wb.name}">`:`<span class="rhglyph">${wb.glyph}</span>`}</div>
       <div class="rhinfo"><div class="rhtag">This Week · rotates every 7 days</div>
@@ -4072,19 +4105,37 @@ function renderRaid(){
     <div class="emile"><div class="emlabel">Weekly Milestone Rewards · claim by best damage %</div>
       <div class="emtrack"><div class="emfill" style="width:${best}%"></div>${mnodes}</div></div>
     <button class="cta raidenter" id="raidEnter">Enter Raid ▸</button>
-    <div class="raidnote">Rewards are by damage %, and the milestone track resets with the boss each week. All-time best: <b>${raidBest}%</b>.</div>
-    ${bossRotationHTML()}
-    <div class="portalhead">More to raid</div>
-    <div class="portalgrid">
-      <button class="portalcard hero-card" id="raidToSpire"><span class="pcico">🗼</span><span class="pctx"><b>Ash Spire</b><small>Endless climb · Floor ${spire&&spire.best||0}</small></span></button>
-      <button class="portalcard" id="raidToDungeons"><span class="pcico">🗝️</span><span class="pctx"><b>Dungeons</b><small>Skill · Equipment farms</small></span></button>
-      <button class="portalcard" id="raidToGold"><span class="pcico">💰</span><span class="pctx"><b>Gold & EXP Raids</b><small>Farm gold + hero XP</small></span></button>
-    </div>`;
-  $('#raidScroll').querySelectorAll('.emnode.ready').forEach(n=>n.addEventListener('click',()=>raidClaimMile(+n.dataset.mi)));
+    <div class="raidnote">Rewards are by damage %, and the milestone track resets with the boss each week. All-time best: <b>${raidBest}%</b>.</div>`;
+  box.querySelectorAll('.emnode.ready').forEach(n=>n.addEventListener('click',()=>raidClaimMile(+n.dataset.mi)));
   $('#raidEnter').addEventListener('click',()=>{SFX.tap();openRaidTeam();});
-  $('#raidToSpire').addEventListener('click',()=>{SFX.tap();openSpire();});
-  $('#raidToDungeons').addEventListener('click',()=>{SFX.tap();openDungeons();});
-  $('#raidToGold').addEventListener('click',()=>{SFX.tap();openDungeons();});
+}
+function renderRaidSpireTab(box){
+  spireCheck(); const best=spire.best, f=spireFloor;
+  const nextBossFloors=[]; for(let fl=Math.ceil(Math.max(1,f)/10)*10, c=0; c<3; fl+=10, c++){nextBossFloors.push(fl);}
+  const spb=nextBossFloors.map(fl=>{const bid=SPIRE_BOSSES[((fl/10-1)%SPIRE_BOSSES.length+SPIRE_BOSSES.length)%SPIRE_BOSSES.length];
+    const rb=RAIDBOSSES.find(x=>x.id===bid); const art=(typeof ECUT!=='undefined'&&ECUT[bid])||(typeof EART!=='undefined'&&EART[bid])||'';
+    const nm=(rb?rb.name:(bid||'Boss').replace('ENM-ORD-','')).split(',')[0];
+    return `<div class="brrow"><div class="brart">${art?`<img src="${art}" alt="">`:`<span class="brgl">👑</span>`}</div>
+      <div class="brtx"><div class="brwk">Floor ${fl}</div><div class="brnm">${nm}</div><div class="brmeta">Boss · Lv ~${Math.round(28+fl*1.6)}</div></div></div>`;}).join('');
+  box.innerHTML=`
+    <div class="spirefeat">
+      <div class="spirefeat-ic">${(typeof SPIREICON!=='undefined')?`<img src="${SPIREICON}" alt="Ash Spire">`:'🗼'}</div>
+      <div class="spirefeat-tx"><div class="rhtag">Endless Ascent · resets monthly</div>
+        <div class="spirefeat-nm">Ash Spire</div>
+        <div class="rhsub">Climb floor after floor of ever-stronger Order forces — every 5th an Elite, every 10th a Boss.</div></div>
+    </div>
+    <div class="spstats">
+      <div class="spstat"><span>This month's best</span><b style="color:var(--warn)">Floor ${best}</b></div>
+      <div class="spstat"><span>◈ Ash Seals</span><b style="color:#7fe9ff">${spire.seals}</b></div>
+    </div>
+    <button class="cta raidenter" id="spireEnterTab">${f>1?'Resume climb · Floor '+f+' ▸':'Begin the climb ▸'}</button>
+    <div class="brwrap"><div class="brhead">👑 Upcoming Boss Floors</div>${spb}</div>
+    <div class="raidnote">Milestone caches every 5th floor grant Ash Seals; F50/100/… grant a big cache. Ash Seals feed Overbreak — hoard them.</div>`;
+  $('#spireEnterTab').addEventListener('click',()=>{SFX.tap();openSpire();});
+}
+function renderRaidBossTab(box){
+  box.innerHTML=`<div class="rtintro">☠ <b>Boss Overview</b> — what's rotating into the Weekly Raid and rising in the Spire.</div>`+
+    bossRotationHTML().replace('coming weeks','Weekly Raid · coming weeks');
 }
 function openRaidTeam(){raidPending=true;arenaTarget=null;curStage=null;
   $('#teamStage').textContent='Weekly Raid · '+raidBossOfWeek().name.split(',')[0];
