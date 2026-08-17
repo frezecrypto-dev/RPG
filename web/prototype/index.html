@@ -1686,6 +1686,11 @@
     background:radial-gradient(circle,rgba(143,107,255,.42),transparent 70%);box-shadow:inset 0 0 0 1px rgba(196,168,255,.4)}
   .navb.on .navi{filter:none;transform:translateY(-2px) scale(1.18);text-shadow:0 0 12px rgba(160,120,255,.9)}
   .navb:hover{color:var(--ink)} .navb:hover .navi{filter:none;transform:translateY(-1px)}
+  .navb .navi{font-size:19px}
+  .navbadge{position:absolute;top:4px;left:calc(50% + 4px);min-width:14px;height:14px;padding:0 3px;border-radius:99px;
+    background:var(--danger);color:#fff;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.5);z-index:2}
+  .navb.notify::after{content:"";position:absolute;top:6px;left:calc(50% + 7px);width:8px;height:8px;border-radius:50%;
+    background:var(--warn);box-shadow:0 0 7px var(--warn);z-index:2}
 
   @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.05ms!important}
     #ambient,.resfx{display:none}
@@ -1765,10 +1770,6 @@
         <span class="res"><i class="cur relic"></i> <b class="num relicN">0</b></span>
       </div>
     </div>
-    <button id="homeShop" class="shopbtn">🛒 Shop</button>
-    <button id="homeQuests" class="shopbtn">📋 Quests<span class="hbadge" id="qBadge" style="display:none">!</span></button>
-    <button id="homeInv" class="shopbtn">🎒 Bag</button>
-    <button id="homeStory" class="shopbtn">📖 Story</button>
     <div id="hubScene">
       <button class="bld" data-go="gacha" style="left:50%;top:20%">
         <svg class="bsvg" viewBox="0 0 64 104"><polygon points="32,4 46,32 18,32" fill="#241a4d" stroke="#7b5cff" stroke-width="1"/><circle cx="32" cy="16" r="10" fill="#7b5cff" opacity=".35"/><circle cx="32" cy="16" r="5" fill="#cbb8ff"/><rect x="21" y="32" width="22" height="66" rx="2" fill="#171233" stroke="#4a3a8f" stroke-width="1"/><rect x="28" y="44" width="8" height="12" rx="2" fill="#8f6bff"/><rect x="28" y="64" width="8" height="12" rx="2" fill="#8f6bff"/><rect x="16" y="96" width="32" height="8" rx="2" fill="#0e0b1e"/></svg>
@@ -1789,10 +1790,11 @@
     </div>
     <nav id="homeNav">
       <button class="navb on" data-nav="home"><span class="navi">🏰</span><span>Home</span></button>
-      <button class="navb" data-nav="heroes"><span class="navi">👥</span><span>Heroes</span></button>
-      <button class="navb" data-nav="summon"><span class="navi">🔮</span><span>Summon</span></button>
+      <button class="navb" data-nav="shop"><span class="navi">🛒</span><span>Shop</span></button>
+      <button class="navb" data-nav="bag"><span class="navi">🎒</span><span>Bag</span></button>
+      <button class="navb" data-nav="quest"><span class="navi">📋</span><span>Quests</span><span class="navbadge" id="qBadge" style="display:none">!</span></button>
+      <button class="navb" data-nav="story"><span class="navi">📖</span><span>Story</span></button>
       <button class="navb" data-nav="events"><span class="navi">🎉</span><span>Events</span></button>
-      <button class="navb" data-nav="raid"><span class="navi">☠️</span><span>Raid</span></button>
       <button class="navb" data-nav="guild"><span class="navi">🛡️</span><span>Guild</span></button>
       <button class="navb" data-nav="pass"><span class="navi">📜</span><span>Pass</span></button>
     </nav>
@@ -5519,10 +5521,10 @@ $('#toMap').addEventListener('click',()=>{openHome();});
 /* ---------- Home hub navigation ---------- */
 function updateHomeNav(active){$$('#homeNav .navb').forEach(b=>b.classList.toggle('on',b.dataset.nav===active));}
 function openHome(){renderCrys();updateHomeNav('home');const f=$('#hubFeat');if(f)f.textContent='Tap a building to enter';
-  const hs=$('#homeShop');if(hs)hs.classList.toggle('notify',vowCanClaim());updateQuestBadge();show('screen-home');}
+  const sn=$('#homeNav .navb[data-nav="shop"]');if(sn)sn.classList.toggle('notify',vowCanClaim());updateQuestBadge();show('screen-home');}
 function navGo(dest){
   if(dest==='home'){openHome();return;}
-  updateHomeNav(['summon','raid','pass','events','heroes','guild'].includes(dest)?dest:'');
+  updateHomeNav(['summon','raid','pass','events','heroes','guild','shop','bag','quest','story'].includes(dest)?dest:'');
   if(dest==='heroes'){buildHeroGrid();renderCrys();show('screen-heroes');}
   else if(dest==='summon'||dest==='gacha'){openGacha();}
   else if(dest==='raid'){openRaid();}
@@ -5531,12 +5533,13 @@ function navGo(dest){
   else if(dest==='events'){openEvents();}
   else if(dest==='guild'){openGuild();}
   else if(dest==='pass'){openPass();}
+  else if(dest==='shop'){openShop('value');}
+  else if(dest==='bag'){openInventory();}
+  else if(dest==='quest'){openQuests();}
+  else if(dest==='story'){openStory();}
 }
 $$('#hubScene .bld').forEach(b=>b.addEventListener('click',()=>{SFX.tap();navGo(b.dataset.go);}));
 $$('#homeNav .navb').forEach(b=>b.addEventListener('click',()=>{SFX.tap();navGo(b.dataset.nav);}));
-$('#homeQuests')?.addEventListener('click',()=>{SFX.tap();openQuests();});
-$('#homeInv')?.addEventListener('click',()=>{SFX.tap();openInventory();});
-$('#homeStory')?.addEventListener('click',()=>{SFX.tap();openStory();});
 $('#qBack')?.addEventListener('click',()=>{SFX.tap();openHome();});
 $('#invBack')?.addEventListener('click',()=>{SFX.tap();openHome();});
 $('#storyBack')?.addEventListener('click',()=>{SFX.tap();openHome();});
@@ -5619,7 +5622,6 @@ $('#codexBack').addEventListener('click',()=>{buildHeroGrid();renderCrys();show(
 $('#toPass')?.addEventListener('click',()=>{SFX.tap();openPass();});
 $('#passBack').addEventListener('click',()=>{openHome();});
 $('#evtBack')?.addEventListener('click',()=>{openHome();});
-$('#homeShop')?.addEventListener('click',()=>{SFX.tap();openShop('value');});
 $('#dunBack')?.addEventListener('click',()=>{openHome();});
 $('#raidBack')?.addEventListener('click',()=>{openHome();});
 $('#spireBack')?.addEventListener('click',()=>{openHome();});
