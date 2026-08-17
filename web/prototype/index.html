@@ -144,6 +144,66 @@
   .lbrow.me{background:rgba(123,92,255,.18);border-color:var(--umbra)} .lbrow.me .lbnm{font-weight:700;color:var(--ink)}
   .lbpin{margin-top:12px;padding-top:10px;border-top:1px dashed var(--line)}
   .lbpinlbl{font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);margin-bottom:5px}
+  .lbrow .avwrap{flex:none}
+  /* ===== Avatars & Frames ===== */
+  .avwrap{position:relative;border-radius:50%;flex:none;display:inline-block;vertical-align:middle}
+  .avwrap .avimg{position:absolute;inset:9%;border-radius:50%;background-size:cover;background-position:top center;background-color:#14101e;overflow:hidden}
+  .avwrap .avimg.avcls,.avwrap .avimg.avnone{display:flex;align-items:center;justify-content:center;font-size:130%}
+  .avwrap .avring{position:absolute;inset:0;border-radius:50%;pointer-events:none;
+    box-shadow:0 0 0 2px var(--fr,#5a4a8f) inset, 0 0 0 3px rgba(0,0,0,.5), 0 0 9px var(--frg,transparent)}
+  .avwrap::after{position:absolute;top:-3px;right:-3px;font-size:11px;line-height:1;filter:drop-shadow(0 1px 2px #000)}
+  .frame-default{--fr:#6a5aa0}
+  .frame-iron{--fr:#9096a4;--frg:rgba(150,160,180,.4)}
+  .frame-silver{--fr:#d3dbe8;--frg:rgba(200,215,235,.55)}
+  .frame-gold{--fr:#ffcf6b;--frg:rgba(255,200,110,.6)} .frame-gold::after{content:'✦'}
+  .frame-arena{--fr:#ff9a5a;--frg:rgba(255,150,90,.6)} .frame-arena::after{content:'⚔'}
+  .frame-champ{--fr:#ff5a6a;--frg:rgba(255,90,110,.75)} .frame-champ::after{content:'👑'}
+  .frame-vanguard{--fr:#b98bff;--frg:rgba(169,112,255,.7)} .frame-vanguard::after{content:'⚑'}
+  .frame-overbroken{--fr:#ffd98a;--frg:rgba(255,190,110,.9)} .frame-overbroken .avring{animation:obring 3s linear infinite}
+  .frame-overbroken::after{content:'✸'}
+  @keyframes obring{0%{box-shadow:0 0 0 2px #ffd98a inset,0 0 0 3px rgba(0,0,0,.5),0 0 8px rgba(255,190,110,.7)}50%{box-shadow:0 0 0 2px #fff2c0 inset,0 0 0 3px rgba(0,0,0,.5),0 0 16px rgba(255,207,107,1)}100%{box-shadow:0 0 0 2px #ffd98a inset,0 0 0 3px rgba(0,0,0,.5),0 0 8px rgba(255,190,110,.7)}}
+  .frame-rank{--fr:#7bd0ff;--frg:rgba(123,208,255,.5)}
+  .frame-rank.rank-1{--fr:#ffcf6b;--frg:rgba(255,207,107,.85)} .frame-rank.rank-1::after{content:'🥇'}
+  .frame-rank.rank-2{--fr:#d3dbe8;--frg:rgba(210,220,235,.7)} .frame-rank.rank-2::after{content:'🥈'}
+  .frame-rank.rank-3{--fr:#e0a56a;--frg:rgba(205,127,50,.7)} .frame-rank.rank-3::after{content:'🥉'}
+  .frame-rank.rank-4,.frame-rank.rank-5{--fr:#c58bff;--frg:rgba(169,112,255,.55)}
+  .frame-rank.rank-6,.frame-rank.rank-7{--fr:#7bd0ff;--frg:rgba(123,208,255,.5)}
+  .frame-rank.rank-8,.frame-rank.rank-9,.frame-rank.rank-10{--fr:#5fe0a0;--frg:rgba(95,224,160,.45)}
+  /* home profile chip */
+  #homeProfile{display:inline-flex;align-items:center;gap:8px;background:rgba(10,8,20,.5);border:1px solid var(--line);border-radius:22px;padding:4px 13px 4px 4px;cursor:pointer;backdrop-filter:blur(4px)}
+  #homeProfile .hpname{font-size:13px;font-weight:700;color:var(--ink);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  /* profile screen */
+  #profScroll{flex:1;overflow-y:auto;padding:14px 18px 26px}
+  .profhero{display:flex;align-items:center;gap:16px;border:1px solid var(--umbra);border-radius:16px;padding:16px;background:linear-gradient(120deg,rgba(123,92,255,.12),var(--panel2))}
+  .profname{font-family:var(--font-title);font-size:22px;display:flex;align-items:center;gap:8px}
+  .profedit{background:none;border:1px solid var(--line);border-radius:7px;color:var(--muted);font-size:11px;cursor:pointer;padding:2px 7px}
+  .profmeta{font-size:11px;color:var(--muted);margin-top:4px} .profmeta2{font-size:11px;color:var(--faint);margin-top:2px}
+  .profsec{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:18px 0 9px}
+  .avgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(66px,1fr));gap:9px}
+  .avpick{position:relative;border:1px solid var(--line);border-radius:11px;background:var(--panel2);cursor:pointer;padding:8px 0 6px;display:flex;flex-direction:column;align-items:center;gap:5px}
+  .avpick .avimg{position:relative;inset:auto;width:46px;height:46px;border-radius:50%;background-size:cover;background-position:top center}
+  .avpick.on{border-color:var(--umbra);box-shadow:0 0 0 1px var(--umbra) inset}
+  .avpick .avpn{font-size:8px;color:var(--muted);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 3px}
+  .frgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .frpick{border:1px solid var(--line);border-radius:12px;background:var(--panel2);cursor:pointer;padding:12px 8px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+  .frpick.on{border-color:var(--umbra);box-shadow:0 0 0 1px var(--umbra) inset}
+  .frpick.locked{opacity:.75}
+  .frprev{position:relative;width:54px;height:54px;border-radius:50%}
+  .frprev .avimg{position:absolute;inset:9%;border-radius:50%;background-size:cover;background-position:top center;display:flex;align-items:center;justify-content:center;background-color:#14101e}
+  .frnm{font-size:11px;font-weight:700} .frtag{font-size:8.5px;color:var(--muted);line-height:1.2}
+  .frtag.on{color:var(--good)} .frtag.lock{color:var(--faint)}
+  /* username modal */
+  #nameModal{position:fixed;inset:0;z-index:9995;display:none;align-items:center;justify-content:center;background:rgba(4,3,10,.82);backdrop-filter:blur(3px)}
+  #nameModal.on{display:flex}
+  .nmcard{width:min(340px,88vw);border:1px solid var(--umbra);border-radius:16px;background:var(--panel);padding:22px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+  .nmtitle{font-family:var(--font-title);font-size:22px}
+  .nmsub{font-size:11px;color:var(--muted);margin:6px 0 16px;line-height:1.5}
+  #nmInput{width:100%;padding:12px 14px;border-radius:11px;border:1px solid var(--line);background:var(--panel2);color:var(--ink);font-size:15px;text-align:center;outline:none}
+  #nmInput:focus{border-color:var(--umbra)}
+  #nmInput.shake{animation:nmShake .38s}
+  @keyframes nmShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .nmerr{font-size:10.5px;color:var(--danger);min-height:14px;margin:8px 0 12px}
+  .nmcard .cta{width:100%}
   .artier{border:1px solid var(--umbra);border-radius:7px;padding:3px 0;text-align:center}
   #arList{flex:1;overflow-y:auto;padding:12px 20px 26px;display:flex;flex-direction:column;gap:8px}
   .arcard{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:12px;padding:11px 13px;background:var(--panel2)}
@@ -1878,12 +1938,31 @@
     <button id="resetBtn" style="background:none;border:none;color:var(--faint);font-size:10px;letter-spacing:.18em;text-transform:uppercase;cursor:pointer;margin-top:2px;display:none">⟲ Reset progress</button>
   </section>
 
+  <!-- PROFILE -->
+  <section class="screen" id="screen-profile">
+    <div class="scrhead"><div><div class="eyebrow">Commander</div><h1>Profile</h1></div>
+      <button class="ghost back" id="profBack">Back</button></div>
+    <div id="profScroll"></div>
+  </section>
+
+  <!-- USERNAME MODAL -->
+  <div id="nameModal">
+    <div class="nmcard">
+      <div class="nmtitle">Choose your name</div>
+      <div class="nmsub">This is how other Gatewardens will see you. It must be unique.</div>
+      <input id="nmInput" type="text" maxlength="16" placeholder="Commander name…" autocomplete="off" spellcheck="false">
+      <div class="nmerr" id="nmErr"></div>
+      <button class="cta" id="nmConfirm">Confirm</button>
+    </div>
+  </div>
+
   <!-- MAP -->
   <!-- HOME HUB (city) -->
   <section class="screen" id="screen-home">
     <div id="homeSky"></div><div id="homeStars"></div><div id="homeGround"></div>
     <div id="homeTop">
-      <div class="hometitle"><div class="eyebrow">The Vow Gate</div><h1>Ashgate</h1></div>
+      <button id="homeProfile" title="Your profile"></button>
+      <div class="hometitle" style="display:none"><div class="eyebrow">The Vow Gate</div><h1>Ashgate</h1></div>
       <div id="cmdrPill" title="Commander level — every foe you defeat grants XP; leveling up raises your max Energy">
         <span class="cmdrlv">⭐ Lv <b class="plvlN">1</b></span>
         <span class="cmdrbar"><span class="cmdrbarf"></span></span>
@@ -2462,6 +2541,8 @@ let bpXP=0, bpClaimF=[], bpClaimP=[], bpPrem=false;   // Battle Pass "Gatewarden
 let evtEarned=0, evtBal=0, evtMile=[], evtShop={};    // Events point-farm (doc 10 s3): earned=lifetime(milestones), bal=spendable(shop)
 let login={n:0, date:''};                             // 28-day login track (pauses on miss, never resets)
 let gleam=0;                                          // Gleam — cosmetic-only soft currency (doc 10 s4/s5)
+// ---- Player profile: username + avatar (a hero portrait) + earned frames ----
+let profile={name:'', avatar:null, frame:'default', frames:['default']};
 // ---- Character skins (cosmetic-only) — art injected into SKINART/SKINCUT ----
 let skinOn={};                                         // heroId -> equipped skinId
 const SKINART={
@@ -2650,7 +2731,7 @@ function renderCrys(){
 const SAVE_KEY='ashgate_save_v1';
 let hasSave=false;
 function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(
-  {v:3,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,arena,raidBest,crystals,gold,starShards,relics,sigils,pity,insight,plvl,pxp,vowTickets,freePullUsed,tutorialDone,energy,energyTs,inventory,gearOn,gearUID,loadouts,daily,bpXP,bpClaimF,bpClaimP,bpPrem,evtEarned,evtBal,evtMile,evtShop,login,gleam,vowCard,shopFirst,cosmetics,skinOn,shopDaily,raidWeek,guild,quests,items,spire,muted:ui.muted,pref:{speed:ui.speed,auto:ui.auto}}));}catch(e){}}
+  {v:3,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,arena,raidBest,crystals,gold,starShards,relics,sigils,pity,insight,plvl,pxp,vowTickets,freePullUsed,tutorialDone,energy,energyTs,inventory,gearOn,gearUID,loadouts,daily,bpXP,bpClaimF,bpClaimP,bpPrem,evtEarned,evtBal,evtMile,evtShop,login,gleam,vowCard,shopFirst,cosmetics,skinOn,profile,shopDaily,raidWeek,guild,quests,items,spire,muted:ui.muted,pref:{speed:ui.speed,auto:ui.auto}}));}catch(e){}}
 function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s||(s.v!==1&&s.v!==2&&s.v!==3))return false;
   owned=new Set(s.owned);progress=s.progress||{};cleared=new Set(s.cleared);
   crystals=s.crystals??crystals;gold=s.gold??gold;starShards=s.starShards??starShards;relics=s.relics??0;sigils=s.sigils??0;pity=s.pity??0;insight=s.insight??40;
@@ -2663,7 +2744,7 @@ function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s
   daily=s.daily||{date:'',win:0,summon:0,enhance:0,claimed:[]};dailyCheck();ui.muted=s.muted??false;
   bpXP=s.bpXP||0;bpClaimF=s.bpClaimF||[];bpClaimP=s.bpClaimP||[];bpPrem=!!s.bpPrem;
   evtEarned=s.evtEarned||0;evtBal=s.evtBal||0;evtMile=s.evtMile||[];evtShop=s.evtShop||{};login=s.login||{n:0,date:''};
-  gleam=s.gleam||0;vowCard=s.vowCard||{active:false,day:0,date:''};shopFirst=s.shopFirst||[];cosmetics=s.cosmetics||[];skinOn=s.skinOn||{};shopDaily=s.shopDaily||{date:'',bought:{}};
+  gleam=s.gleam||0;vowCard=s.vowCard||{active:false,day:0,date:''};shopFirst=s.shopFirst||[];cosmetics=s.cosmetics||[];skinOn=s.skinOn||{};profile=Object.assign({name:'',avatar:null,frame:'default',frames:['default']},s.profile||{});shopDaily=s.shopDaily||{date:'',bought:{}};
   if(s.guild)guild={...guild,...s.guild};
   if(s.quests)quests=s.quests; if(s.items)items=s.items; questPeriodCheck();
   if(s.pref){ui.speed=s.pref.speed||1;ui.auto=!!s.pref.auto;}
@@ -3879,7 +3960,40 @@ function wireArenaViewTabs(){$$('#arRankBar .arvt').forEach(b=>b.addEventListene
 /* ---------- Global Power Ranking (KK leaderboard) ---------- */
 const LB_FIRST=['Kael','Serin','Lyra','Corvin','Mira','Talon','Riven','Sable','Vesper','Cyra','Doran','Elias','Fenn','Isolde','Joran','Kira','Lorne','Maeve','Nadia','Oren','Perrin','Rook','Soraya','Tamsin','Ulric','Vale','Wren','Xael','Yara','Zeph','Bran','Cael','Dain','Enna','Faye'];
 const LB_LAST=['the Unbroken','Ashborn','Gatewarden','of the Vow','Cinderhelm','Nightfall','Emberhart','Palewatch','Duskbanner','Gravewend','Ironvow','Stormcaller','the Hollow','Vowbound','of Ashgate','Embervale','Ashenmoor'];
-function playerName(){try{return (guild&&guild.name)?'You':'You';}catch(e){return 'You';}}
+function playerName(){return (profile&&profile.name)?profile.name:'You';}
+/* ================= PLAYER PROFILE: username · avatar · frames ================= */
+// Frames are earned by achievements; monthly Power-Ranking top-10 grant exclusive rank frames.
+const FRAMES=[
+  {id:'default',      name:'Ashen Band',      cls:'default', how:'Starter frame — always yours'},
+  {id:'iron',         name:'Iron Vow',        cls:'iron',    how:'Reach Commander Lv 10', check:()=>plvl>=10},
+  {id:'silver',       name:'Silver Vow',      cls:'silver',  how:'Reach Commander Lv 25', check:()=>plvl>=25},
+  {id:'gold',         name:'Gilded Vow',      cls:'gold',    how:'Reach Commander Lv 45', check:()=>plvl>=45},
+  {id:'arena-gold',   name:'Arena Gold',      cls:'arena',   how:'Reach Arena Gold tier',   check:()=>arenaTierIdx(arena.best)>=2},
+  {id:'arena-champ',  name:'Arena Champion',  cls:'champ',   how:'Reach Arena Legend tier', check:()=>arenaTierIdx(arena.best)>=6},
+  {id:'guild-vanguard',name:'Vanguard Sigil', cls:'vanguard',how:'Reach the Vanguard guild league', check:()=>guild.joined&&guildLeagueIdx(guild.leagueBest||0)>=6},
+  {id:'overbroken',   name:'Overbroken',      cls:'overbroken',how:'Overbreak any champion', check:()=>[...owned].some(id=>(prog(id).over||0)>0)},
+];
+// monthly Power-Ranking rank frames #1..#10
+const RANK_FRAMES=[];
+for(let n=1;n<=10;n++){RANK_FRAMES.push({id:'rank-'+n,name:'Ranked #'+n,cls:'rank rank-'+n,rank:n,
+  how:'Finish a season in the global Top '+n, check:()=>{try{return leaderboard().rank<=n;}catch(e){return false;}}});}
+const ALL_FRAMES=FRAMES.concat(RANK_FRAMES);
+function frameById(id){return ALL_FRAMES.find(f=>f.id===id)||ALL_FRAMES[0];}
+function ownsFrame(id){return profile.frames.includes(id);}
+// grant any newly-earned frames; returns list of newly unlocked
+function checkFrameUnlocks(){const got=[];
+  ALL_FRAMES.forEach(f=>{if(f.check&&!profile.frames.includes(f.id)){try{if(f.check()){profile.frames.push(f.id);got.push(f);}}catch(e){}}});
+  if(got.length){saveGame();got.forEach(f=>toast&&toast('★ Frame unlocked: '+f.name));}
+  return got;
+}
+// avatar art for a hero id (skin-aware); falls back to class crest
+function avatarInner(hid,px){
+  if(hid&&hero(hid)){const c=heroCut(hid)||heroArt(hid);
+    if(c)return `<div class="avimg" style="background-image:url(${c})"></div>`;
+    return `<div class="avimg avcls">${classChip(hero(hid).class,Math.round((px||40)*0.6))}</div>`;}
+  return `<div class="avimg avnone">🙂</div>`;}
+function avatarFramed(px,hid,frame){hid=hid!==undefined?hid:profile.avatar;frame=frame||profile.frame||'default';
+  return `<div class="avwrap frame-${frameById(frame).cls}" style="width:${px}px;height:${px}px">${avatarInner(hid,px)}<span class="avring"></span></div>`;}
 function leaderboard(){
   const my=accountCP();
   const bots=[];
@@ -3894,25 +4008,85 @@ function leaderboard(){
   return {all, rank, my};
 }
 function renderLeaderboard(){
+  checkFrameUnlocks();
   const {all,rank,my}=leaderboard();
   const top=all.slice(0,100);
   const inTop=rank<=100;
   const rowHTML=(x,i)=>`<div class="lbrow ${x.me?'me':''} ${i<3?'top3 top'+(i+1):''}">
       <span class="lbrk">${i<3?['🥇','🥈','🥉'][i]:'#'+(i+1)}</span>
-      <span class="lbnm">${x.me?'★ You':x.n}</span>
+      ${x.me?avatarFramed(26):''}
+      <span class="lbnm">${x.me?(playerName()):x.n}</span>
       <span class="lbcp">${x.cp.toLocaleString()}</span></div>`;
   const listRows=top.map((x)=>rowHTML(x,all.indexOf(x))).join('');
-  const pinned=!inTop?`<div class="lbpin"><div class="lbpinlbl">Your standing</div>${rowHTML({n:'You',cp:my,me:true},rank-1)}</div>`:'';
+  const pinned=!inTop?`<div class="lbpin"><div class="lbpinlbl">Your standing</div>${rowHTML({n:playerName(),cp:my,me:true},rank-1)}</div>`:'';
   $('#arRankBar').innerHTML=arenaViewTabs()+`
     <div class="lbtop">
-      <div class="lbtl"><div class="lbttag">Global Power Ranking</div><div class="lbtkk"><b>${my.toLocaleString()}</b> <span>KK · Combat Power</span></div>
-        <div class="lbtrk">You are rank <b style="color:${rank<=100?'var(--good)':'var(--warn)'}">#${rank.toLocaleString()}</b> worldwide</div></div>
-      <div class="lbtico">${arenaMedal(Math.max(0,6-Math.floor(rank/20)),'#ffcf6b')}</div>
+      ${avatarFramed(52)}
+      <div class="lbtl"><div class="lbttag">${playerName()} · Global Power Ranking</div><div class="lbtkk"><b>${my.toLocaleString()}</b> <span>KK</span></div>
+        <div class="lbtrk">Rank <b style="color:${rank<=100?'var(--good)':'var(--warn)'}">#${rank.toLocaleString()}</b> worldwide</div></div>
     </div>`;
   const list=$('#arList');
   list.innerHTML=`<div class="archead"><span>Top 100 · by total Combat Power</span></div><div class="lblist">${listRows}</div>${pinned}`;
   wireArenaViewTabs();
 }
+/* ---- Profile screen: name, avatar picker, frame gallery ---- */
+function openProfile(){checkFrameUnlocks();renderProfile();show('screen-profile');}
+function renderProfile(){
+  const box=$('#profScroll'); if(!box)return;
+  const rank=(()=>{try{return leaderboard().rank;}catch(e){return '—';}})();
+  const avHeroes=[...owned];
+  const avGrid=avHeroes.map(id=>{const on=profile.avatar===id;
+    return `<button class="avpick ${on?'on':''}" data-av="${id}">${avatarInner(id,54)}<span class="avpn">${hero(id)?hero(id).name.split(' ')[0]:''}</span></button>`;}).join('');
+  const frameGrid=ALL_FRAMES.map(f=>{const own=ownsFrame(f.id), on=profile.frame===f.id;
+    return `<button class="frpick ${on?'on':''} ${own?'':'locked'}" data-fr="${f.id}">
+      <div class="frprev frame-${f.cls}"><span class="avimg avcls">${avatarInner(profile.avatar,44)}</span><span class="avring"></span></div>
+      <div class="frnm">${f.name}</div>${own?(on?'<div class="frtag on">Equipped</div>':'<div class="frtag">Equip</div>'):`<div class="frtag lock">🔒 ${f.how}</div>`}</button>`;}).join('');
+  box.innerHTML=`
+    <div class="profhero">
+      ${avatarFramed(96)}
+      <div class="profid">
+        <div class="profname">${playerName()} <button class="profedit" id="profEdit">✎</button></div>
+        <div class="profmeta">Commander Lv ${plvl} · ⚔ ${accountCP().toLocaleString()} KK</div>
+        <div class="profmeta2">Global Rank <b style="color:var(--warn)">#${(typeof rank==='number'?rank.toLocaleString():rank)}</b> · ${profile.frames.length} frame${profile.frames.length>1?'s':''}</div>
+      </div>
+    </div>
+    <div class="profsec">🖼️ Avatar · pick any champion you own</div>
+    <div class="avgrid">${avGrid||'<div class="gcempty">Summon a champion to use as your avatar.</div>'}</div>
+    <div class="profsec">🎖️ Frames · earn exclusive frames from Arena & the monthly Power Ranking</div>
+    <div class="frgrid">${frameGrid}</div>`;
+  const pe=$('#profEdit'); if(pe)pe.addEventListener('click',()=>promptUsername(false));
+  box.querySelectorAll('.avpick').forEach(b=>b.addEventListener('click',()=>{profile.avatar=b.dataset.av;SFX.tap&&SFX.tap();renderProfile();saveGame();}));
+  box.querySelectorAll('.frpick').forEach(b=>b.addEventListener('click',()=>{const id=b.dataset.fr;
+    if(!ownsFrame(id)){toast&&toast('Frame locked — '+frameById(id).how);return;}
+    profile.frame=id;SFX.rare&&SFX.rare('E');renderProfile();updateHomeProfile();saveGame();}));
+}
+/* ---- Username entry + (simulated) uniqueness ---- */
+const RESERVED_NAMES=['admin','moderator','gm','system','ashgate','anthropic','null','you'];
+function nameTaken(nm){const low=nm.toLowerCase().trim();
+  if(RESERVED_NAMES.includes(low))return true;
+  // simulate a global registry using the leaderboard bot names
+  return LB_FIRST.some(f=>LB_LAST.some(l=>(f+' '+l).toLowerCase()===low)) || LB_FIRST.map(x=>x.toLowerCase()).includes(low);
+}
+function validateName(nm){nm=(nm||'').trim();
+  if(nm.length<3)return'At least 3 characters.';
+  if(nm.length>16)return'16 characters max.';
+  if(!/^[A-Za-z0-9 _\-]+$/.test(nm))return'Letters, numbers, spaces, _ and - only.';
+  if(nameTaken(nm))return'That name is already taken — try another.';
+  return'';}
+let _nameForced=false;
+function promptUsername(forced){_nameForced=!!forced; const m=$('#nameModal'), inp=$('#nmInput'), err=$('#nmErr');
+  inp.value=profile.name||''; err.textContent=''; m.classList.add('on');
+  setTimeout(()=>{inp.focus();},60);
+}
+function submitUsername(){const inp=$('#nmInput'), err=$('#nmErr'); const v=inp.value.trim();
+  const e=validateName(v); if(e){err.textContent=e; inp.classList.add('shake'); setTimeout(()=>inp.classList.remove('shake'),400); return;}
+  profile.name=v; $('#nameModal').classList.remove('on'); SFX.rare&&SFX.rare('L'); saveGame();
+  updateHomeProfile(); toast&&toast('Welcome, '+v+'!');
+  if(_nameForced){_nameForced=false; if(pendingOnboard){pendingOnboard=false;setTimeout(startTutorial,300);} }
+  if($('#screen-profile').classList.contains('on'))renderProfile();
+}
+function updateHomeProfile(){const b=$('#homeProfile'); if(!b)return;
+  b.innerHTML=avatarFramed(38)+`<span class="hpname">${playerName()}</span>`;}
 const ARENA_LOSS_RP=14;
 function arenaWinRP(sq){return sq.stake+Math.min(15,arena.streak*3);}
 function arenaPromoReward(idx){return {crys:80+idx*40, relics:2+idx};}
@@ -6039,6 +6213,7 @@ $('#toMap').addEventListener('click',()=>{openHome();});
 /* ---------- Home hub navigation ---------- */
 function updateHomeNav(active){$$('#homeNav .navb').forEach(b=>b.classList.toggle('on',b.dataset.nav===active));}
 function openHome(){renderCrys();updateHomeNav('home');const f=$('#hubFeat');if(f)f.textContent='Tap a building to enter';
+  checkFrameUnlocks();updateHomeProfile();
   const sn=$('#homeNav .navb[data-nav="shop"]');if(sn)sn.classList.toggle('notify',vowCanClaim());updateQuestBadge();show('screen-home');}
 function navGo(dest){
   if(dest==='home'){openHome();return;}
@@ -6120,12 +6295,17 @@ renderCrys();
 /* ---------- login / auth gate (device-level, outside the save) ---------- */
 const AUTH_KEY='ashgate_auth';
 function doLogin(method){try{localStorage.setItem(AUTH_KEY,method);}catch(e){} SFX.tap&&SFX.tap(); show('screen-title');
+  if(!profile.name){promptUsername(true);return;}   // every account must set a unique name — even Google/Apple sign-in
   if(pendingOnboard){pendingOnboard=false;setTimeout(startTutorial,350);} }
 { const lb=$('#loginBg'), u=(typeof TITLEART!=='undefined')?TITLEART:null; if(lb&&u)lb.style.backgroundImage=`url(${u})`; }
 $('#loginGoogle')?.addEventListener('click',()=>doLogin('google'));
 $('#loginApple')?.addEventListener('click',()=>doLogin('apple'));
 $('#loginGuest')?.addEventListener('click',()=>doLogin('guest'));
-{ let authed=false; try{authed=!!localStorage.getItem(AUTH_KEY);}catch(e){} if(authed){show('screen-title'); if(pendingOnboard){pendingOnboard=false;setTimeout(startTutorial,350);}} }
+{ let authed=false; try{authed=!!localStorage.getItem(AUTH_KEY);}catch(e){} if(authed){show('screen-title'); if(!profile.name){promptUsername(true);} else if(pendingOnboard){pendingOnboard=false;setTimeout(startTutorial,350);}} }
+$('#homeProfile')?.addEventListener('click',()=>{SFX.tap&&SFX.tap();openProfile();});
+$('#profBack')?.addEventListener('click',()=>openHome());
+$('#nmConfirm')?.addEventListener('click',submitUsername);
+$('#nmInput')?.addEventListener('keydown',e=>{if(e.key==='Enter')submitUsername();});
 setInterval(()=>{const before=Math.floor(energy);energyTick();
   document.querySelectorAll('.enN').forEach(e=>e.textContent=Math.floor(energy));
   document.querySelectorAll('.enEta').forEach(e=>e.textContent=energyEta());
