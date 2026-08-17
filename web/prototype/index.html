@@ -538,6 +538,7 @@
   .freepull .fpsub{font-size:9.5px;font-weight:600;opacity:.8;text-transform:uppercase;letter-spacing:.1em}
   .vowpull{border:1px solid var(--umbra);color:#fff;background:linear-gradient(180deg,rgba(123,92,255,.9),rgba(90,63,214,.9))}
   .vowpull .vpsub{font-size:9.5px;font-weight:600;opacity:.85}
+  .vowpull10{background:linear-gradient(180deg,rgba(255,180,90,.95),rgba(214,120,50,.95));border-color:#7a4a1a;box-shadow:0 0 14px rgba(255,170,80,.28)}
   /* pull reveal overlay */
   #pullResults{position:absolute;inset:0;z-index:30;display:none;flex-direction:column;align-items:center;justify-content:center;
     gap:16px;padding:24px;background:radial-gradient(circle at 50% 45%,rgba(18,14,34,.94),rgba(6,5,12,.98));cursor:pointer}
@@ -693,6 +694,9 @@
   #hdAsc .ascsub{font-size:10px;color:var(--faint)}
   #hdAsc .ascbtn{font-size:10px;padding:6px 10px;border-radius:8px;border:1px solid var(--nec);color:var(--ink);background:rgba(111,227,160,.12);cursor:pointer;white-space:nowrap}
   #hdAsc .ascbtn:disabled{opacity:.45;cursor:default;border-color:var(--line);background:var(--panel)}
+  #hdAsc .ascdis{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
+  #hdAsc .ascdis .adl{font-size:10px;color:var(--warn)}
+  #hdAsc .adbtn{border-color:#7a5a1a;background:rgba(255,180,80,.12)}
   #hdKit{display:flex;flex-direction:column;gap:6px}
   #hdKit .kh{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
   .krow{display:flex;gap:9px;align-items:center;font-size:12px}
@@ -1835,7 +1839,7 @@
       <div class="altar"><div class="rune">✦</div></div>
       <div class="gtitle">Featured Gate</div>
       <div class="pity">Legendary guaranteed within <b id="pityLeft">70</b> pulls</div>
-      <div class="grates">Rates — <b>Legendary 3%</b> · Epic 14% · Rare 38% · Common 45%<br>Soft pity from pull 51 · 10-pull guarantees an Epic or better · dupes become Soul Shards</div>
+      <div class="grates">Rates — <b>Legendary 3%</b> · Epic 14% · Rare 38% · Common 45%<br>Soft pity from pull 51 · 10-pull guarantees an Epic or better · duplicates are kept as copies to raise stars</div>
       <div id="gachaOffers"></div>
       <div id="mercyForge"></div>
     </div>
@@ -3955,6 +3959,8 @@ function renderSlots(){
 
 /* ---------- GACHA (doc 08 rates + pity) ---------- */
 const DUPE_SHARDS={C:1,R:5,E:40,L:300};
+// value of dissolving ONE stored duplicate copy of a maxed hero → feeds ascension of the roster
+const COPY_VALUE={C:{shards:3,relics:0},R:{shards:12,relics:0},E:{shards:40,relics:2},L:{shards:150,relics:6}};
 function rollRarity(){
   pity++;
   if(pity>=70) return 'L';                        // hard pity
@@ -3976,7 +3982,7 @@ function pull(n){
   if(crystals < n*150){flashBar();return;}
   crystals-=n*150; _resolvePull(n);
 }
-function pullTicket(){ if(vowTickets<1){flashBar();return;} vowTickets--; _resolvePull(1); }
+function pullTicket(n){ n=n||1; if(vowTickets<n){flashBar();return;} vowTickets-=n; _resolvePull(n); }
 function freePull(){ if(freePullUsed)return; freePullUsed=true; _resolvePull(1,{forceEpic:true}); }
 function _resolvePull(n,opts){opts=opts||{};
   dailyBump('summon'); sigils+=n;  // Ember Sigil per pull -> Mercy Forge
@@ -4303,9 +4309,13 @@ function renderGachaOffers(){
   if(vowTickets>0){
     h+=`<button class="vowpull" id="vowPullBtn">🎟️ Summon ×1 · <b>Vow Ticket</b> <span class="vpsub">${vowTickets} left</span></button>`;
   }
+  if(vowTickets>=10){
+    h+=`<button class="vowpull vowpull10" id="vowPull10Btn">🎟️ Summon ×10 · <b>Vow Tickets</b> <span class="vpsub">spend 10 · guaranteed Epic+</span></button>`;
+  }
   el.innerHTML=h;
   const fp=$('#freePullBtn'); if(fp)fp.addEventListener('click',()=>{freePull();});
-  const vp=$('#vowPullBtn'); if(vp)vp.addEventListener('click',()=>{pullTicket();});
+  const vp=$('#vowPullBtn'); if(vp)vp.addEventListener('click',()=>{pullTicket(1);});
+  const vp10=$('#vowPull10Btn'); if(vp10)vp10.addEventListener('click',()=>{pullTicket(10);});
 }
 function renderForge(){
   const mf=$('#mercyForge');if(!mf)return;
@@ -4571,10 +4581,22 @@ function renderHdAsc(){
   if(!maxed) right=`<span class="ascsub">Reach ${h.starCap}★ to unlock</span>`;
   else if(atCap) right=`<span class="ascsub" style="color:var(--good)">Fully ascended</span>`;
   else {const c=ascCost(rank);right=`<button class="ascbtn" id="ascBtn" ${(relics<c.relics||gold<c.gold)?'disabled':''}>Ascend <i class="cur relic"></i> ${c.relics} · <i class="cur gold"></i> ${c.gold/1000}k</button>`;}
+  let dissolve='';
+  if(maxed && pr.dupes>0){
+    const v=COPY_VALUE[h.rarity]||COPY_VALUE.C, tot={shards:v.shards*pr.dupes,relics:v.relics*pr.dupes};
+    dissolve=`<div class="ascdis"><span class="adl">◈ ${pr.dupes} spare cop${pr.dupes>1?'ies':'y'} · no ★ left to raise</span>
+      <button class="ascbtn adbtn" id="dissolveBtn">Dissolve → <i class="cur shard"></i> ${tot.shards}${v.relics?` · <i class="cur relic"></i> ${tot.relics}`:''}</button></div>`;
+  }
   $('#hdAsc').innerHTML=`<div class="asctop"><span class="asclbl">Ascension <b>A${rank}</b>/${ASC_CAP}</span><span class="ascpips ${maxed?'':'dim'}">${pips}</span></div>
-    <div class="ascrow"><span class="ascbon">${maxed?ascBonusText(rank):'Locked'}${(maxed&&!atCap)?` <span class="ascnext">→ ${ascBonusText(rank+1)}</span>`:''}</span>${right}</div>`;
+    <div class="ascrow"><span class="ascbon">${maxed?ascBonusText(rank):'Locked'}${(maxed&&!atCap)?` <span class="ascnext">→ ${ascBonusText(rank+1)}</span>`:''}</span>${right}</div>${dissolve}`;
   const bn=$('#ascBtn');if(bn)bn.addEventListener('click',doAscend);
+  const db=$('#dissolveBtn');if(db)db.addEventListener('click',dissolveCopies);
 }
+function dissolveCopies(){const h=hero(curHero),pr=prog(curHero);
+  if(!(pr.stars>=h.starCap)||pr.dupes<1)return;
+  const v=COPY_VALUE[h.rarity]||COPY_VALUE.C;
+  starShards+=v.shards*pr.dupes; relics+=v.relics*pr.dupes; pr.dupes=0;
+  SFX.rare&&SFX.rare('E'); toast&&toast('Copies dissolved'); renderHero(); saveGame();}
 function doAscend(){const h=hero(curHero),pr=prog(curHero);
   if(pr.stars<h.starCap||pr.asc>=ASC_CAP)return;const c=ascCost(pr.asc);
   if(relics<c.relics||gold<c.gold)return;relics-=c.relics;gold-=c.gold;pr.asc++;SFX.rare('E');renderHero();saveGame();}
