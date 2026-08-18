@@ -163,6 +163,7 @@
   .frame-champ{--fr:#ff5a6a;--frg:rgba(255,90,110,.75)} .frame-champ::after{content:'👑'}
   .frame-vanguard{--fr:#b98bff;--frg:rgba(169,112,255,.7)} .frame-vanguard::after{content:'⚑'}
   .frame-overbroken{--fr:#ffd98a;--frg:rgba(255,190,110,.9)} .frame-overbroken .avring{animation:obring 3s linear infinite}
+  .frame-emberbound{--fr:#ff7a3a;--frg:rgba(255,120,50,.85)} .frame-emberbound .avring{animation:obring 3.4s linear infinite}
   .frame-overbroken::after{content:'✸'}
   @keyframes obring{0%{box-shadow:0 0 0 2px #ffd98a inset,0 0 0 3px rgba(0,0,0,.5),0 0 8px rgba(255,190,110,.7)}50%{box-shadow:0 0 0 2px #fff2c0 inset,0 0 0 3px rgba(0,0,0,.5),0 0 16px rgba(255,207,107,1)}100%{box-shadow:0 0 0 2px #ffd98a inset,0 0 0 3px rgba(0,0,0,.5),0 0 8px rgba(255,190,110,.7)}}
   .frame-rank{--fr:#7bd0ff;--frg:rgba(123,208,255,.5)}
@@ -1598,6 +1599,13 @@
   #homeStory{position:absolute;top:160px;right:16px;z-index:4}
   /* story / lore screen */
   #storyScroll{flex:1;overflow-y:auto;padding:14px 16px 90px}
+  .secretcard{border:1px solid #ff7a3a;border-radius:15px;padding:14px 15px;margin-bottom:14px;background:linear-gradient(135deg,rgba(255,120,50,.16),rgba(20,12,8,.6));box-shadow:0 0 22px rgba(255,120,50,.18)}
+  .secretcard.done{border-color:color-mix(in srgb,#ff7a3a 45%,var(--line));opacity:.9}
+  .secretcard .sctag{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#ffae7a}
+  .secretcard .scnm{font-family:var(--font-title);font-size:19px;margin:2px 0 5px;background:linear-gradient(90deg,#ffd0a0,#ff7a3a);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .secretcard .scsub{font-size:11.5px;color:var(--muted);line-height:1.5}
+  .secretcard .scprog{font-size:11px;color:#ffae7a;margin-top:8px} .secretcard .scprog b{color:var(--ink)}
+  .secretcard .scenter{width:100%;margin-top:11px;border-color:#ff7a3a;background:linear-gradient(180deg,rgba(255,140,70,.9),rgba(214,90,40,.9))}
   .stmap{width:100%;height:auto;display:block;border-radius:14px;border:1px solid var(--line);box-shadow:0 8px 30px rgba(0,0,0,.5)}
   .stmapcap{text-align:center;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:6px 0 2px}
   .stintro{font-size:12.5px;line-height:1.65;color:var(--muted);margin:14px 2px}
@@ -2696,6 +2704,7 @@ let login={n:0, date:''};                             // 28-day login track (pau
 let gleam=0;                                          // Gleam — cosmetic-only soft currency (doc 10 s4/s5)
 let rites={spinDate:'', gambleDate:'', gambleWin:0, bountyDate:'', bountyUsed:{}, tributeTs:0};  // daily: bounties, tribute, wheel, gamble
 let stats={summon:0, win:0, bounty:0, spin:0, gift:0};   // lifetime counters for achievements
+let secret={found:false, stage:0, done:false};           // hidden Emberguard×Titan event
 // ---- Player profile: username + avatar (a hero portrait) + earned frames ----
 let profile={name:'', avatar:null, frame:'default', frames:['default'], achv:[], titles:[], title:''};
 // ---- Character skins (cosmetic-only) — art injected into SKINART/SKINCUT ----
@@ -2896,7 +2905,7 @@ function renderCrys(){
 const SAVE_KEY='ashgate_save_v1';
 let hasSave=false;
 function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(
-  {v:3,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,arena,raidBest,crystals,gold,starShards,relics,sigils,pity,insight,plvl,pxp,vowTickets,freePullUsed,tutorialDone,energy,energyTs,inventory,gearOn,gearUID,loadouts,daily,bpXP,bpClaimF,bpClaimP,bpPrem,evtEarned,evtBal,evtMile,evtShop,login,gleam,rites,stats,vowCard,shopFirst,cosmetics,skinOn,profile,shopDaily,raidWeek,guild,quests,items,spire,muted:ui.muted,pref:{speed:ui.speed,auto:ui.auto}}));}catch(e){}}
+  {v:3,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,arena,raidBest,crystals,gold,starShards,relics,sigils,pity,insight,plvl,pxp,vowTickets,freePullUsed,tutorialDone,energy,energyTs,inventory,gearOn,gearUID,loadouts,daily,bpXP,bpClaimF,bpClaimP,bpPrem,evtEarned,evtBal,evtMile,evtShop,login,gleam,rites,stats,secret,vowCard,shopFirst,cosmetics,skinOn,profile,shopDaily,raidWeek,guild,quests,items,spire,muted:ui.muted,pref:{speed:ui.speed,auto:ui.auto}}));}catch(e){}}
 function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s||(s.v!==1&&s.v!==2&&s.v!==3))return false;
   owned=new Set(s.owned);progress=s.progress||{};cleared=new Set(s.cleared);
   crystals=s.crystals??crystals;gold=s.gold??gold;starShards=s.starShards??starShards;relics=s.relics??0;sigils=s.sigils??0;pity=s.pity??0;insight=s.insight??40;
@@ -2909,7 +2918,7 @@ function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s
   daily=s.daily||{date:'',win:0,summon:0,enhance:0,claimed:[]};dailyCheck();ui.muted=s.muted??false;
   bpXP=s.bpXP||0;bpClaimF=s.bpClaimF||[];bpClaimP=s.bpClaimP||[];bpPrem=!!s.bpPrem;
   evtEarned=s.evtEarned||0;evtBal=s.evtBal||0;evtMile=s.evtMile||[];evtShop=s.evtShop||{};login=s.login||{n:0,date:''};
-  gleam=s.gleam||0;vowCard=s.vowCard||{active:false,day:0,date:''};shopFirst=s.shopFirst||[];cosmetics=s.cosmetics||[];skinOn=s.skinOn||{};profile=Object.assign({name:'',avatar:null,frame:'default',frames:['default'],achv:[],titles:[],title:''},s.profile||{});profile.achv||=[];profile.titles||=[];rites=Object.assign({spinDate:'',gambleDate:'',gambleWin:0,bountyDate:'',bountyUsed:{},tributeTs:0},s.rites||{});if(!rites.tributeTs)rites.tributeTs=Date.now();stats=Object.assign({summon:0,win:0,bounty:0,spin:0,gift:0},s.stats||{});shopDaily=s.shopDaily||{date:'',bought:{}};
+  gleam=s.gleam||0;vowCard=s.vowCard||{active:false,day:0,date:''};shopFirst=s.shopFirst||[];cosmetics=s.cosmetics||[];skinOn=s.skinOn||{};profile=Object.assign({name:'',avatar:null,frame:'default',frames:['default'],achv:[],titles:[],title:''},s.profile||{});profile.achv||=[];profile.titles||=[];rites=Object.assign({spinDate:'',gambleDate:'',gambleWin:0,bountyDate:'',bountyUsed:{},tributeTs:0},s.rites||{});if(!rites.tributeTs)rites.tributeTs=Date.now();stats=Object.assign({summon:0,win:0,bounty:0,spin:0,gift:0},s.stats||{});secret=Object.assign({found:false,stage:0,done:false},s.secret||{});shopDaily=s.shopDaily||{date:'',bought:{}};
   if(s.guild)guild={...guild,...s.guild};
   if(s.quests)quests=s.quests; if(s.items)items=s.items; questPeriodCheck();
   if(s.pref){ui.speed=s.pref.speed||1;ui.auto=!!s.pref.auto;}
@@ -4162,6 +4171,7 @@ const FRAMES=[
   {id:'arena-champ',  name:'Arena Champion',  cls:'champ',   how:'Reach Arena Legend tier', check:()=>arenaTierIdx(arena.best)>=6},
   {id:'guild-vanguard',name:'Vanguard Sigil', cls:'vanguard',how:'Reach the Vanguard guild league', check:()=>guild.joined&&guildLeagueIdx(guild.leagueBest||0)>=6},
   {id:'overbroken',   name:'Overbroken',      cls:'overbroken',how:'Overbreak any champion', check:()=>[...owned].some(id=>(prog(id).over||0)>0)},
+  {id:'emberbound',   name:'Emberbound',      cls:'emberbound',how:'Free the smith in the hidden Emberguard trial'},
 ];
 // monthly Power-Ranking rank frames #1..#10
 const RANK_FRAMES=[];
@@ -4354,6 +4364,80 @@ function renderAchv(){
     return `<div class="achvcat">${cat}</div>${rows}`;
   }).join('');
   body.querySelectorAll('.achvclaim').forEach(b=>b.addEventListener('click',()=>claimAchv(b.dataset.achv)));
+}
+/* ================= HIDDEN EVENT — "The Smith in the Shell" =================
+   Trigger: defeat the Ashbound Titan with a squad of ONLY Emberguard heroes.
+   A dialogue between Branwen Oathbreaker and the Titan reveals a buried smith,
+   unlocking a short, hard 3-stage trial with big rewards + an exclusive title/frame. */
+const SECRET_TITLE='the Ashbound', SECRET_FRAME='emberbound';
+const _K2=(id,l)=>'ENM-ORD-'+id+'@'+l;
+const SECRET_REVEAL=[
+  {s:'branwen',side:'vow',n:'Branwen Oathbreaker',t:"Wait — that gait. The forge-brand seared into its shoulder-plate. I know that mark; I struck it myself, a lifetime ago. Gods below… the Order didn't BUILD the Ashbound Titan. They buried Master Aldric inside it."},
+  {s:'titan',side:'order',n:'Ashbound Titan',t:"…B… Bran… wen…"},
+  {s:'branwen',side:'vow',n:'Branwen Oathbreaker',t:"He's still in there. They chained a living soul to a siege-engine and called it a weapon. I'm going to break that chain — even if I have to break him to do it. Meet me where the ash runs deepest."},
+];
+const SECRET_STAGES=[
+  {n:'Echoes in the Iron', teach:'Only Emberguard may walk this road', bg:'2',
+   waves:[[_K2('CWARDEN',90),_K2('CWARDEN',90)],[_K2('TITAN',92)]],
+   pre:[{s:'branwen',side:'vow',n:'Branwen Oathbreaker',t:"Aldric — it's me. It's Bran. Fight the ash in your head. Reach for the forge, not the fist."},
+        {s:'titan',side:'order',n:'Ashbound Titan',t:"COMMAND… OVERRIDE… TARGET: EMBERGUARD… PURGE."}],
+   rw:{crys:300,relics:5}},
+  {n:'The Forge Remembers', teach:'The Order’s hymn is loud in him', bg:'2',
+   waves:[[_K2('KNIGHT',93),_K2('KNIGHT',93),_K2('CHANTER',93)],[_K2('TITAN',95)]],
+   pre:[{s:'branwen',side:'vow',n:'Branwen Oathbreaker',t:"They sing the Stillness into him to drown me out. Fine. If a whisper won't reach you, old man, I'll shout — with steel and spark, the only language we ever shared."}],
+   rw:{crys:500,ticket:2,seals:5}},
+  {n:'The Smith Unshackled', teach:'Free him — as a smith should go', bg:'4', finale:true,
+   waves:[[_K2('WRAITH',95),_K2('WRAITH',95)],[_K2('TITAN',98)]],
+   pre:[{s:'titan',side:'order',n:'Ashbound Titan',t:"…Branwen. The forge. You still… carry my hammer."},
+        {s:'branwen',side:'vow',n:'Branwen Oathbreaker',t:"Every single day, Master. Now stand still and let your apprentice do one last hard thing. As a smith should go — in fire, and free."}],
+   post:[{s:'titan',side:'order',n:'Aldric, at last',t:"The chain… is quiet. Thank you, apprentice. Bank the coals for me… and go win your gates."},
+         {s:'branwen',side:'vow',n:'Branwen Oathbreaker',t:"Rest, Master Aldric. The forge is cold tonight — but the Vow burns on, and I will keep it lit. Always."}],
+   rw:{crys:1200,ticket:5,relics:15,seals:15}},
+];
+function secretUnlocked(){return secret.found;}
+function checkSecretTrigger(){ // called on any victory
+  if(secret.found) return;
+  const titan=(G.waves||[]).some(w=>Array.isArray(w)&&w.some(e=>String((e&&(e._artId||e.id))||'').indexOf('ORD-TITAN')>=0));
+  const heroes=G.heroes||[];
+  const allEmber=heroes.length>0 && heroes.every(u=>{const h=hero(u.id);return h&&h.faction==='EMBERGUARD';});
+  if(titan && allEmber){ secret.found=true; secret.stage=0; saveGame();
+    setTimeout(()=>{ try{playDialogue(SECRET_REVEAL,()=>{toast&&toast('✦ Hidden trial unlocked — see the Story screen');});}catch(e){} }, 1200); }
+}
+function runSecret(){ if(!secret.found||secret.done)return; const idx=Math.min(secret.stage,SECRET_STAGES.length-1);
+  const st=SECRET_STAGES[idx];
+  const ids=autoTeam(); if(!ids.length){toast('Summon some heroes first.');return;} team=ids;
+  const start=()=>{ if(!energyPay(12))return; deploySecret(idx); };
+  if(st.pre&&st.pre.length){ playDialogue(st.pre, start); } else start();
+}
+function deploySecret(idx){ const st=SECRET_STAGES[idx]; curHard=false;
+  const waves=st.waves.map(w=>w.map(k=>mkEnemy(k)));
+  G={heroes:team.map(mkHero),waves,wi:0,enemies:waves[0],surge:0,round:1,over:false,busy:false,auto:ui.auto,speed:ui.speed,telegraph:null,hard:false,secret:{idx},awaiting:null,pendingSkill:null};
+  applySynergy(G.heroes);applyEventFactionWeek(G.heroes);
+  $('#speedBtn').textContent=ui.speed+'×';$('#autoBtn').classList.toggle('active',ui.auto);$('#autoBtn').textContent=ui.auto?'Auto ▶':'Manual';
+  $('#btlChapter').textContent='🔥 HIDDEN · The Smith in the Shell';$('#btlName').textContent=st.n;
+  setBattleBg(st.bg);buildParty();renderEnemies();render();renderTelegraph();
+  $('#roundNum').textContent='1';$('#result').style.display='none';$('#wavepip').textContent=st.finale?'The chain breaks here':'';
+  logMsg('The iron stirs with a memory…');logSynergies(G.heroes.map(u=>u.id));
+  show('screen-battle');turnQueue=[];setTimeout(step,450);
+}
+function endSecret(win){ const st=SECRET_STAGES[G.secret.idx]; setMvp(win); let sub='';
+  if(win){ const rw=st.rw||{};
+    if(rw.crys)crystals+=rw.crys; if(rw.relics)relics+=rw.relics; if(rw.ticket)vowTickets+=rw.ticket; if(rw.seals)spire.seals=(spire.seals||0)+rw.seals;
+    if(G.secret.idx>=secret.stage)secret.stage=G.secret.idx+1;
+    if(st.finale){ secret.done=true;
+      if(!profile.titles.includes(SECRET_TITLE))profile.titles.push(SECRET_TITLE);
+      if(!profile.frames.includes(SECRET_FRAME))profile.frames.push(SECRET_FRAME);
+    }
+    const parts=[]; if(rw.crys)parts.push('<i class="cur crystal"></i> '+rw.crys); if(rw.ticket)parts.push('🎟️ '+rw.ticket); if(rw.relics)parts.push('<i class="cur relic"></i> '+rw.relics); if(rw.seals)parts.push('◈ '+rw.seals);
+    sub=`<b style="color:var(--ember,#ff8f5a)">${parts.join(' · ')}</b>`+(st.finale?'<br>Title <b>“the Ashbound”</b> and the <b>Emberbound</b> frame are yours. Set them on your Profile.':'<br>The memory holds a little longer. Press on.');
+    saveGame();
+  } else sub='The ash reclaims him. Steady your Emberguard and try the chain again.';
+  const r=$('#result');r.style.display='flex';resultCinematic(win);
+  $('#resEyebrow').textContent=win?(st.finale?'The Smith is freed':'Memory reclaimed'):'The chain holds';
+  const v=$('#resVerdict');v.textContent=win?'VICTORY':'DEFEAT';v.className='verdict '+(win?'win':'lose');
+  $('#resSub').innerHTML=sub;
+  const nx=$('#resNext');nx.textContent='Story';nx.onclick=()=>{ if(win&&st.finale&&st.post){playDialogue(st.post,()=>openStory());} else openStory(); };
+  $('#resMap').textContent='Leave'; window._resHub=()=>{ if(win&&st.finale&&st.post){playDialogue(st.post,()=>openStory());} else openStory(); };
 }
 /* ================= DAILY RITES — Wheel of Ash + Gate Gamble ================= */
 const RITE_PRIZES=[
@@ -5451,7 +5535,18 @@ function renderStory(){
       <div class="dcart" style="background-image:url(${STORYART[c.k]})">${c.boss?'<span class="dcboss">BOSS</span>':''}</div>
       <div class="dcn">${flagIcon(c.side)}${c.n}</div><div class="dct">${c.t.split(' · ')[0]}</div></button>`).join('');
   const vow=STORY_CHARS.filter(c=>c.side==='vow'), order=STORY_CHARS.filter(c=>c.side==='order');
-  $('#storyScroll').innerHTML=`
+  let secretCard='';
+  if(secret.found){
+    const total=SECRET_STAGES.length, done=Math.min(secret.stage,total);
+    const cur=SECRET_STAGES[Math.min(secret.stage,total-1)];
+    secretCard=`<div class="secretcard ${secret.done?'done':''}">
+      <div class="sctag">🔥 Hidden Trial</div>
+      <div class="scnm">The Smith in the Shell</div>
+      <div class="scsub">${secret.done?'You freed Master Aldric from the Ashbound Titan. The forge is cold — the Vow burns on.':'A soul is chained inside the Titan. Branwen Oathbreaker means to break that chain. <b>Emberguard-tuned and hard.</b>'}</div>
+      <div class="scprog">${secret.done?'✓ Trial complete · rewards claimed':`Stage ${done+1}/${total} · <b>${cur.n}</b>`}</div>
+      ${secret.done?'':`<button class="cta scenter" id="secretEnter">Enter · Stage ${done+1} ▸ <small>⚡12</small></button>`}</div>`;
+  }
+  $('#storyScroll').innerHTML=secretCard+`
     <img class="stmap" src="${STORYART.map}" alt="Map of Ash Gates">
     <div class="stmapcap">The fractured realm of Ash Gates</div>
     <p class="stintro">Ash Gates is a fractured world built around ancient gateways that once linked realms of sky, sea and stone. When the gates cracked, they bled a grey, burning ash that poisons land and memory. From that ruin rose a doctrine — that the gates must be sealed, conquered, or rewritten — the belief that hardened into the <b>Dark Order</b>.</p>
@@ -5467,6 +5562,7 @@ function renderStory(){
     <div class="stacts">${STORY_ACTS.map((a,i)=>`<div class="stact"><div class="stactn">${a.t}</div><p>${a.b}</p></div>`).join('')}</div>
     <div class="stend">Dawn · Eclipse · Ash — the ending is yours to forge.</div>`;
   $('#storyScroll').querySelectorAll('.doscard').forEach(b=>b.addEventListener('click',()=>openDossier(b.dataset.k)));
+  const se=$('#secretEnter'); if(se)se.addEventListener('click',()=>runSecret());
 }
 function openDossier(k){const c=STORY_CHARS.find(x=>x.k===k);if(!c)return;
   $('#dosArt').style.backgroundImage=`url(${STORYART[k]})`;
@@ -6629,6 +6725,7 @@ function endGame(win){
   if(win)awardPlayerXP(battlePlayerXP());   // Commander XP from every victory → raises max Energy
   if(win&&G.heroes)G.heroes.forEach(u=>{if(owned.has(u.id))bondGain(u.id,12);});   // deployed heroes bond through battle
   if(win)stats.win=(stats.win||0)+1;
+  if(win)checkSecretTrigger();   // hidden Emberguard×Titan event
   if(win){ let ec=G.raid?EVT.earn.raid : (G.pvp||G.trial||G.dungeon||G.guildBoss||G.bounty)?EVT.earn.arena
     : Math.round((curStage&&curStage.boss?EVT.earn.boss:EVT.earn.normal)*(curHard?EVT.earn.hardMul:1));
     evtEarn(ec); }   // Ember Cinders from any PvE clear (event point-farm, doc 10 s3)
@@ -6637,6 +6734,7 @@ function endGame(win){
   if(G.raid)return endRaid(win);
   if(G.trial)return endTrial(win);
   if(G.bounty)return endBounty(win);
+  if(G.secret)return endSecret(win);
   if(G.dungeon)return endDungeon(win);
   if(G.spire)return endSpire(win);
   if(G.gwar)return endGuildWar(win);
@@ -6914,6 +7012,8 @@ $('#speedBtn').addEventListener('click',e=>{ui.speed=ui.speed>=3?1:ui.speed+1;if
   // so their Story-screen dossier cards render without duplicating the image data.
   if(typeof ECUT!=='undefined'){ [['revenant','REVENANT'],['chanter','CHANTER'],['cwarden','CWARDEN'],['architect','ARCHITECT'],['matron','MATRON'],['colossus','COLOSSUS'],['ascendant','ASCENDANT'],['unsealed','UNSEALED']]
     .forEach(([k,K])=>{ const src=ECUT['ENM-ORD-'+K]; if(src && !STORYART[k]) STORYART[k]=src; }); }
+  // Branwen Oathbreaker (Emberguard) as a dialogue speaker for the hidden event
+  if(!STORYART['branwen']){ const bs=(typeof CUT!=='undefined'&&CUT['ASH-BSK-L02'])||(typeof ART!=='undefined'&&ART['ASH-BSK-L02']); if(bs)STORYART['branwen']=bs; }
   const K=(id,l)=>'ENM-ORD-'+id+'@'+l;
   const mkCh=(id,act,name,fam,stages)=>({id,act,name,family:fam,story:true,stages:stages.map((s,i)=>(
     {id:id+'-'+(i+1),name:s.n,teach:s.teach||(s.boss?'Boss · Dark Order':'Ash Legion'),boss:!!s.boss,finale:!!s.finale,waves:s.w}))});
