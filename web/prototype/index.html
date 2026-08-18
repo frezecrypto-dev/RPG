@@ -237,6 +237,23 @@
   .gcard.revealed{background:var(--panel2)} .gcard.picked{border-color:#ffcf6b;box-shadow:0 0 0 2px #ffcf6b inset,0 0 16px rgba(255,207,107,.5)}
   .gcface{display:flex;flex-direction:column;align-items:center;gap:6px;border:1px solid;border-radius:10px;padding:10px 6px;width:100%;height:100%;justify-content:center}
   .gcface .wic{font-size:26px} .gcface .gcn{font-size:9px;text-align:center;color:var(--ink);line-height:1.2}
+  /* Daily Bounties */
+  #dailyScroll .rtintro{align-self:stretch;text-align:left}
+  .bntycard{align-self:stretch;border:1px solid var(--line);border-left:3px solid var(--bc,var(--umbra));border-radius:13px;padding:12px;background:var(--panel2)}
+  .bntycard.done{opacity:.6}
+  .bntytop{display:flex;align-items:center;gap:12px}
+  .bntyic{width:44px;height:44px;flex:none;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:22px;background:radial-gradient(circle at 50% 40%,color-mix(in srgb,var(--bc) 34%,transparent),transparent 70%);border:1px solid color-mix(in srgb,var(--bc) 45%,var(--line))}
+  .bntyinfo{flex:1;min-width:0} .bntynm{font-family:var(--font-title);font-size:15px} .bntydesc{font-size:10px;color:var(--muted);margin:1px 0 3px} .bntymeta{font-size:11px;color:var(--faint)}
+  .bntyleft{flex:none;text-align:center;font-family:var(--font-title);font-size:18px;color:var(--ink)} .bntyleft span{display:block;font-size:8px;color:var(--faint);letter-spacing:.05em;font-family:var(--font-body)}
+  .bntygo{width:100%;margin-top:10px}
+  /* Tribute */
+  .tribcard{align-self:stretch;border:1px solid var(--umbra);border-radius:15px;padding:16px;background:linear-gradient(120deg,rgba(123,92,255,.1),var(--panel2));display:flex;flex-direction:column;gap:12px}
+  .tribbar{position:relative;height:26px;border-radius:13px;background:var(--panel);border:1px solid var(--line);overflow:hidden}
+  .tribfill{height:100%;background:linear-gradient(90deg,#5a3fd6,#a970ff);border-radius:13px;transition:width .6s linear}
+  .tribpctlbl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 2px #000}
+  .tribrows{display:flex;flex-direction:column;gap:8px}
+  .tribrow{display:flex;align-items:center;justify-content:space-between;font-size:13px;color:var(--muted);padding:6px 2px;border-bottom:1px solid var(--line)}
+  .tribrow b{font-family:var(--font-hud);color:var(--ink);font-size:15px}
   .artier{border:1px solid var(--umbra);border-radius:7px;padding:3px 0;text-align:center}
   #arList{flex:1;overflow-y:auto;padding:12px 20px 26px;display:flex;flex-direction:column;gap:8px}
   .arcard{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:12px;padding:11px 13px;background:var(--panel2)}
@@ -2583,7 +2600,7 @@ let bpXP=0, bpClaimF=[], bpClaimP=[], bpPrem=false;   // Battle Pass "Gatewarden
 let evtEarned=0, evtBal=0, evtMile=[], evtShop={};    // Events point-farm (doc 10 s3): earned=lifetime(milestones), bal=spendable(shop)
 let login={n:0, date:''};                             // 28-day login track (pauses on miss, never resets)
 let gleam=0;                                          // Gleam — cosmetic-only soft currency (doc 10 s4/s5)
-let rites={spinDate:'', gambleDate:'', gambleWin:0};  // daily minigames: Wheel of Ash + Gate Gamble
+let rites={spinDate:'', gambleDate:'', gambleWin:0, bountyDate:'', bountyUsed:{}, tributeTs:0};  // daily: bounties, tribute, wheel, gamble
 // ---- Player profile: username + avatar (a hero portrait) + earned frames ----
 let profile={name:'', avatar:null, frame:'default', frames:['default']};
 // ---- Character skins (cosmetic-only) — art injected into SKINART/SKINCUT ----
@@ -2797,7 +2814,7 @@ function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s
   daily=s.daily||{date:'',win:0,summon:0,enhance:0,claimed:[]};dailyCheck();ui.muted=s.muted??false;
   bpXP=s.bpXP||0;bpClaimF=s.bpClaimF||[];bpClaimP=s.bpClaimP||[];bpPrem=!!s.bpPrem;
   evtEarned=s.evtEarned||0;evtBal=s.evtBal||0;evtMile=s.evtMile||[];evtShop=s.evtShop||{};login=s.login||{n:0,date:''};
-  gleam=s.gleam||0;vowCard=s.vowCard||{active:false,day:0,date:''};shopFirst=s.shopFirst||[];cosmetics=s.cosmetics||[];skinOn=s.skinOn||{};profile=Object.assign({name:'',avatar:null,frame:'default',frames:['default']},s.profile||{});rites=Object.assign({spinDate:'',gambleDate:'',gambleWin:0},s.rites||{});shopDaily=s.shopDaily||{date:'',bought:{}};
+  gleam=s.gleam||0;vowCard=s.vowCard||{active:false,day:0,date:''};shopFirst=s.shopFirst||[];cosmetics=s.cosmetics||[];skinOn=s.skinOn||{};profile=Object.assign({name:'',avatar:null,frame:'default',frames:['default']},s.profile||{});rites=Object.assign({spinDate:'',gambleDate:'',gambleWin:0,bountyDate:'',bountyUsed:{},tributeTs:0},s.rites||{});if(!rites.tributeTs)rites.tributeTs=Date.now();shopDaily=s.shopDaily||{date:'',bought:{}};
   if(s.guild)guild={...guild,...s.guild};
   if(s.quests)quests=s.quests; if(s.items)items=s.items; questPeriodCheck();
   if(s.pref){ui.speed=s.pref.speed||1;ui.auto=!!s.pref.auto;}
@@ -4165,13 +4182,58 @@ function ritePickIndex(){const tot=RITE_PRIZES.reduce((a,p)=>a+p.w,0);let r=Math
 function ritesDayCheck(){/* dates compared inline */}
 function spinAvailFree(){return rites.spinDate!==new Date().toDateString();}
 function gambleAvailFree(){return rites.gambleDate!==new Date().toDateString();}
-let dailyTab='wheel', _wheelRot=0, _spinning=false;
-function openDaily(){dailyTab='wheel';renderDaily();show('screen-daily');}
+let dailyTab='bounty', _wheelRot=0, _spinning=false;
+function openDaily(tab){dailyTab=tab||'bounty';renderDaily();show('screen-daily');}
 function renderDaily(){
-  $('#dailyTabs').innerHTML=[['wheel','🎡 Wheel of Ash'],['gamble','🎴 Gate Gamble']].map(([k,l])=>
+  const tabs=[['bounty','🎯 Bounties'],['tribute','⏳ Tribute'],['wheel','🎡 Wheel'],['gamble','🎴 Gamble']];
+  $('#dailyTabs').innerHTML=tabs.map(([k,l])=>
     `<button class="rtab ${k===dailyTab?'on':''}" data-dt="${k}">${l}</button>`).join('');
-  $$('#dailyTabs .rtab').forEach(b=>b.addEventListener('click',()=>{dailyTab=b.dataset.dt;renderDaily();}));
-  if(dailyTab==='wheel')renderWheel(); else renderGamble();
+  $$('#dailyTabs .rtab').forEach(b=>b.addEventListener('click',()=>{dailyTab=b.dataset.dt;renderDaily();$('#dailyScroll').scrollTop=0;}));
+  if(dailyTab==='wheel')renderWheel();
+  else if(dailyTab==='gamble')renderGamble();
+  else if(dailyTab==='bounty')renderBounties();
+  else if(dailyTab==='tribute')renderTribute();
+}
+function renderBounties(){
+  bountyDayCheck();
+  const ids=autoTeam(), pw=teamPowerOf(ids);
+  const cards=BOUNTIES.map(b=>{const left=bountyLeft(b.id), foeLvl=b.foes.length;
+    const canFight=left>0;
+    return `<div class="bntycard ${canFight?'':'done'}" style="--bc:${b.col}">
+      <div class="bntytop"><div class="bntyic">${b.ic}</div>
+        <div class="bntyinfo"><div class="bntynm">${b.name}</div><div class="bntydesc">${b.desc}</div>
+          <div class="bntymeta">Reward <b style="color:${b.col}">${b.ic} ${b.amt.toLocaleString()}</b> · ⚡ ${b.energy}</div></div>
+        <div class="bntyleft">${left}/${b.tries}<span>left</span></div></div>
+      <button class="cta bntygo" data-bnty="${b.id}" ${canFight?'':'disabled'}>${canFight?'Fight ▸':'Done today'}</button></div>`;}).join('');
+  $('#dailyScroll').innerHTML=`<div class="rtintro">🎯 <b>Daily Bounties</b> — quick fights for a specific resource. Limited attempts, reset each day. Your five power ${pw.toLocaleString()}.</div>${cards}`;
+  $('#dailyScroll').querySelectorAll('.bntygo').forEach(b=>b.addEventListener('click',()=>runBounty(b.dataset.bnty)));
+}
+let _tributeTimer=null;
+function renderTribute(){
+  const a=tributeAccrued(), r=tributeRates();
+  const box=$('#dailyScroll');
+  box.innerHTML=`
+    <div class="rtintro">⏳ <b>Tribute</b> — your holdings generate resources over time, up to ${TRIBUTE_CAP_H}h. Collect anytime; the meter then refills.</div>
+    <div class="tribcard">
+      <div class="tribbar"><div class="tribfill" id="tribFill" style="width:${(a.pct*100).toFixed(1)}%"></div>
+        <span class="tribpctlbl" id="tribPct">${a.hrs>=TRIBUTE_CAP_H?'FULL':(a.hrs).toFixed(1)+'h / '+TRIBUTE_CAP_H+'h'}</span></div>
+      <div class="tribrows">
+        <div class="tribrow"><span><i class="cur gold"></i> Gold</span><b id="tribGold">${a.gold.toLocaleString()}</b></div>
+        <div class="tribrow"><span><i class="cur shard"></i> Star Shards</span><b id="tribShard">${a.shard.toLocaleString()}</b></div>
+        <div class="tribrow"><span>📖 Insight</span><b id="tribIns">${a.insight.toLocaleString()}</b></div>
+      </div>
+      <button class="cta" id="tribClaim" ${(a.gold<1&&a.shard<1&&a.insight<1)?'disabled':''}>Collect Tribute</button>
+      <div class="ritenote">Rate scales with your Commander level — currently ${r.gold.toLocaleString()} Gold, ${r.shard} Shards & ${r.insight} Insight per hour.</div>
+    </div>`;
+  const cb=$('#tribClaim'); if(cb)cb.addEventListener('click',claimTribute);
+  clearInterval(_tributeTimer);
+  _tributeTimer=setInterval(()=>{ if(!$('#screen-daily').classList.contains('on')||dailyTab!=='tribute'){clearInterval(_tributeTimer);return;}
+    const a2=tributeAccrued(); const f=$('#tribFill'); if(!f)return;
+    f.style.width=(a2.pct*100).toFixed(1)+'%';
+    $('#tribPct').textContent=a2.hrs>=TRIBUTE_CAP_H?'FULL':a2.hrs.toFixed(1)+'h / '+TRIBUTE_CAP_H+'h';
+    $('#tribGold').textContent=a2.gold.toLocaleString();$('#tribShard').textContent=a2.shard.toLocaleString();$('#tribIns').textContent=a2.insight.toLocaleString();
+    const cb2=$('#tribClaim'); if(cb2)cb2.disabled=(a2.gold<1&&a2.shard<1&&a2.insight<1);
+  },1000);
 }
 const SPIN_COST=60;
 function renderWheel(){
@@ -4233,7 +4295,58 @@ function gamblePick(which){
   const m=$('#gambleMsg'); if(m)m.innerHTML=`You opened <b style="color:${p.col}">${p.ic} ${p.lbl}</b>!`;
   renderCrys(); saveGame(); updateDailyNotify();
 }
-function dailyRewardReady(){return spinAvailFree()||gambleAvailFree();}
+/* ---- Daily Bounties: quick combat contracts for targeted resources ---- */
+const BOUNTIES=[
+  {id:'gold',   name:'Ashfield Payroll',  ic:'<i class="cur gold"></i>',  kind:'gold',    amt:16000, tries:3, energy:8,  bg:'2', mul:1.6, foes:['ENM-GNT-M01','ENM-GNT-M02','ENM-GNT-E02'], col:'#c79a3a', desc:'Ambush a coin caravan for Gold.'},
+  {id:'shard',  name:'Shardvein Delve',   ic:'<i class="cur shard"></i>', kind:'shard',   amt:26,    tries:3, energy:8,  bg:'3', mul:1.7, foes:['ENM-GRD-M01','ENM-GRD-M03','ENM-GRD-E02'], col:'#5a8fd6', desc:'Crack a crystal vein for Star Shards.'},
+  {id:'relic',  name:'Reliquary Watch',   ic:'<i class="cur relic"></i>', kind:'relic',   amt:4,     tries:2, energy:10, bg:'4', mul:1.9, foes:['ENM-UND-M01','ENM-UND-E01','ENM-UND-M01'], col:'#6fe3a0', desc:'Loot a sealed reliquary for Relics.'},
+  {id:'insight',name:'Rite of Focus',     ic:'📖',                        kind:'insight', amt:40,    tries:2, energy:8,  bg:'3', mul:2.0, foes:['ENM-GRD-M02','ENM-GRD-E02','ENM-GRD-B01'], col:'#c9b8ff', desc:'Meditate through an ambush for Insight.'},
+  {id:'gleam',  name:'Emberlight Bounty', ic:'✧',                         kind:'gleam',   amt:70,    tries:1, energy:10, bg:'2', mul:2.1, foes:['ENM-SLM-M01','ENM-SLM-M04','ENM-SLM-E01'], col:'#c58bff', desc:'A rare cosmetic-currency bounty.'},
+];
+function bountyById(id){return BOUNTIES.find(b=>b.id===id);}
+function bountyDayCheck(){const t=new Date().toDateString();if(rites.bountyDate!==t){rites.bountyDate=t;rites.bountyUsed={};}}
+function bountyLeft(id){bountyDayCheck();const b=bountyById(id);return b?b.tries-(rites.bountyUsed[id]||0):0;}
+function bountyAnyLeft(){return BOUNTIES.some(b=>bountyLeft(b.id)>0);}
+function runBounty(id){const b=bountyById(id);if(!b||bountyLeft(id)<1)return;
+  const ids=autoTeam(); if(!ids.length){toast('Summon some heroes first.');return;} team=ids;
+  if(!energyPay(b.energy))return;
+  bountyDayCheck(); rites.bountyUsed[id]=(rites.bountyUsed[id]||0)+1; saveGame();
+  curHard=false;
+  const foes=b.foes.map(k=>{const e=mkEnemy(k);
+    e.stats={hp:Math.round(e.stats.hp*b.mul),atk:Math.round(e.stats.atk*b.mul),def:Math.round(e.stats.def*b.mul),spd:e.stats.spd};
+    e.hp=e.stats.hp;e.max=e.stats.hp;return e;});
+  G={heroes:team.map(mkHero),waves:[foes],wi:0,enemies:foes,surge:0,round:1,over:false,busy:false,auto:ui.auto,speed:ui.speed,telegraph:null,hard:false,bounty:b,awaiting:null,pendingSkill:null};
+  applySynergy(G.heroes);applyEventFactionWeek(G.heroes);
+  $('#speedBtn').textContent=ui.speed+'×';$('#autoBtn').classList.toggle('active',ui.auto);$('#autoBtn').textContent=ui.auto?'Auto ▶':'Manual';
+  $('#btlChapter').textContent='🎯 DAILY BOUNTY';$('#btlName').textContent=b.name;
+  setBattleBg(b.bg);buildParty();renderEnemies();render();renderTelegraph();
+  $('#roundNum').textContent='1';$('#result').style.display='none';$('#wavepip').textContent='';
+  logMsg('The bounty target appears…');logSynergies(G.heroes.map(u=>u.id));
+  show('screen-battle');turnQueue=[];setTimeout(step,450);
+}
+function endBounty(win){const b=G.bounty;setMvp(win);let sub='';
+  if(win){ dailyBump('win');
+    if(b.kind==='gold')gold+=b.amt; else if(b.kind==='shard')starShards+=b.amt; else if(b.kind==='relic')relics+=b.amt;
+    else if(b.kind==='insight')insight+=b.amt; else if(b.kind==='gleam')gleam+=b.amt;
+    sub=`<b style="color:${b.col}">${b.ic} +${b.amt.toLocaleString()} ${b.kind==='gold'?'Gold':b.kind==='shard'?'Star Shards':b.kind==='relic'?'Relics':b.kind==='insight'?'Insight':'Gleam'}</b> claimed. ${bountyLeft(b.id)} attempt${bountyLeft(b.id)!==1?'s':''} left today.`;
+    renderCrys();saveGame();
+  } else sub=`The bounty escaped — that attempt is spent. Re-tune your five and take the next one.`;
+  const r=$('#result');r.style.display='flex';resultCinematic(win);
+  $('#resEyebrow').textContent=win?'Bounty claimed':'Bounty failed';
+  const v=$('#resVerdict');v.textContent=win?'VICTORY':'DEFEAT';v.className='verdict '+(win?'win':'lose');
+  $('#resSub').innerHTML=sub;
+  const nx=$('#resNext');nx.textContent='Bounties';nx.onclick=()=>{dailyTab='bounty';openDaily();};
+  $('#resMap').textContent='Leave'; window._resHub=()=>{dailyTab='bounty';openDaily();};
+}
+/* ---- Tribute: passive resource income that accrues over time, capped ---- */
+const TRIBUTE_CAP_H=8;
+function tributeRates(){return {gold:1500+plvl*90, shard:3+Math.floor(plvl/4), insight:2+Math.floor(plvl/8)};}
+function tributeAccrued(){const now=Date.now();const hrs=Math.max(0,Math.min(TRIBUTE_CAP_H,(now-(rites.tributeTs||now))/3600000));
+  const r=tributeRates();return {hrs,pct:hrs/TRIBUTE_CAP_H,gold:Math.floor(r.gold*hrs),shard:Math.floor(r.shard*hrs),insight:Math.floor(r.insight*hrs)};}
+function claimTribute(){const a=tributeAccrued();if(a.gold<1&&a.shard<1&&a.insight<1)return;
+  gold+=a.gold;starShards+=a.shard;insight+=a.insight;rites.tributeTs=Date.now();
+  SFX.rare&&SFX.rare('E');toast&&toast('Tribute collected');renderCrys();renderDaily();saveGame();updateDailyNotify();}
+function dailyRewardReady(){return spinAvailFree()||gambleAvailFree()||bountyAnyLeft()||tributeAccrued().pct>=0.98;}
 function updateDailyNotify(){const b=$('#homeDaily'); if(b)b.classList.toggle('notify',dailyRewardReady());}
 const ARENA_LOSS_RP=14;
 function arenaWinRP(sq){return sq.stake+Math.min(15,arena.streak*3);}
@@ -6303,13 +6416,14 @@ function endGame(win){
   G.over=true;clearSpotlight();renderTelegraph();SFX[win?'win':'lose']();
   if(win)bpGain(60);   // Battle Pass XP from any victory (campaign/arena/raid/trial)
   if(win)awardPlayerXP(battlePlayerXP());   // Commander XP from every victory → raises max Energy
-  if(win){ let ec=G.raid?EVT.earn.raid : (G.pvp||G.trial||G.dungeon||G.guildBoss)?EVT.earn.arena
+  if(win){ let ec=G.raid?EVT.earn.raid : (G.pvp||G.trial||G.dungeon||G.guildBoss||G.bounty)?EVT.earn.arena
     : Math.round((curStage&&curStage.boss?EVT.earn.boss:EVT.earn.normal)*(curHard?EVT.earn.hardMul:1));
     evtEarn(ec); }   // Ember Cinders from any PvE clear (event point-farm, doc 10 s3)
   window._resHub=null; { const _rm=document.getElementById('resMap'); if(_rm&&_rm.textContent!=='To Map')_rm.textContent='To Map'; }
   if(G.pvp)return endArena(win);
   if(G.raid)return endRaid(win);
   if(G.trial)return endTrial(win);
+  if(G.bounty)return endBounty(win);
   if(G.dungeon)return endDungeon(win);
   if(G.spire)return endSpire(win);
   if(G.gwar)return endGuildWar(win);
