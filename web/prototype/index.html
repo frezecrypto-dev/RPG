@@ -173,8 +173,35 @@
   .frame-rank.rank-6,.frame-rank.rank-7{--fr:#7bd0ff;--frg:rgba(123,208,255,.5)}
   .frame-rank.rank-8,.frame-rank.rank-9,.frame-rank.rank-10{--fr:#5fe0a0;--frg:rgba(95,224,160,.45)}
   /* home profile chip */
-  #homeProfile{display:inline-flex;align-items:center;gap:8px;background:rgba(10,8,20,.5);border:1px solid var(--line);border-radius:22px;padding:4px 13px 4px 4px;cursor:pointer;backdrop-filter:blur(4px)}
-  #homeProfile .hpname{font-size:13px;font-weight:700;color:var(--ink);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #homeProfile{display:inline-flex;align-items:center;gap:8px;background:rgba(10,8,20,.5);border:1px solid var(--line);border-radius:22px;padding:4px 13px 4px 4px;cursor:pointer;backdrop-filter:blur(4px);position:relative}
+  #homeProfile .hpname{font-size:13px;font-weight:700;color:var(--ink);max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;flex-direction:column;line-height:1.1}
+  #homeProfile .hptitle{font-size:8.5px;font-weight:600;color:#c9b8ff;letter-spacing:.02em}
+  #homeProfile.notify::after{content:'';position:absolute;top:2px;right:4px;width:10px;height:10px;border-radius:50%;background:var(--danger);border:2px solid #0a0814}
+  /* titles */
+  .ptitle{font-size:11px;color:#c9b8ff;font-style:italic;margin-left:4px;font-family:var(--font-body);font-weight:400}
+  .lbtitle{font-size:9px;color:#c9b8ff;font-style:italic;margin-left:3px}
+  .profachvbtn{width:100%;margin:14px 0 2px;padding:12px;border-radius:12px;border:1px solid var(--umbra);background:linear-gradient(120deg,rgba(255,207,107,.12),var(--panel2));color:var(--ink);font-size:13px;font-weight:700;cursor:pointer;position:relative}
+  .achvbadge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--danger);color:#fff;font-size:10px;margin-left:6px;vertical-align:middle}
+  .titlerow{display:flex;flex-wrap:wrap;gap:7px}
+  .titlepick{padding:7px 11px;border-radius:9px;border:1px solid var(--line);background:var(--panel2);color:var(--muted);font-size:11px;font-style:italic;cursor:pointer}
+  .titlepick.on{border-color:var(--umbra);background:rgba(123,92,255,.16);color:var(--ink)}
+  /* achievements screen */
+  #achvHead{padding:8px 18px 4px} .achvsum{font-size:12px;color:var(--muted)} .achvsum b{color:var(--ink)}
+  #achvScroll{flex:1;overflow-y:auto;padding:6px 16px 26px}
+  .achvcat{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--umbra);margin:16px 0 8px;font-weight:700}
+  .achv{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:12px;padding:11px 13px;background:var(--panel2);margin-bottom:8px}
+  .achv.ready{border-color:var(--warn);box-shadow:0 0 0 1px rgba(255,196,86,.3) inset}
+  .achv.claimed{opacity:.62}
+  .achvmain{flex:1;min-width:0}
+  .achvnm{font-family:var(--font-title);font-size:14px}
+  .achvtitle{font-size:9px;color:#c9b8ff;font-style:italic;margin-left:4px}
+  .achvdesc{font-size:10px;color:var(--muted);margin:1px 0 6px}
+  .achvbar{height:6px;border-radius:4px;background:var(--panel);border:1px solid var(--line);overflow:hidden}
+  .achvfill{height:100%;background:linear-gradient(90deg,#7b5cff,#a970ff);border-radius:4px}
+  .achvprog{font-size:9px;color:var(--faint);margin-top:4px;font-family:var(--font-hud)}
+  .achvact{flex:none;display:flex;align-items:center}
+  .achvclaim{padding:8px 12px;border-radius:9px;border:1px solid var(--warn);background:rgba(255,196,86,.16);color:var(--ink);font-size:11px;font-weight:700;cursor:pointer}
+  .achvck{color:var(--good);font-size:16px} .achvpct{font-size:11px;color:var(--faint);font-family:var(--font-hud)}
   /* profile screen */
   #profScroll{flex:1;overflow-y:auto;padding:14px 18px 26px}
   .profhero{display:flex;align-items:center;gap:16px;border:1px solid var(--umbra);border-radius:16px;padding:16px;background:linear-gradient(120deg,rgba(123,92,255,.12),var(--panel2))}
@@ -2016,6 +2043,14 @@
     <div id="profScroll"></div>
   </section>
 
+  <!-- ACHIEVEMENTS -->
+  <section class="screen" id="screen-achv">
+    <div class="scrhead"><div><div class="eyebrow">Commander</div><h1>Achievements</h1></div>
+      <button class="ghost back" id="achvBack">Back</button></div>
+    <div id="achvHead"></div>
+    <div id="achvScroll"></div>
+  </section>
+
   <!-- DAILY RITES (minigames) -->
   <section class="screen" id="screen-daily">
     <div class="scrhead"><div><div class="eyebrow">Daily</div><h1>Daily Rites</h1></div>
@@ -2660,8 +2695,9 @@ let evtEarned=0, evtBal=0, evtMile=[], evtShop={};    // Events point-farm (doc 
 let login={n:0, date:''};                             // 28-day login track (pauses on miss, never resets)
 let gleam=0;                                          // Gleam — cosmetic-only soft currency (doc 10 s4/s5)
 let rites={spinDate:'', gambleDate:'', gambleWin:0, bountyDate:'', bountyUsed:{}, tributeTs:0};  // daily: bounties, tribute, wheel, gamble
+let stats={summon:0, win:0, bounty:0, spin:0, gift:0};   // lifetime counters for achievements
 // ---- Player profile: username + avatar (a hero portrait) + earned frames ----
-let profile={name:'', avatar:null, frame:'default', frames:['default']};
+let profile={name:'', avatar:null, frame:'default', frames:['default'], achv:[], titles:[], title:''};
 // ---- Character skins (cosmetic-only) — art injected into SKINART/SKINCUT ----
 let skinOn={};
 const DEFAULT_AVATAR="data:image/webp;base64,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";                                         // heroId -> equipped skinId
@@ -2860,7 +2896,7 @@ function renderCrys(){
 const SAVE_KEY='ashgate_save_v1';
 let hasSave=false;
 function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(
-  {v:3,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,arena,raidBest,crystals,gold,starShards,relics,sigils,pity,insight,plvl,pxp,vowTickets,freePullUsed,tutorialDone,energy,energyTs,inventory,gearOn,gearUID,loadouts,daily,bpXP,bpClaimF,bpClaimP,bpPrem,evtEarned,evtBal,evtMile,evtShop,login,gleam,rites,vowCard,shopFirst,cosmetics,skinOn,profile,shopDaily,raidWeek,guild,quests,items,spire,muted:ui.muted,pref:{speed:ui.speed,auto:ui.auto}}));}catch(e){}}
+  {v:3,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,arena,raidBest,crystals,gold,starShards,relics,sigils,pity,insight,plvl,pxp,vowTickets,freePullUsed,tutorialDone,energy,energyTs,inventory,gearOn,gearUID,loadouts,daily,bpXP,bpClaimF,bpClaimP,bpPrem,evtEarned,evtBal,evtMile,evtShop,login,gleam,rites,stats,vowCard,shopFirst,cosmetics,skinOn,profile,shopDaily,raidWeek,guild,quests,items,spire,muted:ui.muted,pref:{speed:ui.speed,auto:ui.auto}}));}catch(e){}}
 function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s||(s.v!==1&&s.v!==2&&s.v!==3))return false;
   owned=new Set(s.owned);progress=s.progress||{};cleared=new Set(s.cleared);
   crystals=s.crystals??crystals;gold=s.gold??gold;starShards=s.starShards??starShards;relics=s.relics??0;sigils=s.sigils??0;pity=s.pity??0;insight=s.insight??40;
@@ -2873,7 +2909,7 @@ function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s
   daily=s.daily||{date:'',win:0,summon:0,enhance:0,claimed:[]};dailyCheck();ui.muted=s.muted??false;
   bpXP=s.bpXP||0;bpClaimF=s.bpClaimF||[];bpClaimP=s.bpClaimP||[];bpPrem=!!s.bpPrem;
   evtEarned=s.evtEarned||0;evtBal=s.evtBal||0;evtMile=s.evtMile||[];evtShop=s.evtShop||{};login=s.login||{n:0,date:''};
-  gleam=s.gleam||0;vowCard=s.vowCard||{active:false,day:0,date:''};shopFirst=s.shopFirst||[];cosmetics=s.cosmetics||[];skinOn=s.skinOn||{};profile=Object.assign({name:'',avatar:null,frame:'default',frames:['default']},s.profile||{});rites=Object.assign({spinDate:'',gambleDate:'',gambleWin:0,bountyDate:'',bountyUsed:{},tributeTs:0},s.rites||{});if(!rites.tributeTs)rites.tributeTs=Date.now();shopDaily=s.shopDaily||{date:'',bought:{}};
+  gleam=s.gleam||0;vowCard=s.vowCard||{active:false,day:0,date:''};shopFirst=s.shopFirst||[];cosmetics=s.cosmetics||[];skinOn=s.skinOn||{};profile=Object.assign({name:'',avatar:null,frame:'default',frames:['default'],achv:[],titles:[],title:''},s.profile||{});profile.achv||=[];profile.titles||=[];rites=Object.assign({spinDate:'',gambleDate:'',gambleWin:0,bountyDate:'',bountyUsed:{},tributeTs:0},s.rites||{});if(!rites.tributeTs)rites.tributeTs=Date.now();stats=Object.assign({summon:0,win:0,bounty:0,spin:0,gift:0},s.stats||{});shopDaily=s.shopDaily||{date:'',bought:{}};
   if(s.guild)guild={...guild,...s.guild};
   if(s.quests)quests=s.quests; if(s.items)items=s.items; questPeriodCheck();
   if(s.pref){ui.speed=s.pref.speed||1;ui.auto=!!s.pref.auto;}
@@ -3466,7 +3502,7 @@ function bondGain(id,xp){const pr=prog(id);if((pr.bond||0)>=BOND_CAP)return[];
   return leveled;}
 function giftBond(id){const pr=prog(id);if((pr.bond||0)>=BOND_CAP){toast&&toast('Bond is already at max.');return;}
   if(gold<GIFT_COST){flashBar&&flashBar();return;}
-  gold-=GIFT_COST;const lv=bondGain(id,GIFT_XP);SFX.rare&&SFX.rare(lv.length?'E':'R');
+  gold-=GIFT_COST;const lv=bondGain(id,GIFT_XP);stats.gift=(stats.gift||0)+1;SFX.rare&&SFX.rare(lv.length?'E':'R');
   if(lv.length)toast&&toast('♥ Bond Lv '+pr.bond+' — '+hero(id).name.split(' ')[0]);
   renderHero();renderCrys();saveGame();}
 function bondMemText(id,lvl){const h=hero(id);const f=FACTION[h.faction];return (BOND_MEM[lvl]||'').replace('{n}',h.name.split(' ')[0]).replace('{f}',f?f.name:'the Vow');}
@@ -4174,7 +4210,7 @@ function renderLeaderboard(){
   const rowHTML=(x,i)=>`<div class="lbrow ${x.me?'me':''} ${i<3?'top3 top'+(i+1):''}">
       <span class="lbrk">${i<3?['🥇','🥈','🥉'][i]:'#'+(i+1)}</span>
       ${x.me?avatarFramed(26):''}
-      <span class="lbnm">${x.me?(playerName()):x.n}</span>
+      <span class="lbnm">${x.me?(playerName()+(profile.title?' <span class="lbtitle">'+profile.title+'</span>':'')):x.n}</span>
       <span class="lbcp">${x.cp.toLocaleString()}</span></div>`;
   const listRows=top.map((x)=>rowHTML(x,all.indexOf(x))).join('');
   const pinned=!inTop?`<div class="lbpin"><div class="lbpinlbl">Your standing</div>${rowHTML({n:playerName(),cp:my,me:true},rank-1)}</div>`:'';
@@ -4203,20 +4239,28 @@ function renderProfile(){
     return `<button class="frpick ${on?'on':''} ${own?'':'locked'}" data-fr="${f.id}">
       ${avatarFramed(60,profile.avatar,f.id)}
       <div class="frnm">${f.name}</div>${own?(on?'<div class="frtag on">Equipped</div>':'<div class="frtag">Equip</div>'):`<div class="frtag lock">🔒 ${f.how}</div>`}</button>`;}).join('');
+  // title selector (owned titles + a "none" option)
+  const titleOpts=['',...profile.titles];
+  const titleRow=`<div class="titlerow">${titleOpts.map(t=>`<button class="titlepick ${profile.title===t?'on':''}" data-title="${encodeURIComponent(t)}">${t?t:'— none —'}</button>`).join('')}</div>`;
+  const claimBadge=achvClaimableCount()>0?`<span class="achvbadge">${achvClaimableCount()}</span>`:'';
   box.innerHTML=`
     <div class="profhero">
       ${avatarFramed(96)}
       <div class="profid">
-        <div class="profname">${playerName()} <button class="profedit" id="profEdit">✎</button></div>
+        <div class="profname">${playerName()}${titleTag()} <button class="profedit" id="profEdit">✎</button></div>
         <div class="profmeta">Commander Lv ${plvl} · ⚔ ${accountCP().toLocaleString()} KK</div>
-        <div class="profmeta2">Global Rank <b style="color:var(--warn)">#${(typeof rank==='number'?rank.toLocaleString():rank)}</b> · ${profile.frames.length} frame${profile.frames.length>1?'s':''}</div>
+        <div class="profmeta2">Global Rank <b style="color:var(--warn)">#${(typeof rank==='number'?rank.toLocaleString():rank)}</b> · ${profile.frames.length} frame${profile.frames.length>1?'s':''} · ${profile.titles.length} title${profile.titles.length!==1?'s':''}</div>
       </div>
     </div>
+    <button class="profachvbtn" id="profAchvBtn">🏆 Achievements & Titles ${claimBadge}</button>
+    ${profile.titles.length?`<div class="profsec">🏷 Title · shown next to your name</div>${titleRow}`:''}
     <div class="profsec">🖼️ Avatar · pick any champion you own</div>
     <div class="avgrid">${avGrid||'<div class="gcempty">Summon a champion to use as your avatar.</div>'}</div>
     <div class="profsec">🎖️ Frames · earn exclusive frames from Arena & the monthly Power Ranking</div>
     <div class="frgrid">${frameGrid}</div>`;
   const pe=$('#profEdit'); if(pe)pe.addEventListener('click',()=>promptUsername(false));
+  const ab=$('#profAchvBtn'); if(ab)ab.addEventListener('click',openAchv);
+  box.querySelectorAll('.titlepick').forEach(b=>b.addEventListener('click',()=>{profile.title=decodeURIComponent(b.dataset.title);SFX.tap&&SFX.tap();renderProfile();updateHomeProfile();saveGame();}));
   box.querySelectorAll('.avpick').forEach(b=>b.addEventListener('click',()=>{profile.avatar=b.dataset.av||null;SFX.tap&&SFX.tap();renderProfile();updateHomeProfile();saveGame();}));
   box.querySelectorAll('.frpick').forEach(b=>b.addEventListener('click',()=>{const id=b.dataset.fr;
     if(!ownsFrame(id)){toast&&toast('Frame locked — '+frameById(id).how);return;}
@@ -4247,8 +4291,70 @@ function submitUsername(){const inp=$('#nmInput'), err=$('#nmErr'); const v=inp.
   if(_nameForced){_nameForced=false; if(pendingOnboard){pendingOnboard=false;setTimeout(startTutorial,300);} }
   if($('#screen-profile').classList.contains('on'))renderProfile();
 }
+function titleTag(){return profile.title?`<span class="ptitle">${profile.title}</span>`:'';}
 function updateHomeProfile(){const b=$('#homeProfile'); if(!b)return;
-  b.innerHTML=avatarFramed(38)+`<span class="hpname">${playerName()}</span>`;}
+  b.innerHTML=avatarFramed(38)+`<span class="hpname">${playerName()}${profile.title?' <span class="hptitle">'+profile.title+'</span>':''}</span>`;
+  b.classList.toggle('notify', achvClaimableCount()>0);}
+/* ================= ACHIEVEMENTS + TITLES ================= */
+function _ownCount(rar){let n=0;owned.forEach(id=>{const h=hero(id);if(h&&(!rar||h.rarity===rar))n++;});return n;}
+function _anyProg(pred){for(const id of owned){if(pred(prog(id),hero(id)))return true;}return false;}
+function _campCleared(id){return typeof cleared!=='undefined'&&cleared.has&&cleared.has(id);}
+const ACHIEVEMENTS=[
+  {id:'coll10',  cat:'Collection',  name:'A Growing Vow',    desc:'Recruit 10 champions',            cur:()=>owned.size, goal:10, rw:{crys:150}},
+  {id:'coll25',  cat:'Collection',  name:'Full Roster',      desc:'Recruit 25 champions',            cur:()=>owned.size, goal:25, rw:{crys:400}, title:'the Collector'},
+  {id:'leg1',    cat:'Collection',  name:'First Legend',     desc:'Own a Legendary champion',        cur:()=>_ownCount('L'), goal:1, rw:{crys:150}},
+  {id:'leg5',    cat:'Collection',  name:'Legend Keeper',    desc:'Own 5 Legendary champions',       cur:()=>_ownCount('L'), goal:5, rw:{crys:400}, title:'Vowmaster'},
+  {id:'skin1',   cat:'Collection',  name:'Dressed for Dark', desc:'Unlock a character skin',         cur:()=>SKINS.filter(s=>cosmetics.includes(s.id)).length, goal:1, rw:{gleam:150}},
+  {id:'lv20',    cat:'Progress',    name:'Rising Commander', desc:'Reach Commander Level 20',        cur:()=>plvl, goal:20, rw:{crys:200}},
+  {id:'lv40',    cat:'Progress',    name:'Seasoned Command', desc:'Reach Commander Level 40',        cur:()=>plvl, goal:40, rw:{crys:400}, title:'the Veteran'},
+  {id:'maxstar', cat:'Progress',    name:'Starforged',       desc:'Raise a hero to max stars',       cur:()=>_anyProg((pr,h)=>pr.stars>=h.starCap)?1:0, goal:1, rw:{crys:300}},
+  {id:'ascend',  cat:'Progress',    name:'Beyond the Cap',   desc:'Fully Ascend a hero (A6)',        cur:()=>_anyProg(pr=>(pr.asc||0)>=6)?1:0, goal:1, rw:{relics:6}},
+  {id:'over1',   cat:'Progress',    name:'Limitbreaker',     desc:'Overbreak any hero',              cur:()=>_anyProg(pr=>(pr.over||0)>=1)?1:0, goal:1, rw:{crys:200}, title:'Limitbreaker'},
+  {id:'over5',   cat:'Progress',    name:'Ash Sovereign',    desc:'Reach Overbreak V on a hero',     cur:()=>_anyProg(pr=>(pr.over||0)>=5)?1:0, goal:1, rw:{crys:500}, title:'the Unbroken'},
+  {id:'bond10',  cat:'Progress',    name:'Sworn',            desc:'Reach Bond Lv 10 with a hero',    cur:()=>_anyProg(pr=>(pr.bond||0)>=10)?1:0, goal:1, rw:{crys:200}, title:'the Sworn'},
+  {id:'win50',   cat:'Combat',      name:'Blooded',          desc:'Win 50 battles',                  cur:()=>stats.win||0, goal:50, rw:{crys:200}},
+  {id:'win250',  cat:'Combat',      name:'Warbound',         desc:'Win 250 battles',                 cur:()=>stats.win||0, goal:250, rw:{crys:500}, title:'the Warbound'},
+  {id:'act1',    cat:'Combat',      name:'Embers in the Ash',desc:'Clear Story Act I',               cur:()=>_campCleared('5-13')?1:0, goal:1, rw:{crys:300}},
+  {id:'act4',    cat:'Combat',      name:'Beyond the Gate',  desc:'Clear Story Act IV',              cur:()=>_campCleared('8-13')?1:0, goal:1, rw:{crys:800}, title:'Gatewarden'},
+  {id:'spire25', cat:'Combat',      name:'Climber',          desc:'Reach Ash Spire floor 25',        cur:()=>spire.best||0, goal:25, rw:{relics:3}},
+  {id:'spire50', cat:'Combat',      name:'Spirebreaker',     desc:'Reach Ash Spire floor 50',        cur:()=>spire.best||0, goal:50, rw:{crys:300}, title:'Spirebreaker'},
+  {id:'argold',  cat:'Competitive', name:'Contender',        desc:'Reach Arena Gold tier',           cur:()=>arenaTierIdx(arena.best)>=2?1:0, goal:1, rw:{crys:200}},
+  {id:'arleg',   cat:'Competitive', name:'Gladiator',        desc:'Reach Arena Legend tier',         cur:()=>arenaTierIdx(arena.best)>=6?1:0, goal:1, rw:{crys:500}, title:'the Gladiator'},
+  {id:'guild',   cat:'Competitive', name:'Lodgebound',       desc:'Join or found a guild',           cur:()=>guild.joined?1:0, goal:1, rw:{crys:100}},
+  {id:'spin10',  cat:'Daily',       name:'Fortune Seeker',   desc:'Spin the Wheel of Ash 10 times',  cur:()=>stats.spin||0, goal:10, rw:{gleam:150}},
+  {id:'bounty20',cat:'Daily',       name:'Bounty Hunter',    desc:'Complete 20 daily bounties',      cur:()=>stats.bounty||0, goal:20, rw:{crys:200}, title:'the Bounty Hunter'},
+];
+function achvDone(a){return a.cur()>=a.goal;}
+function achvClaimed(a){return profile.achv.includes(a.id);}
+function achvClaimable(a){return achvDone(a)&&!achvClaimed(a);}
+function achvClaimableCount(){return ACHIEVEMENTS.filter(achvClaimable).length;}
+function claimAchv(id){const a=ACHIEVEMENTS.find(x=>x.id===id);if(!a||!achvClaimable(a))return;
+  profile.achv.push(id); const rw=a.rw||{};
+  if(rw.crys)crystals+=rw.crys; if(rw.gold)gold+=rw.gold; if(rw.relics)relics+=rw.relics; if(rw.gleam)gleam+=rw.gleam; if(rw.ticket)vowTickets+=rw.ticket;
+  if(a.title&&!profile.titles.includes(a.title))profile.titles.push(a.title);
+  SFX.rare&&SFX.rare('L'); toast&&toast('★ '+a.name+(a.title?' — Title unlocked!':' — claimed'));
+  renderCrys();renderAchv();updateHomeProfile();saveGame();}
+function rwText(rw){const p=[];if(rw.crys)p.push(`<i class="cur crystal"></i> ${rw.crys}`);if(rw.gold)p.push(`<i class="cur gold"></i> ${rw.gold}`);if(rw.relics)p.push(`<i class="cur relic"></i> ${rw.relics}`);if(rw.gleam)p.push(`✧ ${rw.gleam}`);if(rw.ticket)p.push(`🎟️ ${rw.ticket}`);return p.join(' · ');}
+const ACHV_CATS=['Collection','Progress','Combat','Competitive','Daily'];
+function openAchv(){renderAchv();show('screen-achv');}
+function renderAchv(){
+  const done=ACHIEVEMENTS.filter(a=>achvClaimed(a)).length;
+  $('#achvHead').innerHTML=`<div class="achvsum"><b>${done}</b>/${ACHIEVEMENTS.length} achievements · <b style="color:var(--warn)">${achvClaimableCount()}</b> ready to claim</div>`;
+  const body=$('#achvScroll');
+  body.innerHTML=ACHV_CATS.map(cat=>{
+    const rows=ACHIEVEMENTS.filter(a=>a.cat===cat).map(a=>{
+      const cur=Math.min(a.cur(),a.goal),pct=Math.round(100*cur/a.goal),claimable=achvClaimable(a),claimed=achvClaimed(a);
+      return `<div class="achv ${claimed?'claimed':claimable?'ready':''}">
+        <div class="achvmain"><div class="achvnm">${a.name}${a.title?` <span class="achvtitle">🏷 ${a.title}</span>`:''}</div>
+          <div class="achvdesc">${a.desc}</div>
+          <div class="achvbar"><div class="achvfill" style="width:${pct}%"></div></div>
+          <div class="achvprog">${cur}/${a.goal} · ${rwText(a.rw)}</div></div>
+        <div class="achvact">${claimed?'<span class="achvck">✓</span>':claimable?`<button class="achvclaim" data-achv="${a.id}">Claim</button>`:`<span class="achvpct">${pct}%</span>`}</div></div>`;
+    }).join('');
+    return `<div class="achvcat">${cat}</div>${rows}`;
+  }).join('');
+  body.querySelectorAll('.achvclaim').forEach(b=>b.addEventListener('click',()=>claimAchv(b.dataset.achv)));
+}
 /* ================= DAILY RITES — Wheel of Ash + Gate Gamble ================= */
 const RITE_PRIZES=[
   {k:'gold',   ic:'<i class="cur gold"></i>',   n:20000, w:22, col:'#b8892f', s:'20k',  lbl:'20k Gold'},
@@ -4350,7 +4456,7 @@ function spinWheel(){
   const target=360*5 - (idx*seg) + (_wheelRot - (_wheelRot%360));
   _wheelRot=target;
   const el=$('#wheelEl'); if(el){el.style.transition='transform 3.4s cubic-bezier(.15,.85,.15,1)';el.style.transform=`rotate(${_wheelRot}deg)`;}
-  if(free)rites.spinDate=new Date().toDateString();
+  if(free)rites.spinDate=new Date().toDateString(); stats.spin=(stats.spin||0)+1;
   const bt=$('#spinBtn'); if(bt)bt.disabled=true;
   setTimeout(()=>{
     const p=RITE_PRIZES[idx]; riteGrant(p);
@@ -4413,7 +4519,7 @@ function runBounty(id){const b=bountyById(id);if(!b||bountyLeft(id)<1)return;
   show('screen-battle');turnQueue=[];setTimeout(step,450);
 }
 function endBounty(win){const b=G.bounty;setMvp(win);let sub='';
-  if(win){ dailyBump('win');
+  if(win){ dailyBump('win'); stats.bounty=(stats.bounty||0)+1;
     if(b.kind==='gold')gold+=b.amt; else if(b.kind==='shard')starShards+=b.amt; else if(b.kind==='relic')relics+=b.amt;
     else if(b.kind==='insight')insight+=b.amt; else if(b.kind==='gleam')gleam+=b.amt;
     sub=`<b style="color:${b.col}">${b.ic} +${b.amt.toLocaleString()} ${b.kind==='gold'?'Gold':b.kind==='shard'?'Star Shards':b.kind==='relic'?'Relics':b.kind==='insight'?'Insight':'Gleam'}</b> claimed. ${bountyLeft(b.id)} attempt${bountyLeft(b.id)!==1?'s':''} left today.`;
@@ -4917,7 +5023,7 @@ function pull(n){
 function pullTicket(n){ n=n||1; if(vowTickets<n){flashBar();return;} vowTickets-=n; _resolvePull(n); }
 function freePull(){ if(freePullUsed)return; freePullUsed=true; _resolvePull(1,{forceEpic:true}); }
 function _resolvePull(n,opts){opts=opts||{};
-  dailyBump('summon'); sigils+=n;  // Ember Sigil per pull -> Mercy Forge
+  dailyBump('summon'); sigils+=n; stats.summon=(stats.summon||0)+n;  // Ember Sigil per pull -> Mercy Forge
   const results=[];
   let gotEpicPlus=false;
   for(let i=0;i<n;i++){
@@ -6522,6 +6628,7 @@ function endGame(win){
   if(win)bpGain(60);   // Battle Pass XP from any victory (campaign/arena/raid/trial)
   if(win)awardPlayerXP(battlePlayerXP());   // Commander XP from every victory → raises max Energy
   if(win&&G.heroes)G.heroes.forEach(u=>{if(owned.has(u.id))bondGain(u.id,12);});   // deployed heroes bond through battle
+  if(win)stats.win=(stats.win||0)+1;
   if(win){ let ec=G.raid?EVT.earn.raid : (G.pvp||G.trial||G.dungeon||G.guildBoss||G.bounty)?EVT.earn.arena
     : Math.round((curStage&&curStage.boss?EVT.earn.boss:EVT.earn.normal)*(curHard?EVT.earn.hardMul:1));
     evtEarn(ec); }   // Ember Cinders from any PvE clear (event point-farm, doc 10 s3)
@@ -6672,6 +6779,7 @@ $('#loginGuest')?.addEventListener('click',()=>doLogin('guest'));
 { let authed=false; try{authed=!!localStorage.getItem(AUTH_KEY);}catch(e){} if(authed){show('screen-title'); if(!profile.name){promptUsername(true);} else if(pendingOnboard){pendingOnboard=false;setTimeout(startTutorial,350);}} }
 $('#homeProfile')?.addEventListener('click',()=>{SFX.tap&&SFX.tap();openProfile();});
 $('#profBack')?.addEventListener('click',()=>openHome());
+$('#achvBack')?.addEventListener('click',()=>openProfile());
 $('#homeDaily')?.addEventListener('click',()=>{SFX.tap&&SFX.tap();openDaily();});
 $('#dailyBack')?.addEventListener('click',()=>openHome());
 $('#nmConfirm')?.addEventListener('click',submitUsername);
