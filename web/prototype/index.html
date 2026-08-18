@@ -858,6 +858,18 @@
   .statrow .k{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
   .statrow .v{font-family:var(--font-title);font-size:17px;font-variant-numeric:tabular-nums}
   .statrow .up{color:var(--good);font-size:10px;margin-left:6px}
+  #hdBond{margin:12px 0 2px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:linear-gradient(120deg,rgba(255,120,160,.08),var(--panel2))}
+  #hdBond .bondtop{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+  #hdBond .bondlbl{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)} #hdBond .bondlbl b{color:#ff9ab0;font-family:var(--font-title);font-size:13px} #hdBond .asctag{font-size:8px;opacity:.7}
+  #hdBond .bondhearts{color:#ff5a8a;font-size:12px;letter-spacing:1px} #hdBond .bhoff{color:var(--line)}
+  #hdBond .bondrow{display:flex;align-items:center;gap:10px}
+  #hdBond .bondbar{flex:1;height:8px;border-radius:5px;background:var(--panel);border:1px solid var(--line);overflow:hidden}
+  #hdBond .bondfill{height:100%;background:linear-gradient(90deg,#ff5a8a,#ffa0c0);border-radius:5px;transition:width .4s}
+  #hdBond .ascbtn.bond{border-color:#ff5a8a;background:rgba(255,90,138,.14)}
+  #hdBond .bondnote{font-size:9px;color:var(--faint);margin-top:6px;line-height:1.4}
+  #hdBond .bondmems{margin-top:8px;display:flex;flex-direction:column;gap:6px;border-top:1px dashed var(--line);padding-top:8px}
+  #hdBond .bondmem{display:flex;gap:8px} #hdBond .bmlv{flex:none;font-size:9px;color:#ff9ab0;font-weight:700;padding-top:1px}
+  #hdBond .bmtx{font-size:10.5px;color:var(--muted);font-style:italic;line-height:1.4}
   #hdAsc{margin:12px 0 2px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--panel2)}
   #hdAsc .asctop{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
   #hdAsc .asclbl{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
@@ -2301,6 +2313,7 @@
       </div>
       <div id="hdStats"></div>
       <div id="hdSkins"></div>
+      <div id="hdBond"></div>
       <div id="hdGear"></div>
       <div id="hdAsc"></div>
       <div id="hdKit"></div>
@@ -2721,7 +2734,7 @@ let guild={joined:false, isLeader:false, name:'', tag:'', desc:'', banner:{emble
 let progress={};
 const RATES={L:0.03,E:0.16,R:0.38,C:0.43};
 function prog(id){if(!progress[id]){const h=hero(id);progress[id]={level:20,stars:h?h.startStars:1,skills:{S1:1,S2:1,S3:1},asc:0};}
-  if(!progress[id].skills)progress[id].skills={S1:1,S2:1,S3:1};if(progress[id].asc==null)progress[id].asc=0;if(progress[id].basc==null)progress[id].basc=0;if(progress[id].over==null)progress[id].over=0;if(progress[id].dupes==null)progress[id].dupes=0;return progress[id];}
+  if(!progress[id].skills)progress[id].skills={S1:1,S2:1,S3:1};if(progress[id].asc==null)progress[id].asc=0;if(progress[id].basc==null)progress[id].basc=0;if(progress[id].over==null)progress[id].over=0;if(progress[id].dupes==null)progress[id].dupes=0;if(progress[id].bond==null)progress[id].bond=0;if(progress[id].bondXp==null)progress[id].bondXp=0;return progress[id];}
 const ASC_CAP=6;
 const ascCost=rank=>({relics:2+rank, gold:20000*(rank+1)});
 // Bloodbound Ascension — the red track, fed by duplicate copies of the same champion
@@ -2798,8 +2811,8 @@ function gearBonus(id){
 function computeStats(h,level,stars){
   const g=1+h.perLevel*h.rarityGrowth*(level-1), sf=1+DATA.starBonusPerStar*(stars-h.startStars);
   const p=progress[h.id]||{};
-  const asc=p.asc||0, basc=p.basc||0, over=p.over||0;   // green (relic) + red (bloodbound) tracks + Overbreak level
-  const am=1 + 0.04*asc + 0.04*basc + overCore(over);   // ascension core-stat multiplier
+  const asc=p.asc||0, basc=p.basc||0, over=p.over||0, bond=p.bond||0;   // green + red tracks + Overbreak + Bond
+  const am=1 + 0.04*asc + 0.04*basc + overCore(over) + 0.01*bond;   // ascension + bond core-stat multiplier (+1%/bond lvl)
   const b={hp:h.baseL1.hp*g*sf*am,atk:h.baseL1.atk*g*sf*am,def:h.baseL1.def*g*sf*am,spd:h.baseL1.spd};
   const a=gearBonus(h.id).agg;
   const critR=(asc>=3?0.05:0)+(basc>=3?0.05:0)+overCritR(over);
@@ -3428,12 +3441,35 @@ function heroCP(id){const h=hero(id);if(!h)return 0;const pr=prog(id),st=statsAt
   const asc=(pr.asc||0)+(pr.basc||0), over=pr.over||0;
   let cp = st.hp*0.10 + st.atk*1.0 + st.def*0.9 + st.spd*2.5
          + st.crit_rate*500 + st.crit_dmg*260
-         + skills*80 + pr.stars*120 + asc*220 + over*1300
+         + skills*80 + pr.stars*120 + asc*220 + over*1300 + (pr.bond||0)*60
          + heroGearPower(id)*0.25;
   return Math.round(cp*(RAR_CP_BASE[h.rarity]||1));}
 function accountCP(){let s=0;owned.forEach(id=>{s+=heroCP(id);});return Math.round(s);}
 // best-team CP (top 5 heroes) — a secondary readout
 function topTeamCP(){return [...owned].map(heroCP).sort((a,b)=>b-a).slice(0,5).reduce((a,b)=>a+b,0);}
+/* ================= BOND — emotional attachment to your champions ================= */
+const BOND_CAP=10;
+const bondXpNeed=lvl=>100+lvl*80;          // XP to go from `lvl` to lvl+1
+const GIFT_COST=8000, GIFT_XP=60;          // one gold gift
+const BOND_MEM={ // memory lines unlocked at these bond levels ({n}=hero first name, {f}=faction)
+  1:'{n} fights a little easier at your side now — the wariness is fading.',
+  3:'{n} has started to trust your command, and to watch your back without being asked.',
+  5:'Between battles, {n} shares a quiet story of the life they had before the ash.',
+  7:'{n} no longer asks why you fight. They simply stand where you stand.',
+  10:'{n} is bound to your Vow completely — an unbreakable bond, forged in ash and kept in blood.',
+};
+const BOND_REWARD={3:{crys:60},6:{crys:120,relics:2},10:{crys:250,relics:5,ticket:1}};
+function bondGain(id,xp){const pr=prog(id);if((pr.bond||0)>=BOND_CAP)return[];
+  pr.bondXp=(pr.bondXp||0)+xp;const leveled=[];
+  while(pr.bond<BOND_CAP && pr.bondXp>=bondXpNeed(pr.bond)){pr.bondXp-=bondXpNeed(pr.bond);pr.bond++;leveled.push(pr.bond);
+    const rw=BOND_REWARD[pr.bond];if(rw){if(rw.crys)crystals+=rw.crys;if(rw.relics)relics+=rw.relics;if(rw.ticket)vowTickets+=rw.ticket;}}
+  return leveled;}
+function giftBond(id){const pr=prog(id);if((pr.bond||0)>=BOND_CAP){toast&&toast('Bond is already at max.');return;}
+  if(gold<GIFT_COST){flashBar&&flashBar();return;}
+  gold-=GIFT_COST;const lv=bondGain(id,GIFT_XP);SFX.rare&&SFX.rare(lv.length?'E':'R');
+  if(lv.length)toast&&toast('♥ Bond Lv '+pr.bond+' — '+hero(id).name.split(' ')[0]);
+  renderHero();renderCrys();saveGame();}
+function bondMemText(id,lvl){const h=hero(id);const f=FACTION[h.faction];return (BOND_MEM[lvl]||'').replace('{n}',h.name.split(' ')[0]).replace('{f}',f?f.name:'the Vow');}
 function autoTeam(){ if(team&&team.length>=1)return team.slice(0,5);
   const own=DATA.heroes.filter(h=>owned.has(h.id));
   return own.slice().sort((a,b)=>{const pa=prog(a.id),pb=prog(b.id);return (pb.level*10-RORDER[b.rarity])-(pa.level*10-RORDER[a.rarity]);}).slice(0,5).map(h=>h.id);}
@@ -5469,6 +5505,7 @@ function renderHero(){
   else{bS.disabled=(starShards<sc.shards||gold<sc.gold);bS.querySelector('small').innerHTML='<i class="cur shard"></i> '+sc.shards+' · <i class="cur gold"></i> '+(sc.gold/1000)+'k';}
   renderHdSlots();
   renderHdSkins();
+  renderHdBond();
   renderHdGear();
   renderHdAsc();
   renderCrys();
@@ -5484,6 +5521,21 @@ function renderHdSlots(){
   box.querySelectorAll('.hdslot').forEach(b=>b.addEventListener('click',()=>openGear(b.dataset.sl)));
 }
 // ---- Skins: per-hero cosmetic outfit selector on the detail screen ----
+function renderHdBond(){
+  const box=$('#hdBond'); if(!box)return;
+  const pr=prog(curHero), lvl=pr.bond||0, maxed=lvl>=BOND_CAP;
+  const pct=maxed?100:Math.round(100*(pr.bondXp||0)/bondXpNeed(lvl));
+  const hearts=`<span class="bondhearts">${'♥'.repeat(lvl)}<span class="bhoff">${'♥'.repeat(BOND_CAP-lvl)}</span></span>`;
+  // unlocked memory lines
+  const mems=Object.keys(BOND_MEM).map(Number).filter(l=>l<=lvl).sort((a,b)=>a-b);
+  const memHTML=mems.length?`<div class="bondmems">${mems.map(l=>`<div class="bondmem"><span class="bmlv">Lv ${l}</span><span class="bmtx">“${bondMemText(curHero,l)}”</span></div>`).join('')}</div>`:'';
+  const btn=maxed?`<span class="ascsub" style="color:#ff9ab0">Max bond</span>`
+    :`<button class="ascbtn bond" id="giftBtn" ${gold<GIFT_COST?'disabled':''}>🎁 Gift <i class="cur gold"></i> ${(GIFT_COST/1000)}k</button>`;
+  box.innerHTML=`<div class="bondtop"><span class="bondlbl">♥ Bond <b>Lv ${lvl}</b>/${BOND_CAP} <span class="asctag">+${lvl}% core stats</span></span>${hearts}</div>
+    <div class="bondrow"><div class="bondbar"><div class="bondfill" style="width:${pct}%"></div></div>${btn}</div>
+    <div class="bondnote">Bond grows a little from every battle a hero fights in — or give a gift to speed it. Milestones grant rewards and unlock memories.</div>${memHTML}`;
+  const gb=$('#giftBtn'); if(gb)gb.addEventListener('click',()=>giftBond(curHero));
+}
 function renderHdSkins(){
   const box=$('#hdSkins'); if(!box)return;
   const list=skinsForHero(curHero);
@@ -6469,6 +6521,7 @@ function endGame(win){
   G.over=true;clearSpotlight();renderTelegraph();SFX[win?'win':'lose']();
   if(win)bpGain(60);   // Battle Pass XP from any victory (campaign/arena/raid/trial)
   if(win)awardPlayerXP(battlePlayerXP());   // Commander XP from every victory → raises max Energy
+  if(win&&G.heroes)G.heroes.forEach(u=>{if(owned.has(u.id))bondGain(u.id,12);});   // deployed heroes bond through battle
   if(win){ let ec=G.raid?EVT.earn.raid : (G.pvp||G.trial||G.dungeon||G.guildBoss||G.bounty)?EVT.earn.arena
     : Math.round((curStage&&curStage.boss?EVT.earn.boss:EVT.earn.normal)*(curHard?EVT.earn.hardMul:1));
     evtEarn(ec); }   // Ember Cinders from any PvE clear (event point-farm, doc 10 s3)
