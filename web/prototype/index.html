@@ -207,6 +207,15 @@
   @keyframes nmShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
   .nmerr{font-size:10.5px;color:var(--danger);min-height:14px;margin:8px 0 12px}
   .nmcard .cta{width:100%}
+  /* one-time contextual tip callout */
+  #tipCard{position:fixed;left:50%;bottom:16px;transform:translate(-50%,140%);z-index:9994;width:min(360px,90vw);
+    border:1px solid var(--umbra);border-radius:14px;background:linear-gradient(160deg,rgba(30,22,58,.98),rgba(14,11,26,.98));
+    box-shadow:0 16px 40px rgba(0,0,0,.55);padding:14px 16px;transition:transform .34s cubic-bezier(.2,.9,.3,1);backdrop-filter:blur(6px)}
+  #tipCard.on{transform:translate(-50%,0)}
+  #tipCard .tiphd{display:flex;align-items:center;gap:8px;font-family:var(--font-title);font-size:15px}
+  #tipCard .tipic{font-size:19px}
+  #tipCard .tipbd{font-size:11.5px;color:var(--muted);line-height:1.55;margin:7px 0 11px}
+  #tipCard .tipok{width:100%;padding:9px;border-radius:9px;border:1px solid var(--umbra);background:rgba(123,92,255,.2);color:var(--ink);font-weight:700;font-size:12px;cursor:pointer}
   /* ===== Daily Rites: Wheel of Ash + Gate Gamble ===== */
   #homeDaily{position:absolute;right:14px;bottom:96px;z-index:6;display:flex;flex-direction:column;align-items:center;gap:1px;width:58px;height:58px;justify-content:center;border-radius:50%;border:1px solid var(--umbra);background:radial-gradient(circle at 50% 35%,rgba(123,92,255,.35),rgba(10,8,20,.85));cursor:pointer;backdrop-filter:blur(4px);box-shadow:0 6px 16px rgba(0,0,0,.4)}
   #homeDaily .hdico{font-size:20px;line-height:1} #homeDaily .hdlbl{font-size:8px;letter-spacing:.05em;color:var(--muted)}
@@ -2477,6 +2486,17 @@ function uiAlert(msg,onOk){return uiConfirm(msg,onOk,{yes:'OK',no:null});}
 function toast(msg){const t=document.createElement('div');t.className='uitoast';t.textContent=msg;
   document.body.appendChild(t);requestAnimationFrame(()=>t.classList.add('on'));
   setTimeout(()=>{t.classList.remove('on');setTimeout(()=>t.remove(),300);},2200);}
+/* ---- one-time contextual tips (device-level, shown the first time a system is opened) ---- */
+const TIPS_KEY='ashgate_tips';
+function tipsGet(){try{return JSON.parse(localStorage.getItem(TIPS_KEY))||{};}catch(e){return {};}}
+function tipsMark(k){try{const s=tipsGet();s[k]=1;localStorage.setItem(TIPS_KEY,JSON.stringify(s));}catch(e){}}
+function tipOnce(key,icon,title,body){ if(tipsGet()[key])return; tipsMark(key); showTip(icon,title,body); }
+function showTip(icon,title,body){ let el=document.getElementById('tipCard');
+  if(!el){el=document.createElement('div');el.id='tipCard';document.body.appendChild(el);}
+  el.innerHTML=`<div class="tiphd"><span class="tipic">${icon}</span><b>${title}</b></div><div class="tipbd">${body}</div><button class="tipok">Got it</button>`;
+  requestAnimationFrame(()=>el.classList.add('on'));
+  el.querySelector('.tipok').onclick=()=>el.classList.remove('on');
+  clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('on'),14000);}
 const rand=(a,b)=>a+Math.random()*(b-a),clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const hero=id=>DATA.heroes.find(h=>h.id===id);
 
@@ -2833,11 +2853,12 @@ function renderSettings(){
 function openSettings(){setMsg('');$('#setSave').value='';renderSettings();show('screen-settings');}
 /* ---------- onboarding ---------- */
 const ONBOARD=[
-  {g:'⚔', tag:'Welcome, Gatewarden', title:'ASHGATE', body:'A dark-fantasy squad RPG. Summon a roster of Vowbound, forge a party of five, and fight through four chapters to close the Gate on the Mother-Mass.'},
+  {g:'⚔', tag:'Welcome, Gatewarden', title:'ASHGATE', body:'A dark-fantasy squad RPG. Summon a roster of Vowbound, forge a party of five, and fight through eight story acts — from the Drowned Quarter to the gates beyond the Sealed Gate.'},
   {g:'🛡️', tag:'Build your five', title:'Roles & Synergy', body:'A strong party wants a frontline to hold, damage to kill, and sustain to survive. Field 2+ heroes of the same faction (Emberguard, Freeblades, Hollowed, Choir, Gravebound) for a team synergy bonus — the team-select screen previews it live.'},
   {g:'✦', tag:'Combat', title:'Tactical Turns', body:'Heroes act in SPD order. On each of your heroes’ turns the fight pauses — choose their skill (Basic, Core, or the Surge-fuelled Ultimate) and tap a target. Aim into an enemy’s WEAK spot for bonus damage and Surge. Prefer to watch? Tap Auto to hand the fight to the AI.'},
-  {g:'⚠️', tag:'Combat', title:'Read the telegraphs', body:'Bosses wind up big hits behind a red telegraph with warning pips. Bank Surge for a tank’s team-immunity, or answer with a healer, before it lands. Damage-type matters too — some enemies resist physical or magic.'},
-  {g:'👑', tag:'Grow stronger', title:'Progress & Endgame', body:'Level, star, gear, skill-up, and ascend your heroes. Then farm Hard mode, climb the PvP Arena, and race the weekly Raid boss. Your whole save lives in this browser — back it up under ⚙ Settings.'},
+  {g:'👑', tag:'Grow stronger', title:'Deep Progression', body:'Level, star, gear and skill-up your heroes. At max stars two Ascension tracks open — green Ascension (Relics) and red Bloodbound (duplicate copies) — and finishing both unlocks the Overbreak track for a final power spike. Every upgrade raises a hero’s Combat Power (KK).'},
+  {g:'🏆', tag:'Compete', title:'Ranked & Leaderboards', body:'Climb the ranked PvP Arena for RP and tiers, push your Guild’s League through Guild War, and chase the global Power Ranking by total KK. Top finishes earn exclusive profile frames — set your name, avatar and frame on your Profile (top-left on Home).'},
+  {g:'🎡', tag:'Every day', title:'Daily Rites', body:'Tap the glowing Daily button on Home: fight Bounties for targeted resources, collect passive Tribute, and take your free Wheel spin and Gate Gamble draw. Your save lives in this browser — back it up under ⚙ Settings.'},
 ];
 let obStep=0;
 function renderOnboard(){
@@ -3784,6 +3805,7 @@ function renderGuildWar(body){
       <div class="gwmeta">Enemy Lv ${n.lvl} · ${'★'.repeat(n.stars)}</div>
       <div class="gwrw">${rw}</div>
       ${cap?'<div class="gwcapd">✓ Captured</div>':`<button class="cta gwatk" data-gw="${i}">Attack ▸</button>`}</div>`;}).join('');
+  tipOnce('league','⚑','Guild League','Capturing Guild War fronts, felling the weekly guild boss and beating the rival guild all grant Renown, which climbs your guild through the League tiers. Reach Vanguard for an exclusive profile frame.');
   const li=guildLeagueInfo(guild.renown), board=guildLeagueBoard();
   const myRank=board.findIndex(x=>x.me)+1, promoZone=myRank<=3, relZone=myRank>=board.length-2;
   const nextTxt=li.next?`${li.next.r-guild.renown} Renown to <b style="color:${GUILD_LEAGUES[li.idx+1].col}">${li.next.n}</b>`:'Top league — Vanguard';
@@ -4082,6 +4104,7 @@ function leaderboard(){
 }
 function renderLeaderboard(){
   checkFrameUnlocks();
+  tipOnce('rank','🏆','Power Ranking','A global leaderboard by total Combat Power (KK) — the sum of every hero you own. Finish a monthly season in the world top 10 to earn an exclusive #1–#10 profile frame.');
   const {all,rank,my}=leaderboard();
   const top=all.slice(0,100);
   const inTop=rank<=100;
@@ -4103,7 +4126,8 @@ function renderLeaderboard(){
   wireArenaViewTabs();
 }
 /* ---- Profile screen: name, avatar picker, frame gallery ---- */
-function openProfile(){checkFrameUnlocks();renderProfile();show('screen-profile');}
+function openProfile(){checkFrameUnlocks();renderProfile();show('screen-profile');
+  tipOnce('profile','🎖️','Your Profile','Change your name, pick any champion you own as your avatar, and equip frames. Frames are earned from Arena tiers, the monthly Power Ranking (#1–#10), your Guild League, Overbreak and Commander level.');}
 function renderProfile(){
   const box=$('#profScroll'); if(!box)return;
   const rank=(()=>{try{return leaderboard().rank;}catch(e){return '—';}})();
@@ -4183,7 +4207,8 @@ function ritesDayCheck(){/* dates compared inline */}
 function spinAvailFree(){return rites.spinDate!==new Date().toDateString();}
 function gambleAvailFree(){return rites.gambleDate!==new Date().toDateString();}
 let dailyTab='bounty', _wheelRot=0, _spinning=false;
-function openDaily(tab){dailyTab=tab||'bounty';renderDaily();show('screen-daily');}
+function openDaily(tab){dailyTab=tab||'bounty';renderDaily();show('screen-daily');
+  tipOnce('daily','🎡','Daily Rites','Come back every day: fight Bounties for a specific resource (limited attempts), collect passive Tribute that builds over time, and take your free Wheel of Ash spin and Gate Gamble draw.');}
 function renderDaily(){
   const tabs=[['bounty','🎯 Bounties'],['tribute','⏳ Tribute'],['wheel','🎡 Wheel'],['gamble','🎴 Gamble']];
   $('#dailyTabs').innerHTML=tabs.map(([k,l])=>
@@ -5466,6 +5491,7 @@ function renderHdAsc(){
   const h=hero(curHero),pr=prog(curHero),maxed=pr.stars>=h.starCap;
   const a=pr.asc||0,b=pr.basc||0,over=pr.over||0;
   const gAtCap=a>=ASC_CAP, rAtCap=b>=BASC_CAP, bothFull=gAtCap&&rAtCap;
+  if(maxed)tipOnce('ascend','👑','Ascension & Overbreak','At max stars two tracks open: green Ascension (spend Relics) and red Bloodbound (spend duplicate copies). A star turns black where both meet. Complete all six of each to unlock Overbreak — five ranks fed mainly by Ash Seals from the Ash Spire.');
   const gpips=`<span class="ap g">${'◆'.repeat(a)}${'◇'.repeat(ASC_CAP-a)}</span>`;
   const rpips=`<span class="ap r">${'◆'.repeat(b)}${'◇'.repeat(BASC_CAP-b)}</span>`;
   // green track (relic Ascension)
