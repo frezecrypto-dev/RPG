@@ -2535,8 +2535,34 @@ const SFX=(()=>{
     g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
     let node=s; if(c.createBiquadFilter){const f=c.createBiquadFilter();f.type='bandpass';f.frequency.value=freq;f.Q.value=q;s.connect(f);node=f;}
     node.connect(g); g.connect(master); s.start(t); s.stop(t+dur+0.02); }
+  // ---- procedural ambient soundtrack (no audio files): drone bed + sparse minor bells ----
+  let mNodes=null, mTimer=null, mOn=false, mMood='menu';
+  const MSCALE=[0,3,5,7,10];  // minor pentatonic
+  const midi=n=>440*Math.pow(2,(n-69)/12);
+  function musicStart(mood){ const c=ac(); if(!c||mOn)return; mOn=true; mMood=mood||'menu';
+    const mg=c.createGain(); mg.gain.value=0; mg.connect(master);
+    const lp=c.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=680; lp.Q.value=1.5; lp.connect(mg);
+    const drones=[[55,'sine',0.13],[82.4,'sine',0.09],[110,'triangle',0.06]].map(([f,t,v])=>{
+      const o=c.createOscillator();o.type=t;o.frequency.value=f;const g=c.createGain();g.gain.value=v;o.connect(g);g.connect(lp);o.start();return o;});
+    const lfo=c.createOscillator(); lfo.frequency.value=0.05; const lg=c.createGain(); lg.gain.value=360; lfo.connect(lg); lg.connect(lp.frequency); lfo.start();
+    mg.gain.setTargetAtTime(mMood==='battle'?0.15:0.10, c.currentTime, 2.6);
+    mNodes={mg,lp,drones,lfo};
+    const schedule=()=>{ if(!mOn)return; const c2=ac();
+      if(c2&&mNodes){ const base=mMood==='battle'?45:48, deg=MSCALE[(Math.random()*MSCALE.length)|0]+(Math.random()<0.3?12:0);
+        const o=c2.createOscillator(); o.type=Math.random()<0.5?'triangle':'sine'; o.frequency.value=midi(base+deg);
+        const g=c2.createGain(), t=c2.currentTime, vol=0.045+Math.random()*0.035;
+        g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(vol,t+0.4); g.gain.exponentialRampToValueAtTime(0.0001,t+2.4+Math.random()*1.6);
+        let node=g; if(c2.createStereoPanner){const pn=c2.createStereoPanner();pn.pan.value=Math.random()*1.4-0.7;g.connect(pn);node=pn;}
+        o.connect(g); node.connect(mNodes.mg); o.start(t); o.stop(t+4.5); }
+      mTimer=setTimeout(schedule,(mMood==='battle'?1700:2800)+Math.random()*2600); };
+    mTimer=setTimeout(schedule,1000); }
+  function musicStop(){ if(!mOn)return; mOn=false; clearTimeout(mTimer); const c=ac();
+    if(mNodes&&c){ mNodes.mg.gain.setTargetAtTime(0,c.currentTime,0.5);
+      const nd=mNodes; setTimeout(()=>{try{nd.drones.forEach(o=>o.stop());nd.lfo.stop();}catch(e){}},1200); mNodes=null; } }
+  function musicSet(mood){ if(!mOn){musicStart(mood);return;} if(mood===mMood)return; mMood=mood; const c=ac();
+    if(mNodes&&c)mNodes.mg.gain.setTargetAtTime(mood==='battle'?0.15:0.10,c.currentTime,1.6); }
   return {
-    resume, warm:ac,
+    resume, warm:ac, musicStart, musicStop, musicSet, musicOn:()=>mOn,
     setMuted(m){ const c=ac(); if(master&&c)master.gain.setTargetAtTime(m?0:0.45,c.currentTime,0.01); },
     hit(){ // punchy melee: transient click + body thump + sub
       noise({dur:.05,vol:.20,freq:3000,q:0.5}); noise({dur:.10,vol:.14,freq:1200,q:0.8});
@@ -2944,7 +2970,8 @@ function tutFinish(){ tutorialDone=true; $('#tutorial').classList.remove('on'); 
 function tutSkip(){ tutorialDone=true; $('#tutorial').classList.remove('on'); saveGame(); openHome(); }
 
 /* ---------- screens ---------- */
-function show(id){$$('.screen').forEach(s=>s.classList.toggle('on',s.id===id));try{document.body.dataset.screen=id;}catch(e){}}
+function show(id){$$('.screen').forEach(s=>s.classList.toggle('on',s.id===id));try{document.body.dataset.screen=id;}catch(e){}
+  try{if(SFX&&SFX.musicOn&&SFX.musicOn())SFX.musicSet(id==='screen-battle'?'battle':'menu');}catch(e){}}
 
 /* ---------- MAP (multi-chapter) ---------- */
 function allStages(){return DATA.chapters.flatMap(c=>c.stages);}
@@ -6582,7 +6609,7 @@ renderCrys();
   if(tb&&u){ tb.style.backgroundImage=`url(${u})`; tb.classList.add('on'); } }
 /* ---------- login / auth gate (device-level, outside the save) ---------- */
 const AUTH_KEY='ashgate_auth';
-function doLogin(method){try{localStorage.setItem(AUTH_KEY,method);}catch(e){} SFX.tap&&SFX.tap(); show('screen-title');
+function doLogin(method){try{localStorage.setItem(AUTH_KEY,method);}catch(e){} SFX.tap&&SFX.tap(); SFX.resume&&SFX.resume(); if(!ui.muted&&SFX.musicStart)SFX.musicStart('menu'); show('screen-title');
   if(!profile.name){promptUsername(true);return;}   // every account must set a unique name — even Google/Apple sign-in
   if(pendingOnboard){pendingOnboard=false;setTimeout(startTutorial,350);} }
 { const lb=$('#loginBg'), u=(typeof TITLEART!=='undefined')?TITLEART:null; if(lb&&u)lb.style.backgroundImage=`url(${u})`; }
@@ -6647,7 +6674,7 @@ $('#startBtn').addEventListener('click',()=>{if(team.length<1)return;
 $('#resMap').addEventListener('click',()=>{if(window._resHub){const f=window._resHub;window._resHub=null;f();return;}buildMap();show('screen-map');});
 function syncSnd(){const b=$('#sndBtn');if(b){b.textContent=ui.muted?'🔇':'🔊';b.classList.toggle('muted',ui.muted);}
   const pm=$('#pmMute');if(pm)pm.textContent=(ui.muted?'🔇 Sound: Off':'🔊 Sound: On');}
-$('#sndBtn').addEventListener('click',()=>{ui.muted=!ui.muted;SFX.setMuted(ui.muted);if(!ui.muted)SFX.tap();syncSnd();saveGame();});
+$('#sndBtn').addEventListener('click',()=>{ui.muted=!ui.muted;SFX.setMuted(ui.muted);if(!ui.muted){SFX.tap();SFX.resume&&SFX.resume();if(SFX.musicOn&&!SFX.musicOn())SFX.musicStart("menu");}else if(SFX.musicStop){SFX.musicStop();}syncSnd();saveGame();});
 /* ---------- Battle pause / abandon ---------- */
 function battlePause(){ if(!G||G.over)return; G.paused=true; syncSnd(); $('#pauseMenu').classList.add('on'); SFX.tap&&SFX.tap(); }
 function battleResume(){ $('#pauseMenu').classList.remove('on'); if(!G||G.over)return; G.paused=false; SFX.tap&&SFX.tap();
@@ -6656,7 +6683,7 @@ function battleAbandon(){ $('#pauseMenu').classList.remove('on'); if(G)G.over=tr
   raidPending=false; arenaTarget=null; SFX.tap&&SFX.tap(); openHome(); }
 $('#pauseBtn')&&$('#pauseBtn').addEventListener('click',battlePause);
 $('#pmResume')&&$('#pmResume').addEventListener('click',battleResume);
-$('#pmMute')&&$('#pmMute').addEventListener('click',()=>{ui.muted=!ui.muted;SFX.setMuted(ui.muted);if(!ui.muted)SFX.tap();syncSnd();saveGame();});
+$('#pmMute')&&$('#pmMute').addEventListener('click',()=>{ui.muted=!ui.muted;SFX.setMuted(ui.muted);if(!ui.muted){SFX.tap();SFX.resume&&SFX.resume();if(SFX.musicOn&&!SFX.musicOn())SFX.musicStart("menu");}else if(SFX.musicStop){SFX.musicStop();}syncSnd();saveGame();});
 $('#pmSettings')&&$('#pmSettings').addEventListener('click',()=>{$('#pauseMenu').classList.remove('on');openSettings();});
 $('#pmAbandon')&&$('#pmAbandon').addEventListener('click',battleAbandon);
 // unlock/resume Web Audio on first user gesture (browser autoplay policy)
@@ -6665,7 +6692,7 @@ syncSnd();
 // settings
 $('#setBtn').addEventListener('click',()=>{SFX.tap();openSettings();});
 $('#setBack').addEventListener('click',()=>{buildMap();renderCrys();show('screen-map');});
-$('#setSnd').addEventListener('click',()=>{ui.muted=!ui.muted;SFX.setMuted(ui.muted);if(!ui.muted)SFX.tap();syncSnd();renderSettings();saveGame();});
+$('#setSnd').addEventListener('click',()=>{ui.muted=!ui.muted;SFX.setMuted(ui.muted);if(!ui.muted){SFX.tap();SFX.resume&&SFX.resume();if(SFX.musicOn&&!SFX.musicOn())SFX.musicStart("menu");}else if(SFX.musicStop){SFX.musicStop();}syncSnd();renderSettings();saveGame();});
 $('#setSpeed').addEventListener('click',()=>{ui.speed=ui.speed>=3?1:ui.speed+1;renderSettings();saveGame();});
 $('#setAuto').addEventListener('click',()=>{ui.auto=!ui.auto;renderSettings();saveGame();});
 $('#setExport').addEventListener('click',()=>{const c=exportSave();$('#setSave').value=c;$('#setSave').focus();$('#setSave').select();setMsg(c?'Exported — copy this code to back up or transfer.':'Nothing to export yet.',!!c);});
