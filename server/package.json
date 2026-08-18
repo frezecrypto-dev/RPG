@@ -1,0 +1,12 @@
+{
+  "name": "ashgate-server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Online backend scaffold for Project ASHGATE — accounts, unique names, server-authoritative save sync, leaderboards, arena, guilds. Zero external dependencies.",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node index.js",
+    "test": "node test.mjs"
+  }
+}
