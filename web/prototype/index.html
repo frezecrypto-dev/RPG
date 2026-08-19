@@ -1561,6 +1561,10 @@
   .elday .eldq{font-size:8px;color:var(--muted);line-height:1}
   .elday.notable{border-color:var(--umbra);background:linear-gradient(180deg,rgba(123,92,255,.14),var(--panel2))}
   .elday.claimed{opacity:.45} .elday.claimed::after{content:"✓";position:absolute;top:2px;right:4px;font-size:9px;color:var(--good)}
+  .elnav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:8px 0 6px}
+  .elnav .ellabel{font-size:11px;letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+  .elarrow{width:34px;height:26px;border-radius:7px;border:1px solid var(--line);background:var(--panel2);color:var(--ink);cursor:pointer}
+  .elarrow:disabled{opacity:.3;cursor:default}
   .elday.today{border-color:var(--warn);box-shadow:0 0 0 1px var(--warn),0 0 12px color-mix(in srgb,var(--warn) 40%,transparent);cursor:pointer;animation:bpReady 1.7s ease-in-out infinite}
   #evtLogin .elclaim{margin:0 13px 13px;width:calc(100% - 26px);padding:9px;font-size:12px}
   #evtLogin .elclaim:disabled{opacity:.4}
@@ -3288,13 +3292,25 @@ const EVT={
 };
 const EVT_FACTION_ROT=['EMBERGUARD','HOLLOWED','CHOIR','FREEBLADES','GRAVEBOUND']; // 5-week cycle (doc 04 s2 / doc 10 s3)
 const EVT_FACTION_PCT=0.15;
-const LOGIN=[ // 28-day track; notable days (7/14/21/28) carry Featured Tickets / Crystals (doc 10 s3)
-  {t:'gold',n:20000},{t:'crystal',n:60},{t:'shard',n:20},{t:'gold',n:20000},{t:'crystal',n:60},{t:'relic',n:1},{t:'ticket',n:1},
-  {t:'gold',n:30000},{t:'crystal',n:80},{t:'shard',n:30},{t:'gold',n:30000},{t:'crystal',n:80},{t:'relic',n:1},{t:'crystal',n:300},
-  {t:'gold',n:40000},{t:'crystal',n:100},{t:'shard',n:40},{t:'gold',n:40000},{t:'crystal',n:100},{t:'relic',n:2},{t:'ticket',n:1},
-  {t:'gold',n:50000},{t:'crystal',n:120},{t:'shard',n:50},{t:'gold',n:50000},{t:'crystal',n:120},{t:'relic',n:2},{t:'crystal',n:500},
-];
-const LOGIN_NOTABLE=new Set([6,13,20,27]); // 0-indexed days 7/14/21/28
+const LOGIN_DAYS=1095; // 3-year rolling login calendar; pauses on a miss, never resets (doc 10 s3)
+let loginView=0;       // which 28-day block is being viewed
+// procedural reward for 0-indexed login day i — escalates by 28-day tier,
+// weekly ticket beats, monthly Crystal caches, yearly anniversary jackpots.
+function loginReward(i){
+  const day=i+1, tier=Math.floor(i/28);
+  if(day===365) return {t:'ticket',n:10, big:true};   // 1-year anniversary
+  if(day===730) return {t:'ticket',n:15, big:true};   // 2-year
+  if(day>=1095) return {t:'ticket',n:25, big:true};   // 3-year finale
+  if(day%90===0) return {t:'ticket',n:3, big:true};   // quarter
+  if(day%30===0) return {t:'crystal',n:400+tier*30, big:true}; // monthly cache
+  if(day%7===0)  return {t:'ticket',n:1, big:true};   // weekly Vow ticket
+  const cyc=i%7, gold=20000+tier*4000, cry=60+tier*6, shard=20+tier*4;
+  if(cyc===0||cyc===3) return {t:'gold',n:gold};
+  if(cyc===1||cyc===4) return {t:'crystal',n:cry};
+  if(cyc===2) return {t:'shard',n:shard};
+  return {t:'relic',n:1+Math.floor(tier/6)};
+}
+function loginIsBig(i){return !!loginReward(i).big;}
 function evtFactionWeek(){const w=Math.floor(Date.now()/(7*864e5));return EVT_FACTION_ROT[((w%5)+5)%5];}
 function evtEndsMs(){const cyc=EVT.durationDays*864e5;return Math.ceil((Date.now()+1)/cyc)*cyc-Date.now();}
 function fmtDur(ms){const d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5);return d>0?`${d}d ${h}h`:`${h}h ${Math.floor(ms%36e5/6e4)}m`;}
@@ -3309,10 +3325,10 @@ function evtClaimMile(i){const m=EVT.milestones[i];if(!m||evtEarned<m.p||evtMile
   m.rw.forEach(grantReward);evtMile.push(i);SFX.rare('E');renderCrys();renderEvents();saveGame();}
 function evtBuy(i){const it=EVT.shop[i],bought=evtShop[it.id]||0;
   if(bought>=it.limit||evtBal<it.cost)return;evtBal-=it.cost;evtShop[it.id]=bought+1;grantReward(it.rw);SFX.rare('R');renderCrys();renderEvents();saveGame();}
-function loginCanClaim(){return login.n<LOGIN.length && login.date!==new Date().toDateString();}
-function loginClaim(){if(!loginCanClaim())return;grantReward(LOGIN[login.n]);login.n++;login.date=new Date().toDateString();questBump('login');
-  SFX.rare('E');renderCrys();renderEvents();saveGame();}
-function openEvents(){renderEvents();renderCrys();updateHomeNav('events');show('screen-events');}
+function loginCanClaim(){return login.n<LOGIN_DAYS && login.date!==new Date().toDateString();}
+function loginClaim(){if(!loginCanClaim())return;grantReward(loginReward(login.n));login.n++;login.date=new Date().toDateString();questBump('login');
+  loginView=Math.floor(login.n/28); SFX.rare('E');renderCrys();renderEvents();saveGame();}
+function openEvents(){loginView=Math.floor(Math.min(login.n,LOGIN_DAYS-1)/28);renderEvents();renderCrys();updateHomeNav('events');show('screen-events');}
 function renderEvents(){
   // --- faction week ---
   const fw=evtFactionWeek(), f=FACTION[fw];
@@ -3353,22 +3369,32 @@ function renderEvents(){
       <div class="eshgrid">${shop}</div></div></div>`;
   $('#evtEvent').querySelectorAll('.emnode.ready').forEach(n=>n.addEventListener('click',()=>evtClaimMile(+n.dataset.mi)));
   $('#evtEvent').querySelectorAll('.eibuy').forEach(b=>b.addEventListener('click',()=>evtBuy(+b.dataset.si)));
-  // --- login track ---
-  const today=new Date().toDateString(), canL=loginCanClaim();
-  const grid=LOGIN.map((r,i)=>{
-    const b=BPRWD[r.t]||BPRWD.cos, claimed=i<login.n, isToday=canL&&i===login.n, notable=LOGIN_NOTABLE.has(i);
-    return `<div class="elday ${claimed?'claimed':''} ${isToday?'today':''} ${notable?'notable':''}" ${isToday?'data-login="1"':''}>
+  // --- login track (3-year rolling calendar, shown one 28-day block at a time) ---
+  const canL=loginCanClaim();
+  const blocks=Math.ceil(LOGIN_DAYS/28);
+  if(loginView<0)loginView=0; if(loginView>=blocks)loginView=blocks-1;
+  const start=loginView*28, end=Math.min(start+28,LOGIN_DAYS);
+  let grid='';
+  for(let i=start;i<end;i++){ const r=loginReward(i), b=BPRWD[r.t]||BPRWD.cos;
+    const claimed=i<login.n, isToday=canL&&i===login.n, big=loginIsBig(i);
+    grid+=`<div class="elday ${claimed?'claimed':''} ${isToday?'today':''} ${big?'notable':''}" ${isToday?'data-login="1"':''}>
       <span class="eldn">Day ${i+1}</span><span class="eldi">${b.ic}</span>
       <span class="eldq">${r.n?b.lbl(r.n):b.lbl()}</span></div>`;
-  }).join('');
+  }
+  const yr=Math.floor(start/365)+1, mLabel=`Month ${loginView+1} / ${blocks}`;
   $('#evtLogin').innerHTML=`<div class="evtcard">
-    <div class="ehead"><div><div class="etag">28-day · pauses on miss, never resets</div><div class="etitle">Daily Login</div></div>
-      <div class="etimer">Day<br><b>${Math.min(login.n+1,LOGIN.length)}/${LOGIN.length}</b></div></div>
+    <div class="ehead"><div><div class="etag">3-year calendar · pauses on miss, never resets</div><div class="etitle">Daily Login</div></div>
+      <div class="etimer">Day<br><b>${Math.min(login.n+1,LOGIN_DAYS)} / ${LOGIN_DAYS}</b></div></div>
+    <div class="elnav"><button class="elarrow" id="elPrev" ${loginView<=0?'disabled':''}>◄</button>
+      <span class="ellabel">${mLabel} · Year ${yr}</span>
+      <button class="elarrow" id="elNext" ${loginView>=blocks-1?'disabled':''}>►</button></div>
     <div class="elgrid">${grid}</div>
-    <button class="cta elclaim" id="elClaim" ${canL?'':'disabled'}>${login.n>=LOGIN.length?'Track complete':canL?'Claim today’s reward':'Come back tomorrow'}</button>
-    <div class="elnote">Milestone days (7 / 14 / 21 / 28) carry Featured Vow tickets and Crystal drops — the F2P retention anchor from doc 10.</div></div>`;
+    <button class="cta elclaim" id="elClaim" ${canL?'':'disabled'}>${login.n>=LOGIN_DAYS?'Calendar complete — 3 years!':canL?'Claim today’s reward':'Come back tomorrow'}</button>
+    <div class="elnote">Every 7th day pays a Vow Ticket, every 30th a Crystal cache, and Year 1 / 2 / 3 anniversaries pay big ticket jackpots — the long-haul retention anchor.</div></div>`;
   const el=$('#elClaim'); if(el)el.addEventListener('click',loginClaim);
   const td=$('#evtLogin .elday.today'); if(td)td.addEventListener('click',loginClaim);
+  const pv=$('#elPrev'); if(pv)pv.addEventListener('click',()=>{loginView--;renderEvents();});
+  const nx=$('#elNext'); if(nx)nx.addEventListener('click',()=>{loginView++;renderEvents();});
 }
 
 /* ---------- SHOP / STORE (doc 10 s4 / data/shops.json) ---------- */
