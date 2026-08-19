@@ -1841,6 +1841,20 @@
   .raidbarf{height:100%;background:linear-gradient(90deg,#7a1a2c,#ff3b5c,#ffcf6b);box-shadow:0 0 10px rgba(255,80,100,.5);transition:width .5s}
   .raidenter{width:100%;padding:12px;font-size:14px}
   .raidnote{font-size:9.5px;color:var(--faint);line-height:1.5;text-align:center}
+  .wbcard{border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,rgba(60,20,26,.5),var(--panel2));padding:12px;margin-bottom:4px}
+  .wbtop{display:flex;gap:12px;align-items:center}
+  .wbart{width:72px;height:72px;border-radius:12px;overflow:hidden;flex:0 0 auto;background:#0c0a18;border:1px solid var(--umbra)}
+  .wbart img{width:100%;height:100%;object-fit:cover}
+  .wbmeta{flex:1;min-width:0} .wbtag{font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--danger)}
+  .wbname{font-family:var(--font-title);font-size:17px;color:var(--ink);margin:1px 0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .wbglobalbar{position:relative;height:16px;border-radius:8px;background:rgba(0,0,0,.5);overflow:hidden;border:1px solid var(--line)}
+  .wbgfill{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#ff6a3d,#ffcf6b)}
+  .wbglobalbar span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;text-shadow:0 1px 2px #000}
+  .wbstats{display:flex;gap:10px;margin:10px 0} .wbstats>div{flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:6px 9px}
+  .wbsl{display:block;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em} .wbstats b{font-size:15px;color:var(--warn)}
+  .wblboard{margin-top:10px} .wblhd{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+  .wblrow{display:flex;align-items:center;gap:8px;padding:4px 8px;border-radius:7px;font-size:12px}
+  .wblrow.me{background:rgba(123,92,255,.18)} .wblrk{width:26px;color:var(--faint);font-weight:700} .wblnm{flex:1;color:var(--ink)} .wbldmg{color:var(--warn);font-weight:700}
   .gbslain{font-size:12px;font-weight:800;letter-spacing:.04em;color:var(--good);text-align:center;margin-top:8px;
     text-shadow:0 0 10px color-mix(in srgb,var(--good) 55%,transparent)}
   .portalhead{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);margin:16px 0 -2px}
@@ -2968,7 +2982,7 @@ function renderCrys(){
 const SAVE_KEY='ashgate_save_v1';
 let hasSave=false;
 function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(
-  {v:3,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,arena,raidBest,crystals,gold,starShards,relics,sigils,pity,insight,plvl,pxp,vowTickets,freePullUsed,tutorialDone,energy,energyTs,inventory,gearOn,gearUID,loadouts,daily,bpXP,bpClaimF,bpClaimP,bpPrem,bpSeason,evtEarned,evtBal,evtMile,evtShop,login,gleam,rites,stats,secret,vowCard,shopFirst,cosmetics,skinOn,profile,shopDaily,raidWeek,guild,quests,items,spire,endless,muted:ui.muted,pref:{speed:ui.speed,auto:ui.auto}}));}catch(e){}}
+  {v:3,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,arena,raidBest,crystals,gold,starShards,relics,sigils,pity,insight,plvl,pxp,vowTickets,freePullUsed,tutorialDone,energy,energyTs,inventory,gearOn,gearUID,loadouts,daily,bpXP,bpClaimF,bpClaimP,bpPrem,bpSeason,evtEarned,evtBal,evtMile,evtShop,login,gleam,rites,stats,secret,vowCard,shopFirst,cosmetics,skinOn,profile,shopDaily,raidWeek,guild,quests,items,spire,endless,worldBoss,muted:ui.muted,pref:{speed:ui.speed,auto:ui.auto}}));}catch(e){}}
 function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s||(s.v!==1&&s.v!==2&&s.v!==3))return false;
   owned=new Set(s.owned);progress=s.progress||{};cleared=new Set(s.cleared);
   crystals=s.crystals??crystals;gold=s.gold??gold;starShards=s.starShards??starShards;relics=s.relics??0;sigils=s.sigils??0;pity=s.pity??0;insight=s.insight??40;
@@ -2979,6 +2993,7 @@ function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s
   loadouts=s.loadouts||{};clearedHard=new Set(s.clearedHard||[]);arenaRank=s.arenaRank||0;arena=Object.assign({rp:0,best:0,streak:0,wins:0,season:0,seed:1,claimed:[]},s.arena||{});raidBest=s.raidBest||0;raidWeek=s.raidWeek||{id:-1,best:0,claimed:[]};
   spire=s.spire||{best:0,month:'',seals:0};
   endless=s.endless||{best:0,runs:0};
+  worldBoss=s.worldBoss||{week:-1,dmg:0,best:0};
   daily=s.daily||{date:'',win:0,summon:0,enhance:0,claimed:[]};dailyCheck();ui.muted=s.muted??false;
   bpXP=s.bpXP||0;bpClaimF=s.bpClaimF||[];bpClaimP=s.bpClaimP||[];bpPrem=!!s.bpPrem;bpSeason=s.bpSeason??-1;
   evtEarned=s.evtEarned||0;evtBal=s.evtBal||0;evtMile=s.evtMile||[];evtShop=s.evtShop||{};login=s.login||{n:0,date:''};
@@ -5123,9 +5138,82 @@ function renderRaidSpireTab(box){
     <div class="raidnote">Milestone caches every 5th floor grant Ash Seals; F50/100/… grant a big cache. Ash Seals feed Overbreak — hoard them.</div>`;
   $('#spireEnterTab').addEventListener('click',()=>{SFX.tap();openSpire();});
 }
+/* ---------- World Boss — weekly global damage race with a leaderboard ---------- */
+const WORLDBOSS_ROT=['ENM-GNT-X01','ENM-UND-X01','ENM-SLM-X01','ENM-GRD-X01'];
+const WORLDBOSS_HP=2000000, WORLDBOSS_GOAL=9.0e9; // per-run boss HP; weekly global pool (cosmetic bar)
+let worldBoss={week:-1,dmg:0,best:0};
+function worldBossWeekIdx(){return Math.floor(Date.now()/(7*864e5));}
+function worldBossCheck(){const w=worldBossWeekIdx();if(worldBoss.week!==w){worldBoss.week=w;worldBoss.dmg=0;}}
+function worldBossDef(){worldBossCheck();const id=WORLDBOSS_ROT[((worldBoss.week%WORLDBOSS_ROT.length)+WORLDBOSS_ROT.length)%WORLDBOSS_ROT.length];
+  const byId=x=>Object.values(DATA.enemies).find(e=>e.id===x);return byId(id)||byId(WORLDBOSS_ROT[0]);}
+function worldBossGlobalPct(){ // simulated global progress: server-wide chipping over the week + your contribution
+  const frac=1-evtWeekEndsMs()/(7*864e5);
+  return Math.min(99,Math.round((0.72*frac + worldBoss.dmg/WORLDBOSS_GOAL)*100));
+}
+function worldBossLeaderboard(){
+  const bots=[];
+  for(let i=0;i<120;i++){
+    const nm=LB_FIRST[(i*3+4)%LB_FIRST.length]+' '+LB_LAST[(i*9+2)%LB_LAST.length];
+    const d=Math.max(1000,Math.round(6.0e6*Math.pow(0.945,i)*(1+(((i*23)%100-50)/900))));
+    bots.push({n:nm,d,me:false});
+  }
+  const all=[...bots,{n:'You',d:worldBoss.dmg,me:true}].sort((a,b)=>b.d-a.d||(a.me?1:-1));
+  return {all,rank:all.findIndex(x=>x.me)+1};
+}
+function worldBossEnter(){
+  worldBossCheck(); const ids=autoTeam(); if(!ids.length){toast('Summon some heroes first.');return;} team=ids;
+  if(!energyPay(12))return; curHard=false;
+  const d=worldBossDef(), e=mkEnemy(d.id+'@92');
+  const boss={...e,id:'ENM-WBOSS',_artId:d.id,name:d.name,stats:{...e.stats,hp:WORLDBOSS_HP},
+    side:'enemy',hp:WORLDBOSS_HP,max:WORLDBOSS_HP,barrier:0,status:{},alive:true,el:null,cd:{},
+    tier:'X',isBoss:true,isMini:false,toughMax:400,tough:400,broken:0,vuln:0};
+  G={heroes:team.map(mkHero),waves:[[boss]],wi:0,enemies:[boss],surge:0,round:1,over:false,busy:false,auto:ui.auto,speed:ui.speed,telegraph:null,hard:false,worldBoss:boss,raidPhase:1,awaiting:null,pendingSkill:null};
+  applySynergy(G.heroes);applyEventFactionWeek(G.heroes);
+  $('#speedBtn').textContent=ui.speed+'×';$('#autoBtn').classList.toggle('active',ui.auto);$('#autoBtn').textContent=ui.auto?'Auto ▶':'Manual';
+  $('#btlChapter').textContent='WORLD BOSS';$('#btlName').textContent=boss.name;
+  setBattleBg(d.bg||'2');buildParty();renderEnemies();render();renderTelegraph();
+  $('#roundNum').textContent='1';$('#result').style.display='none';$('#wavepip').textContent='Deal as much damage as you can';
+  logMsg('The World Boss looms over the gate…');logSynergies(G.heroes.map(u=>u.id));
+  show('screen-battle');turnQueue=[];setTimeout(step,450);
+}
+function endWorldBoss(win){
+  const boss=G.worldBoss, dealt=Math.max(0,Math.round(boss.max-boss.hp));
+  worldBossCheck(); worldBoss.dmg+=dealt; worldBoss.best=Math.max(worldBoss.best||0,dealt);
+  const crys=10+Math.round(dealt/40000)*5, gGold=Math.round(dealt/1000)*25;
+  crystals+=crys; gold+=gGold; questBump('win'); saveGame(); setMvp(win); renderCrys();
+  const {rank}=worldBossLeaderboard();
+  const r=$('#result');r.style.display='flex';resultCinematic(win);
+  $('#resEyebrow').textContent=win?'World Boss felled!':'Damage dealt';
+  const v=$('#resVerdict');v.textContent=dealt.toLocaleString();v.className='verdict '+(win?'win':'lose');
+  $('#resSub').innerHTML=`Your strike dealt <b style="color:var(--warn)">${dealt.toLocaleString()}</b> damage.<br>This week: <b>${worldBoss.dmg.toLocaleString()}</b> · global rank <b>#${rank}</b><br><b><i class="cur crystal"></i> +${crys} Crystals · <i class="cur gold"></i> +${gGold.toLocaleString()} Gold</b>`;
+  const nx=$('#resNext');nx.textContent='Strike again ▸';nx.onclick=()=>{worldBossEnter();};
+  $('#resMap').textContent='Leave'; window._resHub=()=>{raidTab='boss';openRaid();};
+}
+function renderWorldBossCard(){
+  worldBossCheck(); const d=worldBossDef();
+  const art=(typeof ECUT!=='undefined'&&ECUT[d.id])?ECUT[d.id]:((typeof EART!=='undefined'&&EART[d.id])?EART[d.id]:null);
+  const pct=worldBossGlobalPct(); const {all,rank}=worldBossLeaderboard();
+  const top=all.slice(0,5).map((x,i)=>`<div class="wblrow ${x.me?'me':''}"><span class="wblrk">#${i+1}</span><span class="wblnm">${x.me?playerName():x.n}</span><span class="wbldmg">${x.d.toLocaleString()}</span></div>`).join('');
+  return `<div class="wbcard">
+    <div class="wbtop">
+      <div class="wbart">${art?`<img src="${art}" alt="">`:''}</div>
+      <div class="wbmeta"><div class="wbtag">World Boss · resets in ${fmtDur(evtWeekEndsMs())}</div>
+        <div class="wbname">${d.name}</div>
+        <div class="wbglobalbar"><div class="wbgfill" style="width:${pct}%"></div><span>${pct}% felled server-wide</span></div>
+      </div>
+    </div>
+    <div class="wbstats"><div><span class="wbsl">Your damage this week</span><b>${worldBoss.dmg.toLocaleString()}</b></div>
+      <div><span class="wbsl">Global rank</span><b>#${rank}</b></div></div>
+    <button class="cta" id="worldBossFight">Strike the World Boss · <i class="cur energy"></i> 12</button>
+    <div class="wblboard"><div class="wblhd">Top Damage Dealers</div>${top}</div>
+    <div class="raidnote">Everyone fights the same weekly boss. Your strikes stack up cumulative damage — ranked globally — and each strike pays Crystals &amp; Gold scaled to the damage you deal.</div>
+  </div>`;
+}
 function renderRaidBossTab(box){
-  box.innerHTML=`<div class="rtintro">☠ <b>Boss Overview</b> — what's rotating into the Weekly Raid and rising in the Spire.</div>`+
+  box.innerHTML=renderWorldBossCard()+
+    `<div class="rtintro" style="margin-top:12px"><b>Boss Overview</b> — what's rotating into the Weekly Raid and rising in the Spire.</div>`+
     bossRotationHTML().replace('coming weeks','Weekly Raid · coming weeks');
+  const fb=box.querySelector('#worldBossFight'); if(fb)fb.addEventListener('click',()=>{SFX.tap&&SFX.tap();worldBossEnter();});
 }
 function openRaidTeam(){raidPending=true;arenaTarget=null;curStage=null;
   $('#teamStage').textContent='Weekly Raid · '+raidBossOfWeek().name.split(',')[0];
@@ -6967,6 +7055,7 @@ function endGame(win){
   if(G.dungeon)return endDungeon(win);
   if(G.spire)return endSpire(win);
   if(G.endless)return endEndless(win);
+  if(G.worldBoss)return endWorldBoss(win);
   if(G.gwar)return endGuildWar(win);
   if(G.guildBoss)return endGuildBoss(win);
   const H=curHard;
