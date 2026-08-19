@@ -6098,18 +6098,29 @@ const FACTION={
   GRAVEBOUND:{name:'Gravebound', stat:'atk',  color:'--nec', bonus:'ATK',            g:'🦴'},
 };
 const SYN_TIER={2:.08,3:.14,4:.20,5:.28};
+const SYN_ROLE={3:.04,4:.08,5:.12}; // "Balanced Host": all-stat bonus for fielding distinct classes
 function factionCounts(ids){const c={};ids.forEach(id=>{const f=hero(id)&&hero(id).faction;if(f)c[f]=(c[f]||0)+1;});return c;}
-function synergies(ids){return Object.entries(factionCounts(ids)).filter(([,n])=>n>=2)
-  .map(([f,n])=>({faction:f,n,t:SYN_TIER[Math.min(5,n)],...FACTION[f]})).sort((a,b)=>b.n-a.n);}
+function classDiversity(ids){const s=new Set();ids.forEach(id=>{const c=hero(id)&&hero(id).class;if(c)s.add(c);});return s.size;}
+function synergies(ids){
+  const out=Object.entries(factionCounts(ids)).filter(([,n])=>n>=2)
+    .map(([f,n])=>({faction:f,n,t:SYN_TIER[Math.min(5,n)],...FACTION[f]})).sort((a,b)=>b.n-a.n);
+  const div=classDiversity(ids), rt=SYN_ROLE[Math.min(5,div)];
+  if(div>=3&&rt)out.push({role:true,name:'Balanced Host',color:'--warn',n:div,t:rt,bonus:'all stats',stat:'all'});
+  return out;
+}
 function applySynergy(units){
-  const counts=factionCounts(units.map(u=>u.id));
-  units.forEach(u=>{const n=counts[u.faction]||0,t=SYN_TIER[Math.min(5,n)],f=FACTION[u.faction];
-    if(n<2||!t||!f)return;const st=u.stats;
-    if(f.stat==='atk')st.atk=Math.round(st.atk*(1+t));
-    else if(f.stat==='def'){st.def=Math.round(st.def*(1+t));st.hp=Math.round(st.hp*(1+t*.6));}
-    else if(f.stat==='crit'){st.crit_rate+=t*.5;st.crit_dmg+=t;}
-    else if(f.stat==='heal'){st.heal_pct=(st.heal_pct||0)+t;st.atk=Math.round(st.atk*(1+t*.4));}
-    u.max=st.hp;u.hp=st.hp;if(st.aegis)u.barrier=Math.round(st.hp*.15);u._syn=f.name;});
+  const ids=units.map(u=>u.id), counts=factionCounts(ids);
+  const div=classDiversity(ids), rt=(div>=3?SYN_ROLE[Math.min(5,div)]:0);
+  units.forEach(u=>{const n=counts[u.faction]||0,t=SYN_TIER[Math.min(5,n)],f=FACTION[u.faction];const st=u.stats;
+    if(n>=2&&t&&f){
+      if(f.stat==='atk')st.atk=Math.round(st.atk*(1+t));
+      else if(f.stat==='def'){st.def=Math.round(st.def*(1+t));st.hp=Math.round(st.hp*(1+t*.6));}
+      else if(f.stat==='crit'){st.crit_rate+=t*.5;st.crit_dmg+=t;}
+      else if(f.stat==='heal'){st.heal_pct=(st.heal_pct||0)+t;st.atk=Math.round(st.atk*(1+t*.4));}
+      u._syn=f.name;
+    }
+    if(rt){ st.atk=Math.round(st.atk*(1+rt)); st.def=Math.round(st.def*(1+rt)); st.hp=Math.round(st.hp*(1+rt)); }
+    u.max=st.hp;u.hp=st.hp;if(st.aegis)u.barrier=Math.round(st.hp*.15);});
 }
 function logSynergies(ids){const s=synergies(ids);if(!s.length)return;
   logMsg(s.map(x=>`<b style="color:var(${x.color})">${x.name} ×${x.n}</b> +${Math.round(x.t*100)}% ${x.bonus}`).join(' · '));}
