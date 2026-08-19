@@ -2726,7 +2726,7 @@ function energyPay(cost){ energyTick();
   return false; }
 function energyEta(){ if(energy>=energyMax)return 'full'; const ms=ENERGY_REGEN_MS-((Date.now()-energyTs)%ENERGY_REGEN_MS);
   const m=Math.floor(ms/60000), s=Math.floor(ms%60000/1000); return `+1 in ${m}:${String(s).padStart(2,'0')}`; }
-let bpXP=0, bpClaimF=[], bpClaimP=[], bpPrem=false;   // Battle Pass "Gatewarden's Vow" (doc 10 s4)
+let bpXP=0, bpClaimF=[], bpClaimP=[], bpPrem=false, bpSeason=-1;   // Battle Pass "Gatewarden's Vow" (doc 10 s4); bpSeason = last-seen 30-day season index
 let evtEarned=0, evtBal=0, evtMile=[], evtShop={};    // Events point-farm (doc 10 s3): earned=lifetime(milestones), bal=spendable(shop)
 let login={n:0, date:''};                             // 28-day login track (pauses on miss, never resets)
 let gleam=0;                                          // Gleam — cosmetic-only soft currency (doc 10 s4/s5)
@@ -2933,7 +2933,7 @@ function renderCrys(){
 const SAVE_KEY='ashgate_save_v1';
 let hasSave=false;
 function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(
-  {v:3,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,arena,raidBest,crystals,gold,starShards,relics,sigils,pity,insight,plvl,pxp,vowTickets,freePullUsed,tutorialDone,energy,energyTs,inventory,gearOn,gearUID,loadouts,daily,bpXP,bpClaimF,bpClaimP,bpPrem,evtEarned,evtBal,evtMile,evtShop,login,gleam,rites,stats,secret,vowCard,shopFirst,cosmetics,skinOn,profile,shopDaily,raidWeek,guild,quests,items,spire,muted:ui.muted,pref:{speed:ui.speed,auto:ui.auto}}));}catch(e){}}
+  {v:3,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,arena,raidBest,crystals,gold,starShards,relics,sigils,pity,insight,plvl,pxp,vowTickets,freePullUsed,tutorialDone,energy,energyTs,inventory,gearOn,gearUID,loadouts,daily,bpXP,bpClaimF,bpClaimP,bpPrem,bpSeason,evtEarned,evtBal,evtMile,evtShop,login,gleam,rites,stats,secret,vowCard,shopFirst,cosmetics,skinOn,profile,shopDaily,raidWeek,guild,quests,items,spire,muted:ui.muted,pref:{speed:ui.speed,auto:ui.auto}}));}catch(e){}}
 function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s||(s.v!==1&&s.v!==2&&s.v!==3))return false;
   owned=new Set(s.owned);progress=s.progress||{};cleared=new Set(s.cleared);
   crystals=s.crystals??crystals;gold=s.gold??gold;starShards=s.starShards??starShards;relics=s.relics??0;sigils=s.sigils??0;pity=s.pity??0;insight=s.insight??40;
@@ -2944,7 +2944,7 @@ function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s
   loadouts=s.loadouts||{};clearedHard=new Set(s.clearedHard||[]);arenaRank=s.arenaRank||0;arena=Object.assign({rp:0,best:0,streak:0,wins:0,season:0,seed:1,claimed:[]},s.arena||{});raidBest=s.raidBest||0;raidWeek=s.raidWeek||{id:-1,best:0,claimed:[]};
   spire=s.spire||{best:0,month:'',seals:0};
   daily=s.daily||{date:'',win:0,summon:0,enhance:0,claimed:[]};dailyCheck();ui.muted=s.muted??false;
-  bpXP=s.bpXP||0;bpClaimF=s.bpClaimF||[];bpClaimP=s.bpClaimP||[];bpPrem=!!s.bpPrem;
+  bpXP=s.bpXP||0;bpClaimF=s.bpClaimF||[];bpClaimP=s.bpClaimP||[];bpPrem=!!s.bpPrem;bpSeason=s.bpSeason??-1;
   evtEarned=s.evtEarned||0;evtBal=s.evtBal||0;evtMile=s.evtMile||[];evtShop=s.evtShop||{};login=s.login||{n:0,date:''};
   gleam=s.gleam||0;vowCard=s.vowCard||{active:false,day:0,date:''};shopFirst=s.shopFirst||[];cosmetics=s.cosmetics||[];skinOn=s.skinOn||{};profile=Object.assign({name:'',avatar:null,frame:'default',frames:['default'],achv:[],titles:[],title:''},s.profile||{});profile.achv||=[];profile.titles||=[];rites=Object.assign({spinDate:'',gambleDate:'',gambleWin:0,bountyDate:'',bountyUsed:{},tributeTs:0},s.rites||{});if(!rites.tributeTs)rites.tributeTs=Date.now();stats=Object.assign({summon:0,win:0,bounty:0,spin:0,gift:0},s.stats||{});secret=Object.assign({found:false,stage:0,done:false},s.secret||{});shopDaily=s.shopDaily||{date:'',bought:{}};
   if(s.guild)guild={...guild,...s.guild};
@@ -3132,6 +3132,14 @@ function claimDaily(id){const t=DAILY_TASKS.find(x=>x.id===id);
   daily.claimed.push(id);bpGain(120);SFX.rare('E');renderHome();saveGame();}
 
 /* ---------- Battle Pass: Gatewarden's Vow (doc 10 s4) ---------- */
+// 30-day battle-pass seasons: each season lasts 30 days, then progress resets and the next theme begins.
+const BP_SEASON_DAYS=30, BP_EPOCH=Date.UTC(2026,0,1);
+const BP_SEASONS=["Gatewarden's Vow","Ashen Tide","Hollow Crown","Emberfall","Drowned Requiem","Sundered Sky"];
+function bpSeasonIdx(){return Math.max(0,Math.floor((Date.now()-BP_EPOCH)/(BP_SEASON_DAYS*864e5)));}
+function bpSeasonName(){const i=bpSeasonIdx();return BP_SEASONS[i%BP_SEASONS.length]+" · Season "+(i+1);}
+function bpSeasonEndsMs(){const i=bpSeasonIdx();return (BP_EPOCH+(i+1)*BP_SEASON_DAYS*864e5)-Date.now();}
+// reset the pass when a new 30-day season begins
+function bpSeasonCheck(){const i=bpSeasonIdx(); if(bpSeason!==i){ if(bpSeason!==-1){bpXP=0;bpClaimF=[];bpClaimP=[];bpPrem=false;} bpSeason=i; saveGame&&saveGame(); }}
 const BP={ name:"Gatewarden's Vow · Season 1", levels:50, xpPer:1000,
   per:{ free:[{t:'gold',n:15000}], paid:[{t:'crystal',n:40},{t:'ore',n:2}] },
   mile:{ 5:{free:[{t:'ticket',n:2}], paid:[{t:'crate',n:4}]},
@@ -3234,8 +3242,9 @@ function renderInventory(){
 }
 function openPass(){renderPass();renderCrys();show('screen-pass');}
 function renderPass(){
+  bpSeasonCheck();
   const lvl=bpLevel(), prog=bpXP%BP.xpPer, pctv=Math.round(100*prog/BP.xpPer), maxed=lvl>=BP.levels;
-  $('#bpHead').innerHTML=`<div><div class="bpsea">Battle Pass</div><div class="bpname">${BP.name}</div></div>
+  $('#bpHead').innerHTML=`<div><div class="bpsea">Battle Pass · ends in ${fmtDur(bpSeasonEndsMs())}</div><div class="bpname">${bpSeasonName()}</div></div>
     <div class="bplvl"><b>Lv ${lvl}</b> <span>/ ${BP.levels}</span></div>`;
   $('#bpXpBar').innerHTML=`<div class="bpxpfill" style="width:${maxed?100:pctv}%"></div><span class="bpxptx">${maxed?'MAX SEASON':prog+' / '+BP.xpPer+' XP'}</span>`;
   const pw=$('#bpPrem');
@@ -6900,6 +6909,7 @@ $$('#mapModes .modebtn').forEach(btn=>btn.addEventListener('click',()=>{
 $('#resetBtn').addEventListener('click',()=>{uiConfirm('Reset all progress — roster, upgrades, and chapter clears?',()=>resetSave(),{yes:'Reset',danger:true});});
 let pendingOnboard=false;
 hasSave=loadGame();
+bpSeasonCheck();  // roll the battle pass to the current 30-day season on boot
 if(hasSave){$('#toMap').textContent='Continue';$('#resetBtn').style.display='block';}
 else{pendingOnboard=true;}  // first run: start with NO gear — all equipment comes from drops (raids/dungeons/campaign)
 renderCrys();
