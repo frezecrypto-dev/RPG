@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <style>
   :root{
     --bg:#0a0910; --panel:rgba(26,22,42,.72); --panel2:#171326;
@@ -2967,7 +2968,7 @@ function renderCrys(){
 const SAVE_KEY='ashgate_save_v1';
 let hasSave=false;
 function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(
-  {v:3,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,arena,raidBest,crystals,gold,starShards,relics,sigils,pity,insight,plvl,pxp,vowTickets,freePullUsed,tutorialDone,energy,energyTs,inventory,gearOn,gearUID,loadouts,daily,bpXP,bpClaimF,bpClaimP,bpPrem,bpSeason,evtEarned,evtBal,evtMile,evtShop,login,gleam,rites,stats,secret,vowCard,shopFirst,cosmetics,skinOn,profile,shopDaily,raidWeek,guild,quests,items,spire,muted:ui.muted,pref:{speed:ui.speed,auto:ui.auto}}));}catch(e){}}
+  {v:3,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,arena,raidBest,crystals,gold,starShards,relics,sigils,pity,insight,plvl,pxp,vowTickets,freePullUsed,tutorialDone,energy,energyTs,inventory,gearOn,gearUID,loadouts,daily,bpXP,bpClaimF,bpClaimP,bpPrem,bpSeason,evtEarned,evtBal,evtMile,evtShop,login,gleam,rites,stats,secret,vowCard,shopFirst,cosmetics,skinOn,profile,shopDaily,raidWeek,guild,quests,items,spire,endless,muted:ui.muted,pref:{speed:ui.speed,auto:ui.auto}}));}catch(e){}}
 function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s||(s.v!==1&&s.v!==2&&s.v!==3))return false;
   owned=new Set(s.owned);progress=s.progress||{};cleared=new Set(s.cleared);
   crystals=s.crystals??crystals;gold=s.gold??gold;starShards=s.starShards??starShards;relics=s.relics??0;sigils=s.sigils??0;pity=s.pity??0;insight=s.insight??40;
@@ -2977,6 +2978,7 @@ function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s
   inventory=s.inventory||[];gearOn=s.gearOn||{};gearUID=s.gearUID||inventory.reduce((m,p)=>Math.max(m,p.uid),0);
   loadouts=s.loadouts||{};clearedHard=new Set(s.clearedHard||[]);arenaRank=s.arenaRank||0;arena=Object.assign({rp:0,best:0,streak:0,wins:0,season:0,seed:1,claimed:[]},s.arena||{});raidBest=s.raidBest||0;raidWeek=s.raidWeek||{id:-1,best:0,claimed:[]};
   spire=s.spire||{best:0,month:'',seals:0};
+  endless=s.endless||{best:0,runs:0};
   daily=s.daily||{date:'',win:0,summon:0,enhance:0,claimed:[]};dailyCheck();ui.muted=s.muted??false;
   bpXP=s.bpXP||0;bpClaimF=s.bpClaimF||[];bpClaimP=s.bpClaimP||[];bpPrem=!!s.bpPrem;bpSeason=s.bpSeason??-1;
   evtEarned=s.evtEarned||0;evtBal=s.evtBal||0;evtMile=s.evtMile||[];evtShop=s.evtShop||{};login=s.login||{n:0,date:''};
@@ -4236,11 +4238,83 @@ function mkFoe(id,level,stars,captain){const h=hero(id),c=CLASS[h.class],st=foeS
 function arenaTierName(){const info=arenaTierInfo(arena.rp);return info.tier.n+(info.div?' '+info.div:'');}
 let _arChal=null, arenaView='ladder';
 function openArena(){_arChal=arenaChallengers();renderArena();show('screen-arena');}
+/* ---------- Endless Gate — score-attack mode with a global leaderboard ---------- */
+let endless={best:0,runs:0};
+const ENDLESS_MOBS=["LEGION","MARKSMAN","HOUND","WRAITH","KNIGHT","REVENANT","CHANTER"];
+const ENDLESS_MAX=30;   // waves; clearing all is "Unbroken"
+function endlessWaves(){
+  const waves=[];
+  for(let w=0;w<ENDLESS_MAX;w++){
+    const lvl=30+w*4, size=3+Math.min(2,Math.floor(w/6)), boss=(w+1)%5===0, row=[];
+    for(let i=0;i<size;i++)row.push(mkEnemy("ENM-ORD-"+ENDLESS_MOBS[(w+i)%ENDLESS_MOBS.length]+"@"+lvl));
+    if(boss)row.push(mkEnemy("ENM-ORD-"+["CWARDEN","WRAITH","REVENANT"][((w/5)|0)%3]+"@"+(lvl+6)));
+    waves.push(row);
+  }
+  return waves;
+}
+function runEndless(){
+  const ids=autoTeam(); if(!ids.length){toast&&toast('Summon some heroes first.');return;} team=ids;
+  if(!energyPay(10))return;
+  const waves=endlessWaves(); curHard=false;
+  G={heroes:team.map(mkHero),waves,wi:0,enemies:waves[0],surge:0,round:1,over:false,busy:false,auto:ui.auto,speed:ui.speed,telegraph:null,hard:false,endless:true,awaiting:null,pendingSkill:null};
+  applySynergy(G.heroes);applyEventFactionWeek(G.heroes);
+  $('#speedBtn').textContent=ui.speed+'×';$('#autoBtn').classList.toggle('active',ui.auto);$('#autoBtn').textContent=ui.auto?'Auto ▶':'Manual';
+  $('#btlChapter').textContent='ENDLESS GATE';$('#btlName').textContent='Survive the waves';
+  setBattleBg('4');buildParty();renderEnemies();render();renderTelegraph();
+  $('#roundNum').textContent='1';$('#result').style.display='none';$('#wavepip').textContent='Each wave cleared = score';
+  logMsg('The Endless Gate yawns open…');logSynergies(G.heroes.map(u=>u.id));
+  show('screen-battle');turnQueue=[];setTimeout(step,450);
+}
+function endEndless(win){
+  setMvp(win);
+  const cleared=Math.min(ENDLESS_MAX,(G.wi||0)+(win?1:0));
+  const isBest=cleared>endless.best; if(isBest)endless.best=cleared;
+  endless.runs=(endless.runs||0)+1;
+  const crys=cleared*8, gGold=cleared*6000; crystals+=crys; gold+=gGold;
+  if(win&&cleared>=ENDLESS_MAX)vowTickets+=2;
+  questBump('win'); saveGame();
+  const r=$('#result');r.style.display='flex';resultCinematic(win);
+  $('#resEyebrow').textContent=win?'Endless cleared!':'Overrun';
+  const v=$('#resVerdict');v.textContent=win?'UNBROKEN':'WAVE '+cleared;v.className='verdict '+(win?'win':'lose');
+  $('#resSub').innerHTML=`You cleared <b>${cleared} wave${cleared!==1?'s':''}</b>${isBest?' — <b style="color:var(--warn)">new best!</b>':' (best '+endless.best+')'}.<br><b><i class="cur crystal"></i> +${crys} Crystals · <i class="cur gold"></i> +${gGold.toLocaleString()} Gold</b>${win&&cleared>=ENDLESS_MAX?' · <b style="color:var(--warn)">+2 Vow Tickets</b>':''}`;
+  const nx=$('#resNext');nx.textContent='Run again ▸';nx.onclick=()=>{runEndless();};
+  $('#resMap').textContent='Leave'; window._resHub=()=>{arenaView='endless';openArena();};
+}
+function endlessLeaderboard(){
+  const bots=[];
+  for(let i=0;i<120;i++){
+    const nm=LB_FIRST[(i*5+2)%LB_FIRST.length]+' '+LB_LAST[(i*13+7)%LB_LAST.length];
+    const score=Math.max(1,Math.round(ENDLESS_MAX*Math.pow(0.955,i)*(1+(((i*17)%100-50)/1200))));
+    bots.push({n:nm,s:score,me:false});
+  }
+  const all=[...bots,{n:'You',s:endless.best,me:true}].sort((a,b)=>b.s-a.s||(a.me?1:-1));
+  return {all,rank:all.findIndex(x=>x.me)+1};
+}
+function renderArenaEndless(){
+  $('#arRankBar').innerHTML=arenaViewTabs()+`
+    <div class="arrankcard" style="--tc:var(--rng)">
+      <div class="arrk-l"><div class="arrk-tier">Endless Gate</div>
+        <div class="arrk-rp"><b>Best · Wave ${endless.best}</b> · ${endless.runs||0} runs</div></div>
+      <button class="cta" id="endlessEnter">Enter · <i class="cur energy"></i> 10</button>
+    </div>
+    <div class="lbnote">Escalating waves of the Dark Order — survive as long as you can. Ranked globally by best wave; Crystals &amp; Gold scale with waves cleared, and clearing all ${ENDLESS_MAX} pays Vow Tickets.</div>`;
+  const {all,rank}=endlessLeaderboard();
+  const rowHTML=(x,i)=>`<div class="lbrow ${x.me?'me':''} ${i<3?'top3 top'+(i+1):''}">
+      <span class="lbrk">#${i+1}</span>
+      <span class="lbnm">${x.me?playerName():x.n}</span>
+      <span class="lbcp">Wave ${x.s}</span></div>`;
+  let html=all.slice(0,100).map((x,i)=>rowHTML(x,i)).join('');
+  if(rank>100)html+='<div class="lbsep">···</div>'+rowHTML({n:'You',s:endless.best,me:true},rank-1);
+  $('#arList').innerHTML=`<div class="lbwrap">${html}</div>`;
+  const eb=$('#endlessEnter');if(eb)eb.addEventListener('click',runEndless);
+}
 function arenaViewTabs(){return `<div class="arviewtabs">
-  <button class="arvt ${arenaView==='ladder'?'on':''}" data-av="ladder">⚔ Ladder</button>
-  <button class="arvt ${arenaView==='rank'?'on':''}" data-av="rank">🏆 Power Rank</button></div>`;}
+  <button class="arvt ${arenaView==='ladder'?'on':''}" data-av="ladder">Ladder</button>
+  <button class="arvt ${arenaView==='rank'?'on':''}" data-av="rank">Power Rank</button>
+  <button class="arvt ${arenaView==='endless'?'on':''}" data-av="endless">Endless</button></div>`;}
 function renderArena(){
   if(arenaView==='rank'){renderLeaderboard();return;}
+  if(arenaView==='endless'){renderArenaEndless();return;}
   const info=arenaTierInfo(arena.rp),t=info.tier,col=t.col;
   const bestInfo=arenaTierInfo(arena.best);
   const nextTxt=info.next?`${info.next.rp-arena.rp} RP to <b style="color:${ARENA_TIERS[info.idx+1].col}">${info.next.n}</b>`:'Top tier reached';
@@ -6892,6 +6966,7 @@ function endGame(win){
   if(G.secret)return endSecret(win);
   if(G.dungeon)return endDungeon(win);
   if(G.spire)return endSpire(win);
+  if(G.endless)return endEndless(win);
   if(G.gwar)return endGuildWar(win);
   if(G.guildBoss)return endGuildBoss(win);
   const H=curHard;
