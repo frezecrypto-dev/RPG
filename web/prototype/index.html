@@ -1561,6 +1561,16 @@
   .elday .eldq{font-size:8px;color:var(--muted);line-height:1}
   .elday.notable{border-color:var(--umbra);background:linear-gradient(180deg,rgba(123,92,255,.14),var(--panel2))}
   .elday.claimed{opacity:.45} .elday.claimed::after{content:"✓";position:absolute;top:2px;right:4px;font-size:9px;color:var(--good)}
+  .evclist{display:flex;flex-direction:column;gap:6px}
+  .evcrow{display:flex;align-items:center;gap:9px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 10px;position:relative;overflow:hidden}
+  .evcbar{position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--ec)}
+  .evcmid{flex:1;min-width:0;padding-left:4px}
+  .evcnm{font-family:var(--font-title);font-size:13px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .evctag{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .evcstat{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+  .evclive{font-size:9px;font-weight:800;letter-spacing:.08em;color:#0a0814;background:var(--ec);border-radius:4px;padding:1px 6px}
+  .evcsoon{font-size:9px;font-weight:800;letter-spacing:.08em;color:var(--ec);border:1px solid var(--ec);border-radius:4px;padding:1px 6px}
+  .evctime{font-size:10px;color:var(--faint);white-space:nowrap}
   .elnav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:8px 0 6px}
   .elnav .ellabel{font-size:11px;letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
   .elarrow{width:34px;height:26px;border-radius:7px;border:1px solid var(--line);background:var(--panel2);color:var(--ink);cursor:pointer}
@@ -2251,7 +2261,8 @@
       <span class="res"><i class="cur relic"></i> <b class="num relicN">0</b></span>
     </div>
     <div id="evtScroll">
-      <div id="evtFaction"></div>
+      <div id="evtCalendar"></div>
+    <div id="evtFaction"></div>
       <div id="evtEvent"></div>
       <div id="evtLogin"></div>
     </div>
@@ -3338,7 +3349,29 @@ function loginCanClaim(){return login.n<LOGIN_DAYS && login.date!==new Date().to
 function loginClaim(){if(!loginCanClaim())return;grantReward(loginReward(login.n));login.n++;login.date=new Date().toDateString();questBump('login');
   loginView=Math.floor(login.n/28); SFX.rare('E');renderCrys();renderEvents();saveGame();}
 function openEvents(){loginView=Math.floor(Math.min(login.n,LOGIN_DAYS-1)/28);renderEvents();renderCrys();updateHomeNav('events');show('screen-events');}
+function evtWeekEndsMs(){const cyc=7*864e5;return Math.ceil((Date.now()+1)/cyc)*cyc-Date.now();}
+function renderEventCalendar(){
+  const el=$('#evtCalendar'); if(!el)return;
+  const fw=evtFactionWeek(), fwk=Math.floor(Date.now()/(7*864e5));
+  const fwNext=EVT_FACTION_ROT[(((fwk+1)%5)+5)%5];
+  const rows=[
+    {nm:FACTION[fw].name+' Faction Week', tag:'+'+Math.round(EVT_FACTION_PCT*100)+'% stats to '+FACTION[fw].name, col:FACTION[fw].color, live:true, ms:evtWeekEndsMs()},
+    {nm:EVT.name, tag:EVT.tag, col:'--warn', live:true, ms:evtEndsMs()},
+    {nm:'Weekly Raid', tag:'Boss rotation · milestones', col:'--rng', live:true, ms:evtWeekEndsMs()},
+    {nm:'Guild War', tag:'Front captures · weekly', col:'--tnk', live:true, ms:evtWeekEndsMs()},
+    {nm:bpSeasonName(), tag:'Battle Pass season', col:'--mag', live:true, ms:bpSeasonEndsMs()},
+    {nm:FACTION[fwNext].name+' Faction Week', tag:'Up next', col:FACTION[fwNext].color, live:false, ms:evtWeekEndsMs()},
+  ];
+  const items=rows.map(r=>`<div class="evcrow" style="--ec:var(${r.col})">
+      <div class="evcbar"></div>
+      <div class="evcmid"><div class="evcnm">${r.nm}</div><div class="evctag">${r.tag}</div></div>
+      <div class="evcstat">${r.live?'<span class="evclive">LIVE</span>':'<span class="evcsoon">SOON</span>'}<span class="evctime">${r.live?'ends '+fmtDur(r.ms):'in '+fmtDur(r.ms)}</span></div>
+    </div>`).join('');
+  el.innerHTML=`<div class="evtcard"><div class="ehead"><div><div class="etag">What's on · rotating live ops</div><div class="etitle">Event Calendar</div></div></div>
+    <div class="evclist">${items}</div></div>`;
+}
 function renderEvents(){
+  renderEventCalendar();
   // --- faction week ---
   const fw=evtFactionWeek(), f=FACTION[fw];
   const fwEl=$('#evtFaction');
