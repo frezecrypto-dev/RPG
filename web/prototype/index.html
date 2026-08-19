@@ -959,6 +959,17 @@
   #hdAsc .ascdis{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
   #hdAsc .ascdis .adl{font-size:10px;color:var(--warn)}
   #hdAsc .adbtn{border-color:#7a5a1a;background:rgba(255,180,80,.12)}
+  #hdRunes{margin:12px 0 2px}
+  #hdRunes .runehd{margin-bottom:8px} #hdRunes .kh{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)} #hdRunes .khsub{text-transform:none;letter-spacing:0;color:var(--faint);font-size:9px;margin-left:6px}
+  .runegrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .runenode{border:1px solid var(--line);border-left:3px solid var(--rc);border-radius:10px;background:var(--panel2);padding:8px 9px}
+  .runetop{display:flex;align-items:center;justify-content:space-between}
+  .runenm{font-family:var(--font-title);font-size:12px;color:var(--ink)} .runelv{font-size:10px;color:var(--rc);font-weight:800}
+  .runepips{display:flex;gap:2px;margin:5px 0 4px;flex-wrap:wrap}
+  .runepips .rp{width:8px;height:8px;border-radius:50%;background:var(--line)} .runepips .rp.on{background:var(--rc);box-shadow:0 0 4px var(--rc)}
+  .runed{font-size:9px;color:var(--muted);margin-bottom:6px;min-height:22px}
+  .runebuy{width:100%;font-size:10px;padding:5px 4px;border-radius:7px;border:1px solid var(--rc);background:rgba(255,255,255,.04);color:var(--ink);cursor:pointer;white-space:nowrap}
+  .runebuy:disabled{opacity:.4;cursor:default;border-color:var(--line)} .runebuy .cur{width:.95em;height:.95em}
   #hdKit{display:flex;flex-direction:column;gap:6px}
   #hdKit .kh{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
   .krow{display:flex;gap:9px;align-items:center;font-size:12px}
@@ -2396,6 +2407,7 @@
       <div id="hdStats"></div>
       <div id="hdSkins"></div>
       <div id="hdBond"></div>
+      <div id="hdRunes"></div>
       <div id="hdGear"></div>
       <div id="hdAsc"></div>
       <div id="hdKit"></div>
@@ -2818,7 +2830,17 @@ let guild={joined:false, isLeader:false, name:'', tag:'', desc:'', banner:{emble
 let progress={};
 const RATES={L:0.03,E:0.16,R:0.38,C:0.43};
 function prog(id){if(!progress[id]){const h=hero(id);progress[id]={level:20,stars:h?h.startStars:1,skills:{S1:1,S2:1,S3:1},asc:0};}
-  if(!progress[id].skills)progress[id].skills={S1:1,S2:1,S3:1};if(progress[id].asc==null)progress[id].asc=0;if(progress[id].basc==null)progress[id].basc=0;if(progress[id].over==null)progress[id].over=0;if(progress[id].dupes==null)progress[id].dupes=0;if(progress[id].bond==null)progress[id].bond=0;if(progress[id].bondXp==null)progress[id].bondXp=0;return progress[id];}
+  if(!progress[id].skills)progress[id].skills={S1:1,S2:1,S3:1};if(progress[id].asc==null)progress[id].asc=0;if(progress[id].basc==null)progress[id].basc=0;if(progress[id].over==null)progress[id].over=0;if(progress[id].dupes==null)progress[id].dupes=0;if(progress[id].bond==null)progress[id].bond=0;if(progress[id].bondXp==null)progress[id].bondXp=0;if(!progress[id].runes)progress[id].runes={atk:0,def:0,hp:0,crit:0,spd:0,life:0};return progress[id];}
+const RUNE_CAP=10;
+const RUNES=[ // per-hero rune board — permanent, gold+insight investment
+  {k:'atk', n:'Emberedge',  d:'+2% ATK / lvl',        col:'--rng'},
+  {k:'def', n:'Ironhide',   d:'+2% DEF / lvl',        col:'--tnk'},
+  {k:'hp',  n:'Lifewell',   d:'+2% HP / lvl',         col:'--hlr'},
+  {k:'crit',n:'Keen Eye',   d:'+1% Crit Rate / lvl',  col:'--asn'},
+  {k:'spd', n:'Swiftrune',  d:'+1 SPD / lvl',         col:'--mag'},
+  {k:'life',n:'Blooddrink', d:'+1% Lifesteal / lvl',  col:'--nec'},
+];
+const runeCost=lvl=>({gold:8000+2000*lvl, insight:5+2*lvl});
 const ASC_CAP=6;
 const ascCost=rank=>({relics:2+rank, gold:20000*(rank+1)});
 // Bloodbound Ascension — the red track, fed by duplicate copies of the same champion
@@ -2899,15 +2921,16 @@ function computeStats(h,level,stars){
   const am=1 + 0.04*asc + 0.04*basc + overCore(over) + 0.01*bond;   // ascension + bond core-stat multiplier (+1%/bond lvl)
   const b={hp:h.baseL1.hp*g*sf*am,atk:h.baseL1.atk*g*sf*am,def:h.baseL1.def*g*sf*am,spd:h.baseL1.spd};
   const a=gearBonus(h.id).agg;
-  const critR=(asc>=3?0.05:0)+(basc>=3?0.05:0)+overCritR(over);
+  const rn=p.runes||{};   // rune board: permanent per-hero investment
+  const critR=(asc>=3?0.05:0)+(basc>=3?0.05:0)+overCritR(over)+0.01*(rn.crit||0);
   const critD=(asc>=6?0.15:0)+(basc>=6?0.15:0)+overCritD(over);
   return {
-    hp:Math.round((b.hp+(a.hp_flat||0))*(1+(a.hp_pct||0))),
-    atk:Math.round((b.atk+(a.atk_flat||0))*(1+(a.atk_pct||0))),
-    def:Math.round((b.def+(a.def_flat||0))*(1+(a.def_pct||0))),
-    spd:Math.round((b.spd+(a.spd_flat||0))*(1+(a.spd_pct||0))),
+    hp:Math.round((b.hp+(a.hp_flat||0))*(1+(a.hp_pct||0)+0.02*(rn.hp||0))),
+    atk:Math.round((b.atk+(a.atk_flat||0))*(1+(a.atk_pct||0)+0.02*(rn.atk||0))),
+    def:Math.round((b.def+(a.def_flat||0))*(1+(a.def_pct||0)+0.02*(rn.def||0))),
+    spd:Math.round((b.spd+(a.spd_flat||0))*(1+(a.spd_pct||0))+(rn.spd||0)),
     crit_rate:.05+(a.crit_rate||0)+critR, crit_dmg:.5+(a.crit_dmg||0)+critD,
-    lifesteal:a.lifesteal||0, heal_pct:a.heal_pct||0, aegis:a.aegis?1:0 };
+    lifesteal:(a.lifesteal||0)+0.01*(rn.life||0), heal_pct:a.heal_pct||0, aegis:a.aegis?1:0 };
 }
 function effStats(h){const pr=prog(h.id);return computeStats(h,pr.level,pr.stars);}
 let _prevCur={crystals:null,gold:null,starShards:null,relics:null,gleam:null,insight:null};
@@ -5810,6 +5833,7 @@ function renderHero(){
   renderHdSlots();
   renderHdSkins();
   renderHdBond();
+  renderHdRunes();
   renderHdGear();
   renderHdAsc();
   renderCrys();
@@ -5840,6 +5864,24 @@ function renderHdBond(){
     <div class="bondnote">Bond grows a little from every battle a hero fights in — or give a gift to speed it. Milestones grant rewards and unlock memories.</div>${memHTML}`;
   const gb=$('#giftBtn'); if(gb)gb.addEventListener('click',()=>giftBond(curHero));
 }
+function runeTotal(id){const rn=(progress[id]&&progress[id].runes)||{};return RUNES.reduce((a,r)=>a+(rn[r.k]||0),0);}
+function renderHdRunes(){
+  const box=$('#hdRunes'); if(!box)return;
+  const pr=prog(curHero), rn=pr.runes||{};
+  const nodes=RUNES.map(r=>{const lv=rn[r.k]||0, max=lv>=RUNE_CAP, c=runeCost(lv), afford=gold>=c.gold&&insight>=c.insight;
+    return `<div class="runenode" style="--rc:var(${r.col})">
+      <div class="runetop"><span class="runenm">${r.n}</span><span class="runelv">${lv}/${RUNE_CAP}</span></div>
+      <div class="runepips">${'<i class="rp on"></i>'.repeat(lv)}${'<i class="rp"></i>'.repeat(RUNE_CAP-lv)}</div>
+      <div class="runed">${r.d}</div>
+      <button class="runebuy" data-rune="${r.k}" ${max||!afford?'disabled':''}>${max?'MAX':`<i class="cur gold"></i> ${(c.gold/1000)}k · <i class="cur insight"></i> ${c.insight}`}</button>
+    </div>`;}).join('');
+  box.innerHTML=`<div class="runehd"><span class="kh">Rune Board <span class="khsub">${runeTotal(curHero)} runes invested · permanent</span></span></div>
+    <div class="runegrid">${nodes}</div>`;
+  box.querySelectorAll('.runebuy').forEach(b=>b.addEventListener('click',()=>buyRune(b.dataset.rune)));
+}
+function buyRune(k){const pr=prog(curHero),rn=pr.runes,lv=rn[k]||0;if(lv>=RUNE_CAP)return;const c=runeCost(lv);
+  if(gold<c.gold||insight<c.insight){flashBar&&flashBar();return;}
+  gold-=c.gold;insight-=c.insight;rn[k]=lv+1;SFX.rare&&SFX.rare('E');renderHero();saveGame();}
 function renderHdSkins(){
   const box=$('#hdSkins'); if(!box)return;
   const list=skinsForHero(curHero);
