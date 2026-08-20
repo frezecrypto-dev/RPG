@@ -168,9 +168,9 @@
   .frame-overbroken::after{content:'✸'}
   @keyframes obring{0%{box-shadow:0 0 0 2px #ffd98a inset,0 0 0 3px rgba(0,0,0,.5),0 0 8px rgba(255,190,110,.7)}50%{box-shadow:0 0 0 2px #fff2c0 inset,0 0 0 3px rgba(0,0,0,.5),0 0 16px rgba(255,207,107,1)}100%{box-shadow:0 0 0 2px #ffd98a inset,0 0 0 3px rgba(0,0,0,.5),0 0 8px rgba(255,190,110,.7)}}
   .frame-rank{--fr:#7bd0ff;--frg:rgba(123,208,255,.5)}
-  .frame-rank.rank-1{--fr:#ffcf6b;--frg:rgba(255,207,107,.85)} .frame-rank.rank-1::after{content:'🥇'}
-  .frame-rank.rank-2{--fr:#d3dbe8;--frg:rgba(210,220,235,.7)} .frame-rank.rank-2::after{content:'🥈'}
-  .frame-rank.rank-3{--fr:#e0a56a;--frg:rgba(205,127,50,.7)} .frame-rank.rank-3::after{content:'🥉'}
+  .frame-rank.rank-1{--fr:#ffcf6b;--frg:rgba(255,207,107,.85)} .frame-rank.rank-1::after{content:'1'}
+  .frame-rank.rank-2{--fr:#d3dbe8;--frg:rgba(210,220,235,.7)} .frame-rank.rank-2::after{content:'2'}
+  .frame-rank.rank-3{--fr:#e0a56a;--frg:rgba(205,127,50,.7)} .frame-rank.rank-3::after{content:'3'}
   .frame-rank.rank-4,.frame-rank.rank-5{--fr:#c58bff;--frg:rgba(169,112,255,.55)}
   .frame-rank.rank-6,.frame-rank.rank-7{--fr:#7bd0ff;--frg:rgba(123,208,255,.5)}
   .frame-rank.rank-8,.frame-rank.rank-9,.frame-rank.rank-10{--fr:#5fe0a0;--frg:rgba(95,224,160,.45)}
@@ -2089,7 +2089,7 @@
     </div>
   </div>
   <button id="setBtn" title="Settings" aria-label="Settings">⚙</button>
-  <button id="sndBtn" title="Sound on/off" aria-label="Toggle sound">🔊</button>
+  <button id="sndBtn" title="Sound on/off" aria-label="Toggle sound">♪</button>
   <!-- LOGIN -->
   <section class="screen on" id="screen-login">
     <div id="loginBg"></div>
@@ -2498,7 +2498,7 @@
         <div class="pm-sub">The fight is on hold. Resume when you're ready — or fall back to safety.</div>
         <div class="pm-btns">
           <button class="pm-btn primary" id="pmResume">▶ Resume battle</button>
-          <button class="pm-btn" id="pmMute">🔊 Sound: On</button>
+          <button class="pm-btn" id="pmMute">Sound: On</button>
           <button class="pm-btn" id="pmSettings">⚙ Settings</button>
           <button class="pm-btn danger" id="pmAbandon">⨯ Abandon &amp; return home</button>
         </div>
@@ -2815,8 +2815,8 @@ function skinById(sid){return SKINS.find(s=>s.id===sid)||null;}
 let vowCard={active:false, day:0, date:''};           // Monthly Vow Card: 300 now + 90/day×30 (doc 10 s4)
 let shopFirst=[], cosmetics=[], shopDaily={date:'', bought:{}}; // first-buy doubles, owned cosmetics, daily deal limits
 let items={};   // usable-item inventory (energy potions, etc.)
-const ITEMDEF={ ENERGY_S:{ic:'⚡',name:'Energy Potion',desc:'Restore 40 Energy',energy:40},
-  ENERGY_L:{ic:'🔋',name:'Big Energy Potion',desc:'Restore 120 Energy',energy:120} };
+const ITEMDEF={ ENERGY_S:{ic:'<i class="cur energy"></i>',name:'Energy Potion',desc:'Restore 40 Energy',energy:40},
+  ENERGY_L:{ic:'<i class="cur energy"></i>',name:'Big Energy Potion',desc:'Restore 120 Energy',energy:120} };
 let quests={ d:{date:'',prog:{},claimed:[]}, w:{week:-1,prog:{},claimed:[]}, m:{month:'',prog:{},claimed:[]} };
 const QUEST_DEFS={
   d:[ {id:'win',key:'win',label:'Win 3 battles',goal:3,rw:[{t:'crystal',n:80},{t:'energy',n:20}]},
@@ -3366,7 +3366,7 @@ function bpClaimAll(){
 /* ---------- EVENTS (live ops · doc 10 s3 / data/events.json) ---------- */
 const EVT={
   id:'EVT-POINTFARM', name:'Ember Reclamation', tag:'Point-farm · 2-week cycle',
-  cur:'Ember Cinders', curIc:'✦', durationDays:14,
+  cur:'Ember Cinders', curIc:'<i class="cur gleam"></i>', durationDays:14,
   earn:{normal:150, boss:400, hardMul:1.5, raid:200, arena:60}, // cinders per clear (points == spendable)
   milestones:[
     {p:500,  rw:[{t:'crystal',n:150}]},
@@ -3374,10 +3374,10 @@ const EVT={
     {p:5000, rw:[{t:'crystal',n:400},{t:'cos'}]},
   ],
   shop:[
-    {id:'TKT-FEAT',  ic:'🎟️', name:'Featured Vow ×2',   rw:{t:'ticket',n:2}, cost:1200, limit:2},
+    {id:'TKT-FEAT',  ic:'<i class="cur ticket"></i>', name:'Featured Vow ×2',   rw:{t:'ticket',n:2}, cost:1200, limit:2},
     {id:'ASC-RELIC', ic:'<i class="cur relic"></i>', name:'Ash Relic ×3', rw:{t:'relic',n:3},  cost:800,  limit:3},
     {id:'STAR-CRATE',ic:'<i class="cur shard"></i>', name:'Star Crate ×5',rw:{t:'crate',n:5},  cost:500,  limit:6},
-    {id:'GLEAM',     ic:'✧', name:'Gleam ×300',       rw:{t:'gleam',n:300},cost:400,  limit:2},
+    {id:'GLEAM',     ic:'<i class="cur gleam"></i>', name:'Gleam ×300',       rw:{t:'gleam',n:300},cost:400,  limit:2},
     {id:'GOLD',      ic:'<i class="cur gold"></i>', name:'Gold ×100k',    rw:{t:'gold',n:100000},cost:200,limit:10},
   ],
 };
@@ -3521,18 +3521,18 @@ const SHOP={
     {id:'CR6500', n:6500, price:'$49.99'},
   ],
   value:[ // targeted value packs, fixed contents — no randomized IAP (doc 10 s4)
-    {id:'VP-WARDEN', ic:'🎁', name:"Gatewarden's Bundle", price:'$9.99', rw:[{t:'crystal',n:800},{t:'gold',n:150000},{t:'relic',n:5},{t:'ore',n:6}]},
-    {id:'VP-CHAPTER',ic:'📜', name:'Chapter Clear Pack',  price:'$2.99', rw:[{t:'ticket',n:3},{t:'crate',n:5}]},
-    {id:'VP-ASC',    ic:'⭐', name:'Ascension Pack',       price:'$4.99', rw:[{t:'relic',n:8},{t:'gold',n:80000}]},
+    {id:'VP-WARDEN', ic:'<i class="cur crystal"></i>', name:"Gatewarden's Bundle", price:'$9.99', rw:[{t:'crystal',n:800},{t:'gold',n:150000},{t:'relic',n:5},{t:'ore',n:6}]},
+    {id:'VP-CHAPTER',ic:'<i class="cur ticket"></i>', name:'Chapter Clear Pack',  price:'$2.99', rw:[{t:'ticket',n:3},{t:'crate',n:5}]},
+    {id:'VP-ASC',    ic:'<i class="cur relic"></i>', name:'Ascension Pack',       price:'$4.99', rw:[{t:'relic',n:8},{t:'gold',n:80000}]},
   ],
   deals:[ // daily crystal-spend deals (resets daily)
     {id:'D-GOLD', ic:'<i class="cur gold"></i>',  name:'Gold ×60,000',  rw:{t:'gold',n:60000}, cost:60, limit:2},
     {id:'D-CRATE',ic:'<i class="cur shard"></i>', name:'Star Crate ×3', rw:{t:'crate',n:3},     cost:80, limit:2},
   ],
   cosmetics:[ // Gleam only — never power (doc 10 s4)
-    {id:'COS-SKIN-ASN',      ic:'🎭', name:'The Hollow Smile — Crimson Court', kind:'Character Skin', cost:1200},
-    {id:'COS-FRAME-GOLD',    ic:'🖼️', name:'Gilded Ultimate Frame',           kind:'Cut-in Frame',   cost:400},
-    {id:'COS-THEME-DROWNED', ic:'🌊', name:'Home Theme — The Drowned Quarter', kind:'Home Theme',     cost:600},
+    {id:'COS-SKIN-ASN',      ic:'<i class="cur gleam"></i>', name:'The Hollow Smile — Crimson Court', kind:'Character Skin', cost:1200},
+    {id:'COS-FRAME-GOLD',    ic:'<i class="cur gleam"></i>', name:'Gilded Ultimate Frame',           kind:'Cut-in Frame',   cost:400},
+    {id:'COS-THEME-DROWNED', ic:'<i class="cur gleam"></i>', name:'Home Theme — The Drowned Quarter', kind:'Home Theme',     cost:600},
   ],
 };
 let shopTab='value';
@@ -3831,7 +3831,7 @@ const GUILD_SHOP=[
   {id:'g-crate', ic:'<i class="cur shard"></i>', name:'Star Crate ×3', rw:{t:'crate',n:3}, cost:200, limit:4},
   {id:'g-relic', ic:'<i class="cur relic"></i>', name:'Ash Relic ×2',  rw:{t:'relic',n:2}, cost:300, limit:3},
   {id:'g-ore',   ic:'<i class="cur gold"></i>',  name:'Gear Ore ×5',   rw:{t:'ore',n:5},   cost:150, limit:5},
-  {id:'g-sel',   ic:'🎟️', name:'Epic Vow Ticket', rw:{t:'ticket',n:1}, cost:500, limit:1},
+  {id:'g-sel',   ic:'<i class="cur ticket"></i>', name:'Epic Vow Ticket', rw:{t:'ticket',n:1}, cost:500, limit:1},
 ];
 const GUILDBOSS={name:'The Sunken Colossus', id:'ENM-GNT-X01', bg:'2', root:'physical', weak:['magical'], glyph:'⛰️', efx:'var(--granite)',
   hp:260000, atk:480, def:250, goal:8000000, tg:'Seismic Toll'};
@@ -4453,7 +4453,7 @@ function renderLeaderboard(){
   const top=all.slice(0,100);
   const inTop=rank<=100;
   const rowHTML=(x,i)=>`<div class="lbrow ${x.me?'me':''} ${i<3?'top3 top'+(i+1):''}">
-      <span class="lbrk">${i<3?['🥇','🥈','🥉'][i]:'#'+(i+1)}</span>
+      <span class="lbrk">${i<3?'#'+(i+1):'#'+(i+1)}</span>
       ${x.me?avatarFramed(26):''}
       <span class="lbnm">${x.me?(playerName()+(profile.title?' <span class="lbtitle">'+profile.title+'</span>':'')):x.n}</span>
       <span class="lbcp">${x.cp.toLocaleString()}</span></div>`;
@@ -4836,7 +4836,7 @@ const BOUNTIES=[
   {id:'shard',  name:'Shardvein Delve',   ic:'<i class="cur shard"></i>', kind:'shard',   amt:26,    tries:3, energy:8,  bg:'3', mul:1.7, foes:['ENM-GRD-M01','ENM-GRD-M03','ENM-GRD-E02'], col:'#5a8fd6', desc:'Crack a crystal vein for Star Shards.'},
   {id:'relic',  name:'Reliquary Watch',   ic:'<i class="cur relic"></i>', kind:'relic',   amt:4,     tries:2, energy:10, bg:'4', mul:1.9, foes:['ENM-UND-M01','ENM-UND-E01','ENM-UND-M01'], col:'#6fe3a0', desc:'Loot a sealed reliquary for Relics.'},
   {id:'insight',name:'Rite of Focus',     ic:'<i class="cur insight"></i>',                        kind:'insight', amt:40,    tries:2, energy:8,  bg:'3', mul:2.0, foes:['ENM-GRD-M02','ENM-GRD-E02','ENM-GRD-B01'], col:'#c9b8ff', desc:'Meditate through an ambush for Insight.'},
-  {id:'gleam',  name:'Emberlight Bounty', ic:'✧',                         kind:'gleam',   amt:70,    tries:1, energy:10, bg:'2', mul:2.1, foes:['ENM-SLM-M01','ENM-SLM-M04','ENM-SLM-E01'], col:'#c58bff', desc:'A rare cosmetic-currency bounty.'},
+  {id:'gleam',  name:'Emberlight Bounty', ic:'<i class="cur gleam"></i>',                         kind:'gleam',   amt:70,    tries:1, energy:10, bg:'2', mul:2.1, foes:['ENM-SLM-M01','ENM-SLM-M04','ENM-SLM-E01'], col:'#c58bff', desc:'A rare cosmetic-currency bounty.'},
 ];
 function bountyById(id){return BOUNTIES.find(b=>b.id===id);}
 function bountyDayCheck(){const t=new Date().toDateString();if(rites.bountyDate!==t){rites.bountyDate=t;rites.bountyUsed={};}}
@@ -7297,8 +7297,8 @@ $('#startBtn').addEventListener('click',()=>{if(team.length<1)return;
   else if(arenaTarget){ deployArena(arenaTarget); }                 // Arena is free (gated by first-clear)
   else { if(!energyPay(hardMode?8:6))return; deploy(); }});
 $('#resMap').addEventListener('click',()=>{if(window._resHub){const f=window._resHub;window._resHub=null;f();return;}buildMap();show('screen-map');});
-function syncSnd(){const b=$('#sndBtn');if(b){b.textContent=ui.muted?'🔇':'🔊';b.classList.toggle('muted',ui.muted);}
-  const pm=$('#pmMute');if(pm)pm.textContent=(ui.muted?'🔇 Sound: Off':'🔊 Sound: On');}
+function syncSnd(){const b=$('#sndBtn');if(b){b.textContent='♪';b.classList.toggle('muted',ui.muted);}
+  const pm=$('#pmMute');if(pm)pm.textContent=(ui.muted?'Sound: Off':'Sound: On');}
 $('#sndBtn').addEventListener('click',()=>{ui.muted=!ui.muted;SFX.setMuted(ui.muted);if(!ui.muted){SFX.tap();SFX.resume&&SFX.resume();if(SFX.musicOn&&!SFX.musicOn())SFX.musicStart("menu");}else if(SFX.musicStop){SFX.musicStop();}syncSnd();saveGame();});
 /* ---------- Battle pause / abandon ---------- */
 function battlePause(){ if(!G||G.over)return; G.paused=true; syncSnd(); $('#pauseMenu').classList.add('on'); SFX.tap&&SFX.tap(); }
