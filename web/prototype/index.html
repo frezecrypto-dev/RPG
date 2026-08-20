@@ -227,6 +227,8 @@
   /* username modal */
   #nameModal{position:fixed;inset:0;z-index:9995;display:none;align-items:center;justify-content:center;background:rgba(4,3,10,.82);backdrop-filter:blur(3px)}
   #nameModal.on{display:flex}
+  .nmnet{font-size:10px;color:var(--faint);margin:2px 0 8px;display:flex;align-items:center;gap:6px;justify-content:center}
+  .netdot{width:7px;height:7px;border-radius:50%;background:var(--faint)} .netdot.on{background:var(--good);box-shadow:0 0 6px var(--good)}
   .nmcard{width:min(340px,88vw);border:1px solid var(--umbra);border-radius:16px;background:var(--panel);padding:22px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.6)}
   .nmtitle{font-family:var(--font-title);font-size:22px}
   .nmsub{font-size:11px;color:var(--muted);margin:6px 0 16px;line-height:1.5}
@@ -2144,6 +2146,7 @@
       <div class="nmsub">This is how other Gatewardens will see you. It must be unique.</div>
       <input id="nmInput" type="text" maxlength="16" placeholder="Commander name…" autocomplete="off" spellcheck="false">
       <div class="nmerr" id="nmErr"></div>
+      <div class="nmnet" id="nmNet"></div>
       <button class="cta" id="nmConfirm">Confirm</button>
     </div>
   </div>
@@ -2987,7 +2990,25 @@ function renderCrys(){
 /* ---------- save / load (localStorage, graceful fallback) ---------- */
 const SAVE_KEY='ashgate_save_v1';
 let hasSave=false;
-function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(
+/* ---------- Online client (offline-first) — activates when a server URL is configured ----------
+   Set window.ASHGATE_SERVER (or localStorage 'ashgate_server') to the backend base URL to go online.
+   Online gives globally-unique names (server UNIQUE constraint), cloud saves and real leaderboards;
+   with no server it stays offline and everything falls back to the local behavior. Backend: /server. */
+const NET_BASE=(((typeof window!=='undefined'&&window.ASHGATE_SERVER)||localStorage.getItem('ashgate_server')||'')+'').replace(/\/+$/,'');
+const NET=(function(){
+  const TK='ashgate_net_token'; let token=localStorage.getItem(TK)||null, online=false, ver=+(localStorage.getItem('ashgate_net_ver')||0), pt=null;
+  async function api(m,p,b){const r=await fetch(NET_BASE+p,{method:m,headers:{'content-type':'application/json',...(token?{authorization:'Bearer '+token}:{})},body:b?JSON.stringify(b):undefined});let j={};try{j=await r.json();}catch(e){} return {status:r.status,json:j};}
+  return {
+    isOnline:()=>online,
+    async init(){ if(!NET_BASE)return false; try{const r=await api('POST','/api/auth/guest'); if(r.json&&r.json.token){token=r.json.token; try{localStorage.setItem(TK,token);}catch(e){} online=true; return true;}}catch(e){} online=false; return false; },
+    async claimName(name){ if(!online)return {ok:true,offline:true}; try{const r=await api('POST','/api/name/claim',{name}); return r.status===200?{ok:true}:{ok:false,reason:(r.json&&r.json.reason)||'taken'};}catch(e){return {ok:true,offline:true};} },
+    pushSave(obj){ if(!online)return; clearTimeout(pt); pt=setTimeout(async()=>{ try{const r=await api('PUT','/api/save',{save:obj,version:ver}); if(r.status===200||r.status===409){ver=r.json.version; try{localStorage.setItem('ashgate_net_ver',String(ver));}catch(e){}}}catch(e){} },1500); },
+    async pullSave(){ if(!online)return null; try{const r=await api('GET','/api/save'); if(r.json&&r.json.save){ver=r.json.version; return r.json.save;}}catch(e){} return null; },
+    async leaderboard(){ if(!online)return null; try{return (await api('GET','/api/leaderboard')).json;}catch(e){return null;} },
+  };
+})();
+function saveGame(){try{if(typeof NET!=='undefined')setTimeout(()=>{try{NET.pushSave(JSON.parse(localStorage.getItem(SAVE_KEY)));}catch(e){}},0);}catch(e){}
+  try{localStorage.setItem(SAVE_KEY,JSON.stringify(
   {v:3,owned:[...owned],progress,cleared:[...cleared],clearedHard:[...clearedHard],arenaRank,arena,raidBest,crystals,gold,starShards,relics,sigils,pity,insight,plvl,pxp,vowTickets,freePullUsed,tutorialDone,energy,energyTs,inventory,gearOn,gearUID,loadouts,daily,bpXP,bpClaimF,bpClaimP,bpPrem,bpSeason,evtEarned,evtBal,evtMile,evtShop,login,gleam,rites,stats,secret,vowCard,shopFirst,cosmetics,skinOn,profile,shopDaily,raidWeek,guild,quests,items,spire,endless,worldBoss,muted:ui.muted,pref:{speed:ui.speed,auto:ui.auto}}));}catch(e){}}
 function loadGame(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(!s||(s.v!==1&&s.v!==2&&s.v!==3))return false;
   owned=new Set(s.owned);progress=s.progress||{};cleared=new Set(s.cleared);
@@ -4505,11 +4526,24 @@ function validateName(nm){nm=(nm||'').trim();
   return'';}
 let _nameForced=false;
 function promptUsername(forced){_nameForced=!!forced; const m=$('#nameModal'), inp=$('#nmInput'), err=$('#nmErr');
-  inp.value=profile.name||''; err.textContent=''; m.classList.add('on');
+  inp.value=profile.name||''; err.textContent=''; m.classList.add('on'); updateNetBadge();
   setTimeout(()=>{inp.focus();},60);
+}
+function updateNetBadge(){ const el=$('#nmNet'); if(!el)return;
+  const on=typeof NET!=='undefined'&&NET.isOnline();
+  el.innerHTML=on?'<span class="netdot on"></span> Online — this name is reserved globally'
+                 :'<span class="netdot"></span> Offline — name checked on this device';
 }
 function submitUsername(){const inp=$('#nmInput'), err=$('#nmErr'); const v=inp.value.trim();
   const e=validateName(v); if(e){err.textContent=e; inp.classList.add('shake'); setTimeout(()=>inp.classList.remove('shake'),400); return;}
+  if(typeof NET!=='undefined'&&NET.isOnline()){ const btn=$('#nmConfirm'); if(btn)btn.disabled=true;
+    NET.claimName(v).then(r=>{ if(btn)btn.disabled=false;
+      if(!r.ok){ err.textContent=r.reason==='taken'?'That name is already taken — pick another.':'Could not claim that name — try again.'; inp.classList.add('shake'); setTimeout(()=>inp.classList.remove('shake'),400); return; }
+      finishUsername(v); });
+    return; }
+  finishUsername(v);
+}
+function finishUsername(v){const inp=$('#nmInput'), err=$('#nmErr');
   profile.name=v; $('#nameModal').classList.remove('on'); SFX.rare&&SFX.rare('L'); saveGame();
   updateHomeProfile(); toast&&toast('Welcome, '+v+'!');
   if(_nameForced){_nameForced=false; if(pendingOnboard){pendingOnboard=false;setTimeout(startTutorial,300);} }
@@ -7170,6 +7204,7 @@ $('#resetBtn').addEventListener('click',()=>{uiConfirm('Reset all progress — r
 let pendingOnboard=false;
 hasSave=loadGame();
 bpSeasonCheck();  // roll the battle pass to the current 30-day season on boot
+if(typeof NET!=='undefined')NET.init().then(ok=>{ if(ok){ try{updateNetBadge&&updateNetBadge();}catch(e){} } });  // go online if a server is configured
 if(hasSave){$('#toMap').textContent='Continue';$('#resetBtn').style.display='block';}
 else{pendingOnboard=true;}  // first run: start with NO gear — all equipment comes from drops (raids/dungeons/campaign)
 renderCrys();

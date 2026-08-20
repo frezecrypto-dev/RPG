@@ -123,6 +123,24 @@ online cutover, not before.
 - Structured audit log of rejected/suspicious saves.
 - Backups + GDPR delete/export for accounts.
 
+## 8b. Client integration (done in the prototype)
+
+The offline-first client is already wired into `web/prototype/index.html`
+as the inlined `NET` object (a compact form of `client-sdk.js`):
+
+- It stays **offline** unless a backend URL is provided via
+  `window.ASHGATE_SERVER` or `localStorage['ashgate_server']`.
+- On boot it calls `NET.init()` (guest auth). When online, the username
+  modal gates **Confirm** on `NET.claimName()` — a server `409` shows
+  "name already taken" — giving globally-unique names; offline it keeps
+  the local reserved-name check. The modal shows an Online/Offline badge.
+- `saveGame()` fires a debounced `NET.pushSave()`; `NET.pullSave()` and
+  `NET.leaderboard()` are available for cloud-save reconciliation and the
+  real Power Ranking once the server is live.
+
+To activate: deploy `/server` (or a production API implementing the same
+endpoints) and set `window.ASHGATE_SERVER` to its base URL.
+
 ## 9. Suggested cutover order
 
 1. Stand up the API (Postgres, OAuth verify, TLS).
