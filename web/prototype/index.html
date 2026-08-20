@@ -1060,6 +1060,7 @@
   .obcard{width:100%;max-width:360px;border:1px solid var(--line);border-radius:18px;padding:26px 22px 20px;text-align:center;
     background:radial-gradient(120% 80% at 50% 0%,rgba(40,30,72,.8),var(--panel2))}
   .obglyph{font-size:46px;filter:drop-shadow(0 3px 10px rgba(0,0,0,.6))}
+  .obglyphimg{width:76px;height:76px;object-fit:contain;filter:drop-shadow(0 3px 12px rgba(0,0,0,.6))}
   .obtag{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--umbra);margin-top:10px}
   .obcard h2{font-family:var(--font-title);font-size:26px;margin:3px 0 10px;font-weight:500}
   .obcard p{font-size:13px;line-height:1.5;color:var(--muted);margin:0 0 16px}
@@ -3021,17 +3022,18 @@ function renderSettings(){
 function openSettings(){setMsg('');$('#setSave').value='';renderSettings();show('screen-settings');}
 /* ---------- onboarding ---------- */
 const ONBOARD=[
-  {g:'⚔', tag:'Welcome, Gatewarden', title:'ASHGATE', body:'A dark-fantasy squad RPG. Summon a roster of Vowbound, forge a party of five, and fight through eight story acts — from the Drowned Quarter to the gates beyond the Sealed Gate.'},
-  {g:'🛡️', tag:'Build your five', title:'Roles & Synergy', body:'A strong party wants a frontline to hold, damage to kill, and sustain to survive. Field 2+ heroes of the same faction (Emberguard, Freeblades, Hollowed, Choir, Gravebound) for a team synergy bonus — the team-select screen previews it live.'},
-  {g:'✦', tag:'Combat', title:'Tactical Turns', body:'Heroes act in SPD order. On each of your heroes’ turns the fight pauses — choose their skill (Basic, Core, or the Surge-fuelled Ultimate) and tap a target. Aim into an enemy’s WEAK spot for bonus damage and Surge. Prefer to watch? Tap Auto to hand the fight to the AI.'},
-  {g:'👑', tag:'Grow stronger', title:'Deep Progression', body:'Level, star, gear and skill-up your heroes. At max stars two Ascension tracks open — green Ascension (Relics) and red Bloodbound (duplicate copies) — and finishing both unlocks the Overbreak track for a final power spike. Every upgrade raises a hero’s Combat Power (KK).'},
-  {g:'🏆', tag:'Compete', title:'Ranked & Leaderboards', body:'Climb the ranked PvP Arena for RP and tiers, push your Guild’s League through Guild War, and chase the global Power Ranking by total KK. Top finishes earn exclusive profile frames — set your name, avatar and frame on your Profile (top-left on Home).'},
-  {g:'🎡', tag:'Every day', title:'Daily Rites', body:'Tap the glowing Daily button on Home: fight Bounties for targeted resources, collect passive Tribute, and take your free Wheel spin and Gate Gamble draw. Your save lives in this browser — back it up under ⚙ Settings.'},
+  {g:'sword', tag:'Welcome, Gatewarden', title:'ASHGATE', body:'A dark-fantasy squad RPG. Summon a roster of Vowbound, forge a party of five, and fight through eight story acts — from the Drowned Quarter to the gates beyond the Sealed Gate.'},
+  {g:'shield', tag:'Build your five', title:'Roles & Synergy', body:'A strong party wants a frontline to hold, damage to kill, and sustain to survive. Field 2+ heroes of the same faction (Emberguard, Freeblades, Hollowed, Choir, Gravebound) for a team synergy bonus — the team-select screen previews it live.'},
+  {g:'combat', tag:'Combat', title:'Tactical Turns', body:'Heroes act in SPD order. On each of your heroes’ turns the fight pauses — choose their skill (Basic, Core, or the Surge-fuelled Ultimate) and tap a target. Aim into an enemy’s WEAK spot for bonus damage and Surge. Prefer to watch? Tap Auto to hand the fight to the AI.'},
+  {g:'crown', tag:'Grow stronger', title:'Deep Progression', body:'Level, star, gear and skill-up your heroes. At max stars two Ascension tracks open — green Ascension (Relics) and red Bloodbound (duplicate copies) — and finishing both unlocks the Overbreak track for a final power spike. Every upgrade raises a hero’s Combat Power (KK).'},
+  {g:'trophy', tag:'Compete', title:'Ranked & Leaderboards', body:'Climb the ranked PvP Arena for RP and tiers, push your Guild’s League through Guild War, and chase the global Power Ranking by total KK. Top finishes earn exclusive profile frames — set your name, avatar and frame on your Profile (top-left on Home).'},
+  {g:'wheel', tag:'Every day', title:'Daily Rites', body:'Tap the glowing Daily button on Home: fight Bounties for targeted resources, collect passive Tribute, and take your free Wheel spin and Gate Gamble draw. Your save lives in this browser — back it up under ⚙ Settings.'},
 ];
 let obStep=0;
 function renderOnboard(){
   const s=ONBOARD[obStep];
-  $('#obGlyph').textContent=s.g;$('#obTag').textContent=s.tag;$('#obTitle').textContent=s.title;$('#obBody').textContent=s.body;
+  const _obi={sword:TABICON&&TABICON.weekly,shield:NAVICON&&NAVICON.heroes,combat:TABICON&&TABICON.boss,crown:NAVICON&&NAVICON.pass,trophy:NAVICON&&NAVICON.raid,wheel:DAILYICON&&DAILYICON.wheel}[s.g];
+  $('#obGlyph').innerHTML=_obi?`<img class="obglyphimg" src="${_obi}">`:s.g;$('#obTag').textContent=s.tag;$('#obTitle').textContent=s.title;$('#obBody').textContent=s.body;
   $('#obDots').innerHTML=ONBOARD.map((_,i)=>`<span class="obdot ${i===obStep?'on':''}"></span>`).join('');
   $('#obNext').textContent=obStep>=ONBOARD.length-1?'Begin the Descent':'Next ▸';
 }
@@ -3085,9 +3087,12 @@ const TUT=[
   {text:"<b>Quests</b> — Daily, Weekly and Monthly — pay you for simply playing: Crystals, Gold, Energy and even <b>Vow Tickets</b>. Check the badge on the home screen and claim them often.", go:()=>openQuests(), sel:'#qTabs'},
   {text:"The <b>Raid Portal</b> holds the weekly boss, the co-op Guild boss, and all <b>Dungeons</b> — Skill, Gold, EXP and the gear dungeons. Battles cost <b>Energy</b>, so pick your fights.", go:()=>openRaid(), sel:'#raidScroll'},
   {text:"Join or found a <b>Guild</b> for chat, donations, a shared shop and a co-op boss. Team play earns Guild Marks and extra rewards.", go:()=>openGuild(), sel:'#screen-guild'},
+  {text:"Come back daily! The glowing <b>Daily</b> button opens the <b>Daily Rites</b> — a free <b>Wheel of Ash</b> spin, resource <b>Bounties</b>, and passive <b>Tribute</b> that builds while you're away. Login rewards run a full <b>3-year</b> calendar.", go:()=>{openHome();}, sel:'#homeDaily'},
+  {text:"Every hero also grows a <b>Bond</b> through battle and has a personal <b>Rune Board</b> — six permanent stat upgrades bought with Gold and Insight. Deepen your favorites to push their power well past their level.", go:()=>{try{openHero(firstOwnedHero());}catch(e){openHome();}}, sel:'#hdRunes'},
+  {text:"When your five are strong, prove it: the <b>Endless Gate</b> (in the Arena) and the weekly <b>World Boss</b> (in the Raid Portal) both rank you on <b>global leaderboards</b>. And check <b>Events</b> for the live-ops calendar and the 30-day <b>Battle Pass</b> season.", go:()=>{openHome();}},
   {text:"Back home: your <b>★ Commander level</b> (top-left) rises from <b>everything you defeat</b>, and each level <b>raises your max Energy</b> — so playing literally lets you play more.", go:()=>openHome(), sel:'#cmdrPill'},
   {text:"Last stop — the <b>Vow Gate</b>. Summon heroes here: <b>3% Legendary</b>, a Legendary guaranteed within 70 pulls, and every 10-pull gives an Epic or better.", go:()=>openGacha(), sel:'#gachaBar'},
-  {text:"🎟️ <b>Vow Tickets</b> are premium summon tickets — <b>each one is a free single summon</b>, earned from the Battle Pass, quests, raids and the guild shop. Spend them here anytime.", sel:'.vowtk'},
+  {text:"<i class=\"cur ticket\"></i> <b>Vow Tickets</b> are premium summon tickets — <b>each one is a free single summon</b>, earned from the Battle Pass, quests, raids and the guild shop. Spend them here anytime.", sel:'.vowtk'},
   {text:"And your welcome gift: a <b>FREE summon with a guaranteed Epic</b>! Tap <b>Finish</b>, then hit the glowing golden button. You've also got <b>1600 Crystals</b> for a full 10-pull. Good luck, Gatewarden!", sel:'#freePullBtn'},
 ];
 let tutIdx=0;
