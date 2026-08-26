@@ -1,0 +1,27 @@
+# Render blueprint for the Ashgate API.  Deploy: render.com -> New -> Blueprint
+# -> point at this repo.  Render sets PORT automatically.
+services:
+  - type: web
+    name: ashgate-api
+    runtime: docker
+    dockerfilePath: ./server/Dockerfile
+    dockerContext: ./server
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      # Signs session tokens. Render generates a strong value once and keeps it.
+      - key: ASHGATE_SECRET
+        generateValue: true
+      # Lock CORS to where the client is served from. CHANGE THIS to your Pages URL.
+      - key: ASHGATE_ORIGIN
+        value: https://frezecrypto-dev.github.io
+      - key: ASHGATE_DB
+        value: /data/db.json
+
+    # IMPORTANT — free instances have NO persistent disk: /data is wiped on every
+    # deploy/restart, so cloud saves would not survive. To keep saves, switch
+    # `plan: free` to `plan: starter` and uncomment the disk below.
+    # disk:
+    #   name: ashgate-data
+    #   mountPath: /data
+    #   sizeGB: 1

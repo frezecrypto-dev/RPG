@@ -25,13 +25,16 @@ import { signToken, verifyToken, verifyOAuth } from './auth.js';
 import { validateSave } from './validate.js';
 
 const PORT = process.env.PORT || 8787;
+// Lock CORS to the game's origin in production; '*' stays the local-dev default.
+const ORIGIN = process.env.ASHGATE_ORIGIN || '*';
 const store = new Store();
 
 const json = (res, code, obj) => {
   const body = JSON.stringify(obj);
   res.writeHead(code, {
     'content-type': 'application/json',
-    'access-control-allow-origin': '*',
+    'access-control-allow-origin': ORIGIN,
+    ...(ORIGIN === '*' ? {} : { vary: 'Origin' }),
     'access-control-allow-headers': 'authorization,content-type',
     'access-control-allow-methods': 'GET,POST,PUT,OPTIONS',
   });
@@ -158,6 +161,15 @@ const server = createServer(async (req, res) => {
 
 // Don't listen when imported by the test harness.
 if (process.env.ASHGATE_NO_LISTEN !== '1') {
+  // Session tokens are HMAC-signed: shipping the dev secret lets anyone forge a
+  // login for any account. Fail loudly instead of starting an insecure server.
+  if (!process.env.ASHGATE_SECRET && process.env.ASHGATE_ALLOW_DEV_SECRET !== '1') {
+    console.error('[ashgate] FATAL: ASHGATE_SECRET is not set.\n' +
+      '  Generate one:  node -e "console.log(require(\'crypto\').randomBytes(48).toString(\'base64url\'))"\n' +
+      '  For local dev only, set ASHGATE_ALLOW_DEV_SECRET=1 to bypass this check.');
+    process.exit(1);
+  }
+  if (ORIGIN === '*') console.warn('[ashgate] WARNING: ASHGATE_ORIGIN unset — CORS is open to any origin.');
   server.listen(PORT, () => console.log(`[ashgate] api listening on http://localhost:${PORT}`));
 }
 
